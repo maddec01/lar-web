@@ -4,8 +4,8 @@ interface StatusIndicatorProps {
     className?: string;
     size?: 'sm' | 'md';
     tone: StatusTone;
-    /** A colour that comes with data, such as a tracker label's, in place of the tone's; none keeps the tone. */
-    color?: string | undefined;
+    /** A colour that comes with data, such as a tracker label's own, in place of the tone's; none keeps the tone. */
+    labelColor?: string | undefined;
     /** A short word after the dot in the tone's text colour, such as a check's "Installed"; the neutral tone mutes it,
      *  for a check that didn't run. */
     label?: string;
@@ -32,7 +32,7 @@ const sizeClasses: Record<NonNullable<StatusIndicatorProps['size']>, string> = {
     md: 'size-2',
 };
 
-export function StatusIndicator({ className, size = 'md', tone, color, label }: StatusIndicatorProps) {
+export function StatusIndicator({ className, size = 'md', tone, labelColor, label }: StatusIndicatorProps) {
     const classes = [
         'inline-block shrink-0 rounded-full',
         sizeClasses[size],
@@ -41,7 +41,7 @@ export function StatusIndicator({ className, size = 'md', tone, color, label }: 
     ]
         .filter(Boolean)
         .join(' ');
-    const dot = <span aria-hidden="true" className={classes} style={color ? { background: color } : undefined} />;
+    const dot = <span aria-hidden="true" className={classes} style={labelColor ? { background: labelColor } : undefined} />;
 
     if (label === undefined) return dot;
 

@@ -53,4 +53,4 @@ export const Labelled: Story = {
 };
 
 /** A colour that comes with data, such as a tracker label's, in place of the tone's. */
-export const DataColor: Story = { args: { tone: 'neutral', color: '#D73A4A' } };
+export const DataColor: Story = { args: { tone: 'neutral', labelColor: '#D73A4A' } };
