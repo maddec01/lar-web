@@ -3,6 +3,9 @@ import { describe, it } from 'vite-plus/test';
 
 import plugin from '../src/plugins/lar.js';
 
+/** The plugin is plain JavaScript, so its rules' literal types widen; they match Oxlint's rule shape at runtime. */
+const rules = plugin.rules as unknown as Record<keyof typeof plugin.rules, Parameters<RuleTester['run']>[1]>;
+
 RuleTester.describe = describe;
 RuleTester.it = it;
 
@@ -10,7 +13,7 @@ const tester = new RuleTester();
 const app = (file: string) => `/repo/web/src/${file}`;
 const designSystem = (file: string) => `/repo/packages/design-system/src/${file}`;
 
-tester.run('boundaries', plugin.rules.boundaries, {
+tester.run('boundaries', rules.boundaries, {
     valid: [
         { code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') },
         { code: "import { HomePage } from '@/features/home';", filename: app('app/AppRoutes.tsx') },
@@ -86,7 +89,7 @@ tester.run('boundaries', plugin.rules.boundaries, {
     ],
 });
 
-tester.run('no-visual-recipes', plugin.rules['no-visual-recipes'], {
+tester.run('no-visual-recipes', rules['no-visual-recipes'], {
     valid: [
         {
             code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text variant="lead">Hi</Text>;',
@@ -124,7 +127,7 @@ tester.run('no-visual-recipes', plugin.rules['no-visual-recipes'], {
     ],
 });
 
-tester.run('padding-lines', plugin.rules['padding-lines'], {
+tester.run('padding-lines', rules['padding-lines'], {
     valid: [
         "import a from 'a';\nimport b from 'b';\n\nconst c = a;\nconst d = b;\n\nexport { c, d };",
         'function f() {\n    const a = 1;\n\n    return a;\n}',

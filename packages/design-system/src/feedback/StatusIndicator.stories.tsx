@@ -1,0 +1,40 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { StatusIndicator } from './StatusIndicator';
+
+const meta = {
+    title: 'Feedback/StatusIndicator',
+    component: StatusIndicator,
+    args: { tone: 'success', size: 'md' },
+} satisfies Meta<typeof StatusIndicator>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+export const Small: Story = { args: { size: 'sm' } };
+
+/** Every tone and size side by side, with what each one means in Lar. */
+export const Tones: Story = {
+    render: (args) => (
+        <div className="flex flex-col gap-2 text-sm">
+            {(
+                [
+                    ['success', 'Server online'],
+                    ['info', 'Scanning'],
+                    ['warning', 'Update available'],
+                    ['danger', 'Drive unreachable'],
+                    ['neutral', 'Idle'],
+                ] as const
+            ).map(([tone, label]) => (
+                <span key={tone} className="flex items-center gap-2">
+                    <StatusIndicator {...args} tone={tone} size="sm" />
+                    <StatusIndicator {...args} tone={tone} size="md" />
+                    {label}
+                </span>
+            ))}
+        </div>
+    ),
+};

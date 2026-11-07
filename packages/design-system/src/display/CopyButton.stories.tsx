@@ -1,0 +1,26 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import { CopyButton } from './CopyButton';
+
+const meta = {
+    title: 'Display/CopyButton',
+    component: CopyButton,
+    args: { label: 'Copy server address', copiedLabel: 'Copied', value: 'http://lar.local:8420' },
+} satisfies Meta<typeof CopyButton>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+
+/** Beside the value it copies, as in a settings row. */
+export const BesideValue: Story = {
+    args: { label: 'Copy API key', value: 'lar_sk_4f9a2c7e1b8d' },
+    render: (args) => (
+        <div className="flex items-center gap-2">
+            <code className="bg-base-200 rounded px-2 py-1 text-xs">{args.value}</code>
+            <CopyButton {...args} />
+        </div>
+    ),
+};

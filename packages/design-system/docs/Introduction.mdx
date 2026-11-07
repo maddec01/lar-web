@@ -1,0 +1,76 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Lar's design system
+
+`@lar-works/design-system` holds Lar's tokens, base styles and **every visual component** the Lar web apps use: the
+media server's libraries, players and settings, and the software factory's repositories, pipelines and deploys all
+render with the components documented here.
+
+It is built on ninna-ui and Tailwind 4 for behaviour and utilities, with
+[lucide](https://lucide.dev/icons) for icons. Apps never reach for those directly: they compose the components this
+package exports.
+
+## Installing it in an app
+
+1. Add the package:
+
+    ```sh
+    pnpm add @lar-works/design-system
+    ```
+
+2. Import its styles once, at the top of the app's CSS. This brings in Tailwind, ninna-ui's preset, Lar's tokens and
+   base styles, and the utilities the components use:
+
+    ```css
+    @import '@lar-works/design-system/styles.css';
+    ```
+
+3. Wrap the app in `DesignSystemProvider`. It sets the icons' stroke width and supplies the design system's own words
+   (Close, Cancel, Appearance…), which an app translates through its `labels` prop:
+
+    ```tsx
+    import { DesignSystemProvider } from '@lar-works/design-system';
+
+    createRoot(document.getElementById('root')!).render(
+        <DesignSystemProvider labels={{ theme: { label: 'Aparência' } }}>
+            <App />
+        </DesignSystemProvider>,
+    );
+    ```
+
+Components come from `@lar-works/design-system`, icons from `@lar-works/design-system/icons`, and test helpers from
+`@lar-works/design-system/testing`.
+
+## Apps never style
+
+Every visual decision (typography, colour, spacing, geometry, states) lives in this package. Application code only
+composes components and chooses their **semantic** recipes, such as `<Button variant="destructive">` or
+`<Text variant="caption" tone="muted">`.
+
+The lint rule **`lar/no-visual-recipes`** enforces this in every app's `src`. It reports:
+
+- a `className` or `style` prop on any element;
+- raw `h1`–`h6`, `p`, `button`, `input`, `select`, `textarea` and `svg` elements: use `Heading`, `Text`, `Button`,
+  `IconButton`, `Input`, `Select`, `Textarea` and the icons instead;
+- look props on design-system components, such as `size`, `color`, `weight`, `gap`, `radius` or `fullWidth`, and
+  `variant` on form controls.
+
+A companion rule, `lar/boundaries`, keeps `@ninna-ui/*`, `lucide-react`, Radix and Floating UI out of apps, so they
+reach them only through this package's public API.
+
+## When something is missing
+
+If a screen needs a look that no component offers, **add or extend a component here** rather than styling in the app.
+Give it a semantic name, cover its states (loading, empty, error, disabled, long text) and add a colocated
+`<Component>.stories.tsx`: every story is rendered by the package's tests, so a story that throws fails the build.
+
+## Finding your way around
+
+- **Foundations**: colour tokens, the type scale, radii and icons.
+- **Typography**, **Actions**, **Forms**, **Display**, **Feedback**, **Navigation**, **Overlays**, **Collections** and
+  **Layout**: the components, grouped as they are in `src/`.
+- **Showcase**: the marketing pages' heroes, device frames and feature sections.
+
+Use the toolbar's theme switch to check every story in light and dark.
