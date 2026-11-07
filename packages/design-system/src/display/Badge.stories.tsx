@@ -91,3 +91,23 @@ export const Tones: Story = {
         </div>
     ),
 };
+
+/** A tracker's labels in their own colours, tinted so each name stays readable in light and dark. */
+export const LabelColors: Story = {
+    render: (args) => (
+        <div className="flex flex-wrap items-center gap-2">
+            {[
+                { color: '#D73A4A', label: 'bug' },
+                { color: '#C2E0C6', label: 'good first issue' },
+                { color: '#FBCA04', label: 'needs triage' },
+                { color: '#5319E7', label: 'design' },
+                { color: '#EDEDED', label: 'wontfix' },
+                { color: undefined, label: 'no colour' },
+            ].map(({ color, label }) => (
+                <Badge key={label} {...args} labelColor={color}>
+                    {label}
+                </Badge>
+            ))}
+        </div>
+    ),
+};

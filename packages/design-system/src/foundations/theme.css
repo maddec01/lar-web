@@ -334,6 +334,64 @@ body {
     background: var(--color-base-300);
 }
 
+/* Notifications' stack presentation: every notification, oldest above the newest, in the bottom right corner with the
+   same gap from the window's bottom and right edges, and from the title bar (h-13) when it's full, above every dialog
+   (z-50) and full-screen cover (z-60). Each carries its slice of the stack's edge fade (Notifications.tsx), off while
+   one has keyboard focus, as in a Modal's body. Successes and failures are tinted. */
+.notification-stack {
+    --notice-edge: calc(var(--spacing) * 4);
+    right: var(--notice-edge);
+    bottom: var(--notice-edge);
+    z-index: 100;
+    flex-direction: column;
+    width: min(calc(var(--spacing) * 104), calc(100vw - var(--spacing) * 8));
+    max-width: none;
+    max-height: calc(100dvh - var(--spacing) * 13 - var(--notice-edge) * 2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+}
+
+.notification-stack:empty {
+    pointer-events: none;
+}
+
+.notification-stack [data-slot='toast'] {
+    flex-shrink: 0;
+    overflow-wrap: anywhere;
+}
+
+.notification-stack > [data-slot='toast'] {
+    mask-image: linear-gradient(
+        to bottom,
+        transparent var(--fade-from, 0%),
+        black var(--fade-top, 0%),
+        black var(--fade-bottom, 100%),
+        transparent var(--fade-to, 100%)
+    );
+}
+
+.notification-stack:has(:focus-visible) > [data-slot='toast'] {
+    mask-image: none;
+}
+
+.notification-stack [data-slot='content'] {
+    min-width: 0;
+}
+
+.notification-stack [data-slot='toast'][data-toast-color='warning'] {
+    @apply bg-warning/10 border-warning/20 text-(--lar-warning-text);
+}
+
+.notification-stack [data-slot='toast'][data-toast-color='success'] {
+    @apply bg-success/10 border-success/20 text-(--lar-success-text);
+}
+
+.notification-stack [data-slot='toast'][data-toast-color='danger'] {
+    @apply bg-danger/10 border-danger/20 text-(--lar-danger-text);
+}
+
 [data-slot='tooltip-content'] {
     @apply glass-menu;
     max-width: min(var(--radix-tooltip-content-available-width), var(--container-xs));
@@ -396,6 +454,12 @@ body {
     .lar-skeleton::before {
         animation: none;
     }
+}
+
+/* A repeating indicator that ambientMotion (AmbientMotion.ts) finds out of view or in a hidden window. Dialogs,
+   loading entrances and interaction transitions keep their timing, as only repeating indicators opt in. */
+[data-ambient-motion='paused'] {
+    animation-play-state: paused;
 }
 
 .lar-progress-indeterminate {

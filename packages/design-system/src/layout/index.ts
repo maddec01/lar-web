@@ -7,7 +7,7 @@ export { Section } from './Section';
 export { SidebarNavigationItem } from './sidebar/SidebarNavigationItem';
 export { SidebarNavigationGroup, SidebarPane } from './sidebar/SidebarPane';
 export { TitleBar, TitleBarTrail, type TitleBarTrailItem } from './TitleBar';
-export { CommandPaletteTrigger } from './toolbar/CommandPaletteTrigger';
+export { CommandPaletteTrigger, type CommandPaletteTriggerToken } from './toolbar/CommandPaletteTrigger';
 export { ToolbarStatusGroup } from './toolbar/ToolbarStatusGroup';
 export { ToolbarStatusItem } from './toolbar/ToolbarStatusItem';
 export { WorkspaceActionsHeader } from './WorkspaceActionsHeader';

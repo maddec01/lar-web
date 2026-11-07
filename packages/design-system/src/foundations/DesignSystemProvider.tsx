@@ -29,6 +29,23 @@ export const defaultDesignSystemLabels = {
         light: 'Light',
         dark: 'Dark',
     },
+    editor: {
+        formatting: 'Formatting',
+        bold: 'Bold',
+        italic: 'Italic',
+        heading: 'Heading',
+        bulletedList: 'Bulleted list',
+        numberedList: 'Numbered list',
+        link: 'Link',
+        linkUrl: 'Link URL',
+        linkPlaceholder: 'https://…',
+        apply: 'Apply',
+        markdown: 'Markdown',
+    },
+    dialog: {
+        expand: 'Expand',
+        restoreSize: 'Restore size',
+    },
 };
 
 export type DesignSystemLabels = typeof defaultDesignSystemLabels;
@@ -71,6 +88,8 @@ function mergeLabels(labels: DesignSystemLabelOverrides | undefined): DesignSyst
         ...labels,
         folders: { ...defaultDesignSystemLabels.folders, ...labels.folders },
         theme: { ...defaultDesignSystemLabels.theme, ...labels.theme },
+        editor: { ...defaultDesignSystemLabels.editor, ...labels.editor },
+        dialog: { ...defaultDesignSystemLabels.dialog, ...labels.dialog },
     };
 }
 

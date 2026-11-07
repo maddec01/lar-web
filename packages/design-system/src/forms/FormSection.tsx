@@ -1,10 +1,11 @@
 import { ChevronDownIcon } from 'lucide-react';
-import { type ReactNode, useId, useState } from 'react';
+import { type ComponentProps, type ReactNode, useId, useState } from 'react';
 
 import { Button, type ButtonProps } from '../actions/Button';
 import { InsetPanel } from '../display/InsetPanel';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Stack } from '../layout/Flow';
+import { HelpTip } from '../overlays/HelpTip';
 import { Heading, Text } from '../typography/Typography';
 import { Field, type FieldProps } from './Field';
 
@@ -76,16 +77,42 @@ export function FormSection({
     );
 }
 
-interface FormRowProps {
+type DataAttributes = { [key: `data-${string}`]: string | undefined };
+
+interface FormRowColumnsProps {
     badges?: ReactNode;
     children: ReactNode;
     description: string;
     /** The row's element id, for linking or scrolling to it; a row with one can take focus when it is opened. */
     id?: string;
     label: ReactNode;
+    layout?: 'columns';
 }
 
-export function FormRow({ badges, children, description, id, label }: FormRowProps) {
+/** A dense tool's settings row: the label (with an optional help popover) and description, then its controls flowing
+ *  beside them and wrapping under them when they don't fit, then content below and an error. */
+interface FormRowFlowProps extends DataAttributes {
+    layout: 'flow';
+    label: ReactNode;
+    /** Explains the setting in a popover from a help button after the label; `helpLabel` names that button. */
+    help?: ReactNode;
+    helpLabel?: string;
+    description?: ReactNode;
+    children?: ReactNode;
+    /** Full-width content under the label and controls, such as a list the setting governs. */
+    below?: ReactNode;
+    error?: string | undefined;
+    /** The error's element id, for a control's aria-describedby. */
+    errorId?: string;
+}
+
+type FormRowProps = FormRowColumnsProps | FormRowFlowProps;
+
+export function FormRow(props: FormRowProps) {
+    if (props.layout === 'flow') return <FormRowFlow {...props} />;
+
+    const { badges, children, description, id, label } = props;
+
     return (
         <div
             id={id}
@@ -105,6 +132,58 @@ export function FormRow({ badges, children, description, id, label }: FormRowPro
             </Stack>
             <div className="min-w-0 sm:flex sm:justify-end [&>[role=status]]:w-full">{children}</div>
         </div>
+    );
+}
+
+function FormRowFlow({
+    layout: _layout,
+    label,
+    help,
+    helpLabel,
+    description,
+    children,
+    below,
+    error,
+    errorId,
+    ...data
+}: FormRowFlowProps) {
+    const fallbackErrorId = useId();
+
+    return (
+        <div {...data} className="settings-row grid min-w-0 gap-2 px-4 py-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="min-w-32 flex-1">
+                    <div className="settings-row-title flex min-w-0 items-center gap-1.5 text-[13px] font-medium wrap-anywhere">
+                        {label}
+                        {help && (
+                            <HelpTip label={helpLabel ?? (typeof label === 'string' ? label : '')}>{help}</HelpTip>
+                        )}
+                    </div>
+                    {description && <div className="text-base-700 text-xs wrap-anywhere">{description}</div>}
+                </div>
+                {children && (
+                    <div className="settings-row-control flex max-w-full min-w-0 flex-wrap items-center gap-2 sm:max-w-[60%] [&_button]:max-w-full [&>span]:max-w-full">
+                        {children}
+                    </div>
+                )}
+            </div>
+            {below}
+            {error && (
+                <p id={errorId ?? fallbackErrorId} role="alert" className="m-0 text-xs text-(--lar-danger-text)">
+                    {error}
+                </p>
+            )}
+        </div>
+    );
+}
+
+/** A value and its unit beside it in a row's controls, such as a number field and "days". */
+export function FormUnit({ children, unit }: { children: ReactNode; unit: ReactNode }) {
+    return (
+        <span className="flex items-center gap-2 text-sm [&_input]:w-20">
+            {children}
+            {unit}
+        </span>
     );
 }
 
@@ -171,5 +250,37 @@ export function Disclosure({ children, label, lazy = false }: { children: ReactN
                 {!lazy || open ? children : null}
             </div>
         </details>
+    );
+}
+
+type FormFieldsetProps = Omit<ComponentProps<'fieldset'>, 'style'> & {
+    /** The legend over the group. */
+    legend?: ReactNode;
+    /** `group` only groups and disables its fields, with no frame. */
+    presentation?: 'bordered' | 'group';
+};
+
+/** The form section's fieldset: a bordered group of controls under a legend, on the native fieldset, which also
+ *  disables every control inside it. As a `group`, it only groups and disables its fields. */
+export function FormFieldset({
+    legend,
+    presentation = 'bordered',
+    className = '',
+    children,
+    ...props
+}: FormFieldsetProps) {
+    return (
+        <fieldset
+            className={`m-0 min-w-0 ${presentation === 'group' ? 'border-0 p-0' : 'border-base-300 mb-3 rounded-lg border px-3 pt-2 pb-0 [&>legend]:mb-2 [&>legend]:font-semibold'} ${className}`}
+            data-slot="fieldset"
+            {...props}
+        >
+            {legend ? (
+                <legend className="text-base-content p-0 text-sm leading-5 font-medium" data-slot="fieldset-legend">
+                    {legend}
+                </legend>
+            ) : null}
+            {children}
+        </fieldset>
     );
 }

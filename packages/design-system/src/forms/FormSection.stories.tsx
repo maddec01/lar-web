@@ -3,8 +3,21 @@ import { RefreshCwIcon } from 'lucide-react';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { HelpTip } from '../overlays/HelpTip';
 import { Text } from '../typography/Typography';
-import { Disclosure, FormAction, FormContent, FormField, FormRow, FormSection, FormStack } from './FormSection';
+import { Field } from './Field';
+import {
+    Disclosure,
+    FormAction,
+    FormContent,
+    FormField,
+    FormFieldset,
+    FormRow,
+    FormSection,
+    FormStack,
+    FormUnit,
+} from './FormSection';
+import { FormSelect } from './FormSelect';
 import { Input } from './Input';
 import { OptionSelect } from './OptionSelect';
 import { Switch } from './Switch';
@@ -149,4 +162,65 @@ export const Stacked: Story = {
             </FormStack>
         </div>
     ),
+};
+
+/** A dense tool's rows: controls flow beside the label and wrap under it, with help, content below and an error. */
+export const FlowRows: Story = {
+    render: () => (
+        <div className="max-w-2xl">
+            <FormSection title="Archive">
+                <FormRow layout="flow" label="Hide finished and set-aside work after" data-setting="hide">
+                    <FormUnit unit="days">
+                        <Input inputMode="numeric" aria-label="Days before hiding" defaultValue="14" />
+                    </FormUnit>
+                </FormRow>
+                <FormRow
+                    layout="flow"
+                    label="Delete hidden work"
+                    help="Deleting removes the work's brief, threads and reviews from this Mac."
+                    description="Export what you want to keep first."
+                >
+                    <FormSelect
+                        aria-label="Delete hidden work"
+                        presentation="setting"
+                        writesOnPick
+                        value="delete"
+                        onChange={() => {}}
+                        choices={[
+                            { value: 'keep', name: 'Keep it' },
+                            { value: 'delete', name: 'Delete it after' },
+                        ]}
+                    />
+                    <FormUnit unit="days">
+                        <Input inputMode="numeric" aria-label="Days before deleting" defaultValue="x" />
+                    </FormUnit>
+                </FormRow>
+                <FormRow layout="flow" label="Build limit" error="Enter a whole number from 1.">
+                    <Switch aria-label="Build limit" busy />
+                </FormRow>
+            </FormSection>
+        </div>
+    ),
+};
+
+/** A fieldset groups controls under a legend and disables them all at once. */
+export const Fieldset: Story = {
+    render: () => (
+        <div className="max-w-md">
+            <FormFieldset legend="Ticket" disabled>
+                <Field label="Title">
+                    <Input defaultValue="Move the title bar" />
+                </Field>
+            </FormFieldset>
+            <FormFieldset presentation="group">
+                <Field label="Body">
+                    <Input defaultValue="Grouped and disabled together, with no frame." />
+                </Field>
+            </FormFieldset>
+        </div>
+    ),
+};
+
+export const Help: Story = {
+    render: () => <HelpTip label="Build limit">How many builds run at once.</HelpTip>,
 };

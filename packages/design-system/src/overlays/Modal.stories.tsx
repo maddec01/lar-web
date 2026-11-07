@@ -12,6 +12,7 @@ import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarPane } from '../layout/sidebar/SidebarPane';
 import { Text } from '../typography/Typography';
 import { Modal } from './Modal';
+import { ModalExpandButton } from './ModalExpandButton';
 
 /** Opens with the story, and reopens from the button after it is closed. */
 function ModalDemo({
@@ -208,6 +209,37 @@ export const LongContent: Story = {
                     <Button variant="primary">Got it</Button>
                 </Modal.Footer>
             </Modal.Content>
+        </ModalDemo>
+    ),
+};
+
+function ExpandableContent() {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <Modal.Content
+            title="Edit catalog"
+            expanded={expanded}
+            headerActions={
+                <ModalExpandButton
+                    expanded={expanded}
+                    onToggle={() => setExpanded((on) => !on)}
+                    shortcut={{ label: '⌘⇧E', keys: 'Meta+Shift+E' }}
+                />
+            }
+        >
+            <Modal.Body>
+                <CatalogFields />
+            </Modal.Body>
+        </Modal.Content>
+    );
+}
+
+/** The header's expand control grows the dialog to the window, under a 52px title bar, and back. */
+export const Expandable: Story = {
+    render: (args) => (
+        <ModalDemo {...args}>
+            <ExpandableContent />
         </ModalDemo>
     ),
 };

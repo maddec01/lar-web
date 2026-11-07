@@ -33,8 +33,20 @@ interface ModalContentPolicyProps extends Omit<ModalContentProps, 'className' | 
     sidebar?: ReactNode;
     /** The dialog's size; a dialog with a sidebar is `paned` unless it says otherwise. */
     presentation?: 'default' | 'paned' | 'workspace';
+    /** Grows the dialog to the window, less a small margin, under a 52px title bar; see ModalExpandButton. */
+    expanded?: boolean;
     title: string;
 }
+
+/** The expanded dialog's size, inline so it wins over every presentation's size classes. */
+const expandedStyle = {
+    width: 'calc(100vw - 2rem)',
+    maxWidth: 'none',
+    height: 'calc(100dvh - (52px + 1rem))',
+    maxHeight: 'none',
+    top: '52px',
+    translate: '-50% 0',
+} as const;
 
 const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
     (
@@ -49,6 +61,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
             onPointerDownOutside,
             sidebar,
             presentation = sidebar ? 'paned' : 'default',
+            expanded = false,
             title,
             ...props
         },
@@ -62,6 +75,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                 ref={ref}
                 {...props}
                 {...focusProps}
+                {...(expanded && { 'data-expanded': true, style: expandedStyle })}
                 title={accessibleTitle ?? title}
                 description={description}
                 closeOnEscape={loading ? false : closeOnEscape}

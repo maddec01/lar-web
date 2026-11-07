@@ -24,3 +24,13 @@ export const BesideValue: Story = {
         </div>
     ),
 };
+
+/** A compact button that says what it does, then Copied for a moment, as beside a command in a notice. */
+export const Text: Story = {
+    args: { label: 'Copy gh auth login', copyText: 'Copy', value: 'gh auth login', presentation: 'text' },
+    render: (args) => (
+        <span className="text-xs">
+            Run <code>{args.value}</code> <CopyButton {...args} />, then press Recheck.
+        </span>
+    ),
+};
