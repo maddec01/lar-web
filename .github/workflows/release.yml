@@ -27,11 +27,11 @@ jobs:
             - name: Version or publish
               uses: changesets/action@v2
               with:
-                  version: pnpm exec changeset version
-                  publish: pnpm release
-                  commit: 'chore: version packages'
-                  title: 'chore: version packages'
-                  createGithubReleases: false
+                  version-script: pnpm exec changeset version
+                  publish-script: pnpm release
+                  commit-message: 'chore: version packages'
+                  pr-title: 'chore: version packages'
+                  create-github-releases: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
