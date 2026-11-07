@@ -5,11 +5,12 @@ import { Button } from '../actions/Button';
 import { CollectionState } from '../collections/CollectionState';
 import { Badge } from '../display/Badge';
 import { BrandMark } from '../display/BrandMark';
+import { InsetPanel } from '../display/InsetPanel';
 import { NoticeCard } from '../display/NoticeCard';
+import { RadioChoice } from '../display/RadioChoice';
 import { Progress } from '../feedback/Progress';
-import { Disclosure } from '../forms/FormSection';
+import { Disclosure, FormFieldset } from '../forms/FormSection';
 import { Input } from '../forms/Input';
-import { RadioGroup, RadioGroupChoice } from '../forms/RadioGroup';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import {
@@ -85,23 +86,25 @@ export const ProjectStep: Story = {
                 progress={<Progress value={0} max={3} caption="Step 1 of 3" aria-label="Step 1 of 3" />}
             />
             <SetupStep>
-                <RadioGroup aria-label="T3 project" presentation="choices" defaultValue="new">
-                    <RadioGroupChoice value="web">
-                        <ProjectLine
-                            icon={icon}
-                            name="web"
-                            badge="GitHub"
-                            path="~/Developer/web"
-                            fullPath="/Users/me/Developer/web"
-                        />
-                    </RadioGroupChoice>
-                    <RadioGroupChoice value="new">
-                        <AddFolderLine
-                            title="Add a repository folder"
-                            hint="Choose a folder already on this machine."
-                        />
-                    </RadioGroupChoice>
-                </RadioGroup>
+                <FormFieldset presentation="group" legend="T3 project" hiddenLegend>
+                    <InsetPanel presentation="settings">
+                        <RadioChoice name="t3-project" checked={false} onChange={fn()} data-choice="web">
+                            <ProjectLine
+                                icon={icon}
+                                name="web"
+                                badge="GitHub"
+                                path="~/Developer/web"
+                                fullPath="/Users/me/Developer/web"
+                            />
+                        </RadioChoice>
+                        <RadioChoice name="t3-project" checked onChange={fn()} data-choice="new">
+                            <AddFolderLine
+                                title="Add a repository folder"
+                                hint="Choose a folder already on this machine."
+                            />
+                        </RadioChoice>
+                    </InsetPanel>
+                </FormFieldset>
                 <ChoiceDetails>
                     <Input aria-label="Repository folder" placeholder="~/Developer/my-project" />
                 </ChoiceDetails>

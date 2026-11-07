@@ -2,21 +2,30 @@ import type { ReactNode } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
 
+type DataAttributes = { [key: `data-${string}`]: string | undefined };
+
+/** One choice of a group of radios, a row of an InsetPanel's `settings` panel: the radio and its content, which can
+ *  shrink so a long title in it truncates, then any `trailing` content. Data attributes, such as the value it names,
+ *  go on the row. */
 export function RadioChoice({
     name,
     checked,
     onChange,
     children,
     trailing,
+    ...data
 }: {
     name: string;
     checked: boolean;
     onChange: () => void;
     children: ReactNode;
     trailing?: ReactNode;
-}) {
+} & DataAttributes) {
     return (
-        <div className="hover:bg-base-100 has-checked:bg-primary/10 has-focus-visible:ring-primary flex min-w-0 items-center gap-3 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-inset has-disabled:opacity-60">
+        <div
+            {...data}
+            className="hover:bg-base-100 has-checked:bg-primary/10 has-focus-visible:ring-primary flex min-w-0 items-center gap-3 transition-colors has-focus-visible:ring-2 has-focus-visible:ring-inset has-disabled:opacity-60"
+        >
             <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 has-disabled:cursor-default">
                 <input
                     {...tabbable}

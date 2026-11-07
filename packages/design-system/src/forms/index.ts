@@ -18,13 +18,7 @@ export { Input, type InputProps } from './Input';
 export { type LabelChoice, type LabelCreation, LabelPicker } from './LabelPicker';
 export { MarkdownEditor } from './MarkdownEditor';
 export { OptionSelect, type OptionSelectOption } from './OptionSelect';
-export {
-    RadioGroup,
-    RadioGroupChoice,
-    RadioGroupItem,
-    type RadioGroupItemProps,
-    type RadioGroupProps,
-} from './RadioGroup';
+export { RadioGroup, RadioGroupItem, type RadioGroupItemProps, type RadioGroupProps } from './RadioGroup';
 export { Select, SelectItem, type SelectProps } from './Select';
 export { Switch } from './Switch';
 export { TagInput } from './TagInput';

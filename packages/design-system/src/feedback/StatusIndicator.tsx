@@ -41,7 +41,9 @@ export function StatusIndicator({ className, size = 'md', tone, labelColor, labe
     ]
         .filter(Boolean)
         .join(' ');
-    const dot = <span aria-hidden="true" className={classes} style={labelColor ? { background: labelColor } : undefined} />;
+    const dot = (
+        <span aria-hidden="true" className={classes} style={labelColor ? { background: labelColor } : undefined} />
+    );
 
     if (label === undefined) return dot;
 

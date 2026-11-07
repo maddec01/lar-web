@@ -72,3 +72,22 @@ function MatchChoices() {
 
 /** A group of choices inside a settings panel, as when matching a file to a movie. */
 export const Group: Story = { render: () => <MatchChoices /> };
+
+/** A long title truncates rather than pushing the row wider, as Lar Factory's onboarding lists the T3 projects to add;
+ *  `data-choice` names each row's value. */
+export const LongTitles: Story = {
+    render: () => (
+        <div className="max-w-md">
+            <InsetPanel presentation="settings">
+                <RadioChoice name="t3-project" checked onChange={() => undefined} data-choice="web">
+                    <span className="block truncate">web · ~/Developer/web</span>
+                </RadioChoice>
+                <RadioChoice name="t3-project" checked={false} onChange={() => undefined} data-choice="long">
+                    <span className="block truncate">
+                        a-project-whose-name-is-long-enough-to-truncate · ~/Developer/clients/acme/a-project
+                    </span>
+                </RadioChoice>
+            </InsetPanel>
+        </div>
+    ),
+};
