@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
+import { LabelChip } from '../display/LabelChip';
 import { Checkbox } from '../forms/Checkbox';
 import { Input } from '../forms/Input';
 import { MarkdownEditor } from '../forms/MarkdownEditor';
@@ -20,7 +21,6 @@ import {
     TicketSearchPane,
 } from './AddItem';
 import { LabelsValue } from './ItemDetails';
-import { LabelChip } from './ItemParts';
 
 const meta = {
     title: 'Board/AddItem',

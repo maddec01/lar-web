@@ -4,6 +4,7 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
+import { LabelChip } from '../display/LabelChip';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
 import { Text } from '../typography/Typography';
@@ -25,7 +26,6 @@ import {
     InlineList,
     KindQuestion,
     LabelsValue,
-    LockedLabel,
     MainSection,
     MetaArea,
     OutgoingTicket,
@@ -39,7 +39,6 @@ import {
     TicketLinkList,
     WaitsOnList,
 } from './ItemDetails';
-import { LabelChip } from './ItemParts';
 import { PartRow, PartsList } from './PartsList';
 import { SourceIcon } from './SourceIcon';
 import { StatusGlyph } from './StatusGlyph';
@@ -70,9 +69,11 @@ const meta = {
                     <LabelsValue>
                         <ChipGroup data-labels>
                             <LabelChip label="urgent" color="#d73a4a" />
-                            <LockedLabel title="The factory manages this for saved links, so it can't be edited.">
-                                linked-work
-                            </LockedLabel>
+                            <LabelChip
+                                label="linked-work"
+                                locked
+                                lockedLabel="The factory manages this for saved links, so it can't be edited."
+                            />
                         </ChipGroup>
                         <IconButton variant="inline" aria-label="Edit labels" icon={<PencilIcon />} />
                     </LabelsValue>

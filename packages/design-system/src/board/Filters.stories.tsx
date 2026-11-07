@@ -5,9 +5,10 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { LabelChip } from '../display/LabelChip';
 import { LabelPicker } from '../forms/LabelPicker';
 import { buttonKind } from './ButtonKinds';
-import { FilterBar, FilterChip, FilterChoice, FilterChoices, FilterLabelBadge, FilterMenu } from './Filters';
+import { FilterBar, FilterChip, FilterChoice, FilterChoices, FilterMenu } from './Filters';
 
 const kinds = [
     { value: 'bug', name: 'Bug', hue: 25 },
@@ -72,7 +73,7 @@ function Demo() {
                     removeLabel={`Remove ${label}`}
                     onRemove={() => setLabels((now) => now.filter((l) => l !== label))}
                 >
-                    <FilterLabelBadge label={label} color="#FBCA04" />
+                    <LabelChip label={label} color="#FBCA04" removable />
                 </FilterChip>
             ))}
             {picked.length + labels.length > 0 && (
@@ -102,7 +103,7 @@ export const LongLabel: Story = {
     render: () => (
         <FilterBar>
             <FilterChip removeLabel="Remove label" onRemove={fn()}>
-                <FilterLabelBadge label="a label as long as a sentence, which a tracker allows" color="#0E8A16" />
+                <LabelChip label="a label as long as a sentence, which a tracker allows" color="#0E8A16" removable />
             </FilterChip>
         </FilterBar>
     ),

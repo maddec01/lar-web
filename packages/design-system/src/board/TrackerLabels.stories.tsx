@@ -4,19 +4,14 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { InsetPanel } from '../display/InsetPanel';
+import { LabelChip } from '../display/LabelChip';
 import { ColorSwatches } from '../forms/ColorSwatches';
 import { FormRow } from '../forms/FormSection';
 import { Input } from '../forms/Input';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { ButtonRow } from './ItemDialog';
-import {
-    CreateLabelForm,
-    TrackerLabelChip,
-    TrackerLabelEditor,
-    TrackerLabelList,
-    TrackerLabelRow,
-} from './TrackerLabels';
+import { CreateLabelForm, TrackerLabelEditor, TrackerLabelList, TrackerLabelRow } from './TrackerLabels';
 
 const actions = (name: string) => (
     <>
@@ -73,19 +68,19 @@ const meta = {
             <TrackerLabelList>
                 <TrackerLabelRow
                     data-label="bug"
-                    chip={<TrackerLabelChip name="bug" color="#D73A4A" />}
+                    chip={<LabelChip label="bug" color="#D73A4A" />}
                     detail="Something isn't working"
                     actions={actions('bug')}
                     editor={editor}
                 />
                 <TrackerLabelRow
                     data-label="lar:building"
-                    chip={<TrackerLabelChip name="lar:building" locked lockedLabel="Factory-managed" />}
+                    chip={<LabelChip label="lar:building" locked lockedLabel="Factory-managed" />}
                     detail="Factory-managed. The factory sets this label itself."
                 />
                 <TrackerLabelRow
                     data-label="long"
-                    chip={<TrackerLabelChip name={`a-label-with-a-${'very-'.repeat(12)}long-name`} color="#1D76DB" />}
+                    chip={<LabelChip label={`a-label-with-a-${'very-'.repeat(12)}long-name`} color="#1D76DB" />}
                     detail={'A long description that truncates and gives itself whole in its tooltip. '.repeat(3)}
                     actions={actions('long')}
                 />

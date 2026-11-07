@@ -1,10 +1,8 @@
 // The tracker's labels on a Lar Factory project's settings page: the list of them, each row with its chip, detail and
 // actions and the editor it opens, and the line that creates one.
 
-import { LockIcon } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 
-import { Badge } from '../display/Badge';
 import type { DataAttributes } from './DataAttributes';
 
 /** The tracker's labels, a row each, in a bordered list that never grows past its section. */
@@ -43,31 +41,6 @@ export function TrackerLabelRow({
             </div>
             {editor}
         </li>
-    );
-}
-
-/** A label's chip: its name in its tracker colour, truncating, after a lock when the factory manages it
- *  (`lockedLabel` names the lock). */
-export function TrackerLabelChip({
-    name,
-    color,
-    locked = false,
-    lockedLabel,
-}: {
-    name: string;
-    color?: string | undefined;
-    locked?: boolean;
-    lockedLabel?: string;
-}) {
-    return (
-        <Badge data-label-chip className="max-w-full min-w-0" labelColor={color}>
-            <span className="inline-flex min-w-0 items-center gap-1">
-                {locked && <LockIcon className="size-3 shrink-0" aria-label={lockedLabel} />}
-                <span className="truncate" title={name}>
-                    {name}
-                </span>
-            </span>
-        </Badge>
     );
 }
 

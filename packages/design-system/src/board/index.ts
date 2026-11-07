@@ -29,7 +29,7 @@ export {
     LimitBars,
 } from './Counters';
 export { DeskCard, DeskHint, DeskMergeState, DeskSection, type MergeState } from './Desk';
-export { FilterBar, FilterChip, FilterChoice, FilterChoices, FilterLabelBadge, FilterMenu } from './Filters';
+export { FilterBar, FilterChip, FilterChoice, FilterChoices, FilterMenu } from './Filters';
 export { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote, ListSortMenu } from './List';
 export { type LoadingLine, type LoadingMark, LoadingScreen } from './LoadingScreen';
 export { type ReleaseNote, ReleaseNotes, UpdateDownloading, UpdatePill, UpdateStatusIcon } from './UpdatePill';
@@ -69,16 +69,7 @@ export {
     type PartSegment,
     PlanningNote,
 } from './Dossier';
-export {
-    ItemBadges,
-    ItemFields,
-    ItemTitle,
-    KindMarker,
-    LabelChip,
-    RepoIdentity,
-    RepoTag,
-    TitleLink,
-} from './ItemParts';
+export { ItemBadges, ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
 export { NeedsYouNotice, NeedsYouResult } from './NeedsYou';
 export {
     type PartKind,
@@ -182,7 +173,6 @@ export {
     KindQuestion,
     LabelEditorPanel,
     LabelsValue,
-    LockedLabel,
     MainColumnSlot,
     MainSection,
     MetaArea,
@@ -217,20 +207,13 @@ export {
     SettingsNav,
     SettingsNote,
 } from './Settings';
-export {
-    CreateLabelForm,
-    TrackerLabelChip,
-    TrackerLabelEditor,
-    TrackerLabelList,
-    TrackerLabelRow,
-} from './TrackerLabels';
+export { CreateLabelForm, TrackerLabelEditor, TrackerLabelList, TrackerLabelRow } from './TrackerLabels';
 export {
     LabelChooser,
     LabelChooserEmpty,
     LabelChooserFooter,
     LabelChooserList,
     LabelChooserOption,
-    VocabularyChip,
     VocabularyMore,
     VocabularyRow,
     VocabularySuggestion,

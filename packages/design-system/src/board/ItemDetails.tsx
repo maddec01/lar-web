@@ -1,7 +1,7 @@
 // What Lar Factory's item dialog shows from a piece of work's details: its sections' headings, the meta area's facts
 // and people, the main column's description, record and comments, and the sidebar's lists.
 
-import { CircleCheckIcon, CircleDotIcon, LockIcon } from 'lucide-react';
+import { CircleCheckIcon, CircleDotIcon } from 'lucide-react';
 import type { ReactNode, Ref } from 'react';
 
 import { Avatar } from '../display/Avatar';
@@ -362,16 +362,6 @@ export function WaitsOnList({ items }: { items: readonly { key: string; title: s
                 </li>
             ))}
         </ul>
-    );
-}
-
-/** A tracker label the factory manages, which can't be edited: a lock and its name; `title` says why. */
-export function LockedLabel({ title, children, ...data }: { title: string; children: string } & DataAttributes) {
-    return (
-        <span {...data} title={title} className="inline-flex items-center gap-1 text-xs text-(--muted-foreground)">
-            <LockIcon className="size-3 shrink-0" aria-hidden="true" />
-            {children}
-        </span>
     );
 }
 

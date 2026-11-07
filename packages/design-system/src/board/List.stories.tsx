@@ -4,10 +4,11 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { LabelChip } from '../display/LabelChip';
 import { Loading } from '../feedback/Loading';
 import { Input } from '../forms/Input';
 import { buttonKind } from './ButtonKinds';
-import { FilterBar, FilterChip, FilterLabelBadge, FilterMenu } from './Filters';
+import { FilterBar, FilterChip, FilterMenu } from './Filters';
 import { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote, ListSortMenu } from './List';
 
 const meta = {
@@ -46,7 +47,7 @@ const meta = {
                     Labels
                 </FilterMenu>
                 <FilterChip removeLabel="Remove bug" onRemove={fn()}>
-                    <FilterLabelBadge label="bug" color="#D73A4A" />
+                    <LabelChip label="bug" color="#D73A4A" removable />
                 </FilterChip>
             </FilterBar>
         ),

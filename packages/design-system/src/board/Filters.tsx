@@ -2,7 +2,6 @@ import { ChevronDownIcon } from 'lucide-react';
 import { forwardRef, type ReactNode } from 'react';
 
 import { Button } from '../actions/Button';
-import { Badge } from '../display/Badge';
 import { Checkbox } from '../forms/Checkbox';
 import { Popover } from '../overlays/Popover';
 import { buttonKind } from './ButtonKinds';
@@ -82,15 +81,5 @@ export function FilterChip({
         <button type="button" data-filter-chip aria-label={removeLabel} title={removeLabel} onClick={onRemove}>
             {children}
         </button>
-    );
-}
-
-/** A label filter's chip face: the label in its tracker's colour, truncated, then ×. */
-export function FilterLabelBadge({ label, color }: { label: string; color?: string | undefined }) {
-    return (
-        <Badge className="max-w-full" labelColor={color}>
-            <span className="max-w-52 truncate">{label}</span>
-            <span aria-hidden="true">×</span>
-        </Badge>
     );
 }

@@ -127,27 +127,6 @@ export function KindMarker({
     );
 }
 
-/** A tracker label as a chip in its tracker's colour, truncating a long name, which its tooltip gives whole. A `note`
- *  follows the name, faded, such as "new" for a label the ticket will create. */
-export function LabelChip({
-    label,
-    color,
-    note,
-}: {
-    label: string;
-    color?: string | undefined;
-    note?: string | undefined;
-}) {
-    return (
-        <Badge data-label-chip className="max-w-full" labelColor={color}>
-            <span className="max-w-52 truncate" title={label}>
-                {label}
-            </span>
-            {note && <span className="opacity-70">{note}</span>}
-        </Badge>
-    );
-}
-
 /** An item's kind badge and the badges that say more of what it is, wrapping. */
 export function ItemBadges({ children, ...data }: { children: ReactNode } & DataAttributes) {
     return (

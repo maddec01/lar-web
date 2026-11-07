@@ -2,17 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SparklesIcon } from 'lucide-react';
 
 import { Badge } from '../display/Badge';
+import { LabelChip } from '../display/LabelChip';
 import { Text } from '../typography/Typography';
-import {
-    ItemBadges,
-    ItemFields,
-    ItemTitle,
-    KindMarker,
-    LabelChip,
-    RepoIdentity,
-    RepoTag,
-    TitleLink,
-} from './ItemParts';
+import { ItemBadges, ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
 
 const icon = <span className="grid size-3.5 place-items-center rounded-sm bg-sky-500 text-[9px] text-white">L</span>;
 

@@ -3,7 +3,6 @@
 
 import type { ReactNode } from 'react';
 
-import { Badge } from '../display/Badge';
 import type { DataAttributes } from './DataAttributes';
 
 /**
@@ -43,42 +42,6 @@ export function VocabularyRow({
             </div>
             {children}
         </div>
-    );
-}
-
-/** A label a kind maps to, truncating, with the × that removes it (`removeLabel` names it). */
-export function VocabularyChip({
-    label,
-    removeLabel,
-    disabled = false,
-    onRemove,
-    children,
-}: {
-    /** The label's name, its tooltip. */
-    label: string;
-    removeLabel: string;
-    disabled?: boolean;
-    onRemove: () => void;
-    /** What the chip shows: the name and any note, such as "(new)". */
-    children: ReactNode;
-}) {
-    return (
-        <Badge className="max-w-40 min-w-0">
-            <span className="inline-flex min-w-0 items-center gap-1">
-                <span className="truncate" title={label}>
-                    {children}
-                </span>
-                <button
-                    type="button"
-                    className="cursor-pointer bg-transparent p-0"
-                    aria-label={removeLabel}
-                    disabled={disabled}
-                    onClick={onRemove}
-                >
-                    ×
-                </button>
-            </span>
-        </Badge>
     );
 }
 

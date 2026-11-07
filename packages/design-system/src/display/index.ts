@@ -21,6 +21,7 @@ export { InsetPanel } from './InsetPanel';
 export { ItemAction } from './ItemAction';
 export { Kbd } from './Kbd';
 export { KindIcon } from './KindIcon';
+export { LabelChip } from './LabelChip';
 export { NoticeCard } from './NoticeCard';
 export { PairingList, type PairingListItem } from './PairingList';
 export { PathList } from './PathList';

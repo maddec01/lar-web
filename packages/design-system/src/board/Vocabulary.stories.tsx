@@ -3,6 +3,7 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { InsetPanel } from '../display/InsetPanel';
+import { LabelChip } from '../display/LabelChip';
 import { Input } from '../forms/Input';
 import { OptionSelect } from '../forms/OptionSelect';
 import { Popover } from '../overlays/Popover';
@@ -16,7 +17,6 @@ import {
     LabelChooserFooter,
     LabelChooserList,
     LabelChooserOption,
-    VocabularyChip,
     VocabularyMore,
     VocabularyRow,
     VocabularySuggestion,
@@ -52,12 +52,13 @@ const meta = {
         'data-vocabulary': 'bug',
         labels: (
             <>
-                <VocabularyChip label="bug" removeLabel="Remove bug from Bug" onRemove={fn()}>
-                    bug
-                </VocabularyChip>
-                <VocabularyChip label="needs-review" removeLabel="Remove needs-review from Bug" onRemove={fn()}>
-                    needs-review (new)
-                </VocabularyChip>
+                <LabelChip label="bug" removeLabel="Remove bug from Bug" onRemove={fn()} />
+                <LabelChip
+                    label="needs-review"
+                    note="(new)"
+                    removeLabel="Remove needs-review from Bug"
+                    onRemove={fn()}
+                />
                 <VocabularyMore label="2 more Bug labels" onClick={fn()}>
                     +2
                 </VocabularyMore>
