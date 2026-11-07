@@ -25,7 +25,8 @@
             "types": "./dist/testing.d.ts",
             "default": "./dist/testing.js"
         },
-        "./styles.css": "./src/styles.css"
+        "./styles.css": "./src/styles.css",
+        "./showcase.css": "./src/showcase.css"
     },
     "files": [
         "dist",

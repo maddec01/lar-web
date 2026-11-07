@@ -9,7 +9,7 @@ interface ActionModalProps {
     actionColor?: 'danger' | 'primary';
     actionDisabled?: boolean;
     actionLabel: string;
-    children: ReactNode;
+    children?: ReactNode;
     bodyLayout?: 'scroll' | 'fill';
     description: string;
     footerLeading?: ReactNode;

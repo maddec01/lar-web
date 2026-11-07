@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 @import '@ninna-ui/core/theme/presets/minimal.css';
-@import '../showcase/devices.css';
-@import '../showcase/stage.css';
-@import '../showcase/server-unit.css';
 
 /* Dark follows an explicit .dark class, or the system while neither .light nor .dark is set, so dark:
    utilities match the palette in both cases. */

@@ -25,7 +25,7 @@ export function ProductIndex({
     return (
         <ul aria-label={label} className="mx-auto flex max-w-[880px] flex-wrap justify-center gap-3">
             {products.map((product) => (
-                <li key={product.href} className="w-full sm:w-[calc(50%-0.375rem)] lg:w-[calc(50%-0.375rem)]">
+                <li key={product.href} className="w-full sm:w-[calc(50%-0.375rem)]">
                     <a
                         {...tabbable}
                         href={product.href}

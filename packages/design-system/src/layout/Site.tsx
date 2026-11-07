@@ -1,5 +1,5 @@
 import { MenuIcon, XIcon } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useId, useState } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
 
@@ -66,6 +66,7 @@ export function SiteHeader({
     onNavigate,
 }: SiteHeaderProps) {
     const [open, setOpen] = useState(false);
+    const menuId = useId();
 
     function follow(href: string) {
         setOpen(false);
@@ -88,7 +89,7 @@ export function SiteHeader({
                 {...tabbable}
                 type="button"
                 aria-expanded={open}
-                aria-controls="site-menu"
+                aria-controls={menuId}
                 aria-label={open ? closeMenuLabel : menuLabel}
                 onClick={() => setOpen((value) => !value)}
                 className="text-base-800 hover:bg-base-200 -mr-2 inline-flex size-9 items-center justify-center rounded-md transition-colors md:hidden [&_svg]:size-5"
@@ -97,7 +98,7 @@ export function SiteHeader({
             </button>
             {open ? (
                 <nav
-                    id="site-menu"
+                    id={menuId}
                     aria-label={navigationLabel}
                     className="glass-menu absolute inset-x-3 top-[calc(100%+0.5rem)] flex flex-col gap-1 rounded-2xl p-2 md:hidden"
                 >
