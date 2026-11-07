@@ -1,6 +1,6 @@
 {
     "name": "@lar-works/design-system",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Lar's design system: tokens, base styles and every visual component the Lar web apps use.",
     "license": "MIT",
     "repository": {
