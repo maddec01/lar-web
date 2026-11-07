@@ -12,13 +12,12 @@ export {
     FormStack,
     FormUnit,
 } from './FormSection';
-export { FormSelect, type FormSelectChoice, type FormSelectProps } from './FormSelect';
 export { HiddenField } from './HiddenField';
 export { InlineFields } from './InlineFields';
 export { Input, type InputProps } from './Input';
 export { type LabelChoice, type LabelCreation, LabelPicker } from './LabelPicker';
 export { MarkdownEditor } from './MarkdownEditor';
-export { OptionSelect } from './OptionSelect';
+export { OptionSelect, type OptionSelectOption } from './OptionSelect';
 export {
     RadioGroup,
     RadioGroupChoice,

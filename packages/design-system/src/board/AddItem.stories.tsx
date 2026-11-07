@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { Checkbox } from '../forms/Checkbox';
-import { FormSelect } from '../forms/FormSelect';
 import { Input } from '../forms/Input';
 import { MarkdownEditor } from '../forms/MarkdownEditor';
+import { OptionSelect } from '../forms/OptionSelect';
 import { Stack } from '../layout/Flow';
 import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
@@ -33,8 +33,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const projects = [
-    { value: 'maddec01/lar-web', name: 'lar-web' },
-    { value: 'maddec01/lar-server', name: 'lar-server' },
+    { value: 'maddec01/lar-web', label: 'lar-web' },
+    { value: 'maddec01/lar-server', label: 'lar-server' },
 ];
 
 /** The New work pane: the title, editor and notes beside the details panel, its ticket part showing the new
@@ -56,7 +56,7 @@ export const NewWork: Story = {
                 details={
                     <>
                         <PanelField heading="Project" htmlFor="story-repo">
-                            <FormSelect id="story-repo" value="maddec01/lar-web" onChange={fn()} choices={projects} />
+                            <OptionSelect id="story-repo" value="maddec01/lar-web" onChange={fn()} options={projects} />
                         </PanelField>
                         <DraftTicketPart>
                             <PanelField heading="Labels">

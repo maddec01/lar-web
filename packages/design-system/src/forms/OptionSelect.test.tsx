@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { type FormEvent, useState } from 'react';
 import { expect, it } from 'vite-plus/test';
 
-import { FormSelect } from './FormSelect';
+import { OptionSelect } from './OptionSelect';
 
 it('gives its form an empty value for None, the picked value after a pick, and an input event by then', async () => {
     const heard: (string | null)[] = [];
@@ -17,14 +17,14 @@ it('gives its form an empty value for None, the picked value after a pick, and a
                     heard.push(new FormData(event.currentTarget).get('who') as string | null)
                 }
             >
-                <FormSelect
+                <OptionSelect
                     id="who"
                     name="who"
-                    aria-label="Who"
+                    label="Who"
                     value={value}
                     onChange={setValue}
                     none="None"
-                    choices={[{ value: 'a', name: 'Ada' }]}
+                    options={[{ value: 'a', label: 'Ada' }]}
                 />
             </form>
         );
@@ -55,14 +55,14 @@ it('gives its form an empty value for None, the picked value after a pick, and a
 
 it('leaves a letter on the closed control alone when a pick writes at once', () => {
     render(
-        <FormSelect
-            aria-label="Model"
+        <OptionSelect
+            label="Model"
             writesOnPick
             value="a"
             onChange={() => undefined}
-            choices={[
-                { value: 'a', name: 'Ada' },
-                { value: 'b', name: 'Babbage' },
+            options={[
+                { value: 'a', label: 'Ada' },
+                { value: 'b', label: 'Babbage' },
             ]}
         />,
     );

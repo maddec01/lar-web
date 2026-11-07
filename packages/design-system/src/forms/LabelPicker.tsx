@@ -107,7 +107,7 @@ export function LabelPicker({
                             />
                             {color && (
                                 <span data-label-dot className="mt-1 flex">
-                                    <StatusIndicator tone="neutral" color={color} />
+                                    <StatusIndicator tone="neutral" labelColor={color} />
                                 </span>
                             )}
                             <span className="min-w-0 flex-1">

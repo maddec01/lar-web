@@ -18,7 +18,6 @@ import {
     FormStack,
     FormUnit,
 } from './FormSection';
-import { FormSelect } from './FormSelect';
 import { Input } from './Input';
 import { OptionSelect } from './OptionSelect';
 import { Switch } from './Switch';
@@ -213,15 +212,15 @@ export const FlowRows: Story = {
                     help="Deleting removes the work's brief, threads and reviews from this Mac."
                     description="Export what you want to keep first."
                 >
-                    <FormSelect
-                        aria-label="Delete hidden work"
+                    <OptionSelect
+                        label="Delete hidden work"
                         presentation="setting"
                         writesOnPick
                         value="delete"
                         onChange={() => {}}
-                        choices={[
-                            { value: 'keep', name: 'Keep it' },
-                            { value: 'delete', name: 'Delete it after' },
+                        options={[
+                            { value: 'keep', label: 'Keep it' },
+                            { value: 'delete', label: 'Delete it after' },
                         ]}
                     />
                     <FormUnit unit="days">

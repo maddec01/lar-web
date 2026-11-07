@@ -3,8 +3,8 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { InsetPanel } from '../display/InsetPanel';
-import { FormSelect } from '../forms/FormSelect';
 import { Input } from '../forms/Input';
+import { OptionSelect } from '../forms/OptionSelect';
 import { Popover } from '../overlays/Popover';
 import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
@@ -23,15 +23,15 @@ import {
 } from './Vocabulary';
 
 const type = (
-    <FormSelect
-        aria-label="Bug type"
+    <OptionSelect
+        label="Bug type"
         writesOnPick
         value="Bug"
         none="No type"
         onChange={fn()}
-        choices={[
-            { value: 'Bug', name: 'Bug' },
-            { value: 'Task', name: 'Task' },
+        options={[
+            { value: 'Bug', label: 'Bug' },
+            { value: 'Task', label: 'Task' },
         ]}
     />
 );

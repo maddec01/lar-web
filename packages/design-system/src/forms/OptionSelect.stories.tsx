@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { BugIcon, CircleDotIcon, GitBranchIcon, SparklesIcon, TrendingUpIcon } from 'lucide-react';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
@@ -73,5 +74,52 @@ export const Interactive: Story = {
         <div className="max-w-xs">
             <InteractiveOptionSelect onChange={args.onChange} />
         </div>
+    ),
+};
+
+const branches = [
+    { value: 'main', label: 'main', icon: <GitBranchIcon /> },
+    { value: 'release', label: 'release', icon: <GitBranchIcon /> },
+    { value: 'legacy', label: 'legacy (archived)', icon: <CircleDotIcon />, disabled: true },
+];
+
+function BranchSelect(props: Partial<Parameters<typeof OptionSelect<string>>[0]>) {
+    const [value, setValue] = useState('');
+
+    return (
+        <div className="w-72">
+            <OptionSelect
+                label="Base branch"
+                placeholder="Choose a branch"
+                options={branches}
+                value={value}
+                onChange={setValue}
+                {...(props as object)}
+            />
+        </div>
+    );
+}
+
+/** With nothing picked, the placeholder; each option with its icon. */
+export const Placeholder: Story = { render: () => <BranchSelect /> };
+
+/** A `none` option empties the value, which a form with the select's `name` reads as an empty string. */
+export const WithNone: Story = { render: () => <BranchSelect none="No default" name="branch" /> };
+
+/** A settings row's 11rem dropdown, which writes at once on a pick. */
+export const Setting: Story = { render: () => <BranchSelect presentation="setting" writesOnPick /> };
+
+/** Each option's icon in its lar-brand hue, as Lar Factory's Kind select shows the kinds. */
+export const HuedIcons: Story = {
+    render: () => (
+        <BranchSelect
+            label="Kind"
+            placeholder="Choose a kind"
+            options={[
+                { value: 'bug', label: 'Bug', icon: <BugIcon />, hue: 25 },
+                { value: 'feature', label: 'Feature', icon: <SparklesIcon />, hue: 150 },
+                { value: 'improvement', label: 'Improvement', icon: <TrendingUpIcon />, hue: 245 },
+            ]}
+        />
     ),
 };
