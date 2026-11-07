@@ -58,7 +58,10 @@ it.each([true, false])('blocks creation when busy or refused (busy: %s)', (busy)
     const filter = screen.getByRole('textbox');
 
     fireEvent.change(filter, { target: { value: 'new' } });
-    expect(screen.getByRole('button', { name: 'Create new' })).toBeDisabled();
+
+    if (busy) expect(screen.getByRole('button', { name: 'Create new' })).toBeDisabled();
+    else expect(screen.queryByRole('button', { name: 'Create new' })).not.toBeInTheDocument();
+
     fireEvent.keyDown(filter, { key: 'Enter' });
     expect(onCreate).not.toHaveBeenCalled();
 });

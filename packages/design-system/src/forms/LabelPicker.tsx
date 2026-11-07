@@ -124,7 +124,7 @@ export function LabelPicker({
                 })}
                 {!hits.length && !fresh && <p className="text-base-700 m-0 p-1.5 text-[11px]">{noMatchLabel}</p>}
             </div>
-            {fresh && (
+            {fresh && !refusal && (
                 <span className="justify-self-start">
                     <Button
                         variant="secondary"
