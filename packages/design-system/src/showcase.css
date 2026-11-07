@@ -5,3 +5,9 @@
 @import './showcase/server-unit.css';
 
 @source './';
+
+/* ninna-ui's own @source paths assume npm's flat node_modules and find nothing under pnpm, so its components'
+   classes are scanned from here: next to this package once installed (pnpm's store or npm's tree), and in this
+   package's own node_modules inside the lar-web workspace. */
+@source '../../../@ninna-ui/*/dist/**/*.js';
+@source '../node_modules/@ninna-ui/*/dist/**/*.js';
