@@ -1,0 +1,17 @@
+version: 2
+updates:
+    - package-ecosystem: npm
+      directory: /
+      schedule:
+          interval: weekly
+      groups:
+          storybook:
+              patterns: ['storybook', '@storybook/*']
+          toolchain:
+              patterns: ['vite-plus', '@voidzero-dev/*', 'typescript', '@types/*']
+          ninna-ui:
+              patterns: ['@ninna-ui/*']
+    - package-ecosystem: github-actions
+      directory: /
+      schedule:
+          interval: monthly

@@ -1,0 +1,72 @@
+name: CI
+
+on:
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.event.pull_request.number || format('{0}-{1}', github.ref, github.sha) }}
+    cancel-in-progress: true
+
+jobs:
+    check:
+        name: Format, lint and types
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+            - uses: ./.github/actions/setup
+            - name: Build packages
+              run: pnpm --filter './packages/*' build
+            - name: Check
+              run: pnpm exec vp check
+
+    test:
+        name: Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+            - uses: ./.github/actions/setup
+            - name: Build packages
+              run: pnpm --filter './packages/*' build
+            - name: Test
+              run: pnpm test
+
+    build:
+        name: Build packages, template and Storybook
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+            - uses: ./.github/actions/setup
+            - name: Build
+              run: pnpm build
+            - name: Build Storybook
+              run: pnpm --filter @lar-works/design-system build-storybook
+
+    changeset:
+        name: Changeset
+        if: github.event_name == 'pull_request' && github.head_ref != 'changeset-release/main'
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - uses: ./.github/actions/setup
+            # A PR that changes a published package says how: `pnpm changeset` writes the note and the version bump.
+            - name: Require a changeset for package changes
+              run: pnpm exec changeset status --since=origin/main
