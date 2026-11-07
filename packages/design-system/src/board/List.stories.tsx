@@ -4,7 +4,7 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 import { Input } from '../forms/Input';
 import { buttonKind } from './ButtonKinds';
 import { FilterBar, FilterChip, FilterLabelBadge, FilterMenu } from './Filters';
@@ -85,7 +85,7 @@ export const Rows: StoryObj<typeof ListItemRow> = {
                 meta="1d"
             />
             <ListNote reading>
-                <Spinner label="Loading more Projects…" />
+                <Loading presentation="inline" label="Loading more Projects…" />
             </ListNote>
         </div>
     ),

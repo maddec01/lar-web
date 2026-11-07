@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 import { Switch } from '../forms/Switch';
 import { BuildLimit, HeaderSwitch, StageList, StagePane, StagePaneEmpty, StageSections } from './StagePane';
 import { statusColor } from './StatusColors';
@@ -35,7 +35,7 @@ type Story = StoryObj<typeof meta>;
 /** A section with no rows says so in one small line. */
 export const Empty: Story = {};
 
-export const Loading: Story = {
+export const StillLoading: Story = {
     args: {
         id: 'queue',
         title: 'Queue',
@@ -43,7 +43,7 @@ export const Loading: Story = {
         right: undefined,
         children: (
             <StagePaneEmpty>
-                <Spinner label="Loading Projects…" />
+                <Loading presentation="inline" label="Loading Projects…" />
             </StagePaneEmpty>
         ),
     },

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 
 /** Lar Factory's window: the board's main area filling the window, and beside it, outside `main`, what sits over the
  *  board (its dialogs, live regions and notifications), so their announcements sit apart from the page. */
@@ -24,7 +24,7 @@ export function BoardContent({ children }: { children: ReactNode }) {
 export function ReadingLine({ label }: { label: string }) {
     return (
         <p className="text-base-700 m-0 flex items-center justify-center gap-2 p-6 text-sm" data-reading>
-            <Spinner label={label} presentation="line" />
+            <Loading label={label} presentation="line" />
         </p>
     );
 }

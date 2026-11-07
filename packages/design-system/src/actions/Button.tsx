@@ -1,7 +1,7 @@
 import { Button as NinnaButton, type ButtonProps as NinnaButtonProps } from '@ninna-ui/primitives';
 import { forwardRef } from 'react';
 
-import { SpinnerIcon } from '../feedback/Spinner';
+import { SpinnerIcon } from '../feedback/Loading';
 import { tabbable } from '../foundations/KeyboardFocus';
 import { ghostRecipe, outlineRecipe, primaryRecipe } from './ButtonRecipes';
 

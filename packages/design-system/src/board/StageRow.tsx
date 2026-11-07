@@ -6,7 +6,7 @@ import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 import type { MouseEvent, ReactNode } from 'react';
 
 import { Badge } from '../display/Badge';
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 import { pickedRow, ROW_ACTION, ROW_OPENS, ROW_RULE } from './RowStyles';
 
 /** A stage row: `item` names it as `data-item`, and `picked` marks the item the dialog shows. */
@@ -306,7 +306,7 @@ export function UsageFigures({
             className="flex min-w-0 items-center justify-end gap-1 text-(--muted-foreground) tabular-nums"
             title={title}
         >
-            {updating && <Spinner title={updating} still={still} />}
+            {updating && <Loading presentation="inline" title={updating} still={still} />}
             {text && <span className="truncate">{text}</span>}
             {text
                 ? partial && (

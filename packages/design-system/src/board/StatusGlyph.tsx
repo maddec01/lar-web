@@ -13,7 +13,7 @@ import {
     ListIcon,
 } from 'lucide-react';
 
-import { SpinnerIcon } from '../feedback/Spinner';
+import { SpinnerIcon } from '../feedback/Loading';
 import { ambientMotion } from '../foundations/AmbientMotion';
 import { type BoardStatus, statusColor } from './StatusColors';
 

@@ -19,8 +19,7 @@ export {
 export { Progress } from './Progress';
 export { ProgressStatusRow } from './ProgressStatusRow';
 export { SkeletonLoader } from './SkeletonLoader';
-export { Spinner, SpinnerIcon } from './Spinner';
+export { Loading } from './Loading';
 export { StatusIndicator, type StatusTone } from './StatusIndicator';
 export { StatusPopoverContent } from './StatusPopoverContent';
 export { StatusRow } from './StatusRow';
-export { Loading } from '@ninna-ui/feedback';

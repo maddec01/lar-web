@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { DropdownMenu } from '../overlays/DropdownMenu';
 import { buttonKind } from './ButtonKinds';
@@ -23,7 +23,7 @@ export function ListButton({ label, icon, count, loadingLabel, onOpen }: ListBut
     return (
         <Button {...buttonKind('control')} className="list-button px-2" leftIcon={icon} title={label} onClick={onOpen}>
             <span className="@max-[70rem]:sr-only">{label}</span>
-            {count === undefined ? <Spinner title={loadingLabel} /> : <Badge>{count}</Badge>}
+            {count === undefined ? <Loading presentation="inline" title={loadingLabel} /> : <Badge>{count}</Badge>}
         </Button>
     );
 }

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CircleDollarSignIcon, CircleDotIcon, FolderGit2Icon, HandIcon, LoaderCircleIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
-import { Spinner } from '../feedback/Spinner';
+import { Loading } from '../feedback/Loading';
 import {
     BoardCounter,
     BoardCounters,
@@ -82,7 +82,11 @@ function Strip({ reading = false }: { reading?: boolean }) {
                     hint="Nothing shaping right now"
                 >
                     <CounterEmpty>
-                        {reading ? <Spinner label="Loading Projects…" /> : 'Nothing shaping right now.'}
+                        {reading ? (
+                            <Loading presentation="inline" label="Loading Projects…" />
+                        ) : (
+                            'Nothing shaping right now.'
+                        )}
                     </CounterEmpty>
                 </BoardCounter>
                 <BoardCounter
