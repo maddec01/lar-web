@@ -11,11 +11,11 @@ showcase. The **Board** category holds the board's own compositions:
 `BoardShell`, `BoardContent`, `ReadingLine`, `BoardTitleBar`, `BoardBrand`, `TitleBarDivider`, `RefreshIndicator`,
 `BoardCounters` and the counter parts, `LoadingScreen`, `BoardWarnings`, `BoardWarning`, `ToolMissing`, `DeskSection`,
 `DeskCard`, `DeskMergeState`, `DeskHint`, `UpdatePill`, `UpdateDownloading`, `ReleaseNotes`, the List's parts
-(`ListButton`, `ListGroupItem`, `ListHeader`, `ListItemRow`, `ListNote`, `ListSortMenu`), the filter bar's parts
-(`FilterBar`, `FilterMenu`, `FilterChoices`, `FilterChoice`, `FilterChip`, `FilterLabelBadge`), the archive's
-(`ActionStack`, `BoardNote`, `SettingConfirm`, `SettingLastRun`) and `buttonKind`, the board's five button kinds. Its
+(`ListButton`, `ListGroupItem`, `ListHeader`, `ListItemRow`, `ListNote`), the filter bar's parts
+(`FilterBar`, `FilterMenu`, `FilterChoices`, `FilterChoice`, `FilterChip`), the archive's
+(`ActionStack`, `SettingConfirm`, `SettingLastRun`) and `buttonKind`, the board's five button kinds. Its
 work by stage is here too: `StatusGlyph` and `statusColor`, `StageTrack`, `SourceIcon`, the item parts (`ItemTitle`,
-`TitleLink`, `RepoTag`, `RepoIdentity`, `ItemFields`, `KindMarker`, `LabelChip`, `ItemBadges`, `ItemNote`), slices
+`TitleLink`, `RepoTag`, `RepoIdentity`, `ItemFields`, `KindMarker`), slices
 (`SliceBar`, `SliceMark`, `SliceList`, `SliceRow`), `ActivityTrack`, `ActivityLabel`, pull requests (`PullRequestList`,
 `PullRequestRow`, `ChecksState`, `PullRequestRef`, `PullRequestReadiness`, `ReadinessDetails`), Start's surroundings
 (`StartGroup`, `StartNote`, `StartTag`, `StartLine`, `ActionError`), `NeedsYouNotice`, `DependencyList`, `EarlierThread`,
@@ -23,19 +23,19 @@ work by stage is here too: `StatusGlyph` and `statusColor`, `StageTrack`, `Sourc
 `HeaderSwitch`), the stage row's parts (`StageRowItem`, `RowOpen`, `RowSide`, `RowSecondLine`, `UsageFigures`…), the
 thread activity line (`ActivityLine`, `AgentList`, `WorkingAgents`), the item dialog's frame (`ItemSummary` and its
 `SummaryStatus`, `SummaryAge`, `SummaryBlocked`, `SummaryParent`, `SummaryPanel`; `ItemDialogBody`, `ItemDialogColumns`,
-`ItemDialogAside`, `WarningNote`, `AccessNotice`, `DialogActions`, `ButtonRow`), its progress (`ItemProgressPanel`,
+`ItemDialogAside`, `WarningNote`, `AccessNotice`, `DialogActions`), its progress (`ItemProgressPanel`,
 `WorkflowSteps`, which draws the current step's status gradient, `PartsProgress`, `ProgressCount`, `ProgressActivity`,
 `SliceChips`, `SliceChip`) and its details (`DetailsHeading`, `DetailsSection`, `TextSection`, `MainSection`,
-`SectionHeader`, `HeaderStatus`, `DetailsText`, `MainColumnSlot`, `MetaArea`, `DetailFact`, `Person`, `PeopleList`,
-`InlineList`, `FactList`, `EditorSlot`, `EditActions`, `SpecSync`, `CommentList`, `Comment`, `TicketLinkList`,
-`TicketLink`, `AttachmentLink`, `SprintCount`, `WaitsOnList`, `LockedLabel`, `LabelsValue`, `ChipGroup`,
-`LabelEditorPanel`, `ChangeFailed`, `KindQuestion`, `ConceptPartList`, `ConceptPart`, `OutgoingTicket`,
-`ChecksDisclosure`, `CheckRun`, `FocusPanel`), a project's icon (`ProjectIcon`, its initial on the colour of the
+`SectionHeader`, `HeaderStatus`, `DetailsText`, `MainColumnSlot`, `MetaArea`, `DetailFact`,
+`InlineList`, `FactList`, `EditorSlot`, `EditActions`, `SpecSync`, `TicketLinkList`,
+`TicketLink`, `AttachmentLink`, `SprintCount`, `WaitsOnList`, `ChipGroup`,
+`LabelEditorPanel`, `ChangeFailed`, `KindQuestion`, `OutgoingTicket`, `CheckRun`, `FocusPanel`; a concept's parts are the
+dossier's `PartRow`s), a project's icon (`ProjectIcon`, its initial on the colour of the
 repository's place with T3's emoji, monogram, favicon or lucide icon), Settings (`OpenSettingsButton`, the title bar's
-icon-only button; `SettingsNav`, the sections' sidebar with its search; the pages' `SettingsGroups`, `ReasonNote`,
-`SettingsNote`, `SettingDetails`, `SettingControl`, `ProjectValueList` and `SourceLink`), a project's kind vocabulary (`VocabularyRow`, `VocabularyChip`, `VocabularyMore`, `VocabularySuggestion`
+icon-only button; `SettingsNav`, the sections' sidebar with its search; the pages' `ReasonNote`,
+`SettingsNote`, `SettingDetails`, `SettingControl` and `ProjectValueList`), a project's kind vocabulary (`VocabularyRow`, `VocabularyMore`, `VocabularySuggestion`
 and the `LabelChooser` with its `LabelChooserList`, `LabelChooserOption`, `LabelChooserEmpty` and
-`LabelChooserFooter`) and tracker labels (`TrackerLabelList`, `TrackerLabelRow`, `TrackerLabelChip`,
+`LabelChooserFooter`) and tracker labels (`TrackerLabelList`, `TrackerLabelRow`,
 `TrackerLabelEditor`, `CreateLabelForm`), Add item (`AddItemButton`, the title bar's Main button; `DraftFields`, a
 draft's fields beside their details panel; `PanelField`, `DraftTicketPart`, `CreateIssueChoice`; `TicketSearchPane` and
 `TicketSearch`, a tracker's open tickets searched and picked), onboarding (`EmptyBoard`, `SetupCardList`, `SetupHeader`,
@@ -44,12 +44,26 @@ draft's fields beside their details panel; `PanelField`, `DraftTicketPart`, `Cre
 parts list (`PartsList`, `PartRow`, `PartKindLabel`…) and Work map (`WorkMapFrame`, `MapBand`, `MapEdges`,
 `MapPartNode`, `MapCheckNode`, `HistoryRow`…).
 
-New generic components: `Progress` (determinate), `Spinner` and `SpinnerIcon`, `StatusText`, `DismissButton`,
-`FormResult` and `LiveRegion` (feedback); `FormSelect`, `FormFieldset`, `FormUnit`, `LabelPicker`, `MarkdownEditor`,
-`ColorSwatches`, `HiddenField` and `RadioGroupChoice`, a radio group's choice in a bordered row whose label truncates
-(forms); `RichText`, `Diagram` and `ColorDot` (display); `CodeText`, a path or command in plain inline
-code that breaks anywhere or never (typography); `HelpTip` and `ModalExpandButton` (overlays);
-`ambientMotion` (foundations), which pauses repeating indicators out of view.
+New generic components: `Progress` (determinate), `DismissButton`, `FormResult` and `LiveRegion` (feedback);
+`FormFieldset`, `FormUnit`, `LabelPicker`, `MarkdownEditor`, `ColorSwatches` and `HiddenField` (forms); `RichText`,
+`Diagram`, `LabelChip` (a label in its own colour, with a note, a lock or a ×), `Comment` and `CommentList`, and `Person`
+(display); `SortMenu` (navigation); `HelpTip` and `ModalExpandButton` (overlays); `ambientMotion` (foundations), which
+pauses repeating indicators out of view.
+
+Consolidated, so each look has one component:
+
+- `Loading` is the design system's own: ninna-ui's announced spinner as before, and with `presentation` (`inline`,
+  `line`, `status`) a small spinner beside what loads, which `still` stops.
+- `Code` is the design system's own: ninna-ui's code chip as before, and with `wrap` (`anywhere`, `never`) a path or
+  command in plain inline code.
+- `OptionSelect` takes an option's `icon` and `hue`, a `none` option, a form field `name` (with an input event on a
+  pick), `writesOnPick`, `busy`, `presentation="setting"`, a `ref` and Select's own props; `label` may be left out
+  when a label names it by its `id`.
+- `StatusIndicator` takes `labelColor`, a colour that comes with data, and `label`, a word after the dot in the
+  tone's text colour.
+- `Text` takes `numeric`, `breaks`, `ownLine` and `only` (`narrow`, `wide`), for small notes.
+- `InlineLink` takes `onClick` (and `disabled`) in place of `href`, a button with its look.
+- `RadioChoice` takes data attributes, and `Disclosure` takes `onOpenChange`.
 
 Extended, with every default unchanged:
 
@@ -64,17 +78,14 @@ Extended, with every default unchanged:
 - `Button` takes `compact` (28px, 12px text), `wrap`, the `tinted` recipe, `iconOnly` (square, its icon alone), `busy`
   (a spinner in its icon's place), `shrinks` with a trailing `mark`, and `pendingLook`; `ButtonLink` takes `compact`
   (the app Button's compact look as a link) and `iconOnly`; `ViewToggle` is CollectionViewToggle's segmented icon
-  toggle for any views, `compact` for a row's line; `DropdownMenu.ItemText` gives an entry a detail line; `BoardNote`
-  takes `numeric`, `only` and data attributes; the icons gain `AzureDevOpsIcon`, and `GitHubIcon` takes a `className`.
+  toggle for any views, `compact` for a row's line; `DropdownMenu.ItemText` gives an entry a detail line; the icons gain `AzureDevOpsIcon`, and `GitHubIcon` takes a `className`.
 - `Avatar` takes `compact` (24px); `Disclosure` takes `presentation="section"`, a section's own content behind a muted
   label; `FormFieldset` takes `hiddenLegend`; `Text` takes `variant="inherit"`, the surrounding size and colour;
-  `IconButton` takes `variant="inline"`, a 20px control in a line of text; `InlineButton` is a button with
-  InlineLink's look, and can be disabled; `BoardNote` takes `ownLine`, `breaks` and an `id`.
+  `IconButton` takes `variant="inline"`, a 20px control in a line of text.
 - `InsetPanel`'s `settings` panel takes a `footer` on the muted surface; `FormResult` takes a `list` under its text, such
   as the paths a call touched; `Badge` takes `muted`, for an entry listed but switched off; `Text` takes `nowrap`;
   `Input` takes `presentation="count"` (a small whole number); `Button`'s `pendingLook` takes `'disabled'`, the disabled
-  look for a button `aria-disabled` holds; `RepoIdentity` takes `presentation="wrap"`, which wraps a longer line;
-  `LabelsValue` takes a `label` for any wrapping row of badges. The board's last `data-icon-only` marks leave
+  look for a button `aria-disabled` holds; `RepoIdentity` takes `presentation="wrap"`, which wraps a longer line. The board's last `data-icon-only` marks leave
   board.css, as every icon-only button is now the Button's `iconOnly`.
 - `FormSection` takes `presentation="dense"`: a dense tool's group, its title with `help` and its description over the
   panels and notes it holds; `Input` takes `presentation` (`setting`, a settings row's 16rem field, or `short`);
@@ -85,10 +96,8 @@ Extended, with every default unchanged:
   `presentation="framed"` (a short list in a frame), `defaultOpen` and data attributes; `ViewToggle` takes
   `presentation="text"`, its options' labels as small text buttons, and each option's `attributes`; `Input` takes
   `presentation="title"`, a document's title typed in place; `Modal.Content` takes `fitsContent`, a paned dialog that
-  takes its content's height; `FormSelect`'s choices take a `hue` for their icon; `RadioGroup` takes
-  `presentation="choices"`; `Spinner` takes `presentation="status"`, a step's announced loading line;
-  `CollectionState` takes an `action` of the caller's own and the `welcome` variant, an app's first-run welcome with its
-  brand mark; `LabelChip` takes a `note`, such as "new"; `DetailsHeading` renders `as` a `label` or `span`.
+  takes its content's height; `CollectionState` takes an `action` of the caller's own and the `welcome` variant, an app's first-run welcome with its
+  brand mark; `DetailsHeading` renders `as` a `label` or `span`.
 - `Badge` takes `labelColor`; `CopyButton` takes `presentation="text"`, `copyText` and `onCopied`; `FormRow` takes
-  `layout="flow"` with `help`, `below` and `error`; `Modal.Content` takes `expanded`; `Switch` and `FormSelect` take
+  `layout="flow"` with `help`, `below` and `error`; `Modal.Content` takes `expanded`; `Switch` takes
   `busy`; `RichText` takes `renderDiagram`; `DesignSystemProvider`'s labels gain `editor` and `dialog` groups.
