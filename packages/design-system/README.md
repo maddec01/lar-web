@@ -21,5 +21,8 @@ import { PlusIcon } from '@lar-works/design-system/icons';
 </DesignSystemProvider>;
 ```
 
+A website that uses the marketing showcase (`Hero`, device frames, `ServerUnit`…) imports
+`@lar-works/design-system/showcase.css` instead of `styles.css`.
+
 Apps compose these components and never style anything themselves; `@lar-works/config`'s lint rules enforce it.
 `@lar-works/design-system/testing` has helpers for apps' jsdom test setup.

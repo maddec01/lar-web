@@ -1,5 +1,7 @@
 /* Everything an app needs from the design system in one import: Tailwind, ninna-ui's preset, Lar's tokens and
-   base styles, and the components' utilities, which Tailwind finds by scanning this package's sources. */
+   base styles, and the components' utilities, which Tailwind finds by scanning this package's sources. The
+   marketing showcase is left out; a site that uses it imports showcase.css instead. */
 @import './foundations/theme.css';
 
 @source './';
+@source not './showcase';

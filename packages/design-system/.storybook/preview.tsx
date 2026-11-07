@@ -1,4 +1,4 @@
-import '../src/styles.css';
+import '../src/showcase.css';
 
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react-vite';
