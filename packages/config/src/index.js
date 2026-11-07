@@ -49,13 +49,15 @@ const baseRules = {
     'lar/padding-lines': 'error',
 };
 
-const sourceFiles = (root) => [`${root}/src/**/*.ts`, `${root}/src/**/*.tsx`];
+/** Globs under an app's root; `.` is the repository root itself. */
+const under = (root, glob) => (root === '.' ? glob : `${root}/${glob}`);
+const sourceFiles = (root) => [under(root, 'src/**/*.ts'), under(root, 'src/**/*.tsx')];
 
 /**
  * Oxlint settings for a repository.
  *
  * @param {object} options
- * @param {string[]} [options.apps] Each app's root, relative to the repository root (`web`, `apps/web`).
+ * @param {string[]} [options.apps] Each app's root, relative to the repository root (`.`, `web`, `apps/web`).
  *   Its `src` follows Lar's layers (app, features, shared, services) and holds no visual recipes.
  * @param {string[]} [options.designSystems] The roots of design-system packages, which own every visual recipe.
  * @param {string[]} [options.ignorePatterns] Extra paths to skip, such as generated API clients.
@@ -78,7 +80,7 @@ export function lint({ apps = [], designSystems = [], ignorePatterns = [] } = {}
                 },
             })),
             ...apps.map((app) => ({
-                files: [`${app}/src/app/**/*.tsx`, `${app}/src/features/**/*.tsx`],
+                files: [under(app, 'src/app/**/*.tsx'), under(app, 'src/features/**/*.tsx')],
                 rules: { 'max-lines': ['error', { max: 250, skipBlankLines: true, skipComments: true }] },
             })),
             ...designSystems.map((designSystem) => ({

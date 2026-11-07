@@ -7,3 +7,4 @@ export {
 } from './DesignSystemProvider';
 export { tabbable } from './KeyboardFocus';
 export { applePlatform, isShortcut } from './KeyboardShortcut';
+export { createThemeController, isThemePreference, type ThemeController, type ThemePreference } from './Theme';

@@ -1,0 +1,74 @@
+# Called by each Lar app on a schedule (and by hand) to move it to the latest lar-web releases: it bumps the tarball
+# URLs in the app's package.json, refreshes the lockfile, opens or updates a PR, and starts the app's CI on it (a PR
+# pushed with GITHUB_TOKEN doesn't start workflows by itself, but a dispatch does).
+#
+#   jobs:
+#     update:
+#       uses: maddec01/lar-web/.github/workflows/update-app.yml@main
+#       with: { directory: web, ci-workflow: ci.yml }
+#       permissions: { contents: write, pull-requests: write, actions: write }
+name: Update lar-web packages
+
+on:
+    workflow_call:
+        inputs:
+            directory:
+                description: The directory holding the app's package.json and pnpm-lock.yaml.
+                type: string
+                default: .
+            ci-workflow:
+                description: The app's CI workflow file, dispatched on the update branch. It needs a workflow_dispatch trigger.
+                type: string
+                default: ci.yml
+            node-version-file:
+                type: string
+                default: .node-version
+
+jobs:
+    update:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        env:
+            GH_TOKEN: ${{ github.token }}
+            BRANCH: chore/update-lar-web
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/checkout@v7
+              with:
+                  repository: maddec01/lar-web
+                  path: .lar-web
+                  persist-credentials: false
+            - uses: pnpm/action-setup@v6
+              with:
+                  package_json_file: ${{ inputs.directory }}/package.json
+            - uses: actions/setup-node@v7
+              with:
+                  node-version-file: ${{ inputs.node-version-file }}
+
+            - name: Bump lar-web packages
+              id: bump
+              working-directory: ${{ inputs.directory }}
+              run: |
+                  result=$(node "$GITHUB_WORKSPACE/.lar-web/scripts/update-consumer.mjs" --notes "$RUNNER_TEMP/notes.md")
+                  echo "updated=$([ "$result" = updated ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+            - name: Refresh the lockfile
+              if: steps.bump.outputs.updated == 'true'
+              working-directory: ${{ inputs.directory }}
+              run: pnpm install --lockfile-only
+
+            - name: Open or update the PR
+              if: steps.bump.outputs.updated == 'true'
+              run: |
+                  rm -rf .lar-web
+                  git config user.name 'github-actions[bot]'
+                  git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+                  git switch -C "$BRANCH"
+                  git commit -am 'chore: update lar-web packages'
+                  git push --force origin "$BRANCH"
+                  if gh pr view "$BRANCH" --json state -q .state 2>/dev/null | grep -q OPEN; then
+                    gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/notes.md"
+                  else
+                    gh pr create --head "$BRANCH" --title 'chore: update lar-web packages' --body-file "$RUNNER_TEMP/notes.md"
+                  fi
+                  gh workflow run "${{ inputs.ci-workflow }}" --ref "$BRANCH"

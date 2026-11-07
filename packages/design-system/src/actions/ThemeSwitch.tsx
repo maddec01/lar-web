@@ -2,8 +2,7 @@ import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
 
 import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { tabbable } from '../foundations/KeyboardFocus';
-
-export type ThemeChoice = 'system' | 'light' | 'dark';
+import type { ThemePreference } from '../foundations/Theme';
 
 const choices = [
     { value: 'system', Icon: MonitorIcon },
@@ -12,7 +11,13 @@ const choices = [
 ] as const;
 
 /** Three small segments for the colour scheme: follow the system, light or dark. */
-export function ThemeSwitch({ value, onChange }: { value: ThemeChoice; onChange: (value: ThemeChoice) => void }) {
+export function ThemeSwitch({
+    value,
+    onChange,
+}: {
+    value: ThemePreference;
+    onChange: (value: ThemePreference) => void;
+}) {
     const labels = useDesignSystemLabels().theme;
 
     return (

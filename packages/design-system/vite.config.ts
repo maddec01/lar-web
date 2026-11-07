@@ -9,6 +9,7 @@ export default defineConfig({
     // module by module. React, ninna-ui, lucide and the rest stay dependencies the app's bundler resolves.
     pack: {
         entry: ['src/index.ts', 'src/icons.ts', 'src/testing.ts'],
+        tsconfig: 'tsconfig.build.json',
         format: ['esm'],
         dts: true,
         unbundle: true,
