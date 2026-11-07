@@ -1,7 +1,6 @@
 # On main, Changesets either opens the "Version packages" PR (bumping versions and changelogs from the pending
-# changesets) or, once that PR is merged, releases each new version as a GitHub Release with the package tarball
-# attached (scripts/release.mjs). Apps install those tarballs by URL; no registry or token is involved. To move an
-# app to a new release, change the version in its package.json URL and run pnpm install.
+# changesets) or, once that PR is merged, publishes the new versions to npm (scripts/release.mjs) and creates a GitHub
+# Release for each. npm trusts this workflow through trusted publishing (OIDC), so no npm token is stored.
 name: Release
 
 on:
@@ -11,6 +10,7 @@ on:
 permissions:
     contents: write
     pull-requests: write
+    id-token: write
 
 concurrency:
     group: release
@@ -18,13 +18,13 @@ concurrency:
 
 jobs:
     release:
-        name: Version or release
+        name: Version or publish
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
             - uses: actions/checkout@v7
             - uses: ./.github/actions/setup
-            - name: Version or release
+            - name: Version or publish
               uses: changesets/action@v2
               with:
                   version: pnpm exec changeset version

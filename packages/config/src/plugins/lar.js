@@ -124,22 +124,14 @@ const boundaries = {
 
 const rawElements = /^(h1|h2|h3|h4|h5|h6|p|button|input|select|textarea|svg)$/;
 
-/** Props that pick a look on a design-system component; apps choose a named recipe instead. */
-const lookProps = new Set([
-    'size',
-    'color',
-    'weight',
-    'gap',
-    'radius',
-    'minChildWidth',
-    'fontSize',
-    'lineHeight',
-    'letterSpacing',
-    'fullWidth',
-]);
+/** Design-system components whose geometry and colour props are looks: apps pick a named recipe instead. */
+const recipeComponents =
+    /^(Text|Heading|Link|Button|IconButton|Badge|Stack|Inline|Grid|Avatar|Loading|StatusIndicator|Alert)$/;
+const lookProps = /^(size|color|weight|gap|radius|minChildWidth|fontSize|lineHeight|letterSpacing)$/;
 
-/** Form controls whose `variant` is a look too; elsewhere `variant` names a semantic recipe. */
+/** Form controls, whose styling and geometry the design system owns entirely. */
 const formControls = /^(Input|Select|Field|FormField|Textarea)$/;
+const formLookProps = /^(fullWidth|size|variant|color)$/;
 
 const noVisualRecipes = {
     meta: {
@@ -177,7 +169,8 @@ const noVisualRecipes = {
                     element?.type === 'JSXIdentifier' &&
                     designSystemNames.has(element.name) &&
                     typeof name === 'string' &&
-                    (lookProps.has(name) || (name === 'variant' && formControls.test(element.name)))
+                    ((recipeComponents.test(element.name) && lookProps.test(name)) ||
+                        (formControls.test(element.name) && formLookProps.test(name)))
                 )
                     context.report({ node, messageId: 'lookProp', data: { prop: name } });
             },
