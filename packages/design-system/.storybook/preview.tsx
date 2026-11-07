@@ -1,4 +1,4 @@
-import '../src/showcase.css';
+import './preview.css';
 
 import { withThemeByClassName } from '@storybook/addon-themes';
 import type { Preview } from '@storybook/react-vite';
@@ -29,17 +29,19 @@ const preview: Preview = {
                     'Collections',
                     'Layout',
                     'Showcase',
+                    'Board',
                 ],
             },
         },
         a11y: { test: 'todo' },
     },
     decorators: [
-        (Story) => (
+        // A story that mounts its own Notifications sets `parameters.notifications` to false.
+        (Story, { parameters }) => (
             <DesignSystemProvider>
                 <TooltipProvider>
                     <Story />
-                    <Notifications />
+                    {parameters.notifications === false ? null : <Notifications />}
                 </TooltipProvider>
             </DesignSystemProvider>
         ),

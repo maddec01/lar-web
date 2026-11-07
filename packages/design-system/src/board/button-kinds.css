@@ -1,0 +1,39 @@
+/* The board's button kinds (ButtonKinds.ts) are the compact Button; these are the marks the board's remaining pages
+   still set on a kind's button, and on links and rows drawn as one, until their components own them. Unlayered, so
+   they win over the Button's utilities. Anything marked with a kind is 28 px tall with 12 px text, except a toggle
+   marked data-toggle, which keeps its own size; `:where` keeps the selector as specific as [data-kind], so the title
+   bar's strip still sizes its counters. A row's actions (a section header's, a desk card's) are 32 px, and an icon-only
+   button is square, keeping its kind's 16 px icon or a 20 px one when marked large. */
+[data-kind]:where(:not([data-toggle])) {
+    height: --spacing(7);
+    font-size: var(--text-xs);
+}
+.row-action [data-kind]:where(:not([data-toggle])) {
+    height: --spacing(8);
+}
+.row-action [data-kind][data-icon-only] {
+    width: --spacing(8);
+}
+[data-kind][data-icon-only] {
+    width: --spacing(7);
+    padding: 0;
+}
+[data-kind][data-icon-only='large'] svg {
+    width: --spacing(5);
+    height: --spacing(5);
+}
+
+/* A kind's button whose long label would clip on a narrow dialog (a wrapping Button marks itself data-wrap): the label
+   wraps and the button grows. */
+[data-kind][data-wrap] {
+    height: auto;
+    min-height: --spacing(7);
+    padding-block: --spacing(1);
+    white-space: normal;
+}
+
+/* The design system's Modal's Close: 28 px square, like every icon-only button on the board. */
+[data-slot='modal-close'] {
+    width: --spacing(7);
+    height: --spacing(7);
+}

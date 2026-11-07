@@ -1,6 +1,7 @@
 // The design system's public API. Icons have their own entry (`@lar-works/design-system/icons`), and styles are
-// imported once by each app (`@import '@lar-works/design-system/styles.css'`).
+// imported once by each app (`@import '@lar-works/design-system/styles.css'`, or showcase.css or board.css).
 export * from './actions';
+export * from './board';
 export * from './collections';
 export * from './display';
 export * from './feedback';

@@ -26,7 +26,8 @@
             "default": "./dist/testing.js"
         },
         "./styles.css": "./src/styles.css",
-        "./showcase.css": "./src/showcase.css"
+        "./showcase.css": "./src/showcase.css",
+        "./board.css": "./src/board.css"
     },
     "files": [
         "dist",
