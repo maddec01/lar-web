@@ -1,5 +1,12 @@
 # @lar-works/design-system
 
+## 0.2.1
+
+### Patch Changes
+
+- [#6](https://github.com/maddec01/lar-web/pull/6) [`628b529`](https://github.com/maddec01/lar-web/commit/628b5291ece1641d03f9d6718624aa59dc553fe8) Thanks [@maddec01](https://github.com/maddec01)! - Generate ninna-ui's own component classes under pnpm too (such as the striped progress bar and the
+  `[role="button"]` pointer-events rule), which ninna-ui's `@source` paths only find in npm's flat `node_modules`.
+
 ## 0.2.0
 
 ### Minor Changes
