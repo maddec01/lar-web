@@ -20,3 +20,5 @@ export default defineConfig({
 // tsconfig.json
 { "extends": "@lar-works/config/tsconfig/app.json" }
 ```
+
+Package releases publish from the lar-web `release.yml` workflow using npm Trusted Publishing.

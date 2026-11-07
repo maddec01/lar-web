@@ -27,6 +27,7 @@ export interface LabelCreation {
 }
 
 interface LabelPickerProps {
+    'data-label-picker'?: string;
     choices: readonly LabelChoice[];
     picked: readonly string[];
     onToggle: (name: string) => void;
@@ -52,6 +53,7 @@ const ignoringCase = (a: string, b: string) => a.toLowerCase() === b.toLowerCase
  * needs. With `create`, Enter or the create button lets a typed name no choice has in.
  */
 export function LabelPicker({
+    'data-label-picker': pickerId = '',
     choices,
     picked,
     onToggle,
@@ -75,7 +77,7 @@ export function LabelPicker({
     };
 
     return (
-        <div className="grid w-72 gap-2" data-label-picker aria-busy={busy}>
+        <div className="grid w-72 gap-2" data-label-picker={pickerId} aria-busy={busy}>
             <Input
                 autoFocus
                 placeholder={placeholder}
@@ -87,7 +89,7 @@ export function LabelPicker({
 
                     e.preventDefault();
 
-                    if (fresh && !refusal) add();
+                    if (fresh && !refusal && !busy) add();
                 }}
             />
             <div className="grid max-h-56 gap-0.5 overflow-y-auto">
@@ -102,7 +104,7 @@ export function LabelPicker({
                         >
                             <Checkbox
                                 checked={picked.some((label) => same(label, name))}
-                                disabled={fixed}
+                                disabled={fixed || busy}
                                 onChange={() => onToggle(name)}
                             />
                             {color && (
@@ -124,7 +126,13 @@ export function LabelPicker({
             </div>
             {fresh && !refusal && (
                 <span className="justify-self-start">
-                    <Button variant="secondary" compact leftIcon={<PlusIcon />} onClick={add}>
+                    <Button
+                        variant="secondary"
+                        compact
+                        leftIcon={<PlusIcon />}
+                        disabled={!!refusal || busy}
+                        onClick={add}
+                    >
                         {create.createLabel(typed)}
                     </Button>
                 </span>
