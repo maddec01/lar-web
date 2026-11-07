@@ -1,6 +1,6 @@
 {
     "name": "@lar-works/config",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Lar's shared toolchain settings: Oxlint rules and plugins, Oxfmt options, TypeScript and test settings.",
     "license": "MIT",
     "repository": {
