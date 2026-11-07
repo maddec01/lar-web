@@ -88,7 +88,7 @@ export function lint({ apps = [], designSystems = [], ignorePatterns = [] } = {}
                 rules: { 'lar/boundaries': ['error', { role: 'design-system' }] },
             })),
             {
-                files: ['**/*.test.ts', '**/*.test.tsx', '**/test/**', '**/*.stories.tsx'],
+                files: ['**/*.test.ts', '**/*.test.tsx', '**/*.test.mjs', '**/test/**', '**/*.stories.tsx'],
                 rules: {
                     'max-lines': 'off',
                     'react/only-export-components': 'off',

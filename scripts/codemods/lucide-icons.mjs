@@ -70,14 +70,16 @@ for await (const file of files(values.dir)) {
 
     for (const [old, lucide] of renamed) next = next.replace(new RegExp(`\\b${old}\\b`, 'g'), lucide);
 
-    const lucideNames = [...new Set(renamed.values())].sort((a, b) => a.localeCompare(b));
-    const imports = [];
+    const keepFrom = values['keep-from'] ?? values.to;
+    const lucideNames = [...new Set(renamed.values())];
+    const groups = new Map([[values.to, lucideNames]]);
 
-    if (lucideNames.length) imports.push(`import { ${lucideNames.join(', ')} } from '${values.to}';\n`);
+    groups.set(keepFrom, [...(groups.get(keepFrom) ?? []), ...keptNames]);
 
-    if (keptNames.size)
-        imports.push(
-            `import { ${[...keptNames].sort((a, b) => a.localeCompare(b)).join(', ')} } from '${values['keep-from'] ?? values.to}';\n`,
+    const imports = [...groups]
+        .filter(([, list]) => list.length)
+        .map(
+            ([module, list]) => `import { ${list.sort((a, b) => a.localeCompare(b)).join(', ')} } from '${module}';\n`,
         );
 
     next = next.slice(0, firstImportAt) + imports.join('') + next.slice(firstImportAt);

@@ -4,9 +4,9 @@ export type ThemePreference = 'system' | 'light' | 'dark';
 
 export interface ThemeController {
     /** Applies the stored preference before the first render, so the page never flashes the other theme. */
-    initialize(): void;
+    initialize: () => void;
     /** The current preference and a setter that stores and applies it, kept in step across tabs. */
-    useTheme(): readonly [ThemePreference, (value: ThemePreference) => void];
+    useTheme: () => readonly [ThemePreference, (value: ThemePreference) => void];
 }
 
 export function isThemePreference(value: string): value is ThemePreference {
@@ -54,11 +54,7 @@ export function createThemeController(storageKey: string): ThemeController {
 
     return {
         initialize: () => applyThemePreference(read()),
-        useTheme() {
-            const preference = useSyncExternalStore(subscribe, read, () => 'system' as const);
-
-            return [preference, set] as const;
-        },
+        useTheme: () => [useSyncExternalStore(subscribe, read, () => 'system' as const), set] as const,
     };
 }
 
