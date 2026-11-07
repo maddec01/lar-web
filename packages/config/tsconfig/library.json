@@ -1,0 +1,12 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Lar web library",
+    "extends": "./app.json",
+    "compilerOptions": {
+        "noEmit": false,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "allowImportingTsExtensions": false,
+        "isolatedDeclarations": false
+    }
+}

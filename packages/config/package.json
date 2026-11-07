@@ -1,0 +1,37 @@
+{
+    "name": "@lar-works/config",
+    "version": "0.1.0",
+    "description": "Lar's shared toolchain settings: Oxlint rules and plugins, Oxfmt options, TypeScript and test settings.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/maddec01/lar-web.git",
+        "directory": "packages/config"
+    },
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./src/index.d.ts",
+            "default": "./src/index.js"
+        },
+        "./lint-plugin": "./src/plugins/lar.js",
+        "./tsconfig/app.json": "./tsconfig/app.json",
+        "./tsconfig/library.json": "./tsconfig/library.json",
+        "./tsconfig/node.json": "./tsconfig/node.json"
+    },
+    "files": [
+        "src",
+        "tsconfig"
+    ],
+    "scripts": {
+        "test": "vp test run"
+    },
+    "peerDependencies": {
+        "vite-plus": "^1.5.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.19.2",
+        "typescript": "^7.0.2",
+        "vite-plus": "1.5.0"
+    }
+}

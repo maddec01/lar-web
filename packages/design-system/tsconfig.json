@@ -1,0 +1,7 @@
+{
+    "extends": "@lar-works/config/tsconfig/app.json",
+    "compilerOptions": {
+        "types": ["vite-plus/client", "@testing-library/jest-dom/vitest"]
+    },
+    "include": ["src", "test", ".storybook", "vite.config.ts"]
+}

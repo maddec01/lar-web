@@ -1,0 +1,441 @@
+/* Device frames drawn in CSS around real screenshots. Each frame is a size container, so bezels, corners and
+   buttons scale with the width it is given (cqi units). */
+
+.lar-device {
+    position: relative;
+    container-type: inline-size;
+    isolation: isolate;
+}
+
+.lar-device img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ---- MacBook ------------------------------------------------------------------------------------------- */
+
+.lar-laptop {
+    padding-inline: 7%;
+}
+
+.lar-laptop__lid {
+    position: relative;
+    padding: 1.7cqi 1.7cqi 2.4cqi;
+    border-radius: 3.2cqi 3.2cqi 0.6cqi 0.6cqi;
+    background: #0c0c0e;
+    box-shadow:
+        0 0 0 0.22cqi #3b3c40,
+        0 0 0 0.4cqi #111214,
+        inset 0 0 0 0.12cqi rgb(255 255 255 / 7%);
+}
+
+.lar-laptop__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border-radius: 1.4cqi 1.4cqi 0.2cqi 0.2cqi;
+    background: var(--color-base-50);
+}
+
+.lar-laptop__menubar {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 2.1cqi;
+    height: 2.6cqi;
+    padding-inline: 1.9cqi;
+    font:
+        600 1.12cqi/1 -apple-system,
+        BlinkMacSystemFont,
+        system-ui,
+        sans-serif;
+    letter-spacing: 0.01em;
+    color: rgb(255 255 255 / 92%);
+    background: rgb(22 22 24 / 72%);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+.lar-laptop__menubar span + span {
+    font-weight: 400;
+    color: rgb(255 255 255 / 80%);
+}
+
+.lar-laptop__menubar time {
+    margin-left: auto;
+    font-weight: 500;
+}
+
+.lar-laptop__notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 3;
+    width: 11.5cqi;
+    height: 2.6cqi;
+    border-radius: 0 0 1cqi 1cqi;
+    background: #0c0c0e;
+    transform: translateX(-50%);
+}
+
+.lar-laptop__notch::after {
+    content: '';
+    position: absolute;
+    top: 0.85cqi;
+    left: 50%;
+    width: 0.75cqi;
+    height: 0.75cqi;
+    border-radius: 999px;
+    background: radial-gradient(circle at 40% 35%, #2b3550, #08090c 70%);
+    transform: translateX(-50%);
+}
+
+.lar-laptop__app {
+    position: absolute;
+    inset: 2.6cqi 0 0;
+}
+
+.lar-laptop__app img {
+    object-position: top center;
+}
+
+/* The screen ends on a fade rather than through the middle of a row. */
+.lar-laptop__app {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 56px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 56px), transparent);
+}
+
+.lar-laptop__base {
+    position: relative;
+    height: 2.5cqi;
+    margin-inline: -7.6%;
+    border-radius: 0.3cqi 0.3cqi 7cqi 7cqi / 0.3cqi 0.3cqi 2.2cqi 2.2cqi;
+    background: var(--lar-laptop-base);
+    box-shadow: inset 0 0.12cqi 0 var(--lar-laptop-base-highlight);
+}
+
+.lar-laptop__base::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 15%;
+    height: 42%;
+    border-radius: 0 0 1.2cqi 1.2cqi;
+    background: var(--lar-laptop-groove);
+    transform: translateX(-50%);
+}
+
+/* ---- iPhone -------------------------------------------------------------------------------------------- */
+
+.lar-phone {
+    position: relative;
+    padding: 4.2cqi;
+    border-radius: 17.5cqi;
+    background: #050506;
+    box-shadow:
+        0 0 0 0.9cqi #2c2d31,
+        0 0 0 1.25cqi #5d5f65,
+        0 0 0 1.6cqi #1a1b1e,
+        inset 0 0 0 0.5cqi rgb(255 255 255 / 5%);
+}
+
+.lar-phone__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1206 / 2622;
+    border-radius: 13.6cqi;
+    background: #000;
+}
+
+.lar-phone__island {
+    position: absolute;
+    top: 6.6cqi;
+    left: 50%;
+    z-index: 2;
+    width: 30cqi;
+    height: 8.8cqi;
+    border-radius: 999px;
+    background: #000;
+    transform: translateX(-50%);
+}
+
+.lar-phone__island::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 3.4cqi;
+    width: 3.2cqi;
+    height: 3.2cqi;
+    border-radius: 999px;
+    background: radial-gradient(circle at 40% 35%, #26304a, #050608 70%);
+    transform: translateY(-50%);
+}
+
+.lar-phone__button {
+    position: absolute;
+    width: 1.3cqi;
+    border-radius: 0.6cqi;
+    background: linear-gradient(90deg, #3d3f44, #6a6c72 60%, #2d2e32);
+}
+
+.lar-phone__button--action {
+    top: 21%;
+    left: -2.6cqi;
+    height: 7%;
+}
+
+.lar-phone__button--volume-up {
+    top: 31%;
+    left: -2.6cqi;
+    height: 11%;
+}
+
+.lar-phone__button--volume-down {
+    top: 44%;
+    left: -2.6cqi;
+    height: 11%;
+}
+
+.lar-phone__button--side {
+    top: 33%;
+    right: -2.6cqi;
+    height: 17%;
+}
+
+/* ---- iPad ---------------------------------------------------------------------------------------------- */
+
+.lar-tablet {
+    padding: 2.6cqi;
+    border-radius: 4.4cqi;
+    background: #060607;
+    box-shadow:
+        0 0 0 0.35cqi #2f3034,
+        0 0 0 0.55cqi #67696f,
+        0 0 0 0.75cqi #1c1d20;
+}
+
+.lar-tablet__screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 2cqi;
+    background: #000;
+}
+
+/* ---- TV ------------------------------------------------------------------------------------------------ */
+
+.lar-tv__panel {
+    position: relative;
+    padding: 0.7cqi;
+    border-radius: 0.9cqi;
+    background: linear-gradient(180deg, #19191b, #0a0a0b);
+    box-shadow:
+        0 0 0 0.12cqi #3a3b3f,
+        inset 0 0 0 0.1cqi rgb(255 255 255 / 6%);
+}
+
+.lar-tv__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.3cqi;
+    background: #000;
+}
+
+.lar-tv__stand {
+    position: relative;
+    width: 26%;
+    height: 3cqi;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #2a2b2e, #151618);
+    clip-path: polygon(38% 0, 62% 0, 64% 70%, 100% 76%, 100% 100%, 0 100%, 0 76%, 36% 70%);
+}
+
+/* ---- Browser window ----------------------------------------------------------------------------------- */
+
+.lar-window {
+    overflow: hidden;
+    border-radius: 1.1cqi;
+    background: var(--color-base-100);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-base-content) 12%, transparent),
+        inset 0 1px 0 rgb(255 255 255 / 6%);
+}
+
+.lar-window__bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: 3.4cqi;
+    min-height: 18px;
+    padding-inline: 1.4cqi;
+    border-bottom: 1px solid var(--color-base-300);
+    background: var(--color-base-200);
+}
+
+.lar-window__lights {
+    display: flex;
+    gap: 0.6cqi;
+}
+
+.lar-window__lights i {
+    width: max(0.95cqi, 6px);
+    height: max(0.95cqi, 6px);
+    border-radius: 999px;
+    background: #ff5f57;
+}
+
+.lar-window__lights i:nth-child(2) {
+    background: #febc2e;
+}
+
+.lar-window__lights i:nth-child(3) {
+    background: #28c840;
+}
+
+.lar-window__address {
+    display: flex;
+    align-items: center;
+    gap: 0.5cqi;
+    min-width: 30cqi;
+    justify-content: center;
+    height: 2.2cqi;
+    min-height: 13px;
+    padding-inline: 1.2cqi;
+    border-radius: 0.6cqi;
+    font-size: max(1.05cqi, 8.5px);
+    color: var(--color-base-700);
+    background: var(--color-base-100);
+}
+
+.lar-window__screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+}
+
+.lar-window__screen img {
+    object-position: top center;
+}
+
+/* ---- Shadows shared by every frame -------------------------------------------------------------------- */
+
+.lar-device[data-shadow='float']::after {
+    content: '';
+    position: absolute;
+    inset: 8% 6% -6%;
+    z-index: -1;
+    border-radius: 50%;
+    background: var(--lar-device-shadow);
+    filter: blur(28px);
+}
+
+/* ---- Mac app window and close-up callout -------------------------------------------------------------- */
+
+.lar-app-window {
+    overflow: hidden;
+    border-radius: max(1cqi, 10px);
+    background: var(--color-base-100);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-base-content) 14%, transparent),
+        inset 0 1px 0 rgb(255 255 255 / 8%),
+        0 40px 80px -40px var(--lar-device-shadow);
+}
+
+.lar-app-window[data-bezel] {
+    padding: max(0.8cqi, 6px);
+    background: #0c0c0e;
+    box-shadow:
+        0 0 0 1px #2c2d31,
+        0 0 0 max(0.25cqi, 2px) #5d5f65,
+        0 40px 80px -40px var(--lar-device-shadow);
+}
+
+.lar-app-window[data-bezel] img {
+    border-radius: max(0.6cqi, 6px);
+}
+
+.lar-app-window[data-fade='right'] img,
+.lar-window__screen[data-fade='right'] img {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+}
+
+.lar-window__screen {
+    background: var(--color-base-100);
+}
+
+/* The capture fades into the window's own screen, not into the page behind it. */
+.lar-window[data-fade='tail'] {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+}
+
+.lar-window[data-fade='bottom'] {
+    -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent);
+    mask-image: linear-gradient(to bottom, #000 74%, transparent);
+}
+
+.lar-device:has(> .lar-window[data-fade='bottom'])::after {
+    inset: 8% 6% 18%;
+}
+
+.lar-window__screen[data-fade='under'] img {
+    -webkit-mask-image: linear-gradient(to right, #000 58%, transparent 80%);
+    mask-image: linear-gradient(to right, #000 58%, transparent 80%);
+}
+
+.lar-window__screen[data-fade='both'] img {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 72px), transparent);
+}
+
+.lar-window__screen[data-fade='both'] {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+}
+
+.lar-app-window[data-fade='bottom'] img {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 56px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 56px), transparent);
+}
+
+.lar-app-window[data-fade='both'] img {
+    -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    mask-image: linear-gradient(to right, #000 82%, transparent);
+}
+
+.lar-app-window[data-fade='both'] .lar-app-window__fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 86%, transparent);
+    mask-image: linear-gradient(to bottom, #000 86%, transparent);
+}
+
+.lar-callout {
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--color-base-100);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-base-content) 14%, transparent),
+        0 0 0 6px color-mix(in srgb, var(--color-base-100) 55%, transparent),
+        0 30px 70px -24px var(--lar-device-shadow);
+}
+
+.lar-callout[data-fade] img {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+}
+
+.lar-callout[data-fade] .lar-callout__fade {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+}
+
+.lar-callout img {
+    display: block;
+    width: 100%;
+    height: auto;
+}

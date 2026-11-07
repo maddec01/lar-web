@@ -1,0 +1,27 @@
+{
+    "name": "lar-web",
+    "private": true,
+    "description": "Lar's shared web foundation: the design system, toolchain settings and the app template.",
+    "type": "module",
+    "packageManager": "pnpm@12.14.0",
+    "engines": {
+        "node": ">=24.15"
+    },
+    "scripts": {
+        "check": "vp check",
+        "fix": "vp check --fix",
+        "test": "pnpm -r test",
+        "build": "pnpm -r build",
+        "storybook": "pnpm --filter @lar-works/design-system storybook",
+        "changeset": "changeset",
+        "release": "pnpm --filter './packages/*' build && changeset publish"
+    },
+    "devDependencies": {
+        "@changesets/changelog-github": "^1.0.0",
+        "@changesets/cli": "^3.0.3",
+        "@lar-works/config": "workspace:*",
+        "@types/node": "^24.19.2",
+        "typescript": "^7.0.2",
+        "vite-plus": "1.5.0"
+    }
+}
