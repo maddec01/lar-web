@@ -1,6 +1,7 @@
 # On main, Changesets either opens the "Version packages" PR (bumping versions and changelogs from the pending
 # changesets) or, once that PR is merged, releases each new version as a GitHub Release with the package tarball
-# attached (scripts/release.mjs). Apps install those tarballs by URL; no registry or token is involved.
+# attached (scripts/release.mjs). Apps install those tarballs by URL; no registry or token is involved. To move an
+# app to a new release, change the version in its package.json URL and run pnpm install.
 name: Release
 
 on:
