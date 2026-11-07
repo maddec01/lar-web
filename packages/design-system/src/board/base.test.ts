@@ -25,6 +25,16 @@ test('the board.css entry imports the theme and every board sheet', () => {
         'board/title-bar.css',
         'board/loading-screen.css',
         'board/button-kinds.css',
+        'board/items.css',
+        'board/rows.css',
     ])
         expect(entry).toContain(`@import './${sheet}';`);
+});
+
+test('reduced motion stops both status spin and pulse without hiding their icons', () => {
+    const reduced = base.match(/@media \(prefers-reduced-motion: reduce\) \{\s*\.status-spin([\s\S]*?)\n\}/)?.[1] ?? '';
+
+    expect(reduced).toMatch(/\.status-pulse[^}]*animation: none/);
+    expect(reduced).toMatch(/^[^}]*animation: none/);
+    expect(reduced).not.toMatch(/display:|visibility:|opacity:/);
 });

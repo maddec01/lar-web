@@ -59,6 +59,13 @@ export const Notes: StoryObj<typeof BoardNote> = {
             <BoardNote tone="error" role="alert">
                 Enter whole days from 0.
             </BoardNote>
+            <BoardNote numeric title="Cost $1.92 · Agent time 19m · Tokens 1.20M">
+                $1.92 · 19m · 1.20M tokens
+            </BoardNote>
+            <div className="@container">
+                <BoardNote only="narrow">Shown only in a container narrower than 40rem.</BoardNote>
+                <BoardNote only="wide">Shown, on one line, only in a container 40rem or wider.</BoardNote>
+            </div>
         </div>
     ),
 };

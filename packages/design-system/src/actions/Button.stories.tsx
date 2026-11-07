@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ChevronDownIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { ChevronDownIcon, MessageSquareTextIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 
 import { Button } from './Button';
 
@@ -77,6 +77,56 @@ export const Wrapping: Story = {
         <div className="w-48">
             <Button {...args} compact wrap variant="secondary">
                 Close the ticket and delete the branch with its worktree
+            </Button>
+        </div>
+    ),
+};
+
+/** A square button with its icon alone, named for assistive technology, at both sizes. */
+export const IconOnly: Story = {
+    render: (args) => (
+        <div className="flex flex-wrap items-center gap-3">
+            <Button
+                {...args}
+                variant="secondary"
+                iconOnly
+                leftIcon={<MessageSquareTextIcon />}
+                aria-label="Open thread"
+            />
+            <Button
+                {...args}
+                compact
+                variant="secondary"
+                iconOnly
+                leftIcon={<MessageSquareTextIcon />}
+                aria-label="Open thread"
+            />
+        </div>
+    ),
+};
+
+/** While `aria-disabled` holds it for an action in flight, a button with `pendingLook` reads as waiting. */
+export const Pending: Story = {
+    args: {
+        variant: 'secondary',
+        compact: true,
+        pendingLook: true,
+        'aria-disabled': true,
+        children: 'Moving to List…',
+    },
+};
+
+/** While its action is in flight, a spinner takes the icon's place. */
+export const Busy: Story = {
+    args: { variant: 'tinted', compact: true, busy: true, 'aria-disabled': true, children: 'Starting…' },
+};
+
+/** In a crowded row, the label truncates while its trailing mark stays. */
+export const Shrinking: Story = {
+    render: (args) => (
+        <div className="flex w-40">
+            <Button {...args} compact variant="tinted" shrinks mark="▾" leftIcon={<PlusIcon />}>
+                Start after owner/repository#1234
             </Button>
         </div>
     ),

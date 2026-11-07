@@ -154,3 +154,29 @@ export const LongMenu: Story = {
         </DropdownMenu>
     ),
 };
+
+/** Choices with a detail line under their label, as Lar Factory's board lists the models a start can use. */
+export const ChoicesWithDetail: Story = {
+    render: (args) => (
+        <DropdownMenu {...args}>
+            <DropdownMenu.Trigger asChild>
+                <Button variant="tinted" compact leftIcon={<PlayIcon />}>
+                    Start ▾
+                </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="start">
+                <DropdownMenu.RadioGroup value="default">
+                    <DropdownMenu.Label>Start with</DropdownMenu.Label>
+                    <DropdownMenu.RadioItem value="default">
+                        <DropdownMenu.ItemText detail="Codex · gpt-5.5, high effort">
+                            T3 Project default
+                        </DropdownMenu.ItemText>
+                    </DropdownMenu.RadioItem>
+                    <DropdownMenu.RadioItem value="opus">
+                        <DropdownMenu.ItemText>Claude Opus</DropdownMenu.ItemText>
+                    </DropdownMenu.RadioItem>
+                </DropdownMenu.RadioGroup>
+            </DropdownMenu.Content>
+        </DropdownMenu>
+    ),
+};

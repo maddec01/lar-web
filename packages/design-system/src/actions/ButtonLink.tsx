@@ -2,6 +2,7 @@ import { ArrowRightIcon } from 'lucide-react';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
+import { ghostRecipe, outlineRecipe, primaryRecipe } from './ButtonRecipes';
 
 /** The marketing pages' calls to action: the Button recipes at a roomier 44px, as links. */
 const recipes = {
@@ -14,6 +15,17 @@ const recipes = {
     quiet: 'border-transparent text-base-content hover:text-primary dark:hover:text-[color-mix(in_srgb,var(--color-primary)_45%,white)]',
 } as const;
 
+/** A compact link is the app Button's compact 28px control with 12px text, in the Button's own recipes, for an action
+ *  that opens a page from a dense tool (such as Lar Factory's board). */
+const compactBase =
+    'relative isolate inline-flex h-7 items-center justify-center gap-2 rounded-md border px-[11px] text-xs font-medium whitespace-nowrap transition-[background-color,box-shadow,scale,color] duration-150 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary focus-visible:outline-none [&_[data-slot=icon]>svg]:size-4';
+const compactRecipes = {
+    primary: primaryRecipe,
+    secondary: outlineRecipe,
+    inverse: recipes.inverse,
+    quiet: ghostRecipe,
+} as const;
+
 export interface ButtonLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'style'> {
     href: string;
     variant?: keyof typeof recipes;
@@ -23,6 +35,10 @@ export interface ButtonLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorEle
     arrow?: boolean;
     external?: boolean;
     onNavigate?: (href: string) => void;
+    /** The app Button's compact 28px look in place of the marketing one, its `icon` leading it. */
+    compact?: boolean;
+    /** With `compact`, a square link showing its icon alone, named by its `aria-label`. */
+    iconOnly?: boolean;
 }
 
 export function ButtonLink({
@@ -33,10 +49,28 @@ export function ButtonLink({
     external,
     onNavigate,
     onClick,
+    compact = false,
+    iconOnly = false,
     children,
     href,
     ...props
 }: ButtonLinkProps) {
+    if (compact)
+        return (
+            <a
+                {...props}
+                href={href}
+                {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                onClick={onClick}
+                data-slot="button"
+                {...(iconOnly ? { 'data-icon-only': '' } : {})}
+                className={`${compactBase} ${compactRecipes[variant]} ${iconOnly ? 'w-7 px-0' : ''}`}
+            >
+                {icon && <span data-slot="icon">{icon}</span>}
+                {children}
+            </a>
+        );
+
     return (
         <a
             {...tabbable}

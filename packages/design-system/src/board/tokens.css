@@ -34,6 +34,13 @@
     --danger-text: var(--error-foreground);
     --soft: color-mix(in srgb, var(--foreground) 7%, transparent);
 
+    /* Each status's colour, which StatusGlyph, the stage track, the slice and part bars draw in. */
+    --st-amber: var(--you);
+    --st-now: var(--thread);
+    --st-review: var(--sub);
+    --st-done: var(--build);
+    --st-idle: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+
     @variant dark {
         --secondary: --alpha(var(--color-white) / 3%);
         --muted: --alpha(var(--color-white) / 3%);

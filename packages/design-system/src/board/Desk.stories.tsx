@@ -26,9 +26,12 @@ const card = (id: string, title: string, next: React.ReactNode, picked = false) 
                 <Button {...buttonKind('open')} leftIcon={<GitPullRequestIcon />}>
                     Open PR
                 </Button>
-                <Button {...buttonKind('open')} aria-label="Open thread" data-icon-only="">
-                    <MessageSquareTextIcon />
-                </Button>
+                <Button
+                    {...buttonKind('open')}
+                    iconOnly
+                    leftIcon={<MessageSquareTextIcon />}
+                    aria-label="Open thread"
+                />
             </>
         }
     />

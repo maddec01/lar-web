@@ -8,7 +8,7 @@ import {
     type DropdownMenuRadioGroupProps,
     type DropdownMenuRadioItemProps,
 } from '@ninna-ui/overlays';
-import { type ComponentProps, forwardRef } from 'react';
+import { type ComponentProps, forwardRef, type ReactNode } from 'react';
 
 interface DropdownMenuContentPolicyProps extends Omit<DropdownMenuContentProps, 'className'> {
     width?: 'sm' | 'md';
@@ -109,6 +109,16 @@ const DropdownMenuRadioItem = forwardRef<HTMLDivElement, DropdownMenuRadioItemPo
 
 DropdownMenuRadioItem.displayName = 'DropdownMenu.RadioItem';
 
+/** An entry's label, truncating to the menu's width, with an optional smaller `detail` line under it. */
+function DropdownMenuItemText({ children, detail }: { children: ReactNode; detail?: ReactNode }) {
+    return (
+        <span className="min-w-0 flex-1 truncate">
+            {children}
+            {detail && <span className="block truncate text-xs">{detail}</span>}
+        </span>
+    );
+}
+
 function DropdownMenuRoot(props: ComponentProps<typeof NinnaDropdownMenu>) {
     return <NinnaDropdownMenu {...props} />;
 }
@@ -119,4 +129,5 @@ export const DropdownMenu = Object.assign(DropdownMenuRoot, NinnaDropdownMenu, {
     Label: DropdownMenuLabel,
     RadioGroup: DropdownMenuRadioGroup,
     RadioItem: DropdownMenuRadioItem,
+    ItemText: DropdownMenuItemText,
 });

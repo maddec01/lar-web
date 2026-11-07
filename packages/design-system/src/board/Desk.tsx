@@ -55,7 +55,8 @@ interface DeskCardProps {
     status: string;
     /** Beside the status: the next step, such as DeskMergeState or DeskHint. */
     next?: ReactNode;
-    /** The card's actions, in its right corner. A click beside them opens the item, as anywhere else on the card. */
+    /** The card's actions, in its right corner, the board's button kinds drawn 32px tall there. A click beside them
+     *  opens the item, as anywhere else on the card. */
     actions: ReactNode;
 }
 
@@ -109,7 +110,7 @@ export function DeskCard({
                 </span>
             </span>
             <div
-                className="desk-actions row-action flex h-8 shrink-0 items-center justify-end gap-1.5"
+                className="desk-actions flex h-8 shrink-0 items-center justify-end gap-1.5 [&_[data-kind]:not([data-toggle])]:h-8 [&_[data-kind][data-icon-only]]:w-8!"
                 // The actions keep their clicks from the card; a click on the row's own empty space still opens it.
                 onClick={(event) => {
                     if (event.target !== event.currentTarget) event.stopPropagation();

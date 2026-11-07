@@ -1,7 +1,9 @@
 import { Button as NinnaButton, type ButtonProps as NinnaButtonProps } from '@ninna-ui/primitives';
 import { forwardRef } from 'react';
 
+import { SpinnerIcon } from '../feedback/Spinner';
 import { tabbable } from '../foundations/KeyboardFocus';
+import { ghostRecipe, outlineRecipe, primaryRecipe } from './ButtonRecipes';
 
 /** T3 Code's button (coss ui): an 8px-radius control, 36px on touch and 32px with a pointer, that dips to
  *  97% while pressed. Every recipe sets its own colours, so ninna-ui only supplies behaviour. */
@@ -15,14 +17,11 @@ const wrapping = {
     wrap: 'h-auto min-h-7 py-1 whitespace-normal sm:h-auto',
 } as const;
 
-const outline =
-    'border-base-400/90 bg-base-100 text-base-content shadow-xs/5 hover:bg-base-200/70 dark:border-base-400 dark:bg-base-400/30 dark:hover:bg-base-400/60 [&_[data-slot=icon]]:text-base-700';
-const ghost =
-    'border-transparent text-base-content hover:bg-base-200 data-[state=open]:bg-base-200 [&_[data-slot=icon]]:text-base-700';
+const outline = outlineRecipe;
+const ghost = ghostRecipe;
 
 const recipes = {
-    primary:
-        'border-primary bg-primary text-primary-content shadow-xs shadow-primary/24 inset-shadow-[0_1px_rgb(255_255_255/16%)] hover:bg-primary/90 active:shadow-none active:inset-shadow-[0_1px_rgb(0_0_0/8%)]',
+    primary: primaryRecipe,
     secondary: outline,
     quiet: ghost,
     row: `${ghost} h-auto min-h-8 min-w-0 max-w-full justify-start whitespace-normal px-0 py-1 text-left text-xs font-normal text-base-700 hover:bg-transparent hover:text-base-content sm:h-auto active:scale-100`,
@@ -40,6 +39,10 @@ const recipes = {
     status: 'h-4 min-w-0 max-w-full justify-start gap-1.5 rounded-sm border-transparent px-0 text-xs font-normal text-base-700 hover:bg-transparent hover:text-base-content sm:h-4 active:scale-100 [&>svg]:size-3 [&>svg]:shrink-0',
 } as const;
 
+/** An icon-only button is as wide as it is tall, with no padding. */
+const square = { default: 'size-9 px-0 sm:size-8', compact: 'w-7 px-0' } as const;
+const pending = 'aria-disabled:cursor-progress aria-disabled:opacity-70';
+
 const selectedChoice =
     'border-primary/60 bg-primary/8 text-base-content ring-1 ring-inset ring-primary/40 hover:bg-primary/12 dark:border-primary/60 dark:bg-primary/16 dark:hover:bg-primary/20';
 
@@ -50,6 +53,18 @@ export type ButtonProps = Omit<NinnaButtonProps, 'color' | 'radius' | 'size' | '
     compact?: boolean;
     /** Lets a long label wrap, growing the button, where it would otherwise clip. */
     wrap?: boolean;
+    /** A square button showing its `leftIcon` alone, named by its `aria-label`. */
+    iconOnly?: boolean;
+    /** Lets the button shrink in a crowded row: its label truncates, while its `mark` (a trailing character, such as ▾
+     *  or ✓) stays. */
+    shrinks?: boolean;
+    mark?: string;
+    /** Its action is in flight: a spinner, turning even under reduced motion, takes its left icon's place, and it reads
+     *  as busy. `false` leaves out the busy state altogether. */
+    busy?: boolean;
+    /** Draws the button as waiting, with the progress cursor at 70%, while `aria-disabled` holds it for an action in
+     *  flight. */
+    pendingLook?: boolean;
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -59,6 +74,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             selected,
             compact = false,
             wrap = false,
+            iconOnly = false,
+            shrinks = false,
+            mark,
+            busy,
+            pendingLook = false,
             className = '',
             children,
             leftIcon,
@@ -79,14 +99,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 variant="ghost"
                 color="neutral"
                 aria-pressed={selected ?? props['aria-pressed']}
+                {...(busy === undefined ? {} : { 'aria-busy': busy || undefined })}
                 data-wrap={wrap || undefined}
-                className={`${base} ${sizes[compact ? 'compact' : 'default']} ${wrapping[wrap ? 'wrap' : 'nowrap']} ${variant === 'choice' && selected ? selectedChoice : recipes[variant]} ${selected && variant !== 'choice' ? 'bg-base-200' : ''} ${className}`}
+                {...(iconOnly ? { 'data-icon-only': '' } : {})}
+                className={`${base} ${sizes[compact ? 'compact' : 'default']} ${wrapping[wrap ? 'wrap' : 'nowrap']} ${variant === 'choice' && selected ? selectedChoice : recipes[variant]} ${selected && variant !== 'choice' ? 'bg-base-200' : ''} ${iconOnly ? square[compact ? 'compact' : 'default'] : ''} ${shrinks ? 'max-w-full min-w-0 shrink' : ''} ${pendingLook ? pending : ''} ${className}`}
                 leftIcon={
-                    context ? <span className="text-(--color-header-icon) [&>svg]:size-4">{leftIcon}</span> : leftIcon
+                    busy ? (
+                        <SpinnerIcon motion="always" className="size-4" />
+                    ) : context ? (
+                        <span className="text-(--color-header-icon) [&>svg]:size-4">{leftIcon}</span>
+                    ) : (
+                        leftIcon
+                    )
                 }
                 rightIcon={context ? <span className="text-base-700 [&>svg]:size-3.5">{rightIcon}</span> : rightIcon}
             >
-                {context ? <span className="truncate">{children}</span> : children}
+                {context ? (
+                    <span className="truncate">{children}</span>
+                ) : shrinks ? (
+                    <>
+                        <span className="truncate">{children}</span>
+                        {mark !== undefined && <> {mark}</>}
+                    </>
+                ) : (
+                    children
+                )}
             </NinnaButton>
         );
     },

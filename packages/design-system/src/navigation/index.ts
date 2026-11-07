@@ -5,7 +5,7 @@ export {
     CollectionBrowseSelector,
     CollectionBrowseTrigger,
 } from './CollectionBrowseSelector';
-export { type CollectionView, CollectionViewToggle } from './CollectionViewToggle';
+export { type CollectionView, CollectionViewToggle, ViewToggle, type ViewToggleOption } from './CollectionViewToggle';
 export {
     type DrilldownBrowseGroup,
     type DrilldownBrowseItem,

@@ -1,19 +1,34 @@
 import type { ReactNode } from 'react';
 
-/** A short note under a setting or an action: muted, or an error in the danger text colour. */
+import type { DataAttributes } from './DataAttributes';
+
+const containers = { narrow: '@min-[40rem]:hidden', wide: 'whitespace-nowrap @max-[40rem]:hidden' } as const;
+
+/** A short note under a setting or an action, or about a piece of work: muted, or an error in the danger text colour.
+ *  `numeric` lines its figures up as a table's. `only` shows it in a container under 40rem (`narrow`) or, on one line,
+ *  in one 40rem or wider (`wide`), where the same words show elsewhere in the other. */
 export function BoardNote({
     tone = 'muted',
     role,
+    title,
+    numeric = false,
+    only,
     children,
+    ...data
 }: {
     tone?: 'muted' | 'error';
     role?: 'alert' | 'status';
+    title?: string | undefined;
+    numeric?: boolean;
+    only?: 'narrow' | 'wide' | undefined;
     children: ReactNode;
-}) {
+} & DataAttributes) {
     return (
         <p
-            className={`m-0 text-xs ${tone === 'error' ? 'text-(--error-foreground)' : 'text-(--muted-foreground)'}`}
+            {...data}
+            className={`m-0 text-xs ${tone === 'error' ? 'text-(--error-foreground)' : 'text-(--muted-foreground)'}${numeric ? ' tabular-nums' : ''}${only ? ` ${containers[only]}` : ''}`}
             role={role}
+            title={title}
         >
             {children}
         </p>

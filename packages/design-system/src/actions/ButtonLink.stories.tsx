@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { DownloadIcon } from 'lucide-react';
+import { DownloadIcon, GitPullRequestIcon, MessageSquareTextIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
 import { GitHubIcon } from '../icons/BrandIcons';
@@ -52,6 +52,28 @@ export const Recipes: Story = {
                     ))}
                 </div>
             ))}
+        </div>
+    ),
+};
+
+/** The app Button's compact look as a link, as Lar Factory's board opens a pull request or a T3 thread. */
+export const Compact: Story = {
+    render: () => (
+        <div className="flex items-center gap-3">
+            <ButtonLink href="#pr" compact variant="secondary" icon={<GitPullRequestIcon />}>
+                Open PR
+            </ButtonLink>
+            <ButtonLink href="#main" compact variant="primary">
+                Open on GitHub
+            </ButtonLink>
+            <ButtonLink
+                href="#thread"
+                compact
+                iconOnly
+                variant="secondary"
+                icon={<MessageSquareTextIcon />}
+                aria-label="Open thread"
+            />
         </div>
     ),
 };

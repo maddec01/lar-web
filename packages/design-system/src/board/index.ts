@@ -24,3 +24,117 @@ export { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote, ListSortM
 export { type LoadingLine, type LoadingMark, LoadingScreen } from './LoadingScreen';
 export { type ReleaseNote, ReleaseNotes, UpdateDownloading, UpdatePill, UpdateStatusIcon } from './UpdatePill';
 export { BoardWarning, BoardWarnings, ToolMissing } from './Warnings';
+export { ActivityLine, type ActivityState, AgentAge, AgentList, AgentRow, WorkingAgents } from './ActivityLine';
+export { ActivityLabel, ActivityTrack } from './ActivityTrack';
+export {
+    AttentionEntry,
+    AttentionList,
+    AttentionMark,
+    AttentionNone,
+    type AttentionTone,
+    EntryButton,
+    PartLink,
+    PartName,
+    RefButton,
+} from './Attention';
+export { LossList } from './Cleanup';
+export type { DataAttributes } from './DataAttributes';
+export { DependencyItem, DependencyList } from './Dependencies';
+export {
+    DossierBody,
+    DossierChips,
+    type DossierChipTone,
+    DossierFields,
+    DossierLine,
+    DossierList,
+    DossierNext,
+    DossierNote,
+    DossierRepos,
+    DossierRow,
+    DossierTitle,
+    DossierTitleCell,
+    DossierToggle,
+    DossierTools,
+    PartsBar,
+    type PartSegment,
+    PlanningNote,
+} from './Dossier';
+export {
+    ItemBadges,
+    ItemFields,
+    ItemNote,
+    ItemTitle,
+    KindMarker,
+    LabelChip,
+    RepoIdentity,
+    RepoTag,
+    TitleLink,
+} from './ItemParts';
+export { NeedsYouNotice, NeedsYouResult } from './NeedsYou';
+export {
+    type PartKind,
+    PartKindLabel,
+    PartRow,
+    PartsList,
+    PartTrack,
+    PartWaits,
+    ShowDoneToggle,
+    ThreadLine,
+} from './PartsList';
+export {
+    ChecksState,
+    PullRequestList,
+    PullRequestReadiness,
+    PullRequestRef,
+    PullRequestRow,
+    ReadinessDetails,
+} from './PullRequests';
+export { SliceBar, SliceList, SliceMark, type SliceProgress, SliceRow } from './Slices';
+export { type ItemSource, SourceIcon } from './SourceIcon';
+export { BuildLimit, HeaderSwitch, StageList, StagePane, StagePaneEmpty, StageSections } from './StagePane';
+export {
+    OnYourDesk,
+    QueueAge,
+    QueuePlace,
+    RowBlocked,
+    RowCells,
+    RowCount,
+    RowFirst,
+    RowFoot,
+    RowGlyph,
+    RowIdentity,
+    RowKindCell,
+    RowOpen,
+    RowPartOf,
+    RowSecondLine,
+    RowSide,
+    RowSliceNote,
+    RowSliceToggle,
+    RowSlices,
+    RowState,
+    RowStateCell,
+    RowTitle,
+    RowTitleCell,
+    StageRowItem,
+    UsageFigures,
+} from './StageRow';
+export { StageTrack } from './StageTrack';
+export { ActionError, StartGroup, StartLine, StartNote, StartTag } from './StartControls';
+export { type BoardStatus, statusColor } from './StatusColors';
+export { StatusGlyph } from './StatusGlyph';
+export { EarlierThread, EarlierThreadList } from './Threads';
+export {
+    HistoryRow,
+    MapBand,
+    MapCanvas,
+    MapCheckNode,
+    type MapEdge,
+    MapEdgeLabel,
+    MapEdges,
+    MapHistoryGroup,
+    MapHistoryList,
+    MapLaneName,
+    MapNode,
+    MapPartNode,
+    WorkMapFrame,
+} from './WorkMap';
