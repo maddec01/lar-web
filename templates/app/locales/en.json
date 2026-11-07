@@ -1,0 +1,32 @@
+{
+    "direction": "ltr",
+    "web": {
+        "brand": {
+            "name": "Lar",
+            "home": "Go to home"
+        },
+        "common": {
+            "close": "Close",
+            "cancel": "Cancel",
+            "tryAgain": "Try again"
+        },
+        "theme": {
+            "label": "Appearance",
+            "system": "Match system",
+            "light": "Light",
+            "dark": "Dark"
+        },
+        "home": {
+            "title": "Welcome",
+            "description": "A new Lar app. Pages live in src/features, data in src/services, and every visual part comes from @lar-works/design-system.",
+            "status": "Status",
+            "online": "Everything is running",
+            "loading": "Checking status"
+        },
+        "notFound": {
+            "title": "Page not found",
+            "description": "There's nothing at this address.",
+            "home": "Go home"
+        }
+    }
+}
