@@ -201,16 +201,7 @@ export {
     SettingsNote,
 } from './Settings';
 export { CreateLabelForm, TrackerLabelEditor, TrackerLabelList, TrackerLabelRow } from './TrackerLabels';
-export {
-    LabelChooser,
-    LabelChooserEmpty,
-    LabelChooserFooter,
-    LabelChooserList,
-    LabelChooserOption,
-    VocabularyMore,
-    VocabularyRow,
-    VocabularySuggestion,
-} from './Vocabulary';
+export { VocabularyMore, VocabularyRow, VocabularySuggestion } from './Vocabulary';
 export {
     AddFolderLine,
     ChoiceDetails,

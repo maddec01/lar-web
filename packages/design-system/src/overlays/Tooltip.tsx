@@ -47,10 +47,7 @@ export const TooltipTrigger = forwardRef<HTMLButtonElement, TooltipTriggerProps>
 TooltipTrigger.displayName = 'TooltipTrigger';
 
 export const TooltipPopup = forwardRef<HTMLDivElement, Omit<TooltipContentProps, 'color' | 'hasArrow'>>(
-    (props, ref) => (
-        // Radix supplies the tooltip role on its visually hidden accessible description.
-        <NinnaTooltip.Content {...props} ref={ref} role={undefined} />
-    ),
+    (props, ref) => <NinnaTooltip.Content {...props} ref={ref} />,
 );
 
 TooltipPopup.displayName = 'TooltipPopup';

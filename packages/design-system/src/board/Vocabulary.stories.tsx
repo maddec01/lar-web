@@ -4,23 +4,14 @@ import { fn } from 'storybook/test';
 import { Button } from '../actions/Button';
 import { InsetPanel } from '../display/InsetPanel';
 import { LabelChip } from '../display/LabelChip';
-import { Input } from '../forms/Input';
+import { LabelPicker } from '../forms/LabelPicker';
 import { OptionSelect } from '../forms/OptionSelect';
 import { Popover } from '../overlays/Popover';
 import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { ReasonNote } from './Settings';
-import {
-    LabelChooser,
-    LabelChooserEmpty,
-    LabelChooserFooter,
-    LabelChooserList,
-    LabelChooserOption,
-    VocabularyMore,
-    VocabularyRow,
-    VocabularySuggestion,
-} from './Vocabulary';
+import { VocabularyMore, VocabularyRow, VocabularySuggestion } from './Vocabulary';
 
 const type = (
     <OptionSelect
@@ -116,61 +107,30 @@ export const None: Story = {
 
 const labels = ['bug', 'defect', 'regression', 'needs-review'];
 
-/** The chooser open: the search field, the list with the highlighted and picked labels, Create and the footer. */
+/** Vocabulary uses the same searchable checklist as item labels and filters. */
 export const Chooser: Story = {
     render: () => (
         <div className="h-120">
             <Popover open>
                 <Popover.Trigger asChild>{chooseButton('Edit')}</Popover.Trigger>
                 <Popover.Content align="start" width="md">
-                    <LabelChooser data-label-picker="bug">
-                        <Input
-                            type="search"
-                            role="combobox"
-                            aria-expanded
-                            aria-controls="labels-bug"
-                            aria-label="Search labels for Bug"
-                            placeholder={`Search ${labels.length} labels`}
-                        />
-                        <LabelChooserList id="labels-bug" label="Bug labels">
-                            {labels.map((label, index) => (
-                                <LabelChooserOption
-                                    key={label}
-                                    id={`label-bug-${index}`}
-                                    selected={index === 0}
-                                    disabled={false}
-                                    active={index === 1}
-                                    onHover={fn()}
-                                    onPick={fn()}
-                                >
-                                    {index === 0 ? '✓ ' : ''}
-                                    {label}
-                                </LabelChooserOption>
-                            ))}
-                        </LabelChooserList>
-                        <Button {...buttonKind('other')} wrap>
-                            Create "a-new-label-with-a-long-name-that-wraps-anywhere-it-needs-to"
-                        </Button>
-                        <LabelChooserFooter>
-                            <Button {...buttonKind('other')}>None</Button>
-                            <Button {...buttonKind('other')}>Done</Button>
-                        </LabelChooserFooter>
-                    </LabelChooser>
+                    <LabelPicker
+                        choices={labels.map((name) => ({ name }))}
+                        picked={['bug']}
+                        onToggle={fn()}
+                        filterLabel="Search labels for Bug"
+                        placeholder="Filter or type a new label"
+                        noMatchLabel="No matching labels."
+                        create={{
+                            refused: null,
+                            problem: () => null,
+                            note: 'New labels are created when you add the Project.',
+                            createLabel: (name) => `Create "${name}"`,
+                            onCreate: fn(),
+                        }}
+                    />
                 </Popover.Content>
             </Popover>
-        </div>
-    ),
-};
-
-/** A search that matches nothing. */
-export const ChooserEmpty: Story = {
-    render: () => (
-        <div className="w-88">
-            <LabelChooser>
-                <LabelChooserList id="labels-feature" label="Feature labels">
-                    <LabelChooserEmpty>No labels match "enhancement".</LabelChooserEmpty>
-                </LabelChooserList>
-            </LabelChooser>
         </div>
     ),
 };

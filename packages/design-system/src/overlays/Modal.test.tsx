@@ -305,6 +305,8 @@ describe('modal dismissal', () => {
         if (!overlay) throw new Error('Modal overlay is missing');
 
         fireEvent.pointerDown(overlay, { button: 0 });
+        fireEvent.pointerUp(overlay, { button: 0 });
+        fireEvent.click(overlay);
         expect(onClose).toHaveBeenCalledOnce();
     });
 });
