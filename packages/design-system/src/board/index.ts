@@ -169,8 +169,6 @@ export {
     ChipGroup,
     Comment,
     CommentList,
-    ConceptPart,
-    ConceptPartList,
     DetailFact,
     DetailsHeading,
     DetailsSection,

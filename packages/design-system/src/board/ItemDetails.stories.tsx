@@ -7,6 +7,7 @@ import { IconButton } from '../actions/IconButton';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
 import { Text } from '../typography/Typography';
+import { PartName } from './Attention';
 import { buttonKind } from './ButtonKinds';
 import {
     AttachmentLink,
@@ -15,8 +16,6 @@ import {
     ChipGroup,
     Comment,
     CommentList,
-    ConceptPart,
-    ConceptPartList,
     DetailFact,
     DetailsSection,
     DetailsText,
@@ -41,6 +40,7 @@ import {
     WaitsOnList,
 } from './ItemDetails';
 import { LabelChip } from './ItemParts';
+import { PartRow, PartsList } from './PartsList';
 import { SourceIcon } from './SourceIcon';
 import { StatusGlyph } from './StatusGlyph';
 
@@ -249,34 +249,49 @@ export const Sidebar: StoryObj<typeof DetailsSection> = {
     ),
 };
 
-/** A concept's parts, each opening its item. */
-export const ConceptParts: StoryObj<typeof ConceptPart> = {
+/** A concept's parts, each opening its item: the dossier's PartRow, its state in its meta line and its figures as its
+ *  action. */
+export const ConceptParts: StoryObj<typeof PartRow> = {
     render: () => (
         <DetailsSection heading="Parts">
-            <ConceptPartList>
-                <ConceptPart
+            <PartsList>
+                <PartRow
                     id="p1"
+                    picked={false}
                     title="Pick the session store"
                     onOpen={fn()}
-                    source={<SourceIcon source="local" label="Local work" />}
-                    glyph={<StatusGlyph status="Done" />}
-                    name="Pick the session store"
-                    state="Complete"
-                >
-                    <Text variant="caption" tone="muted">
-                        $0.42 · 6m
-                    </Text>
-                </ConceptPart>
-                <ConceptPart
+                    name={
+                        <PartName
+                            source={<SourceIcon source="local" label="Local work" />}
+                            glyph={<StatusGlyph status="Done" />}
+                        >
+                            Pick the session store
+                        </PartName>
+                    }
+                    meta="Complete"
+                    action={
+                        <Text variant="caption" tone="muted">
+                            $0.42 · 6m
+                        </Text>
+                    }
+                />
+                <PartRow
                     id="p2"
+                    picked={false}
                     title="Build sign-in"
                     onOpen={fn()}
-                    source={<SourceIcon source="github" label="GitHub issue" />}
-                    glyph={<StatusGlyph status="In progress" running />}
-                    name="Build sign-in"
-                    state="Working"
+                    name={
+                        <PartName
+                            source={<SourceIcon source="github" label="GitHub issue" />}
+                            glyph={<StatusGlyph status="In progress" running />}
+                        >
+                            Build sign-in
+                        </PartName>
+                    }
+                    meta="Working"
+                    action={null}
                 />
-            </ConceptPartList>
+            </PartsList>
         </DetailsSection>
     ),
 };

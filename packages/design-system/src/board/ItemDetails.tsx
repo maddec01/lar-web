@@ -441,52 +441,6 @@ export function KindQuestion({
     );
 }
 
-/** A concept's parts on the board, one ConceptPart each. */
-export function ConceptPartList({ children }: { children: ReactNode }) {
-    return <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] gap-0.5 p-0">{children}</ul>;
-}
-
-/** A part of a concept: a button that opens it from its source, glyph and title, then its `state`, figures and thread. */
-export function ConceptPart({
-    id,
-    title,
-    onOpen,
-    source,
-    glyph,
-    name,
-    state,
-    children,
-}: {
-    id: string;
-    title: string;
-    onOpen: () => void;
-    source: ReactNode;
-    glyph: ReactNode;
-    name: ReactNode;
-    state: string;
-    children?: ReactNode;
-}) {
-    return (
-        <li
-            data-concept-part={id}
-            className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 rounded-md px-2 py-1 hover:bg-(--soft)"
-        >
-            <button
-                type="button"
-                onClick={onOpen}
-                title={title}
-                className="flex min-w-0 flex-1 basis-56 items-start gap-1.5 text-left text-[13px] hover:underline"
-            >
-                {source}
-                <span className="mt-0.5 inline-flex">{glyph}</span>
-                <span className="line-clamp-2">{name}</span>
-            </button>
-            <span className="shrink-0 text-xs text-(--muted-foreground)">{state}</span>
-            {children}
-        </li>
-    );
-}
-
 /** A ticket's outgoing title and text, as the tracker will receive them; the labels name each for assistive
  *  technology. */
 export function OutgoingTicket({
