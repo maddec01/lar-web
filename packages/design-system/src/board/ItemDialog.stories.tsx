@@ -6,7 +6,6 @@ import { buttonKind } from './ButtonKinds';
 import { DetailsHeading, DetailsSection, MainSection } from './ItemDetails';
 import {
     AccessNotice,
-    ButtonRow,
     DialogActions,
     ItemDialogAside,
     ItemDialogBody,
@@ -117,24 +116,6 @@ export const FooterActions: StoryObj<typeof DialogActions> = {
                     Start build
                 </Button>
             </DialogActions>
-        </div>
-    ),
-};
-
-/** Rows of a section's buttons: on one line, wrapping, or with a status beside them. */
-export const ButtonRows: StoryObj<typeof ButtonRow> = {
-    render: () => (
-        <div className="grid w-72 gap-3">
-            {(['row', 'wrap', 'status'] as const).map((layout) => (
-                <ButtonRow key={layout} layout={layout}>
-                    <Button {...buttonKind('other')} onClick={fn()}>
-                        Accept edit
-                    </Button>
-                    <Button {...buttonKind('other')} onClick={fn()}>
-                        Reject edit
-                    </Button>
-                </ButtonRow>
-            ))}
         </div>
     ),
 };

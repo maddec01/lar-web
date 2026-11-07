@@ -8,9 +8,9 @@ import { LabelChip } from '../display/LabelChip';
 import { ColorSwatches } from '../forms/ColorSwatches';
 import { FormRow } from '../forms/FormSection';
 import { Input } from '../forms/Input';
+import { Inline } from '../layout/Flow';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
-import { ButtonRow } from './ItemDialog';
 import { CreateLabelForm, TrackerLabelEditor, TrackerLabelList, TrackerLabelRow } from './TrackerLabels';
 
 const actions = (name: string) => (
@@ -38,14 +38,14 @@ const editor = (
                 </ColorSwatches>
             </FormRow>
         </InsetPanel>
-        <ButtonRow>
+        <Inline as="span">
             <Button {...buttonKind('other')} type="button">
                 Cancel
             </Button>
             <Button {...buttonKind('other')} type="submit">
                 Save
             </Button>
-        </ButtonRow>
+        </Inline>
     </TrackerLabelEditor>
 );
 

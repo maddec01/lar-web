@@ -187,11 +187,6 @@ export function Person({ name }: { name: string }) {
     );
 }
 
-/** People in a fact, such as the assignees, wrapping. */
-export function PeopleList({ children }: { children: ReactNode }) {
-    return <span className="flex flex-wrap gap-x-3 gap-y-1">{children}</span>;
-}
-
 /** A line of short items, such as a review round's verdicts, wrapping. */
 export function InlineList({ items }: { items: readonly string[] }) {
     return (
@@ -362,16 +357,6 @@ export function WaitsOnList({ items }: { items: readonly { key: string; title: s
                 </li>
             ))}
         </ul>
-    );
-}
-
-/** The labels fact's value: the chips, then the control that edits them and any error, wrapping. Any wrapping row of
- *  badges takes it too, such as a skill folder's readers, which `label` then names. */
-export function LabelsValue({ label, children }: { label?: string; children: ReactNode }) {
-    return (
-        <span className="flex flex-wrap items-center gap-1" aria-label={label}>
-            {children}
-        </span>
     );
 }
 

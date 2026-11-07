@@ -177,14 +177,3 @@ export function DialogActions({
         </span>
     );
 }
-
-const buttonRows = {
-    row: 'flex gap-2',
-    wrap: 'flex flex-wrap gap-2',
-    status: 'flex flex-wrap items-center gap-3',
-} as const;
-
-/** A row of a section's buttons: on one line, wrapping, or wrapping with a `status` beside them. */
-export function ButtonRow({ layout = 'row', children }: { layout?: keyof typeof buttonRows; children: ReactNode }) {
-    return <span className={buttonRows[layout]}>{children}</span>;
-}

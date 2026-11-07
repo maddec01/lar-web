@@ -7,6 +7,7 @@ import { IconButton } from '../actions/IconButton';
 import { LabelChip } from '../display/LabelChip';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
+import { Inline } from '../layout/Flow';
 import { Text } from '../typography/Typography';
 import { PartName } from './Attention';
 import { buttonKind } from './ButtonKinds';
@@ -25,11 +26,9 @@ import {
     HeaderStatus,
     InlineList,
     KindQuestion,
-    LabelsValue,
     MainSection,
     MetaArea,
     OutgoingTicket,
-    PeopleList,
     Person,
     SectionHeader,
     SpecSync,
@@ -60,13 +59,13 @@ const meta = {
                     <Person name="Ana Silva" />
                 </DetailFact>
                 <DetailFact label="Assignees">
-                    <PeopleList>
+                    <Inline as="span" wrap space="related">
                         <Person name="Rui Costa" />
                         <Person name="claude-bot" />
-                    </PeopleList>
+                    </Inline>
                 </DetailFact>
                 <DetailFact label="Labels">
-                    <LabelsValue>
+                    <Inline as="span" wrap align="center" space="tight">
                         <ChipGroup data-labels>
                             <LabelChip label="urgent" color="#d73a4a" />
                             <LabelChip
@@ -76,7 +75,7 @@ const meta = {
                             />
                         </ChipGroup>
                         <IconButton variant="inline" aria-label="Edit labels" icon={<PencilIcon />} />
-                    </LabelsValue>
+                    </Inline>
                 </DetailFact>
                 <DetailFact label="Milestone">
                     <SkeletonLoader.Shape width="action" />

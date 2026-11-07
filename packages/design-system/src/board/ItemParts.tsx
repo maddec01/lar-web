@@ -126,12 +126,3 @@ export function KindMarker({
         </span>
     );
 }
-
-/** An item's kind badge and the badges that say more of what it is, wrapping. */
-export function ItemBadges({ children, ...data }: { children: ReactNode } & DataAttributes) {
-    return (
-        <span {...data} className="inline-flex flex-wrap gap-1">
-            {children}
-        </span>
-    );
-}

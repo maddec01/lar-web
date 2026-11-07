@@ -3,8 +3,9 @@ import { SparklesIcon } from 'lucide-react';
 
 import { Badge } from '../display/Badge';
 import { LabelChip } from '../display/LabelChip';
+import { Inline } from '../layout/Flow';
 import { Text } from '../typography/Typography';
-import { ItemBadges, ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
+import { ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
 
 const icon = <span className="grid size-3.5 place-items-center rounded-sm bg-sky-500 text-[9px] text-white">L</span>;
 
@@ -57,14 +58,14 @@ export const Repositories: Story = {
 export const KindAndLabels: Story = {
     render: () => (
         <div className="grid w-80 gap-2">
-            <ItemBadges>
+            <Inline as="span" inline wrap space="tight">
                 <Badge hue={150}>
                     <SparklesIcon aria-hidden="true" />
                     Feature
                 </Badge>
                 <KindMarker said="Bug" label="The ticket says Bug." title="The ticket says Bug. Open to choose." />
                 <Badge>Part of a concept</Badge>
-            </ItemBadges>
+            </Inline>
             <span className="flex flex-wrap gap-1">
                 <LabelChip label="docs" color="#0075ca" />
                 <LabelChip label="good first issue" color="#7057ff" />

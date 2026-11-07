@@ -69,7 +69,7 @@ export {
     type PartSegment,
     PlanningNote,
 } from './Dossier';
-export { ItemBadges, ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
+export { ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
 export { NeedsYouNotice, NeedsYouResult } from './NeedsYou';
 export {
     type PartKind,
@@ -140,7 +140,6 @@ export {
 } from './WorkMap';
 export {
     AccessNotice,
-    ButtonRow,
     DialogActions,
     ItemDialogAside,
     ItemDialogBody,
@@ -172,12 +171,10 @@ export {
     InlineList,
     KindQuestion,
     LabelEditorPanel,
-    LabelsValue,
     MainColumnSlot,
     MainSection,
     MetaArea,
     OutgoingTicket,
-    PeopleList,
     Person,
     SectionHeader,
     SpecSync,
@@ -203,7 +200,6 @@ export {
     ReasonNote,
     SettingControl,
     SettingDetails,
-    SettingsGroups,
     SettingsNav,
     SettingsNote,
 } from './Settings';

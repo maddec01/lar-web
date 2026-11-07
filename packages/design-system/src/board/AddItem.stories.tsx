@@ -7,7 +7,7 @@ import { Checkbox } from '../forms/Checkbox';
 import { Input } from '../forms/Input';
 import { MarkdownEditor } from '../forms/MarkdownEditor';
 import { OptionSelect } from '../forms/OptionSelect';
-import { Stack } from '../layout/Flow';
+import { Inline, Stack } from '../layout/Flow';
 import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import {
@@ -20,7 +20,6 @@ import {
     type TicketSearchMatch,
     TicketSearchPane,
 } from './AddItem';
-import { LabelsValue } from './ItemDetails';
 
 const meta = {
     title: 'Board/AddItem',
@@ -60,10 +59,10 @@ export const NewWork: Story = {
                         </PanelField>
                         <DraftTicketPart>
                             <PanelField heading="Labels">
-                                <LabelsValue>
+                                <Inline as="span" wrap align="center" space="tight">
                                     <LabelChip label="docs" color="#0075ca" />
                                     <LabelChip label="needs-design" note="new" />
-                                </LabelsValue>
+                                </Inline>
                             </PanelField>
                         </DraftTicketPart>
                     </>

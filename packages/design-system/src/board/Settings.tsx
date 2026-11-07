@@ -58,15 +58,6 @@ export function SettingsNav({
     );
 }
 
-/** A settings page's groups, one under the other with room between them. */
-export function SettingsGroups({ children, ...data }: { children: ReactNode } & DataAttributes) {
-    return (
-        <div {...data} className="grid min-w-0 gap-7">
-            {children}
-        </div>
-    );
-}
-
 /**
  * Why a setting can't be changed, in a short muted line that wraps: the `reason`, a help popover with the whole
  * `explanation` (`helpLabel` names its button), then the `action` that checks again, such as an InlineLink with `onClick`.

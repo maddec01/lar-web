@@ -9,28 +9,27 @@ import { Progress } from '../feedback/Progress';
 import { FormRow, FormSection } from '../forms/FormSection';
 import { Input } from '../forms/Input';
 import { Switch } from '../forms/Switch';
+import { Inline, Stack } from '../layout/Flow';
 import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarNavigationGroup } from '../layout/sidebar/SidebarPane';
 import { InlineLink, Link } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
-import { LabelsValue } from './ItemDetails';
 import {
     OpenSettingsButton,
     ProjectValueList,
     ReasonNote,
     SettingControl,
     SettingDetails,
-    SettingsGroups,
     SettingsNav,
     SettingsNote,
 } from './Settings';
 
 const meta = {
     title: 'Board/Settings',
-    component: SettingsGroups,
+    component: SettingsNote,
     args: { children: null },
-} satisfies Meta<typeof SettingsGroups>;
+} satisfies Meta<typeof SettingsNote>;
 
 export default meta;
 
@@ -49,7 +48,7 @@ const reason = (
 export const Page: Story = {
     render: () => (
         <div className="max-w-2xl">
-            <SettingsGroups data-project-page="maddec01/lar-web">
+            <Stack space="page" data-project-page="maddec01/lar-web">
                 <FormSection presentation="dense" title="Project">
                     <InsetPanel presentation="settings">
                         <FormRow layout="flow" label="What this Project does">
@@ -62,7 +61,7 @@ export const Page: Story = {
                         <FormRow layout="flow" label="Glossary and decisions" description={reason} />
                     </InsetPanel>
                 </FormSection>
-            </SettingsGroups>
+            </Stack>
         </div>
     ),
 };
@@ -140,7 +139,7 @@ export const SidebarNoMatch: Story = {
 export const SkillsPage: Story = {
     render: () => (
         <div className="max-w-2xl">
-            <SettingsGroups>
+            <Stack space="page">
                 <FormSection presentation="dense" title="Skill folders" help="The app installs its skills here.">
                     <InsetPanel presentation="settings">
                         <FormRow
@@ -148,10 +147,16 @@ export const SkillsPage: Story = {
                             label="~/.agents/skills"
                             below={
                                 <>
-                                    <LabelsValue label="Provider instances reading ~/.agents/skills">
+                                    <Inline
+                                        as="span"
+                                        wrap
+                                        align="center"
+                                        space="tight"
+                                        aria-label="Provider instances reading ~/.agents/skills"
+                                    >
                                         <Badge tone="accent">Codex personal</Badge>
                                         <Badge muted>Cursor · Disabled</Badge>
-                                    </LabelsValue>
+                                    </Inline>
                                     <SettingDetails breaks>
                                         <Text variant="inherit">Release 0.4.0 · Installing</Text>
                                         <Progress aria-label="Skills installed in ~/.agents/skills" value={1} max={2} />
@@ -192,7 +197,7 @@ export const SkillsPage: Story = {
                         </FormRow>
                     </InsetPanel>
                 </FormSection>
-            </SettingsGroups>
+            </Stack>
         </div>
     ),
 };
