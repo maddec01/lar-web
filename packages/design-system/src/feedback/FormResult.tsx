@@ -12,12 +12,15 @@ export function FormResult({
     text,
     tone = 'warning',
     children,
+    list,
 }: {
     id: string;
     text: string;
     tone?: 'success' | 'warning' | 'error' | undefined;
     /** Shown under the text. */
     children?: ReactNode;
+    /** A list under the text, such as the paths a call touched, indented and wrapping normally. */
+    list?: readonly ReactNode[] | undefined;
 }) {
     return (
         <Alert
@@ -33,6 +36,13 @@ export function FormResult({
                 <>
                     {text}
                     {children}
+                    {list && list.length > 0 && (
+                        <ul className="pl-4.5 whitespace-normal">
+                            {list.map((entry, index) => (
+                                <li key={index}>{entry}</li>
+                            ))}
+                        </ul>
+                    )}
                 </>
             )}
         </Alert>

@@ -14,7 +14,7 @@ const sizes = { default: 'h-9 text-sm sm:h-8', compact: 'h-7 text-xs sm:h-7' } a
 /** A label that would clip on a narrow surface wraps instead, growing the button past its height. */
 const wrapping = {
     nowrap: 'whitespace-nowrap',
-    wrap: 'h-auto min-h-7 py-1 whitespace-normal sm:h-auto',
+    wrap: 'h-auto min-h-7 max-w-full min-w-0 py-1 whitespace-normal wrap-anywhere sm:h-auto',
 } as const;
 
 const outline = outlineRecipe;
@@ -42,6 +42,7 @@ const recipes = {
 /** An icon-only button is as wide as it is tall, with no padding. */
 const square = { default: 'size-9 px-0 sm:size-8', compact: 'w-7 px-0' } as const;
 const pending = 'aria-disabled:cursor-progress aria-disabled:opacity-70';
+const heldDisabled = 'aria-disabled:opacity-64';
 
 const selectedChoice =
     'border-primary/60 bg-primary/8 text-base-content ring-1 ring-inset ring-primary/40 hover:bg-primary/12 dark:border-primary/60 dark:bg-primary/16 dark:hover:bg-primary/20';
@@ -51,7 +52,8 @@ export type ButtonProps = Omit<NinnaButtonProps, 'color' | 'radius' | 'size' | '
     selected?: boolean;
     /** The dense 28px control with 12px text, as Lar Factory's board draws every button. */
     compact?: boolean;
-    /** Lets a long label wrap, growing the button, where it would otherwise clip. */
+    /** Lets a long label wrap, anywhere in a long word if it must, growing the button, which never grows past its
+     *  container, where it would otherwise clip. */
     wrap?: boolean;
     /** A square button showing its `leftIcon` alone, named by its `aria-label`. */
     iconOnly?: boolean;
@@ -63,8 +65,9 @@ export type ButtonProps = Omit<NinnaButtonProps, 'color' | 'radius' | 'size' | '
      *  as busy. `false` leaves out the busy state altogether. */
     busy?: boolean;
     /** Draws the button as waiting, with the progress cursor at 70%, while `aria-disabled` holds it for an action in
-     *  flight. */
-    pendingLook?: boolean;
+     *  flight; `'disabled'` draws it as a disabled button instead, while it keeps its focus (a save with nothing to
+     *  save, say). */
+    pendingLook?: boolean | 'disabled';
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -102,7 +105,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 {...(busy === undefined ? {} : { 'aria-busy': busy || undefined })}
                 data-wrap={wrap || undefined}
                 {...(iconOnly ? { 'data-icon-only': '' } : {})}
-                className={`${base} ${sizes[compact ? 'compact' : 'default']} ${wrapping[wrap ? 'wrap' : 'nowrap']} ${variant === 'choice' && selected ? selectedChoice : recipes[variant]} ${selected && variant !== 'choice' ? 'bg-base-200' : ''} ${iconOnly ? square[compact ? 'compact' : 'default'] : ''} ${shrinks ? 'max-w-full min-w-0 shrink' : ''} ${pendingLook ? pending : ''} ${className}`}
+                className={`${base} ${sizes[compact ? 'compact' : 'default']} ${wrapping[wrap ? 'wrap' : 'nowrap']} ${variant === 'choice' && selected ? selectedChoice : recipes[variant]} ${selected && variant !== 'choice' ? 'bg-base-200' : ''} ${iconOnly ? square[compact ? 'compact' : 'default'] : ''} ${shrinks ? 'max-w-full min-w-0 shrink' : ''} ${pendingLook === 'disabled' ? heldDisabled : pendingLook ? pending : ''} ${className}`}
                 leftIcon={
                     busy ? (
                         <SpinnerIcon motion="always" className="size-4" />

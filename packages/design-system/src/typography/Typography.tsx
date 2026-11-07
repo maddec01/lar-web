@@ -13,6 +13,9 @@ const textStyles = {
     lead: 'text-[17px] leading-[1.6] tracking-[-0.011em] sm:text-lg sm:leading-[1.6] text-pretty',
     /** Running copy on marketing pages. */
     prose: 'text-[15px] leading-[1.65] tracking-[-0.006em] text-pretty',
+    /** The surrounding text's size and, unless a `tone` is given, its colour: a message inside a note or a form that
+     *  sets its own type. */
+    inherit: '',
 } as const;
 
 /** T3's headings: semibold with tightening tracking as they grow; the hero takes t3.codes' display setting. */
@@ -51,13 +54,16 @@ interface TypographyProps extends HTMLAttributes<HTMLElement> {
 export interface TextProps extends TypographyProps {
     as?: 'p' | 'span' | 'div';
     variant?: keyof typeof textStyles;
+    /** Keeps the text on one line, such as a date that shouldn't break. */
+    nowrap?: boolean;
 }
 
 export function Text({
     as: Tag = 'p',
     variant = 'body',
-    tone = 'default',
+    tone = variant === 'inherit' ? undefined : 'default',
     truncate,
+    nowrap = false,
     loading,
     className = '',
     children,
@@ -66,7 +72,7 @@ export function Text({
     return (
         <Tag
             {...props}
-            className={`${textStyles[variant]} ${tones[tone]} ${tone === 'muted' && (variant === 'lead' || variant === 'prose') ? 'dark:text-[#a3a3aa]' : ''} ${truncate ? 'truncate' : ''} ${loading ? `relative ${Tag === 'span' ? 'inline-block w-full' : ''}` : ''} ${className}`}
+            className={`${textStyles[variant]} ${tone ? tones[tone] : ''} ${tone === 'muted' && (variant === 'lead' || variant === 'prose') ? 'dark:text-[#a3a3aa]' : ''} ${truncate ? 'truncate' : ''} ${nowrap ? 'whitespace-nowrap' : ''} ${loading ? `relative ${Tag === 'span' ? 'inline-block w-full' : ''}` : ''} ${className}`}
         >
             {loading ? <LoadingText /> : children}
         </Tag>

@@ -1,15 +1,5 @@
-/* The board's button kinds (ButtonKinds.ts) are the compact Button, and an icon-only one is the Button's `iconOnly`;
-   these are the marks the board's remaining pages still set on a kind's button until their components own them.
-   Unlayered, so they win over the Button's utilities. A button marked data-icon-only is square, keeping its kind's
-   16 px icon or a 20 px one when marked large. */
-[data-kind][data-icon-only] {
-    width: --spacing(7);
-    padding: 0;
-}
-[data-kind][data-icon-only='large'] svg {
-    width: --spacing(5);
-    height: --spacing(5);
-}
+/* The board's button kinds (ButtonKinds.ts) are the compact Button, and an icon-only one is the Button's `iconOnly`.
+   Unlayered, so it wins over the Modal's own utilities. */
 
 /* The design system's Modal's Close: 28 px square, like every icon-only button on the board. */
 [data-slot='modal-close'] {

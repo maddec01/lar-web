@@ -63,3 +63,23 @@ export const OtherViews: Story = {
         </div>
     ),
 };
+
+function Panes() {
+    const [value, setValue] = useState<'new' | 'pick'>('new');
+
+    return (
+        <ViewToggle
+            presentation="text"
+            label="Add"
+            value={value}
+            onChange={setValue}
+            options={[
+                { value: 'new', label: 'New work', attributes: { 'data-pane': 'new' } },
+                { value: 'pick', label: 'Find a ticket', attributes: { 'data-pane': 'pick' } },
+            ]}
+        />
+    );
+}
+
+/** Text options, as Lar Factory's Add item dialog switches between its panes in its header. */
+export const TextOptions: Story = { render: () => <Panes /> };

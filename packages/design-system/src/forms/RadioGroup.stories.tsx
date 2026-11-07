@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
 import { Field } from './Field';
-import { RadioGroup, RadioGroupItem } from './RadioGroup';
+import { RadioGroup, RadioGroupChoice, RadioGroupItem } from './RadioGroup';
 
 const meta = {
     title: 'Forms/RadioGroup',
@@ -73,5 +73,27 @@ export const InvalidInField: Story = {
                 <RadioGroupItem value="develop" label="develop" />
             </RadioGroup>
         </Field>
+    ),
+};
+
+/** `choices` rows: each a bordered row with the bare radio, so a long title truncates, as Lar Factory's onboarding
+ *  lists the T3 projects to add. */
+export const Choices: Story = {
+    render: () => (
+        <div className="max-w-md">
+            <RadioGroup aria-label="T3 project" presentation="choices" defaultValue="web">
+                <RadioGroupChoice value="web">
+                    <span className="truncate">web · ~/Developer/web</span>
+                </RadioGroupChoice>
+                <RadioGroupChoice value="a-project-whose-name-is-long">
+                    <span className="truncate">
+                        a-project-whose-name-is-long-enough-to-truncate · ~/Developer/clients/acme/a-project
+                    </span>
+                </RadioGroupChoice>
+                <RadioGroupChoice value="new">
+                    <span className="truncate">Add a repository folder</span>
+                </RadioGroupChoice>
+            </RadioGroup>
+        </div>
     ),
 };

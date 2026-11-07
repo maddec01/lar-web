@@ -21,6 +21,10 @@
             "types": "./dist/icons.d.ts",
             "default": "./dist/icons.js"
         },
+        "./icons/dynamic": {
+            "types": "./dist/icons/dynamic.d.ts",
+            "default": "./dist/icons/dynamic.js"
+        },
         "./testing": {
             "types": "./dist/testing.d.ts",
             "default": "./dist/testing.js"

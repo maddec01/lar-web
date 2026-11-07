@@ -35,6 +35,9 @@ interface ModalContentPolicyProps extends Omit<ModalContentProps, 'className' | 
     presentation?: 'default' | 'paned' | 'workspace';
     /** Grows the dialog to the window, less a small margin, under a 52px title bar; see ModalExpandButton. */
     expanded?: boolean;
+    /** A paned dialog that keeps its width but takes its content's height, such as a short pane; a long list in it
+     *  scrolls inside. Expanding wins. */
+    fitsContent?: boolean;
     title: string;
 }
 
@@ -47,6 +50,9 @@ const expandedStyle = {
     top: '52px',
     translate: '-50% 0',
 } as const;
+
+/** A dialog that takes its content's height, inline so it wins over the paned size classes. */
+const fitsContentStyle = { height: 'auto' } as const;
 
 const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
     (
@@ -62,6 +68,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
             sidebar,
             presentation = sidebar ? 'paned' : 'default',
             expanded = false,
+            fitsContent = false,
             title,
             ...props
         },
@@ -75,7 +82,9 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                 ref={ref}
                 {...props}
                 {...focusProps}
-                {...(expanded && { 'data-expanded': true, style: expandedStyle })}
+                {...(expanded
+                    ? { 'data-expanded': true, style: expandedStyle }
+                    : fitsContent && { style: fitsContentStyle })}
                 title={accessibleTitle ?? title}
                 description={description}
                 closeOnEscape={loading ? false : closeOnEscape}

@@ -26,3 +26,15 @@ export const Lines: Story = {
 
 /** Empty, it takes no room but stays mounted as a live region. */
 export const Empty: Story = { args: { text: '' } };
+
+/** A list under the text, such as the paths a call touched. */
+export const WithList: Story = {
+    args: {
+        tone: 'warning',
+        text: "Couldn't remove the links Lar Factory didn't make:",
+        list: [
+            <code key="1">~/.claude-work/skills/lar-work</code>,
+            <code key="2">~/.claude-work/skills/lar-shape</code>,
+        ],
+    },
+};

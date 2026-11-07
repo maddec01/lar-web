@@ -52,6 +52,11 @@ export const Repositories: Story = {
             <RepoIdentity icon={icon} name="lar-server" />
             <RepoIdentity icon={icon} name="a-repository-name-long-enough-to-truncate" />
             <RepoIdentity presentation="map" icon={icon} name="lar-apple" title="maddec01/lar-apple" />
+            <RepoIdentity
+                presentation="wrap"
+                icon={icon}
+                name="maddec01/lar-server · #128 · Set aside, finished work"
+            />
         </div>
     ),
 };
@@ -72,6 +77,7 @@ export const KindAndLabels: Story = {
                 <LabelChip label="docs" color="#0075ca" />
                 <LabelChip label="good first issue" color="#7057ff" />
                 <LabelChip label="a label whose name is long enough that the chip truncates it" />
+                <LabelChip label="needs-design" note="new" />
             </span>
             <ItemFields text="User Story · Active · Pedro Gomes" />
             <ItemNote role="status">Planning is saved on this Mac.</ItemNote>

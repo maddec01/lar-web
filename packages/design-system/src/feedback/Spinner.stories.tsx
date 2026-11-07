@@ -22,4 +22,7 @@ export const Still: Story = { args: { still: true } };
 /** On its own line, at body size. */
 export const Line: Story = { args: { presentation: 'line' } };
 
+/** A step's loading line, announced, as Lar Factory's onboarding shows while it reads what a step needs. */
+export const Status: Story = { args: { presentation: 'status', label: 'Checking the repository and your access…' } };
+
 export const Icon: Story = { render: () => <SpinnerIcon aria-hidden="true" className="size-4" /> };

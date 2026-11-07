@@ -111,3 +111,13 @@ export const LabelColors: Story = {
         </div>
     ),
 };
+
+/** `muted` dims an entry that is listed but switched off. */
+export const Muted: Story = {
+    render: () => (
+        <div className="flex gap-1">
+            <Badge tone="accent">Codex personal</Badge>
+            <Badge muted>Cursor · Disabled</Badge>
+        </div>
+    ),
+};

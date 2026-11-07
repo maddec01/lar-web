@@ -11,6 +11,8 @@ export type BadgeProps = Omit<NinnaBadgeProps, 'color' | 'size' | 'variant'> & {
     /** A tracker label's own colour, such as GitHub's, as a soft tint readable in both modes; anything but a colour
      *  keeps the tone. */
     labelColor?: string | undefined;
+    /** Dims the text to the muted colour, for an entry that is listed but switched off. */
+    muted?: boolean;
 };
 
 /** T3 Code's badge: a 6px-radius label on an 8% tint of its tone, in the tone's foreground colour. */
@@ -23,7 +25,15 @@ const toneClasses: Record<NonNullable<BadgeProps['tone']>, string> = {
     info: 'bg-info/10 text-(--lar-info-text) dark:bg-info/16',
 };
 
-export function Badge({ tone = 'neutral', hue, labelColor, className = '', style, ...props }: BadgeProps) {
+export function Badge({
+    tone = 'neutral',
+    hue,
+    labelColor,
+    muted = false,
+    className = '',
+    style,
+    ...props
+}: BadgeProps) {
     const labelTint = tint(labelColor);
 
     return (
@@ -39,7 +49,7 @@ export function Badge({ tone = 'neutral', hue, labelColor, className = '', style
                       ? { ...style, ...labelTint }
                       : style
             }
-            className={`h-5 gap-1 rounded-sm px-1.5 text-xs font-medium [&>svg]:size-3 [&>svg]:shrink-0 ${hue === undefined ? toneClasses[tone] : 'kind-badge!'} ${className}`}
+            className={`h-5 gap-1 rounded-sm px-1.5 text-xs font-medium [&>svg]:size-3 [&>svg]:shrink-0 ${hue === undefined ? toneClasses[tone] : 'kind-badge!'} ${muted ? 'text-(--muted-foreground)' : ''} ${className}`}
         />
     );
 }

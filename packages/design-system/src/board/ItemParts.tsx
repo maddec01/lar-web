@@ -63,8 +63,15 @@ export function RepoTag({ icon, name }: { icon: ReactNode; name: string }) {
     );
 }
 
+const identities = {
+    row: 'flex min-w-0 items-center gap-1',
+    map: 'inline-flex min-w-0 items-center gap-1.5',
+    wrap: 'inline-flex min-w-0 items-center gap-2',
+} as const;
+
 /** A repository's project icon and name together, the name truncating: in a row's line, or roomier on the work map,
- *  where `title` names it in full. */
+ *  where `title` names it in full. `wrap` is roomier still and wraps the name, anywhere if it must, for a line that
+ *  says more than the name, such as an archived item's repository, number and state. */
 export function RepoIdentity({
     icon,
     name,
@@ -75,18 +82,12 @@ export function RepoIdentity({
     icon: ReactNode;
     name: string;
     title?: string;
-    presentation?: 'row' | 'map';
+    presentation?: 'row' | 'map' | 'wrap';
 } & DataAttributes) {
     return (
-        <span
-            {...data}
-            title={title}
-            className={
-                presentation === 'map' ? 'inline-flex min-w-0 items-center gap-1.5' : 'flex min-w-0 items-center gap-1'
-            }
-        >
+        <span {...data} title={title} className={identities[presentation]}>
             {icon}
-            <span className="truncate">{name}</span>
+            <span className={presentation === 'wrap' ? 'min-w-0 wrap-anywhere' : 'truncate'}>{name}</span>
         </span>
     );
 }
@@ -126,13 +127,23 @@ export function KindMarker({
     );
 }
 
-/** A tracker label as a chip in its tracker's colour, truncating a long name, which its tooltip gives whole. */
-export function LabelChip({ label, color }: { label: string; color?: string | undefined }) {
+/** A tracker label as a chip in its tracker's colour, truncating a long name, which its tooltip gives whole. A `note`
+ *  follows the name, faded, such as "new" for a label the ticket will create. */
+export function LabelChip({
+    label,
+    color,
+    note,
+}: {
+    label: string;
+    color?: string | undefined;
+    note?: string | undefined;
+}) {
     return (
         <Badge data-label-chip className="max-w-full" labelColor={color}>
             <span className="max-w-52 truncate" title={label}>
                 {label}
             </span>
+            {note && <span className="opacity-70">{note}</span>}
         </Badge>
     );
 }

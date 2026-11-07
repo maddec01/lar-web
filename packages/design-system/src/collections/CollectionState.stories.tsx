@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FolderPlusIcon, ImageOffIcon, SearchXIcon, ServerCrashIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
+import { Button } from '../actions/Button';
+import { BrandMark } from '../display/BrandMark';
 import { CollectionState } from './CollectionState';
 
 const meta = {
@@ -89,5 +91,17 @@ export const LongContent: Story = {
         description:
             'Lar last saw “Family photos” at /mnt/media/photos/family on 2 November 2026. Point the catalog at its new folder to keep albums, favourites and people you have already tagged; nothing is deleted in the meantime.',
         actionLabel: 'Choose new folder',
+    },
+};
+
+/** A first run's welcome with the brand mark, its action a button of the app's own, as Lar Factory's empty board. */
+export const Welcome: Story = {
+    args: {
+        variant: 'welcome',
+        icon: <BrandMark label="Lar" />,
+        title: 'Add your first Project',
+        description: 'Connect a Project to see its work and start agents from this board.',
+        actionLabel: undefined,
+        action: <Button variant="secondary">Add a Project</Button>,
     },
 };

@@ -17,7 +17,7 @@ const recipe = {
 } as const satisfies Record<ButtonKind, ButtonProps['variant']>;
 
 /** Props to spread on the design system's Button for a kind: its recipe, the compact size, and `data-kind`, which
- *  names the kind for tests and the board's legacy marks. A destructive confirm, such as Reset or Abandon, is its
+ *  names the kind for tests and the board's sheets. A destructive confirm, such as Reset or Abandon, is its
  *  area's Main action filled in the danger colour. */
 export const buttonKind = <
     K extends ButtonKind,

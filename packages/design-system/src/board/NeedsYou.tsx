@@ -2,6 +2,8 @@
 
 import type { ReactNode } from 'react';
 
+import { WARNING_PANEL } from './RowStyles';
+
 /** The reason a piece of work needs you, in the warning tone, then the `actions` that answer it and any `result`. */
 export function NeedsYouNotice({
     reason,
@@ -14,10 +16,7 @@ export function NeedsYouNotice({
     children?: ReactNode;
 }) {
     return (
-        <div
-            className="grid gap-2 rounded-xl border border-[color-mix(in_srgb,var(--warning)_35%,transparent)] bg-(--warning-surface) px-3 py-2.5"
-            data-needs-you-reason
-        >
+        <div className={`grid gap-2 ${WARNING_PANEL}`} data-needs-you-reason>
             <p className="m-0 font-medium text-(--warning-foreground)">{reason}</p>
             <span className="flex flex-wrap gap-1.5">{actions}</span>
             {children}

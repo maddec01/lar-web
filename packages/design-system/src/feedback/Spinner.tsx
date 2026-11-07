@@ -36,12 +36,22 @@ interface SpinnerProps {
     title?: string;
     /** Stops it spinning. */
     still?: boolean;
-    /** `inline` sits in a line of 12px text; `line` stands on its own line of body text. */
-    presentation?: 'inline' | 'line';
+    /** `inline` sits in a line of 12px text; `line` stands on its own line of body text; `status` is a step's own
+     *  loading line, announced, muted body text with room above and below that keeps turning as a pending action's
+     *  spinner does. */
+    presentation?: 'inline' | 'line' | 'status';
 }
 
 /** What shows in place of something still loading: a small spinner, still under reduced motion, and what loads. */
 export function Spinner({ label, title, still = false, presentation = 'inline' }: SpinnerProps) {
+    if (presentation === 'status')
+        return (
+            <p role="status" className="text-base-700 m-0 flex items-center gap-2 py-4 text-sm">
+                <SpinnerIcon motion={still ? 'still' : 'always'} aria-hidden="true" className="size-4" />
+                {label}
+            </p>
+        );
+
     return (
         <span data-loader className="inline-flex min-w-0 items-center gap-1.5" title={title}>
             <SpinnerIcon

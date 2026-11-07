@@ -89,17 +89,31 @@ function navigationClick({
     };
 }
 
+const inline =
+    'focus-visible:outline-primary text-inherit underline decoration-current/40 underline-offset-2 transition-colors hover:decoration-current focus-visible:outline-2';
+
 /** A link inside running text or a note: the surrounding size and colour, underlined. */
 export function InlineLink({ href, children }: { href: string; children?: ReactNode }) {
     return (
-        <a
-            {...tabbable}
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="focus-visible:outline-primary text-inherit underline decoration-current/40 underline-offset-2 transition-colors hover:decoration-current focus-visible:outline-2"
-        >
+        <a {...tabbable} href={href} target="_blank" rel="noreferrer" className={inline}>
             {children}
         </a>
+    );
+}
+
+/** A button inside running text or a note, such as "Change" after what was kept: InlineLink's look. */
+export function InlineButton({
+    onClick,
+    disabled,
+    children,
+}: {
+    onClick: () => void;
+    disabled?: boolean | undefined;
+    children: ReactNode;
+}) {
+    return (
+        <button {...tabbable} type="button" disabled={disabled} onClick={onClick} className={inline}>
+            {children}
+        </button>
     );
 }

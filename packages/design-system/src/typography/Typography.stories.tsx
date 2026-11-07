@@ -108,6 +108,20 @@ export const Tones: Story = {
     ),
 };
 
+/** `inherit` takes the surrounding text's size and colour, such as a message inside a note that sets its own type. */
+export const Inherited: Story = {
+    render: () => (
+        <div className="text-base-700 grid gap-1 text-xs">
+            <Text variant="inherit" role="status">
+                Reading outgoing issue text…
+            </Text>
+            <Text variant="inherit" tone="danger" role="alert">
+                Could not read the outgoing issue text.
+            </Text>
+        </div>
+    ),
+};
+
 /** Text and headings hold their line box while their content loads. */
 export const Loading: Story = {
     render: () => (
@@ -134,6 +148,18 @@ export const Truncated: Story = {
                 /srv/media/music/David Bowie/1972 - The Rise and Fall of Ziggy Stardust and the Spiders from Mars
             </Text>
         </div>
+    ),
+};
+
+/** `nowrap` keeps a short phrase, such as a date, on one line while the sentence around it wraps. */
+export const NoWrap: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted" className="w-48">
+            Matt Pocock · MIT ·{' '}
+            <Text as="span" variant="inherit" nowrap>
+                updated 19 Oct 2026
+            </Text>
+        </Text>
     ),
 };
 

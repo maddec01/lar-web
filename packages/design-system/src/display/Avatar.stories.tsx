@@ -20,6 +20,9 @@ export const FallbackIcon: Story = { args: { src: undefined, name: undefined, sh
 
 export const Square: Story = { args: { shape: 'square' } };
 
+/** The 24px avatar beside a name in a dense list, such as a comment's author. */
+export const Compact: Story = { args: { src: undefined, name: 'Ana Silva', compact: true } };
+
 /** The household's users, with and without a photo. */
 export const Household: Story = {
     render: (args) => (

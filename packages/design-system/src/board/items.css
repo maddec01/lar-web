@@ -1,5 +1,5 @@
-/* An item's parts (ItemParts.tsx, StartControls.tsx): the title link, a project icon's colour, the Start control's group
-   and its message line. */
+/* An item's parts (ItemParts.tsx, StartControls.tsx): the title link, a project icon's colour (ProjectIcon.tsx), the
+   Start control's group and its message line. */
 
 .title {
     font-weight: 500;
@@ -15,8 +15,8 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* The colour behind a project icon's initial. Each repository takes the next colour in the board's list order (repoTone);
-   unlisted repositories keep the muted colour. */
+/* The colour behind a project icon's initial. Each repository takes the next colour in the board's list order
+   (ProjectIcon's `place`); unlisted repositories keep the muted colour. */
 .repo-tone-0 {
     --k: var(--color-sky-500);
 }

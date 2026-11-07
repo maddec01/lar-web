@@ -3,6 +3,7 @@ import { RefreshCwIcon } from 'lucide-react';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { InsetPanel } from '../display/InsetPanel';
 import { HelpTip } from '../overlays/HelpTip';
 import { Text } from '../typography/Typography';
 import { Field } from './Field';
@@ -144,6 +145,38 @@ export const ContentAndDisclosure: Story = {
     },
 };
 
+/** A `section` Disclosure folds a section's own content, such as an earlier version of a text, behind a muted label. */
+export const SectionDisclosure: Story = {
+    render: () => (
+        <div className="grid max-w-md gap-2">
+            <Text>Grant guests read access to the photo library.</Text>
+            <Disclosure label="Original" presentation="section">
+                <Text>Let guests see the photos.</Text>
+            </Disclosure>
+        </div>
+    ),
+};
+
+/** A `group` Disclosure folds a form's optional group under its heading, with a badge, starting open when asked; a
+ *  `framed` one folds a short list in a frame. */
+export const GroupAndFramedDisclosure: Story = {
+    render: () => (
+        <div className="grid max-w-md gap-4">
+            <Disclosure label="Map kinds to labels and types" presentation="group" badge="Optional" lazy defaultOpen>
+                <Text variant="caption" tone="muted">
+                    Without a mapping, new tickets get no labels from their kind.
+                </Text>
+            </Disclosure>
+            <Disclosure label="Optional settings" presentation="group">
+                <Text>What this Project does.</Text>
+            </Disclosure>
+            <Disclosure label="Already added (2)" presentation="framed">
+                <Text>web, api</Text>
+            </Disclosure>
+        </div>
+    ),
+};
+
 /** FormStack spaces several sections as a settings page. */
 export const Stacked: Story = {
     render: () => (
@@ -203,6 +236,40 @@ export const FlowRows: Story = {
     ),
 };
 
+/** `dense`: a dense tool's group, its title with help and its description over the panels and notes it holds. */
+export const Dense: Story = {
+    render: () => (
+        <div className="grid max-w-2xl gap-7">
+            <FormSection
+                presentation="dense"
+                title="Kinds and labels"
+                help="Map bugs, features and improvements to existing labels and types."
+                helpLabel="kind mapping"
+            >
+                <InsetPanel presentation="settings">
+                    <FormRow layout="flow" label="Glossary path">
+                        <Input aria-label="Glossary path" presentation="setting" defaultValue="docs/glossary.md" />
+                    </FormRow>
+                </InsetPanel>
+                <Text variant="caption" tone="muted">
+                    A note under the group's panel.
+                </Text>
+            </FormSection>
+            <FormSection
+                presentation="dense"
+                title="Labels"
+                description="Changes here write to the tracker straight away, for everyone using the repository."
+            >
+                <InsetPanel presentation="settings">
+                    <FormRow layout="flow" label="New label">
+                        <Input aria-label="New label" placeholder="New label name" />
+                    </FormRow>
+                </InsetPanel>
+            </FormSection>
+        </div>
+    ),
+};
+
 /** A fieldset groups controls under a legend and disables them all at once. */
 export const Fieldset: Story = {
     render: () => (
@@ -215,6 +282,11 @@ export const Fieldset: Story = {
             <FormFieldset presentation="group">
                 <Field label="Body">
                     <Input defaultValue="Grouped and disabled together, with no frame." />
+                </Field>
+            </FormFieldset>
+            <FormFieldset presentation="group" legend="Issue options" hiddenLegend>
+                <Field label="Assignee">
+                    <Input defaultValue="Its legend names the group for assistive technology only." />
                 </Field>
             </FormFieldset>
         </div>

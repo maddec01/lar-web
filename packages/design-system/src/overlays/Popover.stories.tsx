@@ -85,3 +85,22 @@ export const Menu: Story = {
         </Popover>
     ),
 };
+
+/** `md`: a 22rem panel, such as a chooser with a search field over its list. */
+export const Medium: Story = {
+    render: (args) => (
+        <Popover {...args}>
+            <Popover.Trigger asChild>
+                <Button variant="secondary">Choose labels</Button>
+            </Popover.Trigger>
+            <Popover.Content side="bottom" align="start" sideOffset={8} width="md">
+                <div className="flex flex-col gap-2">
+                    <Input type="search" aria-label="Search labels" placeholder="Search 12 labels" />
+                    <Text variant="caption" tone="muted">
+                        Pick the labels that mark a bug.
+                    </Text>
+                </div>
+            </Popover.Content>
+        </Popover>
+    ),
+};

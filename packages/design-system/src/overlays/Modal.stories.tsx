@@ -243,3 +243,17 @@ export const Expandable: Story = {
         </ModalDemo>
     ),
 };
+
+/** A paned dialog whose short pane `fitsContent`: it keeps its width and takes the pane's height. */
+export const FitsContent: Story = {
+    render: (args) => (
+        <ModalDemo {...args} trigger="Find a ticket">
+            <Modal.Content title="Add item" presentation="paned" fitsContent focusFirstField={false}>
+                <Modal.Body>
+                    <Text tone="muted">Find tickets outside your list, or open one you’ve already added.</Text>
+                </Modal.Body>
+                <Footer />
+            </Modal.Content>
+        </ModalDemo>
+    ),
+};

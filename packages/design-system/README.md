@@ -25,5 +25,8 @@ A website that uses the marketing showcase (`Hero`, device frames, `ServerUnit`â
 `@lar-works/design-system/showcase.css` instead of `styles.css`, and Lar Factory's board, which composes the `board`
 components (its title bar, counters, desk, loading screenâ€¦), imports `@lar-works/design-system/board.css`.
 
+Icons come from `@lar-works/design-system/icons`, and lucide's `DynamicIcon`, which draws an icon by its name and loads
+lucide's name map lazily, from `@lar-works/design-system/icons/dynamic`.
+
 Apps compose these components and never style anything themselves; `@lar-works/config`'s lint rules enforce it.
 `@lar-works/design-system/testing` has helpers for apps' jsdom test setup.

@@ -53,7 +53,7 @@ export const AllVariants: Story = {
     render: (args) => (
         <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-                {(['quiet', 'header', 'title-bar'] as const).map((variant) => (
+                {(['quiet', 'header', 'title-bar', 'inline'] as const).map((variant) => (
                     <IconButton key={variant} {...args} variant={variant} aria-label={`${variant} settings`} />
                 ))}
                 <IconButton

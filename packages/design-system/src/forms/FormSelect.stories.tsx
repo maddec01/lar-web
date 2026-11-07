@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CircleDotIcon, GitBranchIcon } from 'lucide-react';
+import { BugIcon, CircleDotIcon, GitBranchIcon, SparklesIcon, TrendingUpIcon } from 'lucide-react';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
@@ -48,3 +48,17 @@ export const Disabled: Story = { args: { value: 'main', disabled: true } };
 
 /** A settings row's 11rem dropdown, which writes at once on a pick. */
 export const Setting: Story = { args: { value: 'release', presentation: 'setting', writesOnPick: true } };
+
+/** Each choice's icon in its lar-brand hue, as Lar Factory's Kind select shows the kinds. */
+export const HuedIcons: Story = {
+    args: {
+        'aria-label': 'Kind',
+        placeholder: 'Choose a kind',
+        value: 'bug',
+        choices: [
+            { value: 'bug', name: 'Bug', icon: <BugIcon />, hue: 25 },
+            { value: 'feature', name: 'Feature', icon: <SparklesIcon />, hue: 150 },
+            { value: 'improvement', name: 'Improvement', icon: <TrendingUpIcon />, hue: 245 },
+        ],
+    },
+};

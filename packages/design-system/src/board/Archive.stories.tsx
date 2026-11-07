@@ -66,6 +66,17 @@ export const Notes: StoryObj<typeof BoardNote> = {
                 <BoardNote only="narrow">Shown only in a container narrower than 40rem.</BoardNote>
                 <BoardNote only="wide">Shown, on one line, only in a container 40rem or wider.</BoardNote>
             </div>
+            <div className="flex w-80 flex-wrap gap-2">
+                <span>Kind</span>
+                <BoardNote ownLine role="status">
+                    Takes a line of its own in a wrapping row.
+                </BoardNote>
+            </div>
+            <div className="w-60">
+                <BoardNote breaks role="status">
+                    Exported to /Users/ana/Downloads/lar-work-export-2026-11-07/sign-in-screen.md
+                </BoardNote>
+            </div>
         </div>
     ),
 };

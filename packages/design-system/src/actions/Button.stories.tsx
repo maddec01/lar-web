@@ -116,6 +116,18 @@ export const Pending: Story = {
     },
 };
 
+/** `pendingLook="disabled"` draws a button `aria-disabled` holds as a disabled one, while it keeps focus: a Save with
+ *  nothing new to save. */
+export const HeldDisabled: Story = {
+    args: {
+        variant: 'secondary',
+        compact: true,
+        pendingLook: 'disabled',
+        'aria-disabled': true,
+        children: 'Save',
+    },
+};
+
 /** While its action is in flight, a spinner takes the icon's place. */
 export const Busy: Story = {
     args: { variant: 'tinted', compact: true, busy: true, 'aria-disabled': true, children: 'Starting…' },

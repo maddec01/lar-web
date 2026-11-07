@@ -5,7 +5,7 @@ import { StatusIndicator, type StatusTone } from '../feedback/StatusIndicator';
 import { tabbable } from '../foundations/KeyboardFocus';
 
 export type IconButtonProps = Omit<NinnaIconButtonProps, 'color' | 'radius' | 'size' | 'variant'> & {
-    variant?: 'header' | 'quiet' | 'title-bar';
+    variant?: 'header' | 'quiet' | 'title-bar' | 'inline';
     tone?: StatusTone | 'accent';
     notification?: string;
 };
@@ -42,9 +42,12 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
                     : variant === 'title-bar'
                       ? // The title bar's 28px row of controls, with 16px icons.
                         'text-base-700 hover:bg-base-200 hover:text-base-content data-[state=open]:bg-base-200 data-[state=open]:text-base-content size-7 rounded-md p-0 before:-inset-1.5 **:data-[slot=icon]:size-4 '
-                      : tone === 'neutral'
-                        ? 'text-base-700 hover:bg-base-200 hover:text-base-content data-[state=open]:bg-base-200 rounded-md '
-                        : 'rounded-md ') +
+                      : variant === 'inline'
+                        ? // A 20px control inside a line of text, such as the pencil beside a list of labels, with a 12px icon.
+                          'text-base-700 hover:bg-base-200 grid size-5 place-items-center rounded p-0 disabled:opacity-50 disabled:hover:bg-transparent **:data-[slot=icon]:size-3 '
+                        : tone === 'neutral'
+                          ? 'text-base-700 hover:bg-base-200 hover:text-base-content data-[state=open]:bg-base-200 rounded-md '
+                          : 'rounded-md ') +
                 'transition-[background-color,color,scale] active:scale-[0.94] [&_svg]:size-full ' +
                 className
             }

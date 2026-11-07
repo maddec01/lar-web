@@ -9,6 +9,8 @@ export interface FormSelectChoice {
     value: string;
     name: string;
     icon?: ReactNode;
+    /** A lar-brand app hue that colours the icon, such as a kind's. */
+    hue?: number;
     disabled?: boolean;
 }
 
@@ -67,6 +69,7 @@ export const FormSelect = forwardRef<HTMLButtonElement, FormSelectProps>(
                             key={choice.value}
                             value={choice.value}
                             icon={choice.icon}
+                            iconHue={choice.hue}
                             textValue={choice.name}
                             disabled={choice.disabled}
                         >

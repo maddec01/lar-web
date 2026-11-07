@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
 import { Badge } from '../display/Badge';
-import { InlineLink, Link, LinkBox, LinkOverlay } from './Link';
+import { InlineButton, InlineLink, Link, LinkBox, LinkOverlay } from './Link';
 import { Heading, Text } from './Typography';
 
 const meta = {
@@ -45,6 +45,27 @@ export const Inline: Story = {
                 Need a token? <InlineLink href="https://github.com/settings/tokens">Create one on GitHub</InlineLink>.
             </Text>
         </div>
+    ),
+};
+
+/** InlineButton: an action inside running text, with InlineLink's look. */
+export const InlineAction: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted">
+            Ticket says Feature. Kept as is. <InlineButton onClick={fn()}>Change</InlineButton>
+        </Text>
+    ),
+};
+
+/** A disabled InlineButton, such as Recheck while the check runs. */
+export const InlineActionDisabled: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted">
+            Needs push access.{' '}
+            <InlineButton disabled onClick={fn()}>
+                Checking…
+            </InlineButton>
+        </Text>
     ),
 };
 
