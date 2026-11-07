@@ -7,9 +7,10 @@ import { Badge } from '../display/Badge';
 import { LabelChip } from '../display/LabelChip';
 import { Loading } from '../feedback/Loading';
 import { Input } from '../forms/Input';
+import { SortMenu } from '../navigation/SortMenu';
 import { buttonKind } from './ButtonKinds';
 import { FilterBar, FilterChip, FilterMenu } from './Filters';
-import { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote, ListSortMenu } from './List';
+import { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote } from './List';
 
 const meta = {
     title: 'Board/List',
@@ -29,7 +30,7 @@ const meta = {
             </Button>
         ),
         sort: (
-            <ListSortMenu
+            <SortMenu
                 value="updated"
                 options={[
                     { value: 'updated', label: 'Recently updated' },

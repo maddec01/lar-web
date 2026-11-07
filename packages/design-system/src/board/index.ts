@@ -30,7 +30,7 @@ export {
 } from './Counters';
 export { DeskCard, DeskHint, DeskMergeState, DeskSection, type MergeState } from './Desk';
 export { FilterBar, FilterChip, FilterChoice, FilterChoices, FilterMenu } from './Filters';
-export { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote, ListSortMenu } from './List';
+export { ListButton, ListGroupItem, ListHeader, ListItemRow, ListNote } from './List';
 export { type LoadingLine, type LoadingMark, LoadingScreen } from './LoadingScreen';
 export { type ReleaseNote, ReleaseNotes, UpdateDownloading, UpdatePill, UpdateStatusIcon } from './UpdatePill';
 export { BoardWarning, BoardWarnings, ToolMissing } from './Warnings';
@@ -157,8 +157,6 @@ export {
     ChangeFailed,
     CheckRun,
     ChipGroup,
-    Comment,
-    CommentList,
     DetailFact,
     DetailsHeading,
     DetailsSection,
@@ -175,7 +173,6 @@ export {
     MainSection,
     MetaArea,
     OutgoingTicket,
-    Person,
     SectionHeader,
     SpecSync,
     SprintCount,

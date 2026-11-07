@@ -4,7 +4,9 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
+import { Comment, CommentList } from '../display/Comment';
 import { LabelChip } from '../display/LabelChip';
+import { Person } from '../display/Person';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
 import { Inline } from '../layout/Flow';
@@ -16,8 +18,6 @@ import {
     ChangeFailed,
     CheckRun,
     ChipGroup,
-    Comment,
-    CommentList,
     DetailFact,
     DetailsSection,
     DetailsText,
@@ -29,7 +29,6 @@ import {
     MainSection,
     MetaArea,
     OutgoingTicket,
-    Person,
     SectionHeader,
     SpecSync,
     SprintCount,

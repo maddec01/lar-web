@@ -4,8 +4,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it } from 'vite-plus/test';
 
+import { Comment } from '../display/Comment';
 import { Disclosure } from '../forms/FormSection';
-import { Comment, EditActions, TicketLink } from './ItemDetails';
+import { EditActions, TicketLink } from './ItemDetails';
 import { WorkflowSteps } from './ItemProgress';
 
 it('a lazy section disclosure renders its content only once opened', () => {

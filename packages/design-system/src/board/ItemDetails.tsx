@@ -4,7 +4,6 @@
 import { CircleCheckIcon, CircleDotIcon } from 'lucide-react';
 import type { ReactNode, Ref } from 'react';
 
-import { Avatar } from '../display/Avatar';
 import type { DataAttributes } from './DataAttributes';
 
 const headings = {
@@ -177,16 +176,6 @@ export function DetailFact({
     );
 }
 
-/** A person: their avatar and name, the name wrapping. */
-export function Person({ name }: { name: string }) {
-    return (
-        <span className="inline-flex max-w-full min-w-0 items-center gap-1.5">
-            <Avatar name={name} compact />
-            <span className="min-w-0 wrap-anywhere">{name}</span>
-        </span>
-    );
-}
-
 /** A line of short items, such as a review round's verdicts, wrapping. */
 export function InlineList({ items }: { items: readonly string[] }) {
     return (
@@ -261,29 +250,6 @@ export function SpecSync({
                 </p>
             )}
         </div>
-    );
-}
-
-/** The comments, newest first, one Comment each. */
-export function CommentList({ children }: { children: ReactNode }) {
-    return <ol className="m-0 grid list-none grid-cols-[minmax(0,1fr)] gap-3 p-0">{children}</ol>;
-}
-
-/** A comment: its author's avatar beside a card with their name and `time` over the comment. */
-export function Comment({ author, time, children }: { author: string; time: ReactNode; children: ReactNode }) {
-    return (
-        <li className="flex gap-3">
-            <Avatar name={author} compact />
-            <div className="min-w-0 flex-1 rounded-(--radius-lg) border border-(--border) bg-(--card)">
-                <div className="flex items-center gap-2 border-b border-(--border) px-3 py-1.5 text-xs">
-                    <span className="font-medium" data-comment-author>
-                        {author}
-                    </span>
-                    <span className="text-(--muted-foreground)">{time}</span>
-                </div>
-                <div className="px-3 py-2">{children}</div>
-            </div>
-        </li>
     );
 }
 

@@ -12,4 +12,5 @@ export {
     DrilldownBrowseSelector,
 } from './DrilldownBrowseSelector';
 export { FolderSelector, type FolderSelectorOption, type FolderSelectorProps } from './FolderSelector';
+export { SortMenu } from './SortMenu';
 export { ViewTabs, type ViewTabsItem } from './ViewTabs';
