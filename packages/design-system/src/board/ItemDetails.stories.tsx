@@ -12,7 +12,6 @@ import {
     AttachmentLink,
     ChangeFailed,
     CheckRun,
-    ChecksDisclosure,
     ChipGroup,
     Comment,
     CommentList,
@@ -297,12 +296,12 @@ export const Outgoing: StoryObj<typeof OutgoingTicket> = {
 };
 
 /** A build's checks, folded until opened. */
-export const Checks: StoryObj<typeof ChecksDisclosure> = {
+export const Checks: StoryObj<typeof CheckRun> = {
     render: () => (
-        <ChecksDisclosure summary="Checks" onOpen={fn()}>
+        <Disclosure presentation="section" label="Checks" lazy onOpenChange={fn()}>
             <CheckRun command={'"pnpm" "test"'}>
                 <Text variant="inherit">apps/web · passed · Run by builder</Text>
             </CheckRun>
-        </ChecksDisclosure>
+        </Disclosure>
     ),
 };

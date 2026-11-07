@@ -166,7 +166,6 @@ export {
     AttachmentLink,
     ChangeFailed,
     CheckRun,
-    ChecksDisclosure,
     ChipGroup,
     Comment,
     CommentList,

@@ -35,3 +35,19 @@ it('a group can start open', () => {
     expect(container.querySelector<HTMLDetailsElement>('details')!.open).toBe(true);
     expect(screen.getByText('Mapping fields')).toBeTruthy();
 });
+
+it('tells its owner each time it opens or closes', () => {
+    const heard: boolean[] = [];
+    const { container } = render(
+        <Disclosure presentation="section" label="Checks" onOpenChange={(open) => heard.push(open)}>
+            <p>Runs</p>
+        </Disclosure>,
+    );
+    const details = container.querySelector<HTMLDetailsElement>('details')!;
+
+    details.open = true;
+    fireEvent(details, new Event('toggle'));
+    details.open = false;
+    fireEvent(details, new Event('toggle'));
+    expect(heard).toEqual([true, false]);
+});

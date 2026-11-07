@@ -515,31 +515,6 @@ export function OutgoingTicket({
     );
 }
 
-/** A build's checks, folded under `summary` until opened, which `onOpen` hears each time. */
-export function ChecksDisclosure({
-    summary,
-    onOpen,
-    children,
-    ...data
-}: {
-    summary: string;
-    onOpen: () => void;
-    children: ReactNode;
-} & DataAttributes) {
-    return (
-        <details
-            {...data}
-            className="w-full min-w-0 text-sm"
-            onToggle={(event) => {
-                if (event.currentTarget.open) onOpen();
-            }}
-        >
-            <summary className="min-h-11 cursor-pointer py-3 font-medium">{summary}</summary>
-            <div className="grid gap-3 pt-2">{children}</div>
-        </details>
-    );
-}
-
 /** A check's run: its `command`, then what it says of the run. */
 export function CheckRun({ command, children }: { command: string; children: ReactNode }) {
     return (

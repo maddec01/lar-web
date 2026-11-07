@@ -301,6 +301,7 @@ export function Disclosure({
     presentation = 'note',
     defaultOpen = false,
     badge,
+    onOpenChange,
     ...data
 }: {
     children: ReactNode;
@@ -315,10 +316,15 @@ export function Disclosure({
     defaultOpen?: boolean;
     /** A `group`'s badge after its heading, such as "Optional". */
     badge?: string | undefined;
+    /** Hears each time it opens or closes, such as to read what it shows once it opens. */
+    onOpenChange?: (open: boolean) => void;
 } & DataAttributes) {
     const [open, setOpen] = useState(defaultOpen);
     const shown = !lazy || open ? children : null;
-    const toggle = (event: SyntheticEvent<HTMLDetailsElement>) => setOpen(event.currentTarget.open);
+    const toggle = (event: SyntheticEvent<HTMLDetailsElement>) => {
+        setOpen(event.currentTarget.open);
+        onOpenChange?.(event.currentTarget.open);
+    };
 
     if (presentation === 'group')
         return (

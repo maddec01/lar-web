@@ -2,27 +2,11 @@
 // is announced.
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { expect, it, vi } from 'vite-plus/test';
+import { expect, it } from 'vite-plus/test';
 
 import { Disclosure } from '../forms/FormSection';
-import { ChecksDisclosure, Comment, EditActions, TicketLink } from './ItemDetails';
+import { Comment, EditActions, TicketLink } from './ItemDetails';
 import { WorkflowSteps } from './ItemProgress';
-
-it("a checks disclosure tells each open, not each close, so it can read the checks once it's opened", () => {
-    const opened = vi.fn();
-    const { container } = render(
-        <ChecksDisclosure summary="Checks" onOpen={opened} data-checks>
-            <p>No checks are recorded.</p>
-        </ChecksDisclosure>,
-    );
-    const details = container.querySelector<HTMLDetailsElement>('[data-checks]')!;
-
-    details.open = true;
-    fireEvent(details, new Event('toggle'));
-    details.open = false;
-    fireEvent(details, new Event('toggle'));
-    expect(opened).toHaveBeenCalledOnce();
-});
 
 it('a lazy section disclosure renders its content only once opened', () => {
     const { container } = render(
