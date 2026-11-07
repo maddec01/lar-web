@@ -2,6 +2,7 @@ import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '../actions/Button';
+import { StatusIndicator } from '../feedback/StatusIndicator';
 import { Checkbox } from './Checkbox';
 import { Input } from './Input';
 
@@ -105,12 +106,9 @@ export function LabelPicker({
                                 onChange={() => onToggle(name)}
                             />
                             {color && (
-                                <span
-                                    data-label-dot
-                                    className="mt-1 size-2 shrink-0 rounded-full"
-                                    style={{ background: color }}
-                                    aria-hidden="true"
-                                />
+                                <span data-label-dot className="mt-1 flex">
+                                    <StatusIndicator tone="neutral" color={color} />
+                                </span>
                             )}
                             <span className="min-w-0 flex-1">
                                 <span className="block wrap-anywhere">

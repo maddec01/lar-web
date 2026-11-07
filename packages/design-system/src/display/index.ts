@@ -7,7 +7,6 @@ export { BrandLink, BrandMark } from './BrandMark';
 export { ChangeList, type ChangeListItem } from './ChangeList';
 export { CheckList, type CheckListItem } from './CheckList';
 export { CodeBlock } from './CodeBlock';
-export { ColorDot } from './ColorDot';
 export { CopyButton } from './CopyButton';
 export { DataTable, type DataTableCell, type DataTableRow } from './DataTable';
 export { DetailHero, DetailHeroDetail, DetailHeroDetails, DetailHeroTags } from './DetailHero';

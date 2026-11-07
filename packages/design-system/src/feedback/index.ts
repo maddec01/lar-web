@@ -23,5 +23,4 @@ export { Spinner, SpinnerIcon } from './Spinner';
 export { StatusIndicator, type StatusTone } from './StatusIndicator';
 export { StatusPopoverContent } from './StatusPopoverContent';
 export { StatusRow } from './StatusRow';
-export { StatusText, type StatusTextTone } from './StatusText';
 export { Loading } from '@ninna-ui/feedback';
