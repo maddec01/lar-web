@@ -4,6 +4,10 @@ updates:
       directory: /
       schedule:
           interval: weekly
+      ignore:
+          # @types/node follows the Node major in .node-version.
+          - dependency-name: '@types/node'
+            update-types: ['version-update:semver-major']
       groups:
           storybook:
               patterns: ['storybook', '@storybook/*']
