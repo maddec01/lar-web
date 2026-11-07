@@ -7,7 +7,7 @@ import { FormSelect } from '../forms/FormSelect';
 import { Input } from '../forms/Input';
 import { Popover } from '../overlays/Popover';
 import { InlineButton } from '../typography/Link';
-import { BoardNote } from './Archive';
+import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { ReasonNote } from './Settings';
 import {
@@ -93,9 +93,9 @@ export const Suggested: Story = {
                     helpLabel="access"
                     action={<InlineButton onClick={fn()}>Recheck</InlineButton>}
                 />
-                <BoardNote tone="error" role="alert">
+                <Text variant="caption" tone="danger" role="alert">
                     Could not save the Bug mapping. <InlineButton onClick={fn()}>Retry</InlineButton>
-                </BoardNote>
+                </Text>
             </>
         ),
     },
@@ -104,7 +104,11 @@ export const Suggested: Story = {
 /** Nothing mapped and nothing suggested. */
 export const None: Story = {
     args: {
-        labels: <BoardNote>None</BoardNote>,
+        labels: (
+            <Text variant="caption" tone="muted">
+                None
+            </Text>
+        ),
         chooser: chooseButton('Add label'),
     },
 };

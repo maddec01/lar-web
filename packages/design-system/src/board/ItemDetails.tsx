@@ -421,7 +421,7 @@ export function ChangeFailed({
 }
 
 /** Where the item's kind and its ticket's disagree: the `message`, the `actions` that answer it, then a `hint` and any
- *  `error`, which the caller renders as BoardNotes. */
+ *  `error`, which the caller renders as caption Text. */
 export function KindQuestion({
     message,
     actions,

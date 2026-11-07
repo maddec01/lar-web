@@ -1,48 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { DataAttributes } from './DataAttributes';
-
-const containers = { narrow: '@min-[40rem]:hidden', wide: 'whitespace-nowrap @max-[40rem]:hidden' } as const;
-
-/** A short note under a setting or an action, or about a piece of work: muted, or an error in the danger text colour.
- *  `numeric` lines its figures up as a table's. `only` shows it in a container under 40rem (`narrow`) or, on one line,
- *  in one 40rem or wider (`wide`), where the same words show elsewhere in the other. `ownLine` takes a line of its own
- *  in a wrapping row, and `breaks` lets a long word, such as a path, break anywhere. `id` lets a field name it as its
- *  description. */
-export function BoardNote({
-    id,
-    tone = 'muted',
-    role,
-    title,
-    numeric = false,
-    only,
-    ownLine = false,
-    breaks = false,
-    children,
-    ...data
-}: {
-    id?: string | undefined;
-    tone?: 'muted' | 'error';
-    role?: 'alert' | 'status';
-    title?: string | undefined;
-    numeric?: boolean;
-    only?: 'narrow' | 'wide' | undefined;
-    ownLine?: boolean;
-    breaks?: boolean;
-    children: ReactNode;
-} & DataAttributes) {
-    return (
-        <p
-            {...data}
-            id={id}
-            className={`m-0 text-xs ${tone === 'error' ? 'text-(--error-foreground)' : 'text-(--muted-foreground)'}${numeric ? ' tabular-nums' : ''}${only ? ` ${containers[only]}` : ''}${ownLine ? ' w-full' : ''}${breaks ? ' wrap-anywhere' : ''}`}
-            role={role}
-            title={title}
-        >
-            {children}
-        </p>
-    );
-}
+import { Text } from '../typography/Typography';
 
 /** A row's actions at its right, with what they last did and an error under them. */
 export function ActionStack({
@@ -59,9 +17,9 @@ export function ActionStack({
             <span className="flex flex-wrap items-center gap-2">{children}</span>
             {below}
             {error && (
-                <BoardNote tone="error" role="alert">
+                <Text variant="caption" tone="danger" role="alert">
                     {error}
-                </BoardNote>
+                </Text>
             )}
         </span>
     );

@@ -11,7 +11,6 @@ import { Disclosure } from '../forms/FormSection';
 import { Input } from '../forms/Input';
 import { RadioGroup, RadioGroupChoice } from '../forms/RadioGroup';
 import { Text } from '../typography/Typography';
-import { BoardNote } from './Archive';
 import { buttonKind } from './ButtonKinds';
 import {
     AddFolderLine,
@@ -141,9 +140,13 @@ export const WorkStep: Story = {
     render: () => (
         <div className="max-w-xl">
             <SetupStep presentation="form" data-work-step>
-                <BoardNote>New labels wait until you add the Project.</BoardNote>
+                <Text variant="caption" tone="muted">
+                    New labels wait until you add the Project.
+                </Text>
                 <Disclosure presentation="group" label="Map kinds to labels and types" badge="Optional" lazy>
-                    <BoardNote>Without a mapping, new tickets get no labels from their kind.</BoardNote>
+                    <Text variant="caption" tone="muted">
+                        Without a mapping, new tickets get no labels from their kind.
+                    </Text>
                 </Disclosure>
                 <Disclosure presentation="group" label="Optional settings">
                     <Input aria-label="What this Project does" presentation="setting" placeholder="API" />

@@ -156,23 +156,3 @@ export function ItemBadges({ children, ...data }: { children: ReactNode } & Data
         </span>
     );
 }
-
-/** A short muted note about an item in small text, such as where its planning is saved or why an action is refused. */
-export function ItemNote({
-    id,
-    title,
-    role,
-    children,
-    ...data
-}: {
-    id?: string;
-    title?: string | undefined;
-    role?: 'status' | undefined;
-    children: ReactNode;
-} & DataAttributes) {
-    return (
-        <span {...data} id={id} title={title} role={role} className="text-base-700 text-xs">
-            {children}
-        </span>
-    );
-}

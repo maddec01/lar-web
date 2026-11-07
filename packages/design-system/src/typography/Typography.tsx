@@ -56,7 +56,18 @@ export interface TextProps extends TypographyProps {
     variant?: keyof typeof textStyles;
     /** Keeps the text on one line, such as a date that shouldn't break. */
     nowrap?: boolean;
+    /** Lines its figures up as a table's. */
+    numeric?: boolean;
+    /** Lets a long word, such as a path, break anywhere. */
+    breaks?: boolean;
+    /** Takes a line of its own in a wrapping row. */
+    ownLine?: boolean;
+    /** Shows it only in a container under 40rem (`narrow`) or, on one line, in one 40rem or wider (`wide`), where the
+     *  same words show elsewhere in the other. */
+    only?: keyof typeof containers | undefined;
 }
+
+const containers = { narrow: '@min-[40rem]:hidden', wide: 'whitespace-nowrap @max-[40rem]:hidden' } as const;
 
 export function Text({
     as: Tag = 'p',
@@ -64,15 +75,21 @@ export function Text({
     tone = variant === 'inherit' ? undefined : 'default',
     truncate,
     nowrap = false,
+    numeric = false,
+    breaks = false,
+    ownLine = false,
+    only,
     loading,
     className = '',
     children,
     ...props
 }: TextProps) {
+    const layout = `${numeric ? ' tabular-nums' : ''}${breaks ? ' wrap-anywhere' : ''}${ownLine ? ' w-full' : ''}${only ? ` ${containers[only]}` : ''}`;
+
     return (
         <Tag
             {...props}
-            className={`${textStyles[variant]} ${tone ? tones[tone] : ''} ${tone === 'muted' && (variant === 'lead' || variant === 'prose') ? 'dark:text-[#a3a3aa]' : ''} ${truncate ? 'truncate' : ''} ${nowrap ? 'whitespace-nowrap' : ''} ${loading ? `relative ${Tag === 'span' ? 'inline-block w-full' : ''}` : ''} ${className}`}
+            className={`${textStyles[variant]} ${tone ? tones[tone] : ''} ${tone === 'muted' && (variant === 'lead' || variant === 'prose') ? 'dark:text-[#a3a3aa]' : ''} ${truncate ? 'truncate' : ''} ${nowrap ? 'whitespace-nowrap' : ''} ${loading ? `relative ${Tag === 'span' ? 'inline-block w-full' : ''}` : ''} ${className}${layout}`}
         >
             {loading ? <LoadingText /> : children}
         </Tag>

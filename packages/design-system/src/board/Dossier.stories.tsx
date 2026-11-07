@@ -5,7 +5,7 @@ import { fn } from 'storybook/test';
 
 import { Badge } from '../display/Badge';
 import { ViewToggle } from '../navigation/CollectionViewToggle';
-import { BoardNote } from './Archive';
+import { Text } from '../typography/Typography';
 import {
     DossierBody,
     DossierChips,
@@ -143,8 +143,12 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
             </DossierLine>
             {open && (
                 <DossierBody>
-                    <BoardNote>No delivery planned.</BoardNote>
-                    <BoardNote>1 part the board doesn't read. A Project may no longer be on the board.</BoardNote>
+                    <Text variant="caption" tone="muted">
+                        No delivery planned.
+                    </Text>
+                    <Text variant="caption" tone="muted">
+                        1 part the board doesn't read. A Project may no longer be on the board.
+                    </Text>
                 </DossierBody>
             )}
         </DossierRow>

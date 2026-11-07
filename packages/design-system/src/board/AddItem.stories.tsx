@@ -8,6 +8,7 @@ import { Input } from '../forms/Input';
 import { MarkdownEditor } from '../forms/MarkdownEditor';
 import { Stack } from '../layout/Flow';
 import { InlineButton } from '../typography/Link';
+import { Text } from '../typography/Typography';
 import {
     AddItemButton,
     CreateIssueChoice,
@@ -18,7 +19,6 @@ import {
     type TicketSearchMatch,
     TicketSearchPane,
 } from './AddItem';
-import { BoardNote } from './Archive';
 import { LabelsValue } from './ItemDetails';
 import { LabelChip } from './ItemParts';
 
@@ -48,7 +48,9 @@ export const NewWork: Story = {
                     <>
                         <Input presentation="title" aria-label="Title" placeholder="Title" />
                         <MarkdownEditor label="Description" placeholder="Add a description…" value="" onChange={fn()} />
-                        <BoardNote>Formats as you type · saved as Markdown</BoardNote>
+                        <Text variant="caption" tone="muted">
+                            Formats as you type · saved as Markdown
+                        </Text>
                     </>
                 }
                 details={
@@ -76,7 +78,9 @@ export const LocalWork: Story = {
     render: () => (
         <div className="w-64">
             <DraftTicketPart>
-                <BoardNote>Local work has its kind alone. Saved only on this machine.</BoardNote>
+                <Text variant="caption" tone="muted">
+                    Local work has its kind alone. Saved only on this machine.
+                </Text>
             </DraftTicketPart>
         </div>
     ),
@@ -88,9 +92,9 @@ export const CreateIssueRefused: Story = {
         <CreateIssueChoice
             checkbox={<Checkbox label="Create issue" disabled />}
             reason={
-                <BoardNote>
+                <Text variant="caption" tone="muted">
                     GitHub refused creating issues. <InlineButton onClick={fn()}>Recheck access</InlineButton>
-                </BoardNote>
+                </Text>
             }
         />
     ),
@@ -132,7 +136,9 @@ export const FindATicket: Story = {
     render: () => (
         <div className="max-w-xl">
             <TicketSearchPane id="pick-ticket">
-                <BoardNote>Find tickets outside your list, or open one you’ve already added.</BoardNote>
+                <Text variant="caption" tone="muted">
+                    Find tickets outside your list, or open one you’ve already added.
+                </Text>
                 <Stack space="related">
                     <Search tickets={found} />
                 </Stack>

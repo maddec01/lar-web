@@ -13,7 +13,6 @@ import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarNavigationGroup } from '../layout/sidebar/SidebarPane';
 import { InlineButton } from '../typography/Link';
 import { Text } from '../typography/Typography';
-import { BoardNote } from './Archive';
 import { buttonKind } from './ButtonKinds';
 import { LabelsValue } from './ItemDetails';
 import {
@@ -169,7 +168,9 @@ export const SkillsPage: Story = {
                         </FormRow>
                     </InsetPanel>
                     <SettingsNote>
-                        <BoardNote role="status">T3 Code listed its provider targets.</BoardNote>
+                        <Text variant="caption" tone="muted" role="status">
+                            T3 Code listed its provider targets.
+                        </Text>
                         <FormResult
                             id="settings-result"
                             tone="warning"
@@ -200,9 +201,9 @@ export const ControlWithProjects: Story = {
                 <Button {...buttonKind('other')} shrinks mark="▾">
                     T3 Project default
                 </Button>
-                <BoardNote tone="error" role="alert">
+                <Text variant="caption" tone="danger" role="alert">
                     Couldn't save the model.
-                </BoardNote>
+                </Text>
             </SettingControl>
             <ProjectValueList
                 label="Default model by Project"

@@ -7,7 +7,7 @@ import { InsetPanel } from '../display/InsetPanel';
 import { ColorSwatches } from '../forms/ColorSwatches';
 import { FormRow } from '../forms/FormSection';
 import { Input } from '../forms/Input';
-import { BoardNote } from './Archive';
+import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { ButtonRow } from './ItemDialog';
 import {
@@ -90,9 +90,9 @@ const meta = {
                     actions={actions('long')}
                 />
             </TrackerLabelList>
-            <BoardNote tone="error" role="alert">
+            <Text variant="caption" tone="danger" role="alert">
                 GitHub refused the change.
-            </BoardNote>
+            </Text>
         </div>
     ),
 } satisfies Meta<typeof TrackerLabelList>;

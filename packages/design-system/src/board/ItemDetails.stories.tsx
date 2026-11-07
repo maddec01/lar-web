@@ -7,7 +7,6 @@ import { IconButton } from '../actions/IconButton';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
 import { Text } from '../typography/Typography';
-import { BoardNote } from './Archive';
 import { buttonKind } from './ButtonKinds';
 import {
     AttachmentLink,
@@ -83,9 +82,9 @@ const meta = {
                     <SkeletonLoader.Shape width="action" />
                 </DetailFact>
                 <DetailFact label="Updated">3h ago</DetailFact>
-                <BoardNote ownLine role="status">
+                <Text variant="caption" tone="muted" ownLine role="status">
                     Changed the ticket's labels: bug → feature.
-                </BoardNote>
+                </Text>
             </>
         ),
     },
@@ -131,7 +130,9 @@ export const KindDisagreement: Story = {
                     </>
                 }
             >
-                <BoardNote>Update changes #12: labels bug → feature.</BoardNote>
+                <Text variant="caption" tone="muted">
+                    Update changes #12: labels bug → feature.
+                </Text>
             </KindQuestion>
         ),
     },
@@ -263,7 +264,9 @@ export const ConceptParts: StoryObj<typeof ConceptPart> = {
                     name="Pick the session store"
                     state="Complete"
                 >
-                    <BoardNote>$0.42 · 6m</BoardNote>
+                    <Text variant="caption" tone="muted">
+                        $0.42 · 6m
+                    </Text>
                 </ConceptPart>
                 <ConceptPart
                     id="p2"

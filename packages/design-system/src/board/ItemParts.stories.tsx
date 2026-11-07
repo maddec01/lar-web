@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SparklesIcon } from 'lucide-react';
 
 import { Badge } from '../display/Badge';
+import { Text } from '../typography/Typography';
 import {
     ItemBadges,
     ItemFields,
-    ItemNote,
     ItemTitle,
     KindMarker,
     LabelChip,
@@ -80,7 +80,9 @@ export const KindAndLabels: Story = {
                 <LabelChip label="needs-design" note="new" />
             </span>
             <ItemFields text="User Story · Active · Pedro Gomes" />
-            <ItemNote role="status">Planning is saved on this Mac.</ItemNote>
+            <Text as="span" variant="caption" tone="muted" role="status">
+                Planning is saved on this Mac.
+            </Text>
         </div>
     ),
 };

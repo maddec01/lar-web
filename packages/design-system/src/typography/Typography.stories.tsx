@@ -192,3 +192,39 @@ export const InlineCode: Story = {
         </Text>
     ),
 };
+
+/** Small notes under a setting or an action: muted, or an error; `numeric`, `only`, `ownLine` and `breaks` place them. */
+export const Notes: Story = {
+    render: () => (
+        <div className="grid gap-2">
+            <Text variant="caption" tone="muted" role="status">
+                Saved the retention setting on this Mac.
+            </Text>
+            <Text variant="caption" tone="danger" role="alert">
+                Enter whole days from 0.
+            </Text>
+            <Text variant="caption" tone="muted" numeric title="Cost $1.92 · Agent time 19m · Tokens 1.20M">
+                $1.92 · 19m · 1.20M tokens
+            </Text>
+            <div className="@container">
+                <Text variant="caption" tone="muted" only="narrow">
+                    Shown only in a container narrower than 40rem.
+                </Text>
+                <Text variant="caption" tone="muted" only="wide">
+                    Shown, on one line, only in a container 40rem or wider.
+                </Text>
+            </div>
+            <div className="flex w-80 flex-wrap gap-2">
+                <span>Kind</span>
+                <Text variant="caption" tone="muted" ownLine role="status">
+                    Takes a line of its own in a wrapping row.
+                </Text>
+            </div>
+            <div className="w-60">
+                <Text variant="caption" tone="muted" breaks role="status">
+                    Exported to /Users/ana/Downloads/lar-work-export-2026-11-07/sign-in-screen.md
+                </Text>
+            </div>
+        </div>
+    ),
+};

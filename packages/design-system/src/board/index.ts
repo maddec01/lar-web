@@ -8,7 +8,7 @@ export {
     type TicketSearchMatch,
     TicketSearchPane,
 } from './AddItem';
-export { ActionStack, BoardNote, SettingConfirm, SettingLastRun } from './Archive';
+export { ActionStack, SettingConfirm, SettingLastRun } from './Archive';
 export { BoardContent, BoardShell, ReadingLine } from './BoardShell';
 export { BoardBrand, BoardTitleBar, type RefreshHealth, RefreshIndicator, TitleBarDivider } from './BoardTitleBar';
 export { type ButtonKind, buttonKind } from './ButtonKinds';
@@ -72,7 +72,6 @@ export {
 export {
     ItemBadges,
     ItemFields,
-    ItemNote,
     ItemTitle,
     KindMarker,
     LabelChip,
