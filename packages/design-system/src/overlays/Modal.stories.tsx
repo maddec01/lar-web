@@ -12,6 +12,7 @@ import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarPane } from '../layout/sidebar/SidebarPane';
 import { Text } from '../typography/Typography';
 import { Modal } from './Modal';
+import { ModalExpandButton } from './ModalExpandButton';
 
 /** Opens with the story, and reopens from the button after it is closed. */
 function ModalDemo({
@@ -207,6 +208,51 @@ export const LongContent: Story = {
                 <Modal.Footer>
                     <Button variant="primary">Got it</Button>
                 </Modal.Footer>
+            </Modal.Content>
+        </ModalDemo>
+    ),
+};
+
+function ExpandableContent() {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <Modal.Content
+            title="Edit catalog"
+            expanded={expanded}
+            headerActions={
+                <ModalExpandButton
+                    expanded={expanded}
+                    onToggle={() => setExpanded((on) => !on)}
+                    shortcut={{ label: '⌘⇧E', keys: 'Meta+Shift+E' }}
+                />
+            }
+        >
+            <Modal.Body>
+                <CatalogFields />
+            </Modal.Body>
+        </Modal.Content>
+    );
+}
+
+/** The header's expand control grows the dialog to the window, under a 52px title bar, and back. */
+export const Expandable: Story = {
+    render: (args) => (
+        <ModalDemo {...args}>
+            <ExpandableContent />
+        </ModalDemo>
+    ),
+};
+
+/** A paned dialog whose short pane `fitsContent`: it keeps its width and takes the pane's height. */
+export const FitsContent: Story = {
+    render: (args) => (
+        <ModalDemo {...args} trigger="Find a ticket">
+            <Modal.Content title="Add item" presentation="paned" fitsContent focusFirstField={false}>
+                <Modal.Body>
+                    <Text tone="muted">Find tickets outside your list, or open one you’ve already added.</Text>
+                </Modal.Body>
+                <Footer />
             </Modal.Content>
         </ModalDemo>
     ),

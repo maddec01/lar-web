@@ -5,11 +5,12 @@ export {
     CollectionBrowseSelector,
     CollectionBrowseTrigger,
 } from './CollectionBrowseSelector';
-export { type CollectionView, CollectionViewToggle } from './CollectionViewToggle';
+export { type CollectionView, CollectionViewToggle, ViewToggle, type ViewToggleOption } from './CollectionViewToggle';
 export {
     type DrilldownBrowseGroup,
     type DrilldownBrowseItem,
     DrilldownBrowseSelector,
 } from './DrilldownBrowseSelector';
 export { FolderSelector, type FolderSelectorOption, type FolderSelectorProps } from './FolderSelector';
+export { SortMenu } from './SortMenu';
 export { ViewTabs, type ViewTabsItem } from './ViewTabs';

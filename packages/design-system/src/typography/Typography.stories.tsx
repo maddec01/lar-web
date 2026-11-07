@@ -1,6 +1,6 @@
-import { Code } from '@ninna-ui/primitives';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { Code } from './Code';
 import { Heading, type HeadingProps, Text, type TextProps } from './Typography';
 
 const textVariants = [
@@ -108,6 +108,20 @@ export const Tones: Story = {
     ),
 };
 
+/** `inherit` takes the surrounding text's size and colour, such as a message inside a note that sets its own type. */
+export const Inherited: Story = {
+    render: () => (
+        <div className="text-base-700 grid gap-1 text-xs">
+            <Text variant="inherit" role="status">
+                Reading outgoing issue text…
+            </Text>
+            <Text variant="inherit" tone="danger" role="alert">
+                Could not read the outgoing issue text.
+            </Text>
+        </div>
+    ),
+};
+
 /** Text and headings hold their line box while their content loads. */
 export const Loading: Story = {
     render: () => (
@@ -134,6 +148,18 @@ export const Truncated: Story = {
                 /srv/media/music/David Bowie/1972 - The Rise and Fall of Ziggy Stardust and the Spiders from Mars
             </Text>
         </div>
+    ),
+};
+
+/** `nowrap` keeps a short phrase, such as a date, on one line while the sentence around it wraps. */
+export const NoWrap: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted" className="w-48">
+            Matt Pocock · MIT ·{' '}
+            <Text as="span" variant="inherit" nowrap>
+                updated 19 Oct 2026
+            </Text>
+        </Text>
     ),
 };
 
@@ -164,5 +190,41 @@ export const InlineCode: Story = {
             Install the package with <Code>pnpm add @lar-works/design-system</Code> and import <Code>styles.css</Code>{' '}
             once.
         </Text>
+    ),
+};
+
+/** Small notes under a setting or an action: muted, or an error; `numeric`, `only`, `ownLine` and `breaks` place them. */
+export const Notes: Story = {
+    render: () => (
+        <div className="grid gap-2">
+            <Text variant="caption" tone="muted" role="status">
+                Saved the retention setting on this Mac.
+            </Text>
+            <Text variant="caption" tone="danger" role="alert">
+                Enter whole days from 0.
+            </Text>
+            <Text variant="caption" tone="muted" numeric title="Cost $1.92 · Agent time 19m · Tokens 1.20M">
+                $1.92 · 19m · 1.20M tokens
+            </Text>
+            <div className="@container">
+                <Text variant="caption" tone="muted" only="narrow">
+                    Shown only in a container narrower than 40rem.
+                </Text>
+                <Text variant="caption" tone="muted" only="wide">
+                    Shown, on one line, only in a container 40rem or wider.
+                </Text>
+            </div>
+            <div className="flex w-80 flex-wrap gap-2">
+                <span>Kind</span>
+                <Text variant="caption" tone="muted" ownLine role="status">
+                    Takes a line of its own in a wrapping row.
+                </Text>
+            </div>
+            <div className="w-60">
+                <Text variant="caption" tone="muted" breaks role="status">
+                    Exported to /Users/ana/Downloads/lar-work-export-2026-11-07/sign-in-screen.md
+                </Text>
+            </div>
+        </div>
     ),
 };

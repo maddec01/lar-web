@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { ChevronDownIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { ChevronDownIcon, MessageSquareTextIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 
 import { Button } from './Button';
 
@@ -33,6 +33,7 @@ export const Recipes: Story = {
                     'secondary',
                     'quiet',
                     'subtle',
+                    'tinted',
                     'destructive',
                     'destructive-quiet',
                     'choice',
@@ -49,6 +50,95 @@ export const Recipes: Story = {
             </Button>
             <Button {...args} variant="context" leftIcon={<PlusIcon />} rightIcon={<ChevronDownIcon />}>
                 context
+            </Button>
+        </div>
+    ),
+};
+
+/** The dense 28px control with 12px text, as Lar Factory's board draws every button, in each recipe it uses. */
+export const Compact: Story = {
+    render: (args) => (
+        <div className="flex flex-wrap items-center gap-3">
+            {(['primary', 'tinted', 'secondary', 'quiet', 'destructive'] as const).map((variant) => (
+                <Button key={variant} {...args} compact variant={variant}>
+                    {variant}
+                </Button>
+            ))}
+            <Button {...args} compact variant="tinted" leftIcon={<PlusIcon />}>
+                Start build
+            </Button>
+        </div>
+    ),
+};
+
+/** A long label in a narrow surface wraps instead of clipping. */
+export const Wrapping: Story = {
+    render: (args) => (
+        <div className="w-48">
+            <Button {...args} compact wrap variant="secondary">
+                Close the ticket and delete the branch with its worktree
+            </Button>
+        </div>
+    ),
+};
+
+/** A square button with its icon alone, named for assistive technology, at both sizes. */
+export const IconOnly: Story = {
+    render: (args) => (
+        <div className="flex flex-wrap items-center gap-3">
+            <Button
+                {...args}
+                variant="secondary"
+                iconOnly
+                leftIcon={<MessageSquareTextIcon />}
+                aria-label="Open thread"
+            />
+            <Button
+                {...args}
+                compact
+                variant="secondary"
+                iconOnly
+                leftIcon={<MessageSquareTextIcon />}
+                aria-label="Open thread"
+            />
+        </div>
+    ),
+};
+
+/** While `aria-disabled` holds it for an action in flight, a button with `pendingLook` reads as waiting. */
+export const Pending: Story = {
+    args: {
+        variant: 'secondary',
+        compact: true,
+        pendingLook: true,
+        'aria-disabled': true,
+        children: 'Moving to List…',
+    },
+};
+
+/** `pendingLook="disabled"` draws a button `aria-disabled` holds as a disabled one, while it keeps focus: a Save with
+ *  nothing new to save. */
+export const HeldDisabled: Story = {
+    args: {
+        variant: 'secondary',
+        compact: true,
+        pendingLook: 'disabled',
+        'aria-disabled': true,
+        children: 'Save',
+    },
+};
+
+/** While its action is in flight, a spinner takes the icon's place. */
+export const Busy: Story = {
+    args: { variant: 'tinted', compact: true, busy: true, 'aria-disabled': true, children: 'Starting…' },
+};
+
+/** In a crowded row, the label truncates while its trailing mark stays. */
+export const Shrinking: Story = {
+    render: (args) => (
+        <div className="flex w-40">
+            <Button {...args} compact variant="tinted" shrinks mark="▾" leftIcon={<PlusIcon />}>
+                Start after owner/repository#1234
             </Button>
         </div>
     ),

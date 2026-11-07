@@ -21,16 +21,22 @@
             "types": "./dist/icons.d.ts",
             "default": "./dist/icons.js"
         },
+        "./icons/dynamic": {
+            "types": "./dist/icons/dynamic.d.ts",
+            "default": "./dist/icons/dynamic.js"
+        },
         "./testing": {
             "types": "./dist/testing.d.ts",
             "default": "./dist/testing.js"
         },
         "./styles.css": "./src/styles.css",
-        "./showcase.css": "./src/showcase.css"
+        "./showcase.css": "./src/showcase.css",
+        "./board.css": "./src/board.css"
     },
     "files": [
         "dist",
         "src",
+        "!src/**/*.test.ts",
         "!src/**/*.test.tsx",
         "!src/**/*.stories.tsx"
     ],
@@ -42,6 +48,14 @@
         "build-storybook": "storybook build --output-dir storybook-static"
     },
     "dependencies": {
+        "@lexical/code": "0.52.0",
+        "@lexical/html": "0.52.0",
+        "@lexical/link": "0.52.0",
+        "@lexical/list": "0.52.0",
+        "@lexical/markdown": "0.52.0",
+        "@lexical/react": "0.52.0",
+        "@lexical/rich-text": "0.52.0",
+        "@lexical/selection": "0.52.0",
         "@ninna-ui/core": "^0.6.0",
         "@ninna-ui/feedback": "^0.6.0",
         "@ninna-ui/forms": "^0.6.0",
@@ -50,8 +64,16 @@
         "@ninna-ui/primitives": "^0.6.0",
         "@ninna-ui/react-internal": "^0.6.0",
         "@tanstack/react-virtual": "^3.14.26",
+        "hast-util-to-jsx-runtime": "^2.3.7",
+        "lexical": "0.52.0",
         "lucide-react": "^1.70.0",
-        "qrcode-generator": "^2.0.4"
+        "qrcode-generator": "^2.0.4",
+        "react-markdown": "^10.1.0",
+        "rehype-parse": "^9.0.1",
+        "rehype-raw": "^7.0.0",
+        "rehype-sanitize": "^6.0.0",
+        "remark-gfm": "^4.0.1",
+        "unified": "^11.0.5"
     },
     "peerDependencies": {
         "react": "^19.2.0",
@@ -68,6 +90,7 @@
         "@testing-library/jest-dom": "^7.0.1",
         "@testing-library/react": "^16.3.3",
         "@testing-library/user-event": "^14.6.8",
+        "@types/hast": "^3.0.5",
         "@types/node": "^24.19.2",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",

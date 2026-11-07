@@ -1,0 +1,8 @@
+/* The board's button kinds (ButtonKinds.ts) are the compact Button, and an icon-only one is the Button's `iconOnly`.
+   Unlayered, so it wins over the Modal's own utilities. */
+
+/* The design system's Modal's Close: 28 px square, like every icon-only button on the board. */
+[data-slot='modal-close'] {
+    width: --spacing(7);
+    height: --spacing(7);
+}

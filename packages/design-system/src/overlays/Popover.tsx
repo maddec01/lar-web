@@ -8,12 +8,14 @@ interface PopoverContentPolicyProps extends Omit<PopoverContentProps, 'className
     onOpenAutoFocus?: (event: Event) => void;
     onCloseAutoFocus?: (event: Event) => void;
     presentation?: 'default' | 'menu';
-    width?: 'content' | 'sm' | 'trigger';
+    /** `sm` is 16rem and `md` 22rem, such as a chooser with a list; either stays inside the window. */
+    width?: 'content' | 'sm' | 'md' | 'trigger';
 }
 
 const popoverWidthClasses: Record<NonNullable<PopoverContentPolicyProps['width']>, string | undefined> = {
     content: undefined,
     sm: 'w-64',
+    md: 'w-88',
     trigger: 'w-(--radix-popover-trigger-width)',
 };
 

@@ -1,5 +1,7 @@
 import { toast } from '@ninna-ui/feedback';
 
+import { forgetNotificationSlots } from './Notifications';
+
 export interface ErrorNotification {
     description: string;
     title: string;
@@ -7,6 +9,7 @@ export interface ErrorNotification {
 
 export function dismissAllNotifications(): void {
     toast.dismissAll();
+    forgetNotificationSlots();
 }
 
 export function showErrorNotification(notification: ErrorNotification): void {

@@ -68,4 +68,30 @@ describe('copy invitation from LAN administration', () => {
         expect(await screen.findByRole('button', { name: 'Copied' })).toBeEnabled();
         expect(button).not.toHaveAttribute('aria-busy', 'true');
     });
+
+    it('as text, says Copy, then Copied, keeps its name, and reports each copy', async () => {
+        const writeText = vi.fn().mockResolvedValue(undefined);
+        const onCopied = vi.fn();
+
+        vi.stubGlobal('navigator', { clipboard: { writeText } });
+        render(
+            <CopyButton
+                presentation="text"
+                label="Copy pnpm test"
+                copyText="Copy"
+                copiedLabel="Copied"
+                value="pnpm test"
+                onCopied={onCopied}
+            />,
+        );
+
+        const button = screen.getByRole('button', { name: 'Copy pnpm test' });
+
+        expect(button).toHaveTextContent('Copy');
+        fireEvent.click(button);
+        await waitFor(() => expect(button).toHaveTextContent('Copied'));
+        expect(writeText).toHaveBeenCalledWith('pnpm test');
+        expect(onCopied).toHaveBeenCalledOnce();
+        expect(button).toHaveAccessibleName('Copy pnpm test');
+    });
 });

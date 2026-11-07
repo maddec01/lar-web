@@ -1,6 +1,7 @@
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
 
 const COPIED_FEEDBACK_MS = 1500;
@@ -9,10 +10,25 @@ interface CopyButtonProps {
     copiedLabel: string;
     label: string;
     value: string;
+    /** `icon` is a copy icon that turns into a tick; `text` is a compact button that reads `copyText`, then
+     *  `copiedLabel`, as a dense tool's Copy beside a command. */
+    presentation?: 'icon' | 'text';
+    /** The text presentation's word before a copy, such as "Copy"; `label` stays its accessible name. */
+    copyText?: string;
+    /** Called after each copy, such as to announce it in a live region. */
+    onCopied?: () => void;
 }
 
-/** The LAN admin also runs over HTTP, where the async clipboard API is unavailable. */
-export function CopyButton({ copiedLabel, label, value }: CopyButtonProps) {
+/** Copies `value`. The LAN admin also runs over HTTP, where the async clipboard API is unavailable, so it falls back
+ *  to a selected textarea. */
+export function CopyButton({
+    copiedLabel,
+    label,
+    value,
+    presentation = 'icon',
+    copyText = label,
+    onCopied,
+}: CopyButtonProps) {
     const [copiedValue, setCopiedValue] = useState<string | null>(null);
     const [copying, setCopying] = useState(false);
     const copied = copiedValue === value;
@@ -25,28 +41,42 @@ export function CopyButton({ copiedLabel, label, value }: CopyButtonProps) {
         return () => window.clearTimeout(timer);
     }, [copiedValue]);
 
+    const copy = async () => {
+        setCopying(true);
+
+        let done = false;
+
+        try {
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(value);
+                done = true;
+            } else {
+                done = copySelection(value);
+            }
+        } catch {
+            done = copySelection(value);
+        } finally {
+            setCopiedValue(done ? value : null);
+            setCopying(false);
+        }
+
+        if (done) onCopied?.();
+    };
+
+    if (presentation === 'text')
+        return (
+            <Button variant="secondary" compact aria-label={label} onClick={() => void copy()}>
+                {copied ? copiedLabel : copyText}
+            </Button>
+        );
+
     return (
         <IconButton
             icon={copied ? <CheckIcon /> : <CopyIcon />}
             aria-label={copied ? copiedLabel : label}
             title={copied ? copiedLabel : label}
             loading={copying}
-            onClick={async () => {
-                setCopying(true);
-
-                try {
-                    if (navigator.clipboard) {
-                        await navigator.clipboard.writeText(value);
-                        setCopiedValue(value);
-                    } else {
-                        setCopiedValue(copySelection(value) ? value : null);
-                    }
-                } catch {
-                    setCopiedValue(copySelection(value) ? value : null);
-                } finally {
-                    setCopying(false);
-                }
-            }}
+            onClick={copy}
             tone={copied ? 'success' : 'neutral'}
         />
     );

@@ -1,12 +1,16 @@
 import { ChevronDownIcon } from 'lucide-react';
-import { type ReactNode, useId, useState } from 'react';
+import { type ComponentProps, type ReactNode, type SyntheticEvent, useId, useState } from 'react';
 
 import { Button, type ButtonProps } from '../actions/Button';
+import { Badge } from '../display/Badge';
 import { InsetPanel } from '../display/InsetPanel';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Stack } from '../layout/Flow';
+import { HelpTip } from '../overlays/HelpTip';
 import { Heading, Text } from '../typography/Typography';
 import { Field, type FieldProps } from './Field';
+
+type DataAttributes = { [key: `data-${string}`]: string | undefined };
 
 const contentSpacing = 'px-4 py-3.5 sm:px-5';
 const rowClasses = `grid min-w-0 gap-x-6 gap-y-3 sm:items-center ${contentSpacing}`;
@@ -30,10 +34,68 @@ interface FormSectionProps {
     description?: string;
     loading?: boolean;
     loadingLabel?: string;
+    presentation?: 'default';
     title: ReactNode;
 }
 
-export function FormSection({
+/** A dense tool's settings group: its title (with an optional help popover) and description over the content as
+ *  given, such as one or more settings panels and their notes. */
+interface DenseFormSectionProps extends DataAttributes {
+    presentation: 'dense';
+    title?: ReactNode;
+    /** Explains the group in a popover from a help button after the title; `helpLabel` names that button. */
+    help?: ReactNode;
+    helpLabel?: string;
+    description?: ReactNode;
+    /** Names the group when its title doesn't, or when it has none. */
+    'aria-label'?: string;
+    children?: ReactNode;
+}
+
+export function FormSection(props: FormSectionProps | DenseFormSectionProps) {
+    if (props.presentation === 'dense') return <DenseFormSection {...props} />;
+
+    return <PanelFormSection {...props} />;
+}
+
+function DenseFormSection({
+    presentation: _presentation,
+    title,
+    help,
+    helpLabel,
+    description,
+    'aria-label': label,
+    children,
+    ...data
+}: DenseFormSectionProps) {
+    const titleId = useId();
+
+    return (
+        <section
+            {...data}
+            aria-label={label}
+            aria-labelledby={label || !title ? undefined : titleId}
+            className="grid min-w-0 gap-3"
+        >
+            {(title || description) && (
+                <div>
+                    {title && (
+                        <h3 id={titleId} className="m-0 flex items-center gap-1.5 text-[13px] font-semibold">
+                            {title}
+                            {help && (
+                                <HelpTip label={helpLabel ?? (typeof title === 'string' ? title : '')}>{help}</HelpTip>
+                            )}
+                        </h3>
+                    )}
+                    {description && <p className="text-base-700 m-0 mt-0.5 text-xs">{description}</p>}
+                </div>
+            )}
+            {children}
+        </section>
+    );
+}
+
+function PanelFormSection({
     action,
     badges,
     children,
@@ -76,16 +138,40 @@ export function FormSection({
     );
 }
 
-interface FormRowProps {
+interface FormRowColumnsProps {
     badges?: ReactNode;
     children: ReactNode;
     description: string;
     /** The row's element id, for linking or scrolling to it; a row with one can take focus when it is opened. */
     id?: string;
     label: ReactNode;
+    layout?: 'columns';
 }
 
-export function FormRow({ badges, children, description, id, label }: FormRowProps) {
+/** A dense tool's settings row: the label (with an optional help popover) and description, then its controls flowing
+ *  beside them and wrapping under them when they don't fit, then content below and an error. */
+interface FormRowFlowProps extends DataAttributes {
+    layout: 'flow';
+    label: ReactNode;
+    /** Explains the setting in a popover from a help button after the label; `helpLabel` names that button. */
+    help?: ReactNode;
+    helpLabel?: string;
+    description?: ReactNode;
+    children?: ReactNode;
+    /** Full-width content under the label and controls, such as a list the setting governs. */
+    below?: ReactNode;
+    error?: string | undefined;
+    /** The error's element id, for a control's aria-describedby. */
+    errorId?: string;
+}
+
+type FormRowProps = FormRowColumnsProps | FormRowFlowProps;
+
+export function FormRow(props: FormRowProps) {
+    if (props.layout === 'flow') return <FormRowFlow {...props} />;
+
+    const { badges, children, description, id, label } = props;
+
     return (
         <div
             id={id}
@@ -105,6 +191,58 @@ export function FormRow({ badges, children, description, id, label }: FormRowPro
             </Stack>
             <div className="min-w-0 sm:flex sm:justify-end [&>[role=status]]:w-full">{children}</div>
         </div>
+    );
+}
+
+function FormRowFlow({
+    layout: _layout,
+    label,
+    help,
+    helpLabel,
+    description,
+    children,
+    below,
+    error,
+    errorId,
+    ...data
+}: FormRowFlowProps) {
+    const fallbackErrorId = useId();
+
+    return (
+        <div {...data} className="settings-row grid min-w-0 gap-2 px-4 py-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="min-w-32 flex-1">
+                    <div className="settings-row-title flex min-w-0 items-center gap-1.5 text-[13px] font-medium wrap-anywhere">
+                        {label}
+                        {help && (
+                            <HelpTip label={helpLabel ?? (typeof label === 'string' ? label : '')}>{help}</HelpTip>
+                        )}
+                    </div>
+                    {description && <div className="text-base-700 text-xs wrap-anywhere">{description}</div>}
+                </div>
+                {children && (
+                    <div className="settings-row-control flex max-w-full min-w-0 flex-wrap items-center gap-2 sm:max-w-[60%] [&_button]:max-w-full [&>span]:max-w-full">
+                        {children}
+                    </div>
+                )}
+            </div>
+            {below}
+            {error && (
+                <p id={errorId ?? fallbackErrorId} role="alert" className="m-0 text-xs text-(--lar-danger-text)">
+                    {error}
+                </p>
+            )}
+        </div>
+    );
+}
+
+/** A value and its unit beside it in a row's controls, such as a number field and "days". */
+export function FormUnit({ children, unit }: { children: ReactNode; unit: ReactNode }) {
+    return (
+        <span className="flex items-center gap-2 text-sm [&_input]:w-20">
+            {children}
+            {unit}
+        </span>
     );
 }
 
@@ -156,20 +294,117 @@ export function FormAction(props: Omit<ButtonProps, 'type' | 'size' | 'variant' 
     return <Button {...props} type="button" variant="subtle" />;
 }
 
-export function Disclosure({ children, label, lazy = false }: { children: ReactNode; label: string; lazy?: boolean }) {
-    const [open, setOpen] = useState(false);
+export function Disclosure({
+    children,
+    label,
+    lazy = false,
+    presentation = 'note',
+    defaultOpen = false,
+    badge,
+    onOpenChange,
+    ...data
+}: {
+    children: ReactNode;
+    label: string;
+    lazy?: boolean;
+    /** `note` folds small muted text behind a chevron; `section` folds a section's own content, such as an earlier
+     *  version of a text, behind a muted label in the body size; `group` folds a form's optional group behind its
+     *  heading, such as optional settings; `framed` folds a short list in a frame, such as entries that can't be
+     *  picked. */
+    presentation?: 'note' | 'section' | 'group' | 'framed';
+    /** Starts open, such as a group whose kept answers may need a look. */
+    defaultOpen?: boolean;
+    /** A `group`'s badge after its heading, such as "Optional". */
+    badge?: string | undefined;
+    /** Hears each time it opens or closes, such as to read what it shows once it opens. */
+    onOpenChange?: (open: boolean) => void;
+} & DataAttributes) {
+    const [open, setOpen] = useState(defaultOpen);
+    const shown = !lazy || open ? children : null;
+    const toggle = (event: SyntheticEvent<HTMLDetailsElement>) => {
+        setOpen(event.currentTarget.open);
+        onOpenChange?.(event.currentTarget.open);
+    };
+
+    if (presentation === 'group')
+        return (
+            <details {...data} open={open} onToggle={toggle} className="min-w-0">
+                <summary className="cursor-pointer text-[13px] font-semibold">
+                    {label}
+                    {badge && (
+                        <>
+                            {' '}
+                            <Badge className="ms-1">{badge}</Badge>
+                        </>
+                    )}
+                </summary>
+                {shown && <div className="mt-3 grid min-w-0 gap-3">{shown}</div>}
+            </details>
+        );
+
+    if (presentation === 'framed')
+        return (
+            <details {...data} open={open} onToggle={toggle} className="min-w-0 rounded-lg border px-3 py-2">
+                <summary className="cursor-pointer text-sm font-medium">{label}</summary>
+                <div className="mt-2">{shown}</div>
+            </details>
+        );
+
+    if (presentation === 'section')
+        return (
+            <details {...data} className="grid min-w-0 gap-2" onToggle={toggle}>
+                <summary className="text-base-700 cursor-pointer text-sm">{label}</summary>
+                <div className="pt-2">{shown}</div>
+            </details>
+        );
 
     return (
-        <details className="group px-1" onToggle={(event) => setOpen(event.currentTarget.open)}>
+        <details {...data} className="group px-1" onToggle={toggle}>
             <summary className="text-base-700 hover:text-base-content focus-visible:outline-primary flex w-fit cursor-pointer list-none items-center gap-1.5 rounded py-1 text-xs focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
                 <span aria-hidden="true" className="-rotate-90 transition-transform group-open:rotate-0 [&>svg]:size-3">
                     <ChevronDownIcon />
                 </span>
                 {label}
             </summary>
-            <div className="text-base-700 mt-2 space-y-2 text-xs leading-relaxed">
-                {!lazy || open ? children : null}
-            </div>
+            <div className="text-base-700 mt-2 space-y-2 text-xs leading-relaxed">{shown}</div>
         </details>
+    );
+}
+
+type FormFieldsetProps = Omit<ComponentProps<'fieldset'>, 'style'> & {
+    /** The legend over the group. */
+    legend?: ReactNode;
+    /** Names the group for assistive technology only, where what's around it already says what it is. */
+    hiddenLegend?: boolean;
+    /** `group` only groups and disables its fields, with no frame. */
+    presentation?: 'bordered' | 'group';
+};
+
+/** The form section's fieldset: a bordered group of controls under a legend, on the native fieldset, which also
+ *  disables every control inside it. As a `group`, it only groups and disables its fields. */
+export function FormFieldset({
+    legend,
+    hiddenLegend = false,
+    presentation = 'bordered',
+    className = '',
+    children,
+    ...props
+}: FormFieldsetProps) {
+    return (
+        <fieldset
+            className={`m-0 min-w-0 ${presentation === 'group' ? 'border-0 p-0' : 'border-base-300 mb-3 rounded-lg border px-3 pt-2 pb-0 [&>legend]:mb-2 [&>legend]:font-semibold'} ${className}`}
+            data-slot="fieldset"
+            {...props}
+        >
+            {legend ? (
+                <legend
+                    className={hiddenLegend ? 'sr-only' : 'text-base-content p-0 text-sm leading-5 font-medium'}
+                    data-slot="fieldset-legend"
+                >
+                    {legend}
+                </legend>
+            ) : null}
+            {children}
+        </fieldset>
     );
 }

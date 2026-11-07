@@ -70,3 +70,23 @@ export const AllVariants: Story = {
         </div>
     ),
 };
+
+/** `setting` is a settings row's 16rem field and `short` a few characters' one, such as a hex colour. */
+export const Widths: Story = {
+    render: () => (
+        <div className="grid max-w-sm gap-3">
+            <Input aria-label="Glossary path" presentation="setting" defaultValue="docs/glossary.md" />
+            <Input aria-label="Hex colour" presentation="short" defaultValue="D73A4A" />
+            <Input aria-label="Build limit" presentation="count" inputMode="numeric" defaultValue="2" />
+        </div>
+    ),
+};
+
+/** `title` types a document's title in place, such as a new item's in Lar Factory's Add item dialog. */
+export const Title: Story = {
+    render: () => (
+        <div className="max-w-xl">
+            <Input aria-label="Title" placeholder="Title" presentation="title" />
+        </div>
+    ),
+};

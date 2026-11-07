@@ -48,6 +48,27 @@ export const Inline: Story = {
     ),
 };
 
+/** InlineLink with `onClick`: an action inside running text, with InlineLink's look. */
+export const InlineAction: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted">
+            Ticket says Feature. Kept as is. <InlineLink onClick={fn()}>Change</InlineLink>
+        </Text>
+    ),
+};
+
+/** A disabled InlineLink button, such as Recheck while the check runs. */
+export const InlineActionDisabled: Story = {
+    render: () => (
+        <Text variant="caption" tone="muted">
+            Needs push access.{' '}
+            <InlineLink disabled onClick={fn()}>
+                Checking…
+            </InlineLink>
+        </Text>
+    ),
+};
+
 /** LinkBox and LinkOverlay: the whole card opens the album, while the artist link stays clickable above it. */
 export const CardOverlay: Story = {
     render: (args) => (

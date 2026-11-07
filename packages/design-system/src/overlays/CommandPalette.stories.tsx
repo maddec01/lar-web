@@ -8,7 +8,9 @@ import {
     ImageIcon,
     type LucideIcon,
     MusicIcon,
+    PlusIcon,
     SettingsIcon,
+    TagIcon,
     TvIcon,
 } from 'lucide-react';
 import { type ComponentProps, useState } from 'react';
@@ -17,7 +19,7 @@ import { fn } from 'storybook/test';
 import { Button } from '../actions/Button';
 import { ResultRow } from '../collections/ResultList';
 import { Kbd } from '../display/Kbd';
-import { CommandPalette, CommandPaletteGroup, useCommandPaletteOption } from './CommandPalette';
+import { CommandPalette, CommandPaletteGroup, CommandPaletteOption, useCommandPaletteOption } from './CommandPalette';
 
 interface Destination {
     value: string;
@@ -188,3 +190,76 @@ export const Empty: Story = { render: (args) => <CommandPaletteDemo {...args} in
 export const Busy: Story = { args: { busy: true, empty: 'Searching…' } };
 
 export const WithoutFooter: Story = { args: { footer: undefined } };
+
+const filterGroups = [
+    {
+        label: 'Actions',
+        options: [
+            { value: 'action:add', name: 'Add item', icon: <PlusIcon /> },
+            { value: 'action:settings', name: 'Settings', icon: <SettingsIcon /> },
+        ],
+    },
+    {
+        label: 'Labels',
+        options: [
+            { value: 'label:bug', name: 'bug', icon: <TagIcon />, hint: '12 items', checked: true },
+            { value: 'label:docs', name: 'documentation', icon: <TagIcon />, meta: 'lar-works/lar-web' },
+        ],
+    },
+];
+
+/** Several filter tokens before the field, a Clear control after it, and options that tick when on. */
+function FilterDemo({ busy = false }: { busy?: boolean }) {
+    const [tokens, setTokens] = useState(['lar-factory', 'Bug', 'needs triage', 'design']);
+    const options = filterGroups.flatMap((group) => group.options);
+
+    return (
+        <>
+            <Button variant="secondary">Search the board</Button>
+            <CommandPalette
+                label="Search the board"
+                description="Find tickets, actions and settings, and filter the board."
+                placeholder="Search"
+                query=""
+                onQueryChange={fn()}
+                tokens={tokens.map((label) => ({
+                    id: label,
+                    label,
+                    leading: <TagIcon className="size-3" />,
+                    remove: {
+                        label: `Remove ${label}`,
+                        onRemove: () => setTokens((now) => now.filter((t) => t !== label)),
+                    },
+                }))}
+                onBackspaceEmpty={() => setTokens((now) => now.slice(0, -1))}
+                trailing={
+                    tokens.length ? (
+                        <Button variant="secondary" compact onClick={() => setTokens([])}>
+                            Clear
+                        </Button>
+                    ) : null
+                }
+                options={options.map((option) => option.value)}
+                onSelect={fn()}
+                onClose={fn()}
+                listLabel="Search results"
+                busy={busy}
+                busyLabel="Loading Projects…"
+                empty="Nothing matches."
+            >
+                {filterGroups.map((group) => (
+                    <CommandPaletteGroup key={group.label} label={group.label}>
+                        {group.options.map((option) => (
+                            <CommandPaletteOption key={option.value} {...option} />
+                        ))}
+                    </CommandPaletteGroup>
+                ))}
+            </CommandPalette>
+        </>
+    );
+}
+
+export const WithTokens: Story = { render: () => <FilterDemo /> };
+
+/** While more may arrive, the busy label shows under what is listed so far. */
+export const BusyWithOptions: Story = { render: () => <FilterDemo busy /> };

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { Button } from '../actions/Button';
 import { Text } from '../typography/Typography';
 import { InsetPanel } from './InsetPanel';
 import { RadioChoice } from './RadioChoice';
@@ -60,6 +61,28 @@ export const Settings: Story = {
                     <Text variant="caption" tone="muted">
                         For mobile data
                     </Text>
+                </RadioChoice>
+            </>
+        ),
+    },
+};
+
+/** A settings panel with its group's own action in the footer. */
+export const SettingsWithFooter: Story = {
+    args: {
+        presentation: 'settings',
+        footer: (
+            <Button compact variant="secondary">
+                Add Project
+            </Button>
+        ),
+        children: (
+            <>
+                <RadioChoice name="project" checked onChange={() => undefined}>
+                    <Text variant="label">maddec01/lar-web</Text>
+                </RadioChoice>
+                <RadioChoice name="project" checked={false} onChange={() => undefined}>
+                    <Text variant="label">maddec01/lar-server</Text>
                 </RadioChoice>
             </>
         ),

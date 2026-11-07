@@ -38,3 +38,19 @@ export const Tones: Story = {
         </div>
     ),
 };
+
+/** With a `label`: a check's state as a short word after the dot, in the tone's text colour; muted for one that
+ *  didn't run. */
+export const Labelled: Story = {
+    render: () => (
+        <div className="flex flex-col gap-2">
+            <StatusIndicator tone="success" label="Installed" />
+            <StatusIndicator tone="warning" label="Logged out" />
+            <StatusIndicator tone="danger" label="Not found" />
+            <StatusIndicator tone="neutral" label="Not checked" />
+        </div>
+    ),
+};
+
+/** A colour that comes with data, such as a tracker label's, in place of the tone's. */
+export const DataColor: Story = { args: { tone: 'neutral', labelColor: '#D73A4A' } };

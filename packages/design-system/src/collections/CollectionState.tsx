@@ -13,9 +13,14 @@ const variants = {
     compact: { layout: 'max-w-64 px-3 py-6', icon: '[&>svg]:size-6', space: 'related' },
     /** A quiet empty state with the same surface as dashboard content. */
     panel: { layout: 'max-w-md px-4 py-5', icon: '[&>svg]:size-6', space: 'related' },
+    /** A first run's welcome in an app's empty main area: its `icon` (such as the brand mark) in its own colours over a
+     *  section-sized title. */
+    welcome: { layout: 'max-w-xl px-6 py-16', icon: '', space: 'group' },
 } as const;
 
 interface CollectionStateProps {
+    /** The action in place of `actionLabel` and `onAction`, for a caller whose button has its own look or markers. */
+    action?: ReactNode;
     actionLabel?: string;
     description: string;
     icon?: ReactNode;
@@ -25,6 +30,7 @@ interface CollectionStateProps {
 }
 
 export function CollectionState({
+    action,
     actionLabel,
     description,
     icon,
@@ -39,12 +45,18 @@ export function CollectionState({
             space={variants[variant].space}
             className={`mx-auto text-center ${variants[variant].layout}`}
         >
-            {icon ? <span className={`text-base-500 ${variants[variant].icon}`}>{icon}</span> : null}
+            {icon ? (
+                variant === 'welcome' ? (
+                    icon
+                ) : (
+                    <span className={`text-base-500 ${variants[variant].icon}`}>{icon}</span>
+                )
+            ) : null}
             <Stack space="tight">
                 {compact ? (
                     <Text variant="label">{title}</Text>
                 ) : (
-                    <Heading as="h2" variant="subsection">
+                    <Heading as="h2" variant={variant === 'welcome' ? 'section' : 'subsection'}>
                         {title}
                     </Heading>
                 )}
@@ -52,11 +64,12 @@ export function CollectionState({
                     {description}
                 </Text>
             </Stack>
-            {actionLabel && onAction ? (
-                <Button type="button" onClick={onAction} variant="secondary">
-                    {actionLabel}
-                </Button>
-            ) : null}
+            {action ??
+                (actionLabel && onAction ? (
+                    <Button type="button" onClick={onAction} variant="secondary">
+                        {actionLabel}
+                    </Button>
+                ) : null)}
         </Stack>
     );
 

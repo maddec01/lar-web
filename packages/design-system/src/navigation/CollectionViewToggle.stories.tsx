@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ListChecksIcon, MapIcon } from 'lucide-react';
 import { type ComponentProps, useState } from 'react';
 import { fn } from 'storybook/test';
 
-import { CollectionViewToggle } from './CollectionViewToggle';
+import { CollectionViewToggle, ViewToggle } from './CollectionViewToggle';
 
 function CollectionViewToggleDemo(args: ComponentProps<typeof CollectionViewToggle>) {
     const [value, setValue] = useState(args.value);
@@ -36,3 +37,49 @@ export const Table: Story = { args: { value: 'table' } };
 
 /** Photos only make sense as a grid. */
 export const TableDisabled: Story = { args: { disabledViews: ['table'] } };
+
+function MapOrList({ compact }: { compact?: boolean }) {
+    const [value, setValue] = useState<'map' | 'list'>('map');
+
+    return (
+        <ViewToggle
+            compact={compact}
+            value={value}
+            onChange={setValue}
+            options={[
+                { value: 'map', label: 'Work map', icon: <MapIcon /> },
+                { value: 'list', label: 'Parts list', icon: <ListChecksIcon /> },
+            ]}
+        />
+    );
+}
+
+/** Any views, as Lar Factory's board draws a dossier as a Work map or a parts list; compact in a row's line. */
+export const OtherViews: Story = {
+    render: () => (
+        <div className="flex items-center gap-4">
+            <MapOrList />
+            <MapOrList compact />
+        </div>
+    ),
+};
+
+function Panes() {
+    const [value, setValue] = useState<'new' | 'pick'>('new');
+
+    return (
+        <ViewToggle
+            presentation="text"
+            label="Add"
+            value={value}
+            onChange={setValue}
+            options={[
+                { value: 'new', label: 'New work', attributes: { 'data-pane': 'new' } },
+                { value: 'pick', label: 'Find a ticket', attributes: { 'data-pane': 'pick' } },
+            ]}
+        />
+    );
+}
+
+/** Text options, as Lar Factory's Add item dialog switches between its panes in its header. */
+export const TextOptions: Story = { render: () => <Panes /> };
