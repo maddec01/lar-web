@@ -7,7 +7,7 @@ import { FormSelect } from '../forms/FormSelect';
 import { Input } from '../forms/Input';
 import { MarkdownEditor } from '../forms/MarkdownEditor';
 import { Stack } from '../layout/Flow';
-import { InlineButton } from '../typography/Link';
+import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import {
     AddItemButton,
@@ -93,7 +93,7 @@ export const CreateIssueRefused: Story = {
             checkbox={<Checkbox label="Create issue" disabled />}
             reason={
                 <Text variant="caption" tone="muted">
-                    GitHub refused creating issues. <InlineButton onClick={fn()}>Recheck access</InlineButton>
+                    GitHub refused creating issues. <InlineLink onClick={fn()}>Recheck access</InlineLink>
                 </Text>
             }
         />

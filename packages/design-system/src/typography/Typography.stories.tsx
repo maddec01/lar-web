@@ -1,6 +1,6 @@
-import { Code } from '@ninna-ui/primitives';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { Code } from './Code';
 import { Heading, type HeadingProps, Text, type TextProps } from './Typography';
 
 const textVariants = [

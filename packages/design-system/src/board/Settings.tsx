@@ -1,7 +1,7 @@
 // Lar Factory's settings: the title bar's button that opens them, the sections' sidebar, the column of a page's groups,
 // the short reason a setting can't be changed, and the parts its rows show under and beside their controls.
 
-import { ExternalLinkIcon, SettingsIcon } from 'lucide-react';
+import { SettingsIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { Button } from '../actions/Button';
@@ -69,7 +69,7 @@ export function SettingsGroups({ children, ...data }: { children: ReactNode } & 
 
 /**
  * Why a setting can't be changed, in a short muted line that wraps: the `reason`, a help popover with the whole
- * `explanation` (`helpLabel` names its button), then the `action` that checks again, such as an InlineButton.
+ * `explanation` (`helpLabel` names its button), then the `action` that checks again, such as an InlineLink with `onClick`.
  */
 export function ReasonNote({
     reason,
@@ -129,21 +129,5 @@ export function ProjectValueList({
                 </li>
             ))}
         </ul>
-    );
-}
-
-/** A link to where something comes from, such as a bundled skill's source, opening in a new tab: small, with the
- *  external-link icon, underlined on hover. `label` is its accessible name. */
-export function SourceLink({ href, label, children }: { href: string; label: string; children: ReactNode }) {
-    return (
-        <a
-            className="inline-flex items-center gap-1 text-xs font-medium text-(--foreground) underline-offset-2 hover:underline [&_svg]:size-3.5"
-            aria-label={label}
-            href={href}
-            target="_blank"
-            rel="noopener"
-        >
-            <ExternalLinkIcon /> {children}
-        </a>
     );
 }

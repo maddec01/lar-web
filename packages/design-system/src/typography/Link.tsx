@@ -92,28 +92,23 @@ function navigationClick({
 const inline =
     'focus-visible:outline-primary text-inherit underline decoration-current/40 underline-offset-2 transition-colors hover:decoration-current focus-visible:outline-2';
 
-/** A link inside running text or a note: the surrounding size and colour, underlined. */
-export function InlineLink({ href, children }: { href: string; children?: ReactNode }) {
-    return (
-        <a {...tabbable} href={href} target="_blank" rel="noreferrer" className={inline}>
-            {children}
-        </a>
-    );
-}
+/** A link inside running text or a note: the surrounding size and colour, underlined. With `onClick` in place of
+ *  `href` it is a button with the same look, such as "Change" after what was kept, and can be `disabled`. */
+export function InlineLink(
+    props:
+        | { href: string; children?: ReactNode }
+        | { onClick: () => void; disabled?: boolean | undefined; children?: ReactNode },
+) {
+    if ('onClick' in props)
+        return (
+            <button {...tabbable} type="button" disabled={props.disabled} onClick={props.onClick} className={inline}>
+                {props.children}
+            </button>
+        );
 
-/** A button inside running text or a note, such as "Change" after what was kept: InlineLink's look. */
-export function InlineButton({
-    onClick,
-    disabled,
-    children,
-}: {
-    onClick: () => void;
-    disabled?: boolean | undefined;
-    children: ReactNode;
-}) {
     return (
-        <button {...tabbable} type="button" disabled={disabled} onClick={onClick} className={inline}>
-            {children}
-        </button>
+        <a {...tabbable} href={props.href} target="_blank" rel="noreferrer" className={inline}>
+            {props.children}
+        </a>
     );
 }

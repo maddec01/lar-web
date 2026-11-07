@@ -219,7 +219,6 @@ export {
     SettingsGroups,
     SettingsNav,
     SettingsNote,
-    SourceLink,
 } from './Settings';
 export {
     CreateLabelForm,

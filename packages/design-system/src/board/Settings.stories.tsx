@@ -11,7 +11,7 @@ import { Input } from '../forms/Input';
 import { Switch } from '../forms/Switch';
 import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarNavigationGroup } from '../layout/sidebar/SidebarPane';
-import { InlineButton } from '../typography/Link';
+import { InlineLink, Link } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { LabelsValue } from './ItemDetails';
@@ -24,7 +24,6 @@ import {
     SettingsGroups,
     SettingsNav,
     SettingsNote,
-    SourceLink,
 } from './Settings';
 
 const meta = {
@@ -42,7 +41,7 @@ const reason = (
         reason="GitHub refused pushing branches."
         explanation="GitHub refused pushing branches. Ask for write access to the repository, then check again."
         helpLabel="access"
-        action={<InlineButton onClick={fn()}>Recheck</InlineButton>}
+        action={<InlineLink onClick={fn()}>Recheck</InlineLink>}
     />
 );
 
@@ -76,9 +75,9 @@ export const Checking: Story = {
             explanation="The factory hasn't checked this access yet."
             helpLabel="access"
             action={
-                <InlineButton disabled onClick={fn()}>
+                <InlineLink disabled onClick={fn()}>
                     Checking…
-                </InlineButton>
+                </InlineLink>
             }
         />
     ),
@@ -182,9 +181,14 @@ export const SkillsPage: Story = {
                 <FormSection presentation="dense" title="Bundled skills">
                     <InsetPanel presentation="settings">
                         <FormRow layout="flow" label="tdd" description="Matt Pocock · MIT · updated 19 Oct">
-                            <SourceLink href="https://github.com/mattpocock/skills" label="tdd source">
+                            <Link
+                                variant="caption"
+                                external
+                                href="https://github.com/mattpocock/skills"
+                                aria-label="tdd source"
+                            >
                                 Source
-                            </SourceLink>
+                            </Link>
                         </FormRow>
                     </InsetPanel>
                 </FormSection>

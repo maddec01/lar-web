@@ -6,7 +6,7 @@ import { InsetPanel } from '../display/InsetPanel';
 import { FormSelect } from '../forms/FormSelect';
 import { Input } from '../forms/Input';
 import { Popover } from '../overlays/Popover';
-import { InlineButton } from '../typography/Link';
+import { InlineLink } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import { ReasonNote } from './Settings';
@@ -91,10 +91,10 @@ export const Suggested: Story = {
                     reason="GitHub refused setting labels."
                     explanation="GitHub refused setting labels. Ask for triage access, then check again."
                     helpLabel="access"
-                    action={<InlineButton onClick={fn()}>Recheck</InlineButton>}
+                    action={<InlineLink onClick={fn()}>Recheck</InlineLink>}
                 />
                 <Text variant="caption" tone="danger" role="alert">
-                    Could not save the Bug mapping. <InlineButton onClick={fn()}>Retry</InlineButton>
+                    Could not save the Bug mapping. <InlineLink onClick={fn()}>Retry</InlineLink>
                 </Text>
             </>
         ),
