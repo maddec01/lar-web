@@ -4,13 +4,14 @@
 import { SquarePenIcon } from 'lucide-react';
 import type { KeyboardEvent, ReactNode, Ref } from 'react';
 
-import { Button } from '../actions/Button';
+import { ButtonBase as Button } from '../actions/Button';
 import { FormResult } from '../feedback/FormResult';
-import { FormFieldset } from '../forms/FormSection';
-import { Input } from '../forms/Input';
+import { FormFieldsetBase } from '../forms/FormDisclosure';
+import { InputBase } from '../forms/Input';
 import { tabbable } from '../foundations/KeyboardFocus';
+import { scrollFadeClassName, useScrollFade } from '../overlays/useScrollFade';
 import { buttonKind } from './ButtonKinds';
-import { DetailsHeading } from './ItemDetails';
+import { DetailsHeading } from './ItemDetailSections';
 
 /** The title bar's Add item button, a Main action named by its `label`, which folds away, for screen readers only, on a
  *  title bar under 70rem; `title` gives it whole with its shortcut, which `keyShortcuts` names. */
@@ -20,9 +21,13 @@ export function AddItemButton({
     keyShortcuts,
     onOpen,
 }: {
+    /** The button's text, such as "Add item". */
     label: string;
+    /** The tooltip, which gives its shortcut. */
     title: string;
+    /** The shortcut, for `aria-keyshortcuts`. */
     keyShortcuts?: string;
+    /** Called as the reader opens the add-item dialog. */
     onOpen: () => void;
 }) {
     return (
@@ -34,7 +39,7 @@ export function AddItemButton({
             aria-keyshortcuts={keyShortcuts}
             onClick={onOpen}
         >
-            <span className="@max-[70rem]:sr-only">{label}</span>
+            <span className="@max-6xl:sr-only">{label}</span>
         </Button>
     );
 }
@@ -42,8 +47,8 @@ export function AddItemButton({
 /**
  * A draft's fields as one group, which `disabled` locks: the `main` column (its title, editor and notes) beside the
  * `details` panel, which `detailsLabel` names. Narrower than 40rem the panel stacks under the main column, which then
- * grows with its text, and the two scroll as one; each row sizes to its content, so a long text pushes the panel down
- * rather than running under it.
+ * grows with its text, and the two scroll as one; each row sizes to its content, so the body scrolls while the footer stays outside it. On wide dialogs each column
+ * scrolls independently, so the Project and Kind controls stay beside long descriptions.
  */
 export function DraftFields({
     id,
@@ -52,36 +57,56 @@ export function DraftFields({
     main,
     details,
 }: {
+    /** The group's id, for the form's controls outside it. */
     id: string;
+    /** Locks every field, such as while the draft saves. */
     disabled: boolean;
+    /** Names the details panel for screen readers. */
     detailsLabel: string;
+    /** The main column: the title, editor and notes. */
     main: ReactNode;
+    /** The details panel beside it. */
     details: ReactNode;
 }) {
+    // Whichever region scrolls at this width (the whole draft on a narrow pane, else each column) fades at its edges.
+    const { setViewport: draftRef } = useScrollFade();
+    const { setViewport: mainFadeRef } = useScrollFade();
+    const { setViewport: detailsFadeRef } = useScrollFade();
+
     return (
         <div className="@container flex min-h-0 flex-1 flex-col">
-            <FormFieldset
+            <FormFieldsetBase
                 id={id}
                 presentation="group"
                 disabled={disabled}
-                className="border-base-300 grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_16rem] border-t @max-[40rem]:auto-rows-max @max-[40rem]:grid-cols-[minmax(0,1fr)] @max-[40rem]:content-start @max-[40rem]:overflow-y-auto"
+                className="flex min-h-0 flex-1 flex-col overflow-hidden"
             >
-                <div className="flex min-h-0 flex-col gap-3 overflow-y-auto px-5 pt-4 pb-5 sm:px-6 @max-[40rem]:min-h-80 @max-[40rem]:overflow-visible">
-                    {main}
-                </div>
-                <aside
-                    aria-label={detailsLabel}
-                    className="border-base-300 bg-base-50/60 grid content-start gap-5 overflow-y-auto border-l px-4 py-4 @max-[40rem]:overflow-visible @max-[40rem]:border-t @max-[40rem]:border-l-0"
+                <div
+                    ref={draftRef}
+                    data-draft-scroll
+                    className={`@max-pane:grid-cols-[minmax(0,1fr)] @max-pane:auto-rows-max @max-pane:content-start @max-pane:overflow-y-auto grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_16rem] overflow-hidden ${scrollFadeClassName}`}
                 >
-                    {details}
-                </aside>
-            </FormFieldset>
+                    <div
+                        ref={mainFadeRef}
+                        className={`@max-pane:min-h-80 @max-pane:overflow-visible flex min-h-0 flex-col gap-3 overflow-y-auto px-6 pt-4 pb-5 ${scrollFadeClassName}`}
+                    >
+                        {main}
+                    </div>
+                    <aside
+                        ref={detailsFadeRef}
+                        aria-label={detailsLabel}
+                        className={`border-line bg-surface-page/60 @max-pane:overflow-visible @max-pane:border-t @max-pane:border-l-0 grid content-start gap-5 overflow-y-auto border-l px-6 py-4 ${scrollFadeClassName}`}
+                    >
+                        {details}
+                    </aside>
+                </div>
+            </FormFieldsetBase>
         </div>
     );
 }
 
 /**
- * A field of a details panel under its small uppercase `heading`, which labels the field `htmlFor` names; without
+ * A field of a details panel under its sentence-case `heading`, which labels the field `htmlFor` names; without
  * `htmlFor`, the field is a group of controls that the heading names, such as a ticket's labels (`id` and `ref` reach
  * the group).
  */
@@ -92,10 +117,15 @@ export function PanelField({
     ref,
     children,
 }: {
+    /** The field's sentence-case heading. */
     heading: string;
+    /** The id of the control the heading labels; without it, the field is a group the heading names. */
     htmlFor?: string;
+    /** The field's id. */
     id?: string;
+    /** The field's element, for moving focus to it. */
     ref?: Ref<HTMLDivElement>;
+    /** The field's control or controls. */
     children: ReactNode;
 }) {
     if (htmlFor)
@@ -120,8 +150,13 @@ export function PanelField({
 
 /** The details panel's ticket part, ruled off from the fields above it: a ticket's own fields, or what a draft without
  *  one keeps. */
-export function DraftTicketPart({ children }: { children: ReactNode }) {
-    return <div className="border-base-300 grid gap-3 border-t pt-4">{children}</div>;
+export function DraftTicketPart({
+    children,
+}: {
+    /** The ticket's own fields, or what a draft without one keeps. */
+    children: ReactNode;
+}) {
+    return <div className="border-line grid gap-3 border-t pt-4">{children}</div>;
 }
 
 /** Create issue in the footer: its `checkbox`, then the `reason` it can't be ticked, kept to a readable width, and any
@@ -131,8 +166,11 @@ export function CreateIssueChoice({
     reason,
     error,
 }: {
+    /** The Create issue checkbox. */
     checkbox: ReactNode;
+    /** Why it can't be ticked, under it. */
     reason?: ReactNode;
+    /** Why creating the issue failed, announced. */
     error?: ReactNode;
 }) {
     return (
@@ -146,11 +184,22 @@ export function CreateIssueChoice({
 
 /** The Find a ticket pane, ruled off from the header: its notes and fields, one under the other, scrolling above the
  *  footer when a long result list needs it. */
-export function TicketSearchPane({ id, children }: { id: string; children: ReactNode }) {
+export function TicketSearchPane({
+    id,
+    children,
+}: {
+    /** The pane's id, for the control that opens it. */
+    id: string;
+    /** The pane's notes and fields. */
+    children: ReactNode;
+}) {
+    const { setViewport: fadeRef } = useScrollFade();
+
     return (
         <div
+            ref={fadeRef}
             id={id}
-            className="border-base-300 grid min-h-0 content-start gap-4 overflow-y-auto border-t px-5 pt-4 pb-5 sm:px-6"
+            className={`grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-4 overflow-y-auto px-5 pt-4 pb-5 sm:px-6 ${scrollFadeClassName}`}
         >
             {children}
         </div>
@@ -187,20 +236,35 @@ export function TicketSearch({
     onPick,
     result,
 }: {
+    /** The search field's id. */
     id: string;
+    /** The field's text. */
     query: string;
+    /** Called with the field's text as the reader types. */
     onQueryChange: (query: string) => void;
+    /** Called as the reader runs the search, by the button or Enter. */
     onSearch: () => void;
+    /** Names the search field. */
     fieldLabel: string;
+    /** The field's placeholder. */
     placeholder: string;
+    /** The search button's text, such as "Search". */
     searchLabel: string;
+    /** Locks the field and its button. */
     disabled?: boolean | undefined;
+    /** Locks the search button alone, such as while the field is empty. */
     searchDisabled?: boolean;
+    /** The matching tickets, each a button that picks it. */
     tickets: readonly TicketSearchMatch[];
+    /** Names the list of matches. */
     listLabel: string;
+    /** A search is in flight. */
     busy?: boolean;
+    /** A picked ticket is being attached: the matches are locked. */
     picking?: boolean;
+    /** Called with a ticket's number as the reader picks it. */
     onPick: (number: number) => void;
+    /** What the search found, announced, such as "3 tickets". */
     result: string;
 }) {
     const onKey = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -213,7 +277,7 @@ export function TicketSearch({
     return (
         <div className="grid gap-2" data-ticket-picker>
             <div className="flex gap-2">
-                <Input
+                <InputBase
                     id={`${id}-query`}
                     type="search"
                     value={query}
@@ -225,7 +289,13 @@ export function TicketSearch({
                     placeholder={placeholder}
                     className="min-w-0 flex-1"
                 />
-                <Button {...buttonKind('other')} id={`${id}-search`} disabled={searchDisabled} onClick={onSearch}>
+                <Button
+                    {...buttonKind('other')}
+                    size="md"
+                    id={`${id}-search`}
+                    disabled={disabled || searchDisabled}
+                    onClick={onSearch}
+                >
                     {searchLabel}
                 </Button>
             </div>
@@ -239,15 +309,11 @@ export function TicketSearch({
                                 data-ticket={ticket.number}
                                 disabled={busy}
                                 onClick={() => onPick(ticket.number)}
-                                className="hover:bg-base-200/70 focus-visible:outline-primary flex w-full min-w-0 items-baseline gap-2 rounded-md px-2 py-1.5 text-left text-sm focus-visible:outline-2 disabled:opacity-60"
+                                className="hover:bg-fill-hover focus-ring flex w-full min-w-0 items-baseline gap-2 rounded-md px-2 py-1.5 text-left text-sm disabled:opacity-60"
                             >
-                                <span className="shrink-0 text-(--muted-foreground) tabular-nums">
-                                    #{ticket.number}
-                                </span>
+                                <span className="text-fg-muted shrink-0 tabular-nums">#{ticket.number}</span>
                                 <span className="min-w-0 flex-1 truncate">{ticket.title}</span>
-                                {ticket.note && (
-                                    <span className="shrink-0 text-xs text-(--muted-foreground)">{ticket.note}</span>
-                                )}
+                                {ticket.note && <span className="text-fg-muted shrink-0 text-xs">{ticket.note}</span>}
                             </button>
                         </li>
                     ))}

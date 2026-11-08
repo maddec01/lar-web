@@ -268,10 +268,19 @@ test('busy content shows beside listed options and marks the list busy', async (
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
 });
 
-test('the footer holds the key hints', async () => {
-    await show(element({ footer: 'Arrow keys to move' }));
-    expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Arrow keys to move');
-    expect(document.querySelector('[role="listbox"]')?.textContent).not.toContain('Arrow keys to move');
+test('the palette owns its key hints, in its own words or a translation', async () => {
+    await show(element({}));
+
+    const hints = () => document.querySelector('[data-slot="command-palette-hints"]')?.textContent;
+
+    expect(hints()).toBe('↑↓move↵selectescclose');
+    expect(document.querySelector('[role="listbox"]')?.textContent).not.toContain('move');
+
+    await rerender(element({ hints: { move: 'navegar', select: 'abrir' } }));
+    expect(hints()).toBe('↑↓navegar↵abrirescclose');
+
+    await rerender(element({ tokens: [{ id: 'kind', label: 'Bug' }], onBackspaceEmpty: () => undefined }));
+    expect(hints()).toBe('↑↓move↵selectescclose⌫remove filter');
 });
 
 test('a press on the trailing control leaves the focus in the field', async () => {

@@ -49,7 +49,7 @@ export const Wide: Story = {
 /** In a narrow card the fields stack and the actions sit below them. */
 export const Narrow: Story = {
     render: (args) => (
-        <div className="border-base-300 bg-base-100 max-w-xs rounded-lg border p-4">
+        <div className="border-line bg-surface-raised max-w-xs rounded-lg border p-4">
             <InlineFields {...args} />
         </div>
     ),

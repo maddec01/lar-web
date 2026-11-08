@@ -3,7 +3,7 @@ import { FolderGit2Icon, GitPullRequestIcon, InboxIcon, SquarePenIcon } from 'lu
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
-import { Badge } from '../display/Badge';
+import { KindBadge } from '../display/KindBadge';
 import { LabelChip } from '../display/LabelChip';
 import { Loading } from '../feedback/Loading';
 import { Input } from '../forms/Input';
@@ -25,7 +25,7 @@ const meta = {
         title: 'lar-factory',
         count: 12,
         scope: (
-            <Button {...buttonKind('other')} compact={false} data-toggle aria-pressed>
+            <Button {...buttonKind('other')} data-toggle aria-pressed>
                 Board scoped
             </Button>
         ),
@@ -66,7 +66,7 @@ export const Reading: Story = { args: { count: undefined } };
 
 export const Rows: StoryObj<typeof ListItemRow> = {
     render: () => (
-        <div className="grid w-[36rem]">
+        <div className="grid w-144">
             <ListItemRow
                 item="61"
                 name="Move the title bar into the design system"
@@ -76,7 +76,7 @@ export const Rows: StoryObj<typeof ListItemRow> = {
                 title="Move the title bar into the design system"
                 repoIcon={<FolderGit2Icon className="size-3" />}
                 meta="lar-factory · 2h"
-                chips={<Badge hue={25}>Bug</Badge>}
+                chips={<KindBadge hue={25}>Bug</KindBadge>}
             />
             <ListItemRow
                 item="draft"
@@ -107,7 +107,7 @@ export const Groups: StoryObj<typeof ListGroupItem> = {
 
 export const TitleBarButton: StoryObj<typeof ListButton> = {
     render: () => (
-        <div className="@container flex gap-2">
+        <div className="@container flex w-full gap-2">
             <ListButton label="List" icon={<InboxIcon />} count={7} loadingLabel="Loading Projects…" onOpen={fn()} />
             <ListButton
                 label="List"

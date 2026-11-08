@@ -6,8 +6,13 @@ import { Checkbox } from '../forms/Checkbox';
 import { Popover } from '../overlays/Popover';
 import { buttonKind } from './ButtonKinds';
 
+interface FilterBarProps {
+    /** The filter menus, the active chips and Clear. */
+    children: ReactNode;
+}
+
 /** The List's filters: menus of checklists, then the active choices as chips that remove themselves, then Clear. */
-export const FilterBar = forwardRef<HTMLDivElement, { children: ReactNode }>(({ children }, ref) => (
+export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(({ children }, ref) => (
     <div ref={ref} data-item-filters className="flex flex-wrap items-center gap-1.5">
         {children}
     </div>
@@ -18,9 +23,11 @@ FilterBar.displayName = 'FilterBar';
 interface FilterMenuProps {
     /** What the menu filters, as `data-filter`. */
     which: string;
+    /** The filter's name, such as "Kind". */
     name: string;
     /** How many of its choices are on, after its name. */
     picked: number;
+    /** The filter's FilterChoices. */
     children: ReactNode;
 }
 
@@ -42,7 +49,12 @@ export function FilterMenu({ which, name, picked, children }: FilterMenuProps) {
 }
 
 /** A filter menu's checklist. */
-export function FilterChoices({ children }: { children: ReactNode }) {
+export function FilterChoices({
+    children,
+}: {
+    /** The choices, one FilterChoice each. */
+    children: ReactNode;
+}) {
     return <div className="grid w-52 gap-0.5">{children}</div>;
 }
 
@@ -52,14 +64,17 @@ export function FilterChoice({
     onToggle,
     children,
 }: {
+    /** The choice is on. */
     checked: boolean;
+    /** Called as the reader turns the choice on or off. */
     onToggle: () => void;
+    /** What the choice is, such as a badge. */
     children: ReactNode;
 }) {
     return (
         <label
             data-filter-choice
-            className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-xs hover:bg-(--accent)"
+            className="hover:bg-fill-hover flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-xs"
         >
             <Checkbox checked={checked} onChange={onToggle} />
             {children}
@@ -73,13 +88,16 @@ export function FilterChip({
     onRemove,
     children,
 }: {
+    /** The chip's accessible name, such as "Remove Bug". */
     removeLabel: string;
+    /** Called as the reader removes the choice. */
     onRemove: () => void;
+    /** The choice, such as a badge. */
     children: ReactNode;
 }) {
     return (
-        <button type="button" data-filter-chip aria-label={removeLabel} title={removeLabel} onClick={onRemove}>
-            {children}
+        <button type="button" data-filter-chip title={removeLabel} onClick={onRemove}>
+            <span className="sr-only">{removeLabel}:</span> {children}
         </button>
     );
 }

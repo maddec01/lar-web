@@ -19,7 +19,7 @@ export const Corner: Story = {
         <div className="max-w-sm text-xs">
             <DismissButton {...args} />
             <div className="font-medium">GitHub CLI is logged out.</div>
-            <div className="text-base-700 mt-1">
+            <div className="text-fg-muted mt-1">
                 The board reads GitHub through gh. Run gh auth login, then Recheck.
             </div>
         </div>
@@ -31,7 +31,7 @@ export const Inline: Story = {
     args: { placement: 'inline', label: 'Dismiss error for #61' },
     render: (args) => (
         <p className="text-xs">
-            <span role="alert">Couldn't start #61: the branch is checked out elsewhere.</span>{' '}
+            <span role="alert">Couldn’t start #61: the branch is checked out elsewhere.</span>{' '}
             <DismissButton {...args} />
         </p>
     ),

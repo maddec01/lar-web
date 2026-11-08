@@ -1,13 +1,24 @@
-import { Badge } from './Badge';
+import { BadgeBase as Badge } from './Badge';
 
 export interface BadgeListItem {
+    /** The item's key in the list. */
     id: string;
+    /** The badge's text. */
     label: string;
     /** Shown struck through, as a warning, when the item doesn't apply. */
     struck?: boolean;
 }
 
-export function BadgeList({ items, label }: { items: readonly BadgeListItem[]; label?: string }) {
+/** A wrapping list of neutral badges, such as a title's genres. */
+export function BadgeList({
+    items,
+    label,
+}: {
+    /** The badges, in order. */
+    items: readonly BadgeListItem[];
+    /** Names the list for screen readers, such as "Genres". */
+    label?: string;
+}) {
     return (
         <ul aria-label={label} className="flex flex-wrap gap-2">
             {items.map(({ id, label: text, struck = false }) => (

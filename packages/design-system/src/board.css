@@ -3,10 +3,14 @@
    there too. */
 @import './foundations/theme.css';
 @import './board/tokens.css';
+
+/* Board action hierarchy (ButtonKinds.ts): solid primary is the area's one next/submit action. A tinted Start
+   launches agent work (Shape, Start build, Start after), including a split button's model/options half; it never
+   means selected, running, or merely opens a thread. Neutral outlines open destinations or offer other actions.
+   Quiet icon controls open tools or a thread within a concept parts list. Disabled actions retain their kind. */
 @import './board/base.css';
 @import './board/title-bar.css';
-@import './board/loading-screen.css';
-@import './board/button-kinds.css';
+@import './feedback/app-splash.css';
 @import './board/items.css';
 @import './board/rows.css';
 

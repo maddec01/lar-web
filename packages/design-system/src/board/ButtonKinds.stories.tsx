@@ -4,7 +4,7 @@ import { GitPullRequestIcon, InboxIcon, MessageSquareTextIcon, PlayIcon, Trash2I
 import { Button } from '../actions/Button';
 import { buttonKind } from './ButtonKinds';
 
-/** The board's five kinds of button, spread from `buttonKind` on the design system's Button. */
+/** The board’s five kinds of button, spread from `buttonKind` on the design system’s Button. */
 function Kinds() {
     return (
         <div className="flex flex-wrap items-center gap-3">
@@ -25,7 +25,8 @@ function Kinds() {
                 List
             </Button>
             <Button {...buttonKind('other')}>Recheck</Button>
-            <Button {...buttonKind('other')} disabled title="T3 Code is not running">
+            <Button {...buttonKind('other', 'danger')}>Abandon</Button>
+            <Button {...buttonKind('other')} disabled title="T3 Code isn’t running">
                 Disabled, with why
             </Button>
         </div>

@@ -75,7 +75,7 @@ const meta = {
     argTypes: { children: { control: false } },
     decorators: [
         (Story) => (
-            <div className="h-[560px] md:w-60">
+            <div className="h-140 md:w-60">
                 <Story />
             </div>
         ),
@@ -86,7 +86,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Server's settings sections, grouped. Below the md breakpoint they become one scrolling row. */
+/** Lar Server’s settings sections, grouped. Below the md breakpoint they become one scrolling row. */
 export const SettingsSections: Story = {};
 
 /** A single ungrouped list. */

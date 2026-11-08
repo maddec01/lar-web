@@ -1,13 +1,18 @@
 import type { ReactNode } from 'react';
 
-import { Text } from '../typography/Typography';
+import { TextBase } from '../typography/Typography';
 
-export function CollectionSectionHeader({ children }: { children: ReactNode }) {
+export function CollectionSectionHeader({
+    children,
+}: {
+    /** The section's label, such as an album's disc or a letter of the alphabet. */
+    children: ReactNode;
+}) {
     return (
-        <div className="border-base-300 bg-base-100/65 flex h-10 items-center border-b px-3" role="presentation">
-            <Text as="span" className="shrink-0 tracking-[0.12em]" variant="overline">
+        <div className="border-line bg-surface-raised/65 flex h-10 items-center border-b px-3" role="presentation">
+            <TextBase as="span" className="shrink-0" variant="label">
                 {children}
-            </Text>
+            </TextBase>
         </div>
     );
 }

@@ -20,7 +20,7 @@ import { AppWindow, BrowserFrame, PhoneFrame, Screenshot } from '../showcase/Dev
 import { Hero } from '../showcase/Hero';
 import { ProductBand, ProductBands, ProductIndex } from '../showcase/ProductBand';
 import { DeviceStage, Reveal } from '../showcase/Stage';
-import { Announcement, AppIcon, StatusPill } from '../showcase/Status';
+import { Announcement, AppIcon, ReadinessStatus } from '../showcase/Status';
 import { PageSection, SectionHeading } from './PageSection';
 import { SiteFooter, SiteHeader, type SiteLink, SiteShell } from './Site';
 
@@ -40,9 +40,11 @@ function DemoHeader({ current }: { current?: string }) {
             navigationLabel="Main"
             menuLabel="Open menu"
             closeMenuLabel="Close menu"
+            menuTitle="Menu"
             onNavigate={navigate}
             links={links.map((link) => ({ ...link, current: link.href === current }))}
             utilities={<ThemeSwitch value={theme} onChange={setTheme} />}
+            mobileUtilities={<ThemeSwitch value={theme} onChange={setTheme} labelsVisible />}
             actions={
                 <ButtonLink
                     href="https://github.com/maddec01/lar-factory/releases/latest"
@@ -95,7 +97,7 @@ const footer = (
     />
 );
 
-/** Lar's home page: the hero and product index, a band per product, the principles and the closing call. */
+/** Lar’s home page: the hero and product index, a band per product, the principles and the closing call. */
 function HomePage() {
     return (
         <>
@@ -116,14 +118,14 @@ function HomePage() {
                             {
                                 name: 'Lar Factory',
                                 icon: <AppIcon src={factoryIcon} alt="" size="sm" />,
-                                status: <StatusPill status="available">Available for Mac</StatusPill>,
+                                status: <ReadinessStatus status="available">Available for Mac</ReadinessStatus>,
                                 summary: 'Turn repository issues into reviewed pull requests.',
                                 href: '/factory',
                             },
                             {
                                 name: 'Lar Server',
                                 icon: <AppIcon src={serverIcon} alt="" size="sm" />,
-                                status: <StatusPill status="development">In development</StatusPill>,
+                                status: <ReadinessStatus status="development">In development</ReadinessStatus>,
                                 summary: 'Stream your own music and films to native apps.',
                                 href: '/server',
                             },
@@ -139,7 +141,7 @@ function HomePage() {
                             chroma={0.09}
                             icon={<AppIcon src={factoryIcon} alt="" size="sm" />}
                             name="Lar Factory"
-                            status={<StatusPill status="available">Available for Mac</StatusPill>}
+                            status={<ReadinessStatus status="available">Available for Mac</ReadinessStatus>}
                             title="Turn issues into reviewed pull requests."
                             description="Shape ideas on a board. Let agents build them in isolated worktrees. Review and merge every pull request yourself."
                             note="Free · Apple silicon · Requires T3 Code"
@@ -176,7 +178,7 @@ function HomePage() {
                             hue={264}
                             icon={<AppIcon src={serverIcon} alt="" size="sm" />}
                             name="Lar Server"
-                            status={<StatusPill status="development">In development</StatusPill>}
+                            status={<ReadinessStatus status="development">In development</ReadinessStatus>}
                             title="Your music and films, on every screen."
                             description="Indexed on a server you own and streamed to native apps on your phone, tablet and computer, with the TV next."
                             actions={
@@ -186,13 +188,13 @@ function HomePage() {
                             }
                             media={
                                 <DeviceStage
-                                    endSize="large"
+                                    endSize="lg"
                                     main={
                                         <BrowserFrame address="lar-server.local" aspect="1600 / 1040" fade="tail">
                                             <Screenshot
                                                 dark={dashboardDark}
                                                 light={dashboardLight}
-                                                alt="The Lar Server dashboard: catalogs, the machine's resources and who's listening right now."
+                                                alt="The Lar Server dashboard: catalogs, the machine’s resources and who’s listening right now."
                                             />
                                         </BrowserFrame>
                                     }
@@ -270,16 +272,28 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The top-level marketing page: the site shell with its glass header, Lar's home page and the footer. */
+/** The top-level marketing page: the site shell with its glass header, Lar’s home page and the footer. */
 export const MarketingPage: Story = {};
 
-/** The header on a product page, with that page's link marked current. Narrow screens fold the links into a menu. */
+/** The header on a product page, with that page’s link marked current. Narrow screens fold the links into a menu. */
 export const Header: Story = {
     render: () => (
         <div className="glass-bar">
             <DemoHeader current="/server" />
         </div>
     ),
+};
+
+/** The menu open on a phone: the links, the theme switch and the page’s call to action. Escape closes it and focus
+ *  goes back to its button. */
+export const MobileMenuOpen: Story = {
+    globals: { viewport: { value: 'mobile1' } },
+    render: () => (
+        <div className="glass-bar relative min-h-96">
+            <DemoHeader current="/factory" />
+        </div>
+    ),
+    play: async ({ canvasElement }) => canvasElement.querySelector<HTMLButtonElement>('button[aria-expanded]')?.click(),
 };
 
 export const Footer: Story = { render: () => footer };

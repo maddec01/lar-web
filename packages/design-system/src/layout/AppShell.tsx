@@ -1,7 +1,12 @@
-import { type ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { type ReactNode, useLayoutEffect, useRef } from 'react';
+
+import { GlassBar } from './GlassBar';
+import { useScrolled } from './useScrolled';
 
 interface AppShellProps {
+    /** The page under the header, such as a PageLayout. */
     children: ReactNode;
+    /** The app's title bar, which sticks to the top as glass. */
     header: ReactNode;
 }
 
@@ -11,7 +16,7 @@ interface AppShellProps {
 export function AppShell({ children, header }: AppShellProps) {
     const shell = useRef<HTMLDivElement>(null);
     const headerContainer = useRef<HTMLDivElement>(null);
-    const scrolled = useDocumentScrolled();
+    const scrolled = useScrolled();
 
     useLayoutEffect(() => {
         const container = headerContainer.current;
@@ -35,29 +40,10 @@ export function AppShell({ children, header }: AppShellProps) {
             ref={shell}
             className="flex min-h-dvh min-w-0 flex-col pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)]"
         >
-            <div
-                ref={headerContainer}
-                data-scrolled={scrolled || undefined}
-                className="glass-bar data-scrolled:border-base-300 sticky top-0 z-50 shrink-0 border-b border-transparent pt-[env(safe-area-inset-top)] transition-[border-color] duration-300"
-            >
+            <GlassBar ref={headerContainer} scrolled={scrolled}>
                 {header}
-            </div>
+            </GlassBar>
             {children}
         </div>
     );
-}
-
-function useDocumentScrolled() {
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const update = () => setScrolled(window.scrollY > 2);
-
-        update();
-        window.addEventListener('scroll', update, { passive: true });
-
-        return () => window.removeEventListener('scroll', update);
-    }, []);
-
-    return scrolled;
 }

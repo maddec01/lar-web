@@ -1,7 +1,6 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { expect, test } from 'vite-plus/test';
 
+import { semanticColors } from '../foundations/tokens';
 import { CONTRAST_FLOOR, PALETTE, chipFill, chipText, contrastRatio, tint } from './LabelTint';
 
 test('the contrast ratio is the WCAG one', () => {
@@ -41,17 +40,16 @@ test('a colour with room to spare keeps its hue, and the pale ones the review me
 
 test('the style names both modes, and anything but a colour keeps the neutral style', () => {
     expect(tint('#C2E0C6')!.color).toMatch(/^light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\)$/);
-    expect(tint('#C2E0C6')!.backgroundColor).toBe('color-mix(in srgb, #C2E0C6 16%, transparent)');
+    expect(tint('#C2E0C6')!.backgroundColor).toBe('rgb(194 224 198 / 16%)');
     expect(tint(undefined)).toBeUndefined();
     expect(tint('red; background: url(x)')).toBeUndefined();
 });
 
-test('the palette values match the theme', () => {
-    const theme = readFileSync(join(import.meta.dirname, '../foundations/theme.css'), 'utf8');
-    const [light, dark] = theme.split('@utility lar-dark-palette') as [string, string];
-
-    expect(light).toContain(`--color-base-content: ${PALETTE.light.foreground};`);
-    expect(light).toContain(`--color-base-200: ${PALETTE.light.surface};`);
-    expect(dark).toContain(`--color-base-content: ${PALETTE.dark.foreground};`);
-    expect(dark).toContain(`--color-base-200: ${PALETTE.dark.surface};`);
+test('the palette is the semantic tokens a picked row draws with', () => {
+    // tokens.test.ts holds theme.css to these values.
+    expect(PALETTE.light).toEqual({
+        foreground: semanticColors.fg.light,
+        surface: semanticColors['fill-selected'].light,
+    });
+    expect(PALETTE.dark).toEqual({ foreground: semanticColors.fg.dark, surface: semanticColors['fill-selected'].dark });
 });

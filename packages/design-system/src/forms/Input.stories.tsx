@@ -7,10 +7,7 @@ const meta = {
     title: 'Forms/Input',
     component: Input,
     args: { placeholder: 'Search albums, artists and tracks', 'aria-label': 'Search' },
-    argTypes: {
-        variant: { control: 'select', options: ['filled', 'outline', 'flushed', 'unstyled'] },
-        size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'] },
-    },
+    argTypes: { presentation: { control: 'select', options: ['field', 'setting', 'short', 'count', 'title'] } },
     render: (args) => (
         <div className="max-w-sm">
             <Input {...args} />
@@ -52,26 +49,19 @@ export const LongValue: Story = {
     },
 };
 
-/** Every variant and state, for comparing them in light and dark. */
-export const AllVariants: Story = {
+/** Every state, for comparing them in light and dark. */
+export const AllStates: Story = {
     render: (args) => (
         <div className="flex max-w-sm flex-col gap-3">
-            {(['filled', 'outline', 'flushed', 'unstyled'] as const).map((variant) => (
-                <Input
-                    key={variant}
-                    {...args}
-                    variant={variant}
-                    placeholder={`${variant} input`}
-                    aria-label={variant}
-                />
-            ))}
+            <Input {...args} placeholder="Empty" aria-label="Empty" />
+            <Input {...args} defaultValue="Filled in" aria-label="Filled in" />
             <Input {...args} placeholder="Invalid" aria-label="Invalid" invalid />
             <Input {...args} placeholder="Disabled" aria-label="Disabled" disabled />
         </div>
     ),
 };
 
-/** `setting` is a settings row's 16rem field and `short` a few characters' one, such as a hex colour. */
+/** `setting` is a settings row’s 16rem field and `short` a few characters' one, such as a hex colour. */
 export const Widths: Story = {
     render: () => (
         <div className="grid max-w-sm gap-3">
@@ -82,7 +72,7 @@ export const Widths: Story = {
     ),
 };
 
-/** `title` types a document's title in place, such as a new item's in Lar Factory's Add item dialog. */
+/** `title` types a document’s title in place, such as a new item’s in Lar Factory’s Add item dialog. */
 export const Title: Story = {
     render: () => (
         <div className="max-w-xl">

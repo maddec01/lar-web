@@ -1,7 +1,7 @@
 import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from 'react';
 
 import { Heading, Text } from '../typography/Typography';
-import { type Readiness, StatusLight, StatusPill } from './Status';
+import { type Readiness, StatusLight, ReadinessStatus } from './Status';
 
 export type MediaApp = 'music' | 'video' | 'photos' | 'books';
 
@@ -14,10 +14,13 @@ export interface ServerBay {
 }
 
 interface ServerUnitProps {
+    /** Names the unit for screen readers. */
     label: string;
     /** The key for the bays' lights, set under the unit. */
     legend?: ReactNode;
+    /** The front display's name and state. */
     display: { name: string; state: string };
+    /** The drive sleds, one per media app, each with what it can do. */
     bays: readonly ServerBay[];
 }
 
@@ -64,11 +67,11 @@ export function ServerUnit({ label, display, bays, legend }: ServerUnitProps) {
     return (
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-14">
             <div className="flex flex-col gap-8 [perspective:1600px]">
-                <div className="lar-unit [transform:rotateX(2deg)_rotateY(5deg)] transition-transform duration-700 hover:[transform:rotateX(1deg)_rotateY(3deg)]">
+                <div className="lar-unit [transform:rotateX(2deg)_rotateY(5deg)] transition-transform duration-(--motion-duration-deliberate) hover:[transform:rotateX(1deg)_rotateY(3deg)]">
                     <div className="lar-unit__top" aria-hidden="true">
                         <svg viewBox="0 0 100 100" className="lar-unit__mark">
-                            <path d={MARK_L} fill="#f4f4f5" />
-                            <path d={MARK_S} fill="#355292" />
+                            <path d={MARK_L} fill="var(--color-zinc-100)" />
+                            <path d={MARK_S} fill="var(--color-brand-mark)" />
                         </svg>
                         <div className="lar-unit__lcd">
                             <span>{display.name}</span>
@@ -117,7 +120,7 @@ export function ServerUnit({ label, display, bays, legend }: ServerUnitProps) {
                     role="tabpanel"
                     id={`${baseId}-panel`}
                     aria-labelledby={`${baseId}-${current.id}-tab`}
-                    className="border-base-300 bg-base-100/70 dark:bg-base-100/50 rounded-[1.25rem] border p-5 sm:min-h-[420px] sm:p-7"
+                    className="border-line bg-surface-glass rounded-2xl border p-5 sm:min-h-105 sm:p-7"
                 >
                     {current.panel}
                 </div>
@@ -133,10 +136,15 @@ export interface ReadinessItem {
 }
 
 interface ReadinessPanelProps {
+    /** The app's icon. */
     icon: ReactNode;
+    /** The app's name. */
     title: string;
+    /** Where the app stands, such as a ReadinessStatus. */
     status: ReactNode;
+    /** A sentence on the app today. */
     summary: string;
+    /** Its capabilities, grouped by readiness. */
     groups: readonly { title: string; items: readonly ReadinessItem[]; wideOnly?: boolean }[];
 }
 
@@ -159,15 +167,15 @@ export function ReadinessPanel({ icon, title, status, summary, groups }: Readine
                     <Text as="span" variant="overline" tone="muted">
                         {group.title}
                     </Text>
-                    <ul className="divide-base-300/70 flex flex-col divide-y">
+                    <ul className="divide-line/70 flex flex-col divide-y">
                         {group.items.map((item) => (
                             <li
                                 key={item.label}
-                                className="text-base-800 flex items-center gap-3 py-1.5 text-sm sm:py-2"
+                                className="text-fg-soft flex items-center gap-3 py-1.5 text-sm sm:py-2"
                             >
                                 <StatusLight status={item.status} />
                                 <span className="min-w-0 flex-1">{item.label}</span>
-                                <span className="text-base-700 shrink-0 text-xs">{item.statusLabel}</span>
+                                <span className="text-fg-muted shrink-0 text-xs">{item.statusLabel}</span>
                             </li>
                         ))}
                     </ul>
@@ -178,13 +186,18 @@ export function ReadinessPanel({ icon, title, status, summary, groups }: Readine
 }
 
 /** The key for the readiness lights. */
-export function ReadinessLegend({ items }: { items: readonly { status: Readiness; label: string }[] }) {
+export function ReadinessLegend({
+    items,
+}: {
+    /** Each readiness with its label. */
+    items: readonly { status: Readiness; label: string }[];
+}) {
     return (
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {items.map((item) => (
-                <StatusPill key={item.status} status={item.status}>
+                <ReadinessStatus key={item.status} status={item.status}>
                     {item.label}
-                </StatusPill>
+                </ReadinessStatus>
             ))}
         </div>
     );

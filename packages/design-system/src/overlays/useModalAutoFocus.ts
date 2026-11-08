@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 /** Focuses a dialog's first editable field when it opens, or once one appears, unless `focusFirstField` is
  *  false, such as while the caller focuses something else; turning it off stops a pending wait. */
-export function useModalAutoFocus(focusFirstField = true) {
+export function useModalAutoFocus(focusFirstField = true, focusContent = true) {
     const cleanup = useRef<(() => void) | undefined>(undefined);
     const returnFocus = useRef<HTMLElement | null>(null);
 
@@ -18,7 +18,14 @@ export function useModalAutoFocus(focusFirstField = true) {
 
         if (!(dialog instanceof HTMLElement)) return;
 
-        returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        const menu = active?.closest('[role="menu"]');
+        // A menu item disappears as its dialog opens. Return to the menu's trigger instead of the removed item.
+        const trigger = menu?.id
+            ? document.querySelector<HTMLElement>(`[aria-controls="${CSS.escape(menu.id)}"]`)
+            : null;
+
+        returnFocus.current = trigger ?? active;
 
         if (!focusFirstField) return;
 
@@ -26,6 +33,12 @@ export function useModalAutoFocus(focusFirstField = true) {
             event.preventDefault();
 
             return;
+        }
+
+        // Read-only content starts at the dialog, never its close button. Keep waiting for async editable fields.
+        if (focusContent) {
+            event.preventDefault();
+            dialog.focus({ preventScroll: true });
         }
 
         const observer = new MutationObserver(() => {

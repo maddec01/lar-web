@@ -39,7 +39,7 @@ type Story = StoryObj<typeof meta>;
 /** The mark draws itself: the block springs in, the L traces around it, then "ar" slides out and "Factory" fades in. */
 export const Drawing: Story = {};
 
-/** Opened after the desktop's starting page drew the mark, it starts finished. */
+/** Opened after the desktop’s starting page drew the mark, it starts finished. */
 export const Drawn: Story = { args: { drawn: true } };
 
 /** A new step rolls in as the last rolls out. */

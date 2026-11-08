@@ -5,15 +5,19 @@ import { useId, useState } from 'react';
 
 import { IconButton } from '../actions/IconButton';
 import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
-import { Text } from '../typography/Typography';
+import { TextBase } from '../typography/Typography';
 import { useModalAutoFocus } from './useModalAutoFocus';
 
 interface ImageViewerProps {
+    /** The image's text alternative. */
     alt: string;
+    /** A line under the image, such as its file name. */
     caption?: string;
+    /** Called as the reader closes the viewer. */
     onClose: () => void;
+    /** The viewer is showing. */
     open: boolean;
-    /** Pixel size to show beside the caption; omit when unknown rather than guessing. */
+    /** Original pixel size, when known. Otherwise the loaded image’s natural dimensions appear beside the caption. */
     resolution?: { height: number; width: number };
     /** Omit while the image is not ready yet (still loading, authenticating, and so on); shows the
      * same loading indicator as a slow-loading image rather than a broken one. */
@@ -29,8 +33,20 @@ export function ImageViewer({ alt, caption, onClose, open, resolution, src }: Im
     const focusProps = useModalAutoFocus();
     const captionId = useId();
     const [loadedSource, setLoadedSource] = useState<string>();
+    const [naturalSize, setNaturalSize] = useState<{ src: string; width: number; height: number }>();
+    const rememberImage = (image: HTMLImageElement) => {
+        if (!src || image.naturalWidth <= 0 || image.naturalHeight <= 0) return;
+
+        setLoadedSource(src);
+        setNaturalSize((current) =>
+            current?.src === src && current.width === image.naturalWidth && current.height === image.naturalHeight
+                ? current
+                : { src, width: image.naturalWidth, height: image.naturalHeight },
+        );
+    };
+    const dimensions = resolution ?? (naturalSize?.src === src ? naturalSize : undefined);
     const loaded = Boolean(src) && loadedSource === src;
-    const size = resolution ? labels.imageSize(resolution.width, resolution.height) : undefined;
+    const size = dimensions ? labels.imageSize(dimensions.width, dimensions.height) : undefined;
 
     return (
         <NinnaModal open={open} onOpenChange={(next) => !next && onClose()}>
@@ -38,17 +54,17 @@ export function ImageViewer({ alt, caption, onClose, open, resolution, src }: Im
                 {...focusProps}
                 title={caption ?? alt}
                 size="full"
-                className="top-0 left-0 flex h-dvh max-h-none w-screen translate-x-0 translate-y-0 items-center justify-center overflow-hidden rounded-none border-0 bg-transparent p-4 shadow-none sm:top-0 sm:left-0 sm:h-dvh sm:w-screen sm:translate-x-0 sm:translate-y-0 sm:p-8"
+                className="dark lar-dark-palette bg-surface-page text-fg top-0 left-0 flex h-dvh max-h-none w-screen translate-x-0 translate-y-0 items-center justify-center overflow-hidden rounded-none border-0 p-4 shadow-none sm:top-0 sm:left-0 sm:h-dvh sm:w-screen sm:translate-x-0 sm:translate-y-0 sm:p-8"
                 onClick={(event) => event.target === event.currentTarget && onClose()}
             >
-                {/* The standard header close button, lightened because it always sits on the dark backdrop. */}
-                <div className="absolute top-5 right-5 z-10 [--color-header-icon:#ffffff] sm:top-6 sm:right-6">
+                {/* The viewer is a dark stage in both themes (the dark palette, scoped), so the photo and its caption read the same. */}
+                <div className="absolute top-5 right-5 z-10 sm:top-6 sm:right-6">
                     <NinnaModal.Close asChild>
                         <IconButton aria-label={labels.close} icon={<XIcon />} variant="header" />
                     </NinnaModal.Close>
                 </div>
                 {loaded ? null : (
-                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-white/80">
+                    <span className="text-fg-soft pointer-events-none absolute inset-0 flex items-center justify-center">
                         <Loading size="lg" />
                     </span>
                 )}
@@ -63,29 +79,24 @@ export function ImageViewer({ alt, caption, onClose, open, resolution, src }: Im
                             src={src}
                             decoding="async"
                             ref={(image) => {
-                                if (image?.complete && image.naturalWidth > 0) setLoadedSource(src);
+                                if (image?.complete) rememberImage(image);
                             }}
-                            onLoad={() => setLoadedSource(src)}
+                            onLoad={(event) => rememberImage(event.currentTarget)}
                             onError={() => setLoadedSource(src)}
-                            className={`pointer-events-auto max-h-[calc(100dvh-7rem)] max-w-full rounded-lg object-contain shadow-2xl transition-opacity duration-200 motion-reduce:transition-none sm:max-h-[calc(100dvh-9rem)] ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                            className={`pointer-events-auto max-h-[calc(100dvh-7rem)] max-w-full rounded-lg object-contain shadow-(--shadow-dialog) transition-opacity duration-(--motion-duration-base) motion-reduce:transition-none sm:max-h-[calc(100dvh-9rem)] ${loaded ? 'opacity-100' : 'opacity-0'}`}
                         />
                     ) : null}
                     {caption || size ? (
                         <figcaption className="flex max-w-prose flex-wrap items-baseline justify-center gap-x-3 gap-y-1 text-center">
                             {caption ? (
-                                <Text
-                                    id={captionId}
-                                    as="span"
-                                    className="wrap-break-word text-white/90"
-                                    variant="label"
-                                >
+                                <TextBase id={captionId} as="span" className="wrap-break-word" variant="label">
                                     {caption}
-                                </Text>
+                                </TextBase>
                             ) : null}
                             {size ? (
-                                <Text as="span" className="text-white/60 tabular-nums" variant="caption">
+                                <TextBase as="span" className="tabular-nums" tone="soft" variant="caption">
                                     {size}
-                                </Text>
+                                </TextBase>
                             ) : null}
                         </figcaption>
                     ) : null}

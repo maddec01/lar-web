@@ -23,8 +23,13 @@ const meta = {
         larLabel: 'Lar',
         hostLabel: 'Host',
         unavailableLabel: 'Not measured',
+        timeLabel: 'Time',
+        keyboardHint: 'Use the arrow keys to read each sample',
         points: cpu,
         formatValue: percent,
+        // An app passes its own locale-bound formatter; this one is fixed to UTC so the stories read the same anywhere.
+        formatTime: (timestamp: number) =>
+            new Intl.DateTimeFormat('en-GB', { timeStyle: 'medium', timeZone: 'UTC' }).format(timestamp),
         maximum: 100,
     },
     decorators: [
@@ -41,6 +46,18 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Cpu: Story = {};
+
+/** Focused from the keyboard, the arrow keys walk the samples; the reading is announced as it changes. Host is dashed
+ *  with square markers and Lar solid with round ones, so neither depends on colour. */
+export const KeyboardReading: Story = {
+    play: async ({ canvasElement }) => {
+        const plot = canvasElement.querySelector<HTMLElement>('[role="group"]');
+
+        plot?.focus();
+        for (let index = 0; index < 8; index += 1)
+            plot?.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    },
+};
 
 /** Without a maximum the scale fits the highest sample. */
 export const Memory: Story = {

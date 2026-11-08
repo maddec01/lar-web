@@ -18,7 +18,7 @@ export function AppLayout() {
                         <BrandLink
                             href={paths.home}
                             label={t('brand.home')}
-                            onNavigate={(href) => void navigate(href)}
+                            onNavigate={(href: string) => void navigate(href)}
                         />
                     }
                     title={<TitleBarTrail items={[{ key: 'home', label: t('brand.name') }]} />}

@@ -41,9 +41,12 @@ describe('GitHub-flavoured markdown', () => {
     test('task lists', () => {
         const out = markdown('- [x] done\n- [ ] todo');
 
-        expect(out.match(/<input type="checkbox" disabled=""( checked="")?\/>/g)).toHaveLength(2);
-        expect(out).toMatch(/<input [^>]*checked=""[^>]*\/> done/);
-        expect(out).toMatch(/<input type="checkbox" disabled=""\/> todo/);
+        // Read-only checkboxes in the design system's checkbox look, each named by its item.
+        expect(
+            out.match(/<input type="checkbox" disabled="" aria-label="[^"]+" class="[^"]*appearance-none[^"]*"/g),
+        ).toHaveLength(2);
+        expect(out).toMatch(/<input [^>]*aria-label="done" class="[^"]*" checked=""\/>.*<\/span> done/);
+        expect(out).toMatch(/<input type="checkbox" disabled="" aria-label="todo" class="[^"]*"\/>.*<\/span> todo/);
     });
 
     test('strikethrough and autolinked URLs', () => {
@@ -59,13 +62,14 @@ describe('raw HTML', () => {
         const out = markdown('<details>\n<summary>More</summary>\n\nHidden **text**\n\n</details>');
 
         expect(out).toMatch(/<details>/);
-        expect(out).toMatch(/<summary>More<\/summary>/);
+        // The summary draws the disclosure chevron before its text.
+        expect(out).toMatch(/<summary [^>]*><svg [^>]*lucide-chevron-down[^>]*>.*<\/svg>More<\/summary>/);
         expect(out).toMatch(/<strong>text<\/strong>/);
     });
 
     test('<details> survives in html', () => {
         expect(html('<details><summary>More</summary><p>Hidden</p></details>')).toMatch(
-            /<details><summary>More<\/summary><p>Hidden<\/p><\/details>/,
+            /<details><summary [^>]*><svg .*<\/svg>More<\/summary><p>Hidden<\/p><\/details>/,
         );
     });
 
@@ -132,8 +136,9 @@ describe('images', () => {
         const out = markdown('![a diagram](https://example.com/d.png)');
 
         expect(out).not.toMatch(/<img/);
+        expect(out).toContain('data-attachment="true"');
         expect(out).toMatch(
-            /<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>a diagram<\/a>/,
+            /<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>[\s\S]*Image: a diagram<\/a>/,
         );
     });
 
@@ -141,14 +146,18 @@ describe('images', () => {
         const out = html('<p><img src="https://example.com/d.png" alt="shot"></p>');
 
         expect(out).not.toMatch(/<img/);
-        expect(out).toMatch(/<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*>shot<\/a>/);
+        expect(out).toContain('data-attachment="true"');
+        expect(out).toMatch(
+            /<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*>[\s\S]*Image: shot<\/a>/,
+        );
     });
 
     test('raw html in markdown becomes a link', () => {
         const out = markdown('<img src="https://example.com/d.png" alt="raw">');
 
         expect(out).not.toMatch(/<img/);
-        expect(out).toMatch(/<a [^>]*href="https:\/\/example.com\/d.png"[^>]*>raw<\/a>/);
+        expect(out).toContain('data-attachment="true"');
+        expect(out).toMatch(/<a [^>]*href="https:\/\/example.com\/d.png"[^>]*>[\s\S]*Image: raw<\/a>/);
     });
 
     test('an empty alt shows the URL as the link text', () => {

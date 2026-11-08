@@ -36,7 +36,7 @@
     overflow: hidden;
     aspect-ratio: 16 / 10;
     border-radius: 1.4cqi 1.4cqi 0.2cqi 0.2cqi;
-    background: var(--color-base-50);
+    background: var(--color-surface-page);
 }
 
 .lar-laptop__menubar {
@@ -260,9 +260,9 @@
 .lar-window {
     overflow: hidden;
     border-radius: 1.1cqi;
-    background: var(--color-base-100);
+    background: var(--color-surface-raised);
     box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--color-base-content) 12%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--color-fg) 12%, transparent),
         inset 0 1px 0 rgb(255 255 255 / 6%);
 }
 
@@ -273,8 +273,8 @@
     height: 3.4cqi;
     min-height: 18px;
     padding-inline: 1.4cqi;
-    border-bottom: 1px solid var(--color-base-300);
-    background: var(--color-base-200);
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-fill-muted);
 }
 
 .lar-window__lights {
@@ -308,8 +308,8 @@
     padding-inline: 1.2cqi;
     border-radius: 0.6cqi;
     font-size: max(1.05cqi, 8.5px);
-    color: var(--color-base-700);
-    background: var(--color-base-100);
+    color: var(--color-fg-muted);
+    background: var(--color-surface-raised);
 }
 
 .lar-window__screen {
@@ -339,19 +339,19 @@
 .lar-app-window {
     overflow: hidden;
     border-radius: max(1cqi, 10px);
-    background: var(--color-base-100);
+    background: var(--color-surface-raised);
     box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--color-base-content) 14%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--color-fg) 14%, transparent),
         inset 0 1px 0 rgb(255 255 255 / 8%),
         0 40px 80px -40px var(--lar-device-shadow);
 }
 
 .lar-app-window[data-bezel] {
     padding: max(0.8cqi, 6px);
-    background: #0c0c0e;
+    background: var(--lar-app-bezel);
     box-shadow:
-        0 0 0 1px #2c2d31,
-        0 0 0 max(0.25cqi, 2px) #5d5f65,
+        0 0 0 1px var(--lar-app-bezel-edge),
+        0 0 0 max(0.25cqi, 2px) var(--lar-app-bezel-rim),
         0 40px 80px -40px var(--lar-device-shadow);
 }
 
@@ -366,7 +366,7 @@
 }
 
 .lar-window__screen {
-    background: var(--color-base-100);
+    background: var(--color-surface-raised);
 }
 
 /* The capture fades into the window's own screen, not into the page behind it. */
@@ -417,10 +417,10 @@
 .lar-callout {
     overflow: hidden;
     border-radius: 14px;
-    background: var(--color-base-100);
+    background: var(--color-surface-raised);
     box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--color-base-content) 14%, transparent),
-        0 0 0 6px color-mix(in srgb, var(--color-base-100) 55%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--color-fg) 14%, transparent),
+        0 0 0 6px color-mix(in srgb, var(--color-surface-raised) 55%, transparent),
         0 30px 70px -24px var(--lar-device-shadow);
 }
 
@@ -438,4 +438,37 @@
     display: block;
     width: 100%;
     height: auto;
+}
+
+/* ---- Placeholder while a capture loads ----------------------------------------------------------------- */
+
+/* Until a lazy capture decodes, its screen shows a quiet tint of the page's surface and the brand hue rather than a
+   solid white or black slab. The capture covers it once it paints. */
+.lar-screenshot,
+.lar-laptop__screen,
+.lar-phone__screen,
+.lar-tablet__screen,
+.lar-tv__screen,
+.lar-window__screen {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--color-primary) 12%, var(--color-fill-muted)),
+        var(--color-fill-muted) 60%
+    );
+}
+
+/* Detail crops preserve source geometry, instead of shrinking an entire desktop interaction onto a phone. */
+.lar-screenshot-detail {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.lar-screenshot-detail > .lar-screenshot {
+    position: absolute;
+    left: var(--lar-shot-left);
+    top: var(--lar-shot-top);
+    width: var(--lar-shot-width);
+    height: var(--lar-shot-height);
+    max-width: none;
 }

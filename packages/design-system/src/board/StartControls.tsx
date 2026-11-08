@@ -3,20 +3,30 @@
 
 import type { ReactNode, Ref } from 'react';
 
-import { Badge } from '../display/Badge';
 import type { DataAttributes } from './DataAttributes';
+import { StateWord } from './StateWord';
 
 /** Start and what goes with it, at the right of its row, wrapping. */
-export function StartGroup({ children }: { children: ReactNode }) {
+export function StartGroup({
+    children,
+}: {
+    /** Start and what goes with it. */
+    children: ReactNode;
+}) {
     return <span className="start-group">{children}</span>;
 }
 
 /** A sentence on a line of its own in StartGroup, such as "Run finished.". */
-export function StartNote({ children }: { children: ReactNode }) {
+export function StartNote({
+    children,
+}: {
+    /** The sentence, such as "Run finished.". */
+    children: ReactNode;
+}) {
     return <span className="basis-full">{children}</span>;
 }
 
-/** The tag that takes Start's place: Started, or May have started while it's `unsure`. It takes focus back from a closed
+/** The state that takes Start's place, a light and its word: Started, or May have started while it's `unsure`. It takes focus back from a closed
  *  message, so it is focusable from script. */
 export function StartTag({
     unsure = false,
@@ -24,20 +34,23 @@ export function StartTag({
     children,
     ...data
 }: {
+    /** Says "May have started" rather than "Started". */
     unsure?: boolean;
+    /** More on the tag, as its tooltip. */
     title: string;
+    /** The tag's text. */
     children: ReactNode;
 } & DataAttributes) {
     return (
-        <Badge
+        <StateWord
             {...data}
-            tone={unsure ? 'warning' : 'success'}
+            state={unsure ? 'waiting' : 'ready'}
             className={unsure ? 'started-tag unsure' : 'started-tag'}
             tabIndex={-1}
             title={title}
         >
             {children}
-        </Badge>
+        </StateWord>
     );
 }
 
@@ -48,8 +61,11 @@ export function StartLine({
     children,
     ...data
 }: {
+    /** The line's element, for moving focus to it. */
     ref?: Ref<HTMLParagraphElement>;
+    /** Makes the line focusable from script, as -1. */
     tabIndex?: number;
+    /** Start's message or error, or what Auto-build says. */
     children: ReactNode;
 } & DataAttributes) {
     return (
@@ -65,8 +81,11 @@ export function ActionError({
     role,
     children,
 }: {
+    /** The error's element, for moving focus to it. */
     ref?: Ref<HTMLSpanElement>;
+    /** `alert` to announce the error as it appears. */
     role?: 'alert';
+    /** The error. */
     children: ReactNode;
 }) {
     return (

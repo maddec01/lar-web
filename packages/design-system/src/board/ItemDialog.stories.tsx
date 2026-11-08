@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { CircleAlertIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
+import { PageError } from '../feedback/PageError';
 import { buttonKind } from './ButtonKinds';
-import { DetailsHeading, DetailsSection, MainSection } from './ItemDetails';
+import { DetailsHeading, DetailsSection, MainColumnSlot, MainSection } from './ItemDetails';
 import {
     AccessNotice,
     DialogActions,
@@ -27,7 +29,7 @@ const meta = {
     component: ItemSummary,
     decorators: [
         (Story) => (
-            <div className="max-w-3xl">
+            <div className="w-full max-w-3xl">
                 <Story />
             </div>
         ),
@@ -71,20 +73,11 @@ export const SummaryWithPanel: Story = {
     },
 };
 
-/** The body: notes, then the main column with the sidebar beside it once the dialog is 45rem wide. */
+/** The body leads with content and its sidebar, followed by the inline permission warning. */
 export const Body: StoryObj<typeof ItemDialogBody> = {
     render: () => (
         <ItemDialogBody fill={false} data-item-body>
-            <WarningNote icon={<StatusGlyph status="Needs you" presentation="title" />}>Answer in T3</WarningNote>
             <WarningNote data-paused>Paused: the build limit is reached.</WarningNote>
-            <AccessNotice
-                message="This Mac can't edit tickets in maddec01/lar-web."
-                action={
-                    <Button {...buttonKind('other')} onClick={fn()}>
-                        Recheck access
-                    </Button>
-                }
-            />
             <ItemDialogColumns aside fill={false}>
                 <MainSection header={<DetailsHeading presentation="label">Description</DetailsHeading>}>
                     <p className="m-0 text-sm">Owners sign in with a passkey.</p>
@@ -94,12 +87,22 @@ export const Body: StoryObj<typeof ItemDialogBody> = {
                         <p className="m-0 text-sm">#12 Sessions table</p>
                     </DetailsSection>
                 </ItemDialogAside>
+                <MainColumnSlot>
+                    <AccessNotice
+                        message="This Mac can’t edit tickets in maddec01/lar-web."
+                        action={
+                            <Button {...buttonKind('other')} onClick={fn()}>
+                                Recheck access
+                            </Button>
+                        }
+                    />
+                </MainColumnSlot>
             </ItemDialogColumns>
         </ItemDialogBody>
     ),
 };
 
-/** The footer's groups: the moves at its start, in small text, and the rest at its end. */
+/** The footer’s groups: the moves at its start, in small text, and the rest at its end. */
 export const FooterActions: StoryObj<typeof DialogActions> = {
     render: () => (
         <div className="flex items-center justify-between gap-3">
@@ -117,5 +120,20 @@ export const FooterActions: StoryObj<typeof DialogActions> = {
                 </Button>
             </DialogActions>
         </div>
+    ),
+};
+
+/** A failed content read stays compact, with a retry inside the failed region. */
+export const FailedDetails: StoryObj<typeof ItemDialogBody> = {
+    render: () => (
+        <ItemDialogBody fill={false}>
+            <PageError
+                size="panel"
+                icon={<CircleAlertIcon />}
+                title="Couldn’t load the details"
+                description="Couldn’t reach the board to read the details."
+                primaryAction={{ label: 'Try again', onAction: fn() }}
+            />
+        </ItemDialogBody>
     ),
 };

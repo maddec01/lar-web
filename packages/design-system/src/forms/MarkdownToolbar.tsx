@@ -1,7 +1,8 @@
-// The Markdown editor's toolbar: bold, italic, heading, bulleted list, numbered list and link, each pressed while
-// the selection has it. Link opens a URL field under the toolbar, as Electron has no window.prompt: Enter or Apply links
-// the selection, Escape, a click outside or an empty URL closes it with no link, and Escape leaves the dialog open. Its
-// tooltip stays shut while the field is open, so it covers none of it.
+// The Markdown editor's toolbar, internal to MarkdownEditor (not exported; its stories show it): bold, italic, heading,
+// bulleted list, numbered list and link, each pressed while the selection has it. Link opens a URL field under the
+// toolbar, as Electron has no window.prompt: Enter or Apply links the selection, Escape, a click outside or an empty URL
+// closes it with no link, and Escape leaves the dialog open. Its tooltip stays shut while the field is open, so it covers
+// none of it.
 
 import { $isLinkNode, $toggleLink, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import {
@@ -98,14 +99,14 @@ function ToolButton({
                         run();
                         button.onClick?.(event);
                     }}
-                    className={`focus-visible:ring-primary grid size-7 place-items-center rounded-md transition-colors outline-none focus-visible:ring-2 [&_svg]:size-4 ${on ? 'bg-primary/10 text-primary' : 'text-base-700 hover:bg-base-200 hover:text-base-content'}`}
+                    className={`focus-ring grid size-7 place-items-center rounded-md transition-colors [&_svg]:size-4 ${on ? 'bg-primary-surface text-primary-fg' : 'text-fg-muted hover:bg-fill-hover hover:text-fg'}`}
                 >
                     {icon}
                 </button>
             </TooltipTrigger>
             <TooltipPopup side="bottom">
                 {label}
-                {keys && <span className="text-base-500 ms-2">{keys}</span>}
+                {keys && <span className="text-fg-muted ms-2">{keys}</span>}
             </TooltipPopup>
         </Tooltip>
     );
@@ -147,7 +148,7 @@ function LinkField({
                         aria-label={labels.linkUrl}
                         placeholder={labels.linkPlaceholder}
                         autoComplete="off"
-                        className="border-base-300 bg-base-100 focus:border-primary/60 focus:ring-primary/15 h-7 w-56 max-w-full rounded-md border px-2 text-sm outline-none focus:ring-3"
+                        className="border-line bg-surface-raised focus-field h-7 w-56 max-w-full rounded-md border px-2 text-sm"
                         onKeyDown={(event) => {
                             if (event.key !== 'Enter') return;
 
@@ -155,7 +156,7 @@ function LinkField({
                             apply();
                         }}
                     />
-                    <Button compact onClick={apply}>
+                    <Button size="sm" onClick={apply}>
                         {labels.apply}
                     </Button>
                 </div>
@@ -214,7 +215,7 @@ export function MarkdownToolbar({ className = '' }: { className?: string }) {
         <div
             role="toolbar"
             aria-label={labels.formatting}
-            className={`border-base-300/70 flex shrink-0 items-center gap-0.5 border-b px-2 py-1 ${className}`}
+            className={`border-line/70 flex shrink-0 items-center gap-0.5 border-b px-2 py-1 ${className}`}
         >
             <ToolButton
                 label={labels.bold}
@@ -230,7 +231,7 @@ export function MarkdownToolbar({ className = '' }: { className?: string }) {
                 icon={<ItalicIcon />}
                 run={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
             />
-            <span aria-hidden="true" className="bg-base-300 mx-1 h-4 w-px" />
+            <span aria-hidden="true" className="bg-line mx-1 h-4 w-px" />
             <ToolButton
                 label={labels.heading}
                 keys="#"
@@ -261,7 +262,7 @@ export function MarkdownToolbar({ className = '' }: { className?: string }) {
                     quiet={linking !== null}
                 />
             </LinkField>
-            <span className="text-base-700 ms-auto pe-1 text-[11px]">{labels.markdown}</span>
+            <span className="text-fg-muted text-2xs ms-auto pe-1">{labels.markdown}</span>
         </div>
     );
 }

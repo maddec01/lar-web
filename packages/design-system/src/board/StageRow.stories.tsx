@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { HammerIcon, MessageSquareTextIcon, PlayIcon, SparklesIcon } from 'lucide-react';
+import { ChevronDownIcon, HammerIcon, MessageSquareTextIcon, PlayIcon, SparklesIcon } from 'lucide-react';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { KindBadge } from '../display/KindBadge';
 import { ActivityLine } from './ActivityLine';
 import { buttonKind } from './ButtonKinds';
 import { ItemTitle } from './ItemParts';
@@ -26,7 +27,6 @@ import {
     RowPartOf,
     RowSecondLine,
     RowSide,
-    RowSliceNote,
     RowSliceToggle,
     RowSlices,
     RowState,
@@ -46,10 +46,10 @@ const identity = (
     </RowIdentity>
 );
 const feature = (
-    <Badge hue={150}>
+    <KindBadge hue={150}>
         <SparklesIcon aria-hidden="true" />
         Feature
-    </Badge>
+    </KindBadge>
 );
 const slices = [
     { name: '#1 Model', progress: 'done' as const },
@@ -121,6 +121,13 @@ function BuildRow({ picked = false }: { picked?: boolean }) {
 const meta = {
     title: 'Board/StageRow',
     component: StageRowItem,
+    decorators: [
+        (Story) => (
+            <div className="w-full">
+                <Story />
+            </div>
+        ),
+    ],
     args: { item: 'I_150', picked: false, children: null },
     render: () => (
         <StagePane id="build" title="Build" glyph={<StatusGlyph status="In progress" running />} count={4}>
@@ -149,17 +156,18 @@ const meta = {
                             </RowStateCell>
                         </RowOpen>
                         <RowSide>
-                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />} shrinks mark="▾">
+                            <Button
+                                {...buttonKind('start')}
+                                leftIcon={<PlayIcon />}
+                                shrinks
+                                rightIcon={<ChevronDownIcon />}
+                            >
                                 Start after
                             </Button>
                         </RowSide>
                     </RowFirst>
                     <RowSecondLine bar={<SliceBar slices={slices} />}>
                         <RowBlocked>Blocked by #202 until it completes</RowBlocked>
-                        <RowSliceNote
-                            title="active #2 Endpoint"
-                            first={{ word: 'active', tone: 'active', title: 'Endpoint' }}
-                        />
                     </RowSecondLine>
                     <RowFoot>
                         <StartLine>
@@ -212,7 +220,7 @@ type Story = StoryObj<typeof meta>;
 /** Rows at work, blocked and on your desk, the middle one picked; the first unfolds its slices. */
 export const Rows: Story = {};
 
-/** A Queue row shows its place in the glyph's column and its age as its state. */
+/** A Queue row shows its place in the glyph’s column and its age as its state. */
 export const QueueRow: Story = {
     render: () => (
         <StagePane id="queue" title="Queue" glyph={<StatusGlyph status="Queued" />} count={1}>
@@ -233,9 +241,73 @@ export const QueueRow: Story = {
                             </RowStateCell>
                         </RowOpen>
                         <RowSide>
-                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />}>
-                                Shape ▾
+                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />} rightIcon={<ChevronDownIcon />}>
+                                Shape
                             </Button>
+                        </RowSide>
+                    </RowFirst>
+                </StageRowItem>
+            </StageList>
+        </StagePane>
+    ),
+};
+
+/** Rows with nothing but figures under them hold the figures beside their action instead, so they keep the height of
+ *  a Queue row: a Shaping row with its thread’s button, and one on your desk. */
+export const FiguresBesideAction: Story = {
+    render: () => (
+        <StagePane id="shaping" title="Shaping" glyph={<StatusGlyph status="Shaping" />} count={2}>
+            <StageList>
+                <StageRowItem item="I_130" picked={false}>
+                    <RowFirst>
+                        <RowOpen onOpen={fn()}>
+                            <RowGlyph>
+                                <StatusGlyph status="Shaping" />
+                            </RowGlyph>
+                            {identity}
+                            <RowKindCell>{feature}</RowKindCell>
+                            <RowTitleCell>
+                                <RowTitle name="#130 Show cold bitmap subtitles">
+                                    <ItemTitle reference="#130" title="Show cold bitmap subtitles" />
+                                </RowTitle>
+                            </RowTitleCell>
+                            <RowStateCell>
+                                <RowState>Shaping</RowState>
+                            </RowStateCell>
+                        </RowOpen>
+                        <RowSide
+                            figures={<UsageFigures title="Agent time · tokens · cost" text="19m · 1.20M · $1.92" />}
+                        >
+                            <Button
+                                {...buttonKind('other')}
+                                leftIcon={<MessageSquareTextIcon />}
+                                iconOnly
+                                aria-label="Open thread"
+                            />
+                        </RowSide>
+                    </RowFirst>
+                </StageRowItem>
+                <StageRowItem item="I_23" picked={false}>
+                    <RowFirst>
+                        <RowOpen onOpen={fn()}>
+                            <RowGlyph>
+                                <StatusGlyph status="Needs you" />
+                            </RowGlyph>
+                            {identity}
+                            <RowKindCell>{feature}</RowKindCell>
+                            <RowTitleCell>
+                                <RowTitle name="#23 Faster library sync on large collections">
+                                    <ItemTitle reference="#23" title="Faster library sync on large collections" />
+                                </RowTitle>
+                            </RowTitleCell>
+                            <RowStateCell>
+                                <RowState>Needs you</RowState>
+                            </RowStateCell>
+                        </RowOpen>
+                        <RowSide
+                            figures={<UsageFigures title="Agent time · tokens · cost" text="52m · 3.15M · $0.62" />}
+                        >
+                            <OnYourDesk>on your desk</OnYourDesk>
                         </RowSide>
                     </RowFirst>
                 </StageRowItem>
@@ -252,5 +324,40 @@ export const Figures: Story = {
             <UsageFigures title="Agent time · tokens · cost" text="19m · 1.20M · $1.92" partial="partial" />
             <UsageFigures title="This total is incomplete" incomplete="Usage incomplete" />
         </div>
+    ),
+};
+
+/** Current evidence occupies the status column; recorded workflow stays in secondary detail. */
+export const EvidenceStatuses: Story = {
+    render: () => (
+        <StagePane id="evidence" title="Build" count={3}>
+            <StageList>
+                {['Checks failed', 'Checks running', 'Checking mergeability'].map((status) => (
+                    <StageRowItem key={status} item={status} picked={false}>
+                        <RowFirst>
+                            <RowOpen onOpen={fn()}>
+                                <RowGlyph>
+                                    <StatusGlyph status="Review" />
+                                </RowGlyph>
+                                {identity}
+                                <RowKindCell>{feature}</RowKindCell>
+                                <RowTitleCell>
+                                    <RowTitle name="#142 Verify current PR evidence">
+                                        #142 Verify current PR evidence
+                                    </RowTitle>
+                                </RowTitleCell>
+                                <RowStateCell>
+                                    <RowState title={status}>{status}</RowState>
+                                </RowStateCell>
+                            </RowOpen>
+                            <RowSide>{null}</RowSide>
+                        </RowFirst>
+                        <RowSecondLine>
+                            <span>Recorded stage: Ready to merge</span>
+                        </RowSecondLine>
+                    </StageRowItem>
+                ))}
+            </StageList>
+        </StagePane>
     ),
 };

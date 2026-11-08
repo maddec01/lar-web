@@ -2,7 +2,7 @@ import { ChevronRightIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { StatusTone } from '../feedback/StatusIndicator';
-import { LinkBox, LinkOverlay } from '../typography/Link';
+import { LinkBoxBase, LinkOverlay } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { toneTileClasses } from './ToneTile';
 
@@ -12,8 +12,11 @@ export function RowList({
     label,
     layout = 'panel',
 }: {
+    /** Its RowListItems. */
     children: ReactNode;
+    /** Names the list for screen readers. */
     label: string;
+    /** `panel` (the default) rules the rows inside a raised panel; `columns` lays them in two ruled columns from md. */
     layout?: 'panel' | 'columns';
 }) {
     return (
@@ -21,8 +24,8 @@ export function RowList({
             aria-label={label}
             className={
                 layout === 'columns'
-                    ? '[&>li]:border-base-300 grid gap-x-8 md:grid-cols-2 [&>li]:border-b'
-                    : 'divide-base-300 border-base-300 bg-base-100 divide-y overflow-hidden rounded-lg border'
+                    ? '[&>li]:border-line grid gap-x-8 md:grid-cols-2 [&>li]:border-b'
+                    : 'divide-line surface-card divide-y overflow-hidden rounded-lg border'
             }
         >
             {children}
@@ -35,15 +38,21 @@ interface RowListItemProps {
     actions?: ReactNode;
     /** Short labels such as "lar can fix", shown before the actions or chevron. */
     badges?: ReactNode;
+    /** Muted facts after the subtitle, such as a size or a date. */
     detail?: string;
+    /** The icon in its tinted tile, or the portrait with `avatar`. */
     icon: ReactNode;
     /** A round portrait instead of the tinted square tile. */
     avatar?: boolean;
     /** Makes the whole row a link, with actions remaining independently usable. */
     href?: string;
+    /** Called with the `href` on a plain left click, for the app's router. */
     onNavigate?: (href: string) => void;
+    /** One line about it, under the title. */
     subtitle?: string;
+    /** What the reader recognises it by. */
     title: string;
+    /** The icon tile's tint, such as `warning` for something that needs a look. */
     tone?: StatusTone;
 }
 
@@ -96,15 +105,17 @@ export function RowListItem({
 
     return (
         <li>
-            <LinkBox className={`${row} ${href ? 'hover:bg-base-100 focus-within:bg-base-100 transition-colors' : ''}`}>
+            <LinkBoxBase
+                className={`${row} ${href ? 'hover:bg-surface-raised focus-within:bg-surface-raised transition-colors' : ''}`}
+            >
                 {content}
                 {actions ? <span className="flex shrink-0 items-center gap-1">{actions}</span> : null}
                 {href ? (
-                    <span aria-hidden="true" className="text-base-500 flex shrink-0 [&>svg]:size-4">
+                    <span aria-hidden="true" className="text-fg-muted flex shrink-0 [&>svg]:size-4">
                         <ChevronRightIcon />
                     </span>
                 ) : null}
-            </LinkBox>
+            </LinkBoxBase>
         </li>
     );
 }

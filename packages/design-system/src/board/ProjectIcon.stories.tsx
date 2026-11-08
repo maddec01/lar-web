@@ -11,20 +11,20 @@ const favicon =
 const meta = {
     title: 'Board/ProjectIcon',
     component: ProjectIcon,
-    args: { name: 'lar-web', place: 0, size: 'row' },
+    args: { name: 'lar-web', place: 0, size: 'md' },
 } satisfies Meta<typeof ProjectIcon>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The toned initial: the colour of the repository's place on the board. */
+/** The toned initial: the colour of the repository’s place on the board. */
 export const Initial: Story = {};
 
-/** A project the board doesn't list keeps the muted colour. */
+/** A project the board doesn’t list keeps the muted colour. */
 export const Unlisted: Story = { args: { place: undefined } };
 
-/** Each of the board's eight repository colours, which repeat after the eighth. */
+/** Each of the board’s eight repository colours, which repeat after the eighth. */
 export const Tones: Story = {
     render: (args) => (
         <span className="flex gap-1">
@@ -39,19 +39,22 @@ export const Tones: Story = {
 export const Sizes: Story = {
     render: (args) => (
         <span className="flex items-center gap-2">
-            <ProjectIcon {...args} size="small" />
-            <ProjectIcon {...args} size="row" />
-            <ProjectIcon {...args} size="medium" />
+            <ProjectIcon {...args} size="sm" />
+            <ProjectIcon {...args} size="md" />
+            <ProjectIcon {...args} size="lg" />
         </span>
     ),
 };
 
 /** An emoji or a monogram chosen in T3 takes the square. */
 export const EmojiAndMonogram: Story = {
+    // User-selected project artwork is decorative (aria-hidden), with the repository name beside it. Its brand
+    // colour is content, as with a favicon, not a text colour the application chooses for readable information.
+    parameters: { a11y: { config: { rules: [{ id: 'color-contrast', enabled: false }] } } },
     render: (args) => (
         <span className="flex items-center gap-2">
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'emoji', emoji: '🎛️' }} />
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'monogram', text: 'LW', color: 'rose' }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'emoji', emoji: '🎛️' }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'monogram', text: 'LW', color: 'rose' }} />
         </span>
     ),
 };
@@ -60,18 +63,23 @@ export const EmojiAndMonogram: Story = {
 export const FaviconAndLucide: Story = {
     render: (args) => (
         <span className="flex items-center gap-2">
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'favicon', src: favicon }} />
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'lucide', name: 'git-branch', color: 'sky' }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'favicon', src: favicon }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'lucide', name: 'git-branch', color: 'sky' }} />
         </span>
     ),
+};
+
+/** A neutral repository glyph, without a multicolour emoji among the board's line icons. */
+export const Monochrome: Story = {
+    args: { name: 'lar-apple', icon: { kind: 'lucide', name: 'apple', color: 'gray' } },
 };
 
 /** A broken favicon or an unknown lucide name leaves the initial. */
 export const Fallbacks: Story = {
     render: (args) => (
         <span className="flex items-center gap-2">
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'favicon', src: '/missing.png' }} />
-            <ProjectIcon {...args} size="medium" icon={{ kind: 'lucide', name: 'not-a-lucide-icon', color: 'sky' }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'favicon', src: '/missing.png' }} />
+            <ProjectIcon {...args} size="lg" icon={{ kind: 'lucide', name: 'not-a-lucide-icon', color: 'sky' }} />
         </span>
     ),
 };

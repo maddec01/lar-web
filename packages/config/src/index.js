@@ -1,3 +1,5 @@
+export { checkUiCopy } from './copy.js';
+
 // The settings every Lar web repository spreads into its root vite.config.ts, so all of them format, lint and test
 // the same way. Plain JavaScript: Vite+ loads config dependencies from node_modules, where Node strips no types.
 

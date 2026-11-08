@@ -35,7 +35,7 @@ function Rows({ figure }: { figure?: boolean }) {
                     key={item.id}
                     item={item.id}
                     label={item.title}
-                    leading={glyph(CircleDotIcon, 'var(--you)')}
+                    leading={glyph(CircleDotIcon, 'var(--color-board-you)')}
                     title={item.title}
                     trailing={
                         figure ? (
@@ -51,15 +51,15 @@ function Rows({ figure }: { figure?: boolean }) {
     );
 }
 
-/** The title bar's five counters, as the status strip shows them; each opens its panel. */
+/** The title bar’s five counters, as the status strip shows them; each opens its panel. */
 function Strip({ reading = false }: { reading?: boolean }) {
     return (
-        <div className="status-strip @container flex w-[72rem] items-center">
+        <div className="status-strip @container flex w-288 items-center">
             <BoardCounters>
                 <BoardCounter
                     label="need you"
                     value={reading ? <CounterDash /> : 2}
-                    icon={glyph(HandIcon, 'var(--you)')}
+                    icon={glyph(HandIcon, 'var(--color-board-you)')}
                     title="Needs you"
                     sub={reading ? undefined : 2}
                     hint="2 items waiting on your answer, verification or merge"
@@ -76,7 +76,7 @@ function Strip({ reading = false }: { reading?: boolean }) {
                 <BoardCounter
                     label="shaping"
                     value={0}
-                    icon={glyph(CircleDotIcon, 'var(--thread)')}
+                    icon={glyph(CircleDotIcon, 'var(--color-board-active)')}
                     fold="medium"
                     title="Shaping"
                     hint="Nothing shaping right now"
@@ -91,11 +91,12 @@ function Strip({ reading = false }: { reading?: boolean }) {
                 </BoardCounter>
                 <BoardCounter
                     label="building"
-                    icon={glyph(LoaderCircleIcon, 'var(--thread)')}
+                    icon={glyph(LoaderCircleIcon, 'var(--color-board-active)')}
                     width="limit"
                     title="Building"
-                    value={<CounterOfLimit count={2} limit={3} />}
-                    sub={<LimitBars used={2} limit={3} />}
+                    count={2}
+                    value={<CounterOfLimit count={2} used={2} limit={3} />}
+                    sub="Automatic limit 3"
                     hint="Room for 1 more build under the build limit of 3"
                     foot="Room for 1 more build under the build limit."
                 >
@@ -136,8 +137,14 @@ export const Counters: Story = {};
 /** Before the first read lands, a zero would be a claim, so counts are dashes. */
 export const Reading: Story = { render: () => <Strip reading /> };
 
-/** The build limit's bars: two builds over a limit of one show past it, after a gap. */
-export const OverTheLimit: Story = { render: () => <LimitBars used={3} limit={1} /> };
+/** The build limit’s bars: two builds over a limit of one show past it, after a gap. */
+export const OverTheLimit: Story = {
+    render: () => (
+        <LimitBars used={3} limit={1}>
+            3 running · limit 1
+        </LimitBars>
+    ),
+};
 
 export const OpenPanel: Story = {
     play: async ({ canvasElement }) => {

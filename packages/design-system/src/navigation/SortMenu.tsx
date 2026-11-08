@@ -9,14 +9,17 @@ export function SortMenu<Value extends string>({
     options,
     onChange,
 }: {
+    /** The sort in use, named on the button. */
     value: Value;
+    /** The ways the list sorts, each with its label. */
     options: readonly { value: Value; label: string }[];
+    /** Called with the sort the reader picks. */
     onChange: (value: Value) => void;
 }) {
     return (
         <DropdownMenu>
             <DropdownMenu.Trigger asChild>
-                <Button variant="secondary" compact rightIcon={<ChevronDownIcon />}>
+                <Button variant="secondary" size="sm" rightIcon={<ChevronDownIcon />}>
                     {options.find((option) => option.value === value)?.label}
                 </Button>
             </DropdownMenu.Trigger>

@@ -38,7 +38,7 @@ export { ActivityLine, type ActivityState, AgentAge, AgentList, AgentRow, Workin
 export { ActivityLabel, ActivityTrack } from './ActivityTrack';
 export {
     AttentionEntry,
-    AttentionList,
+    BoardAttentionList,
     AttentionMark,
     AttentionNone,
     type AttentionTone,
@@ -87,6 +87,7 @@ export {
     PullRequestReadiness,
     PullRequestRef,
     PullRequestRow,
+    PullRequestState,
     ReadinessDetails,
 } from './PullRequests';
 export { SliceBar, SliceList, SliceMark, type SliceProgress, SliceRow } from './Slices';
@@ -120,8 +121,17 @@ export {
 } from './StageRow';
 export { StageTrack } from './StageTrack';
 export { ActionError, StartGroup, StartLine, StartNote, StartTag } from './StartControls';
-export { type BoardStatus, statusColor } from './StatusColors';
-export { StatusGlyph } from './StatusGlyph';
+export {
+    attentionToneState,
+    type BoardStatus,
+    boardColor,
+    boardStatusState,
+    sliceProgressLabel,
+    sliceProgressState,
+    stageColor,
+    statusColor,
+} from './StatusColors';
+export { StatusGlyph, StatusGlyphSlot } from './StatusGlyph';
 export { EarlierThread, EarlierThreadList } from './Threads';
 export {
     HistoryRow,

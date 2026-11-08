@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MessageSquareTextIcon, PlayIcon } from 'lucide-react';
+import { ChevronDownIcon, MessageSquareTextIcon, PlayIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
@@ -19,8 +19,8 @@ const meta = {
     ],
     args: {
         children: (
-            <Button {...buttonKind('start')} leftIcon={<PlayIcon />}>
-                Start ▾
+            <Button {...buttonKind('start')} leftIcon={<PlayIcon />} rightIcon={<ChevronDownIcon />}>
+                Start
             </Button>
         ),
     },
@@ -59,7 +59,7 @@ export const Tags: Story = {
     },
 };
 
-/** Start's error under it, with its dismiss button, and a note in muted text. */
+/** Start’s error under it, with its dismiss button, and a note in muted text. */
 export const Lines: Story = {
     render: () => (
         <div className="grid w-72 gap-1">

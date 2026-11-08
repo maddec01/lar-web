@@ -1,10 +1,10 @@
 import { type ReactNode, useId } from 'react';
 
-import { Heading, Text } from '../typography/Typography';
+import { Heading, TextBase } from '../typography/Typography';
 
 const widths = {
-    narrow: 'max-w-[880px]',
-    default: 'max-w-[1200px]',
+    narrow: 'max-w-220',
+    default: 'max-w-page',
 } as const;
 
 const spacing = {
@@ -16,14 +16,20 @@ const spacing = {
 } as const;
 
 interface PageSectionProps {
+    /** The section's content, under its heading. */
     children: ReactNode;
+    /** An anchor for in-page links, which land clear of the sticky header. */
     id?: string;
+    /** `default` is the page column (75rem); `narrow` a reading measure (55rem). */
     width?: keyof typeof widths;
+    /** The band's vertical room: `hero` for the page's first, `closing` for the last before the footer, `default`
+     *  or `tight` between. */
     space?: keyof typeof spacing;
-    /** A raised band separates a section from the ones around it. */
-    tone?: 'plain' | 'raised';
+    /** `raised` sets a section apart from the ones around it on a band of its own; `plain` (the default) doesn't. */
+    variant?: 'plain' | 'raised';
     /** Names the section for assistive technology when it has no SectionHeading. */
     label?: string;
+    /** Art behind the band, such as a Backdrop. */
     background?: ReactNode;
     /** The section's SectionHeading, set above the content with room to breathe. */
     heading?: ReactNode;
@@ -35,7 +41,7 @@ export function PageSection({
     id,
     width = 'default',
     space = 'default',
-    tone = 'plain',
+    variant = 'plain',
     label,
     background,
     heading,
@@ -44,7 +50,7 @@ export function PageSection({
         <section
             id={id}
             aria-label={label}
-            className={`relative isolate scroll-mt-16 ${tone === 'raised' ? 'border-base-300/80 bg-base-100/70 dark:bg-base-100/50 border-y' : ''}`}
+            className={`relative isolate scroll-mt-16 ${variant === 'raised' ? 'border-line/80 bg-surface-glass border-y' : ''}`}
         >
             {background}
             <div className={`mx-auto w-full px-5 sm:px-8 ${widths[width]} ${spacing[space]}`}>
@@ -56,12 +62,19 @@ export function PageSection({
 }
 
 interface SectionHeadingProps {
+    /** A short label above the title, in the brand navy. */
     eyebrow?: string;
+    /** The section's title. */
     title: ReactNode;
+    /** A sentence under the title that carries the section's point. */
     lead?: ReactNode;
+    /** `center` (the default) for a band of its own; `start` beside other content. */
     align?: 'center' | 'start';
+    /** The title's heading level; `h1` only for the page's opening section. */
     level?: 'h1' | 'h2';
-    size?: 'display' | 'headline';
+    /** The title's heading variant: `headline` (the default) for a section; `display` for the page's one big
+     *  statement. */
+    variant?: 'display' | 'headline';
 }
 
 /** The eyebrow, title and lead that open a section. */
@@ -71,33 +84,34 @@ export function SectionHeading({
     lead,
     align = 'center',
     level = 'h2',
-    size = 'headline',
+    variant = 'headline',
 }: SectionHeadingProps) {
     const id = useId();
 
     return (
         <header
             aria-labelledby={id}
-            className={`flex flex-col gap-4 ${align === 'center' ? 'mx-auto max-w-[760px] items-center text-center' : 'max-w-[640px]'}`}
+            className={`flex flex-col gap-4 ${align === 'center' ? 'mx-auto max-w-190 items-center text-center' : 'max-w-160'}`}
         >
             {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-            <Heading id={id} as={level} variant={size}>
+            <Heading id={id} as={level} variant={variant}>
                 {title}
             </Heading>
             {lead ? (
-                <Text variant="lead" tone="muted" className={align === 'center' ? 'max-w-[620px]' : ''}>
+                <TextBase variant="lead" tone="muted" className={align === 'center' ? 'max-w-155' : ''}>
                     {lead}
-                </Text>
+                </TextBase>
             ) : null}
         </header>
     );
 }
 
 /** A short label above a title, in the brand navy. */
-export function Eyebrow({ children }: { children: ReactNode }) {
-    return (
-        <span className="text-primary text-[13px] font-semibold tracking-[-0.005em] dark:text-[color-mix(in_srgb,var(--color-primary)_50%,white)]">
-            {children}
-        </span>
-    );
+export function Eyebrow({
+    children,
+}: {
+    /** The label's text. */
+    children: ReactNode;
+}) {
+    return <span className="text-primary-fg text-ui tracking-heading font-semibold">{children}</span>;
 }

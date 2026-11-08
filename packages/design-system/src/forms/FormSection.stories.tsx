@@ -4,8 +4,10 @@ import { RefreshCwIcon } from 'lucide-react';
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
 import { InsetPanel } from '../display/InsetPanel';
+import { StatusIndicator } from '../feedback/StatusIndicator';
 import { HelpTip } from '../overlays/HelpTip';
 import { Text } from '../typography/Typography';
+import { DateField } from './DateField';
 import { Field } from './Field';
 import {
     Disclosure,
@@ -21,6 +23,7 @@ import {
 import { Input } from './Input';
 import { OptionSelect } from './OptionSelect';
 import { Switch } from './Switch';
+import { Textarea } from './Textarea';
 
 const meta = {
     title: 'Forms/FormSection',
@@ -59,7 +62,7 @@ export const WithActionAndBadges: Story = {
                 Rescan
             </Button>
         ),
-        badges: <Badge tone="success">Healthy</Badge>,
+        badges: <StatusIndicator state="ready" label="Healthy" />,
     },
 };
 
@@ -144,7 +147,7 @@ export const ContentAndDisclosure: Story = {
     },
 };
 
-/** A `section` Disclosure folds a section's own content, such as an earlier version of a text, behind a muted label. */
+/** A `section` Disclosure folds a section’s own content, such as an earlier version of a text, behind a muted label. */
 export const SectionDisclosure: Story = {
     render: () => (
         <div className="grid max-w-md gap-2">
@@ -152,11 +155,14 @@ export const SectionDisclosure: Story = {
             <Disclosure label="Original" presentation="section">
                 <Text>Let guests see the photos.</Text>
             </Disclosure>
+            <Disclosure label="Checks" presentation="section" defaultOpen>
+                <Text>All checks passed.</Text>
+            </Disclosure>
         </div>
     ),
 };
 
-/** A `group` Disclosure folds a form's optional group under its heading, with a badge, starting open when asked; a
+/** A `group` Disclosure folds a form’s optional group under its heading, with a badge, starting open when asked; a
  *  `framed` one folds a short list in a frame. */
 export const GroupAndFramedDisclosure: Story = {
     render: () => (
@@ -196,7 +202,37 @@ export const Stacked: Story = {
     ),
 };
 
-/** A dense tool's rows: controls flow beside the label and wrap under it, with help, content below and an error. */
+/** A dialog's editor: FormFields straight in a FormStack, outside any panel, are flush with the dialog's text (full
+ *  width), one 20px gap apart with or without help, each label topping its control's first line (beside a textarea
+ *  too), and a date reads as the long date pages show until it is focused. */
+export const DialogFields: Story = {
+    render: () => (
+        <div className="max-w-2xl">
+            <FormStack>
+                <FormField label="Title" helperText="From MusicBrainz">
+                    <Input defaultValue="Tidewater Hymns" />
+                </FormField>
+                <FormField label="Release date" helperText="From MusicBrainz">
+                    <DateField value="2021-01-10" locale="en-US" onValueChange={() => {}} />
+                </FormField>
+                <FormField label="First released">
+                    <DateField value="2021-01" locale="en-US" onValueChange={() => {}} />
+                </FormField>
+                <FormField label="Plot">
+                    <Textarea
+                        rows={4}
+                        defaultValue="On a storm-battered island off the northern coast, a reclusive lighthouse keeper finds a logbook that predicts every ship that will be lost."
+                    />
+                </FormField>
+                <FormField label="Year">
+                    <Input defaultValue="2021" />
+                </FormField>
+            </FormStack>
+        </div>
+    ),
+};
+
+/** A dense tool’s rows: controls flow beside the label and wrap under it, with help, content below and an error. */
 export const FlowRows: Story = {
     render: () => (
         <div className="max-w-2xl">
@@ -209,7 +245,7 @@ export const FlowRows: Story = {
                 <FormRow
                     layout="flow"
                     label="Delete hidden work"
-                    help="Deleting removes the work's brief, threads and reviews from this Mac."
+                    help="Deleting removes the work’s brief, threads and reviews from this Mac."
                     description="Export what you want to keep first."
                 >
                     <OptionSelect
@@ -235,7 +271,7 @@ export const FlowRows: Story = {
     ),
 };
 
-/** `dense`: a dense tool's group, its title with help and its description over the panels and notes it holds. */
+/** `dense`: a dense tool’s group, its title with help and its description over the panels and notes it holds. */
 export const Dense: Story = {
     render: () => (
         <div className="grid max-w-2xl gap-7">
@@ -251,7 +287,7 @@ export const Dense: Story = {
                     </FormRow>
                 </InsetPanel>
                 <Text variant="caption" tone="muted">
-                    A note under the group's panel.
+                    A note under the group’s panel.
                 </Text>
             </FormSection>
             <FormSection
@@ -294,4 +330,26 @@ export const Fieldset: Story = {
 
 export const Help: Story = {
     render: () => <HelpTip label="Build limit">How many builds run at once.</HelpTip>,
+};
+
+/** Short fields stay together; helper text only takes space when present. */
+export const AdjacentFields: Story = {
+    render: () => (
+        <FormStack>
+            <FormField label="Title">
+                <Input defaultValue="The Lantern Keeper" />
+            </FormField>
+            <FormField label="Year">
+                <Input defaultValue="2024" />
+            </FormField>
+            <FormField label="Provider" helperText="Choose the source used to match this movie.">
+                <OptionSelect
+                    label="Provider"
+                    value="tmdb"
+                    options={[{ value: 'tmdb', label: 'The Movie Database' }]}
+                    onChange={() => undefined}
+                />
+            </FormField>
+        </FormStack>
+    ),
 };

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MessageSquareTextIcon, PlayIcon } from 'lucide-react';
+import { ChevronDownIcon, MessageSquareTextIcon, PlayIcon } from 'lucide-react';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
@@ -74,7 +74,7 @@ function SampleMap() {
                         id="a"
                         width={NODE_W}
                         height={NODE_H}
-                        tone="asks"
+                        attention="asks"
                         picked={false}
                         openLabel="Open #204"
                         title="#204 Sign-in screen · Needs you"
@@ -87,7 +87,7 @@ function SampleMap() {
                             </Button>
                         }
                         name={<ItemTitle reference="#204" title="Sign-in screen" />}
-                        glyph={<StatusGlyph status="Needs you" presentation="compact" />}
+                        glyph={<StatusGlyph status="Needs you" size="sm" />}
                         facts="Needs you"
                     />
                 </MapNode>
@@ -96,7 +96,7 @@ function SampleMap() {
                         id="b"
                         width={NODE_W}
                         height={NODE_H}
-                        tone="waits"
+                        attention="waits"
                         picked
                         openLabel="Open #205"
                         title="#205 Owner accounts · Ready · Waiting on #204"
@@ -104,12 +104,17 @@ function SampleMap() {
                         source={<SourceIcon corner source="local" label="Saved only on this machine." />}
                         head={<PartKindLabel kind="build">Build</PartKindLabel>}
                         action={
-                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />} shrinks mark="▾">
+                            <Button
+                                {...buttonKind('start')}
+                                leftIcon={<PlayIcon />}
+                                shrinks
+                                rightIcon={<ChevronDownIcon />}
+                            >
                                 Start after
                             </Button>
                         }
                         name={<ItemTitle reference="#205" title="Owner accounts" />}
-                        glyph={<StatusGlyph status="Ready" presentation="compact" />}
+                        glyph={<StatusGlyph status="Ready" size="sm" />}
                         facts="Ready · Waiting on #204"
                         slices={
                             <SliceBar
@@ -127,7 +132,7 @@ function SampleMap() {
                         height={NODE_H}
                         label="end-to-end check"
                         title="Sign in and stream away from home"
-                        glyph={<StatusGlyph status="Queued" presentation="compact" />}
+                        glyph={<StatusGlyph status="Queued" size="sm" />}
                         steps="4 steps · after #205"
                         stepsTitle="After #205"
                     />
@@ -149,7 +154,7 @@ function SampleMap() {
                 <MapHistoryList width={W}>
                     <HistoryRow
                         id="h1"
-                        glyph={<StatusGlyph status="Done" presentation="compact" />}
+                        glyph={<StatusGlyph status="Done" size="sm" />}
                         kind={<PartKindLabel kind="research">Research</PartKindLabel>}
                         name="#201 Relay options"
                         onOpen={fn()}
@@ -158,7 +163,7 @@ function SampleMap() {
                     />
                     <HistoryRow
                         id="h2"
-                        glyph={<StatusGlyph status="Done" presentation="compact" />}
+                        glyph={<StatusGlyph status="Done" size="sm" />}
                         kind={<PartKindLabel kind="build">Build</PartKindLabel>}
                         name="#202 Device tokens"
                         onOpen={fn()}

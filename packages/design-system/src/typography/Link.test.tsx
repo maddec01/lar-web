@@ -81,3 +81,17 @@ describe.each([
         expect(navigate).not.toHaveBeenCalled();
     });
 });
+
+it('a navigation instruction supplies one decorative arrow without changing its accessible name', () => {
+    const { rerender } = render(
+        <Link arrow href="/activity">
+            Go to the dashboard
+        </Link>,
+    );
+    const link = screen.getByRole('link', { name: 'Go to the dashboard' });
+
+    expect(link.textContent).toBe('Go to the dashboard →');
+    expect(link.querySelector('[aria-hidden="true"]')).toHaveTextContent('→');
+    rerender(<Link href="/activity">Dashboard</Link>);
+    expect(screen.getByRole('link').textContent).toBe('Dashboard');
+});

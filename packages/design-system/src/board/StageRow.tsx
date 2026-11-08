@@ -5,26 +5,50 @@
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 import type { MouseEvent, ReactNode } from 'react';
 
-import { Badge } from '../display/Badge';
 import { Loading } from '../feedback/Loading';
 import { pickedRow, ROW_ACTION, ROW_OPENS, ROW_RULE } from './RowStyles';
+import { StateWord } from './StateWord';
 
 /** A stage row: `item` names it as `data-item`, and `picked` marks the item the dialog shows. */
-export function StageRowItem({ item, picked, children }: { item: string; picked: boolean; children: ReactNode }) {
+export function StageRowItem({
+    item,
+    picked,
+    children,
+}: {
+    /** The item, named as `data-item`. */
+    item: string;
+    /** The item the dialog shows now. */
+    picked: boolean;
+    /** The row's lines. */
+    children: ReactNode;
+}) {
     return (
-        <li data-item={item} className={`@container py-2 ${ROW_RULE} hover:bg-(--accent) ${pickedRow(picked)}`}>
+        <li data-item={item} className={`@container py-2 ${ROW_RULE} hover:bg-fill-hover ${pickedRow(picked)}`}>
             {children}
         </li>
     );
 }
 
 /** A row's first line: its cells, then its side. */
-export function RowFirst({ children }: { children: ReactNode }) {
+export function RowFirst({
+    children,
+}: {
+    /** The cells, then the side. */
+    children: ReactNode;
+}) {
     return <div className="row-first">{children}</div>;
 }
 
 /** A row's first line's cells as the one button that opens its item. */
-export function RowOpen({ onOpen, children }: { onOpen: () => void; children: ReactNode }) {
+export function RowOpen({
+    onOpen,
+    children,
+}: {
+    /** Called as the reader opens the item. */
+    onOpen: () => void;
+    /** The first line's cells. */
+    children: ReactNode;
+}) {
     return (
         <button type="button" data-row-open data-meta onClick={onOpen} className={`row-cols ${ROW_OPENS}`}>
             {children}
@@ -33,12 +57,22 @@ export function RowOpen({ onOpen, children }: { onOpen: () => void; children: Re
 }
 
 /** A row's first line's cells, when its title opens the item and the rest of the line does something else. */
-export function RowCells({ children }: { children: ReactNode }) {
+export function RowCells({
+    children,
+}: {
+    /** The first line's cells. */
+    children: ReactNode;
+}) {
     return <div className="row-cols">{children}</div>;
 }
 
 /** The first cell: the item's status glyph. */
-export function RowGlyph({ children }: { children: ReactNode }) {
+export function RowGlyph({
+    children,
+}: {
+    /** The status glyph. */
+    children: ReactNode;
+}) {
     return (
         <span className="grid size-6 place-items-center" data-glyph>
             {children}
@@ -47,21 +81,36 @@ export function RowGlyph({ children }: { children: ReactNode }) {
 }
 
 /** The first cell of a Queue row: its place in the Queue. */
-export function QueuePlace({ children }: { children: ReactNode }) {
+export function QueuePlace({
+    children,
+}: {
+    /** The place, such as "1". */
+    children: ReactNode;
+}) {
     return <span className="queue-n text-center font-medium tabular-nums">{children}</span>;
 }
 
 /** Where the item's ticket is saved and its repository, in the source cell. */
-export function RowIdentity({ children }: { children: ReactNode }) {
+export function RowIdentity({
+    children,
+}: {
+    /** The source and repository. */
+    children: ReactNode;
+}) {
     return (
-        <span data-row-identity className="flex min-w-0 items-center gap-1.5 text-[11px] text-(--muted-foreground)">
+        <span data-row-identity className="text-2xs text-fg-muted flex min-w-0 items-center gap-1.5">
             {children}
         </span>
     );
 }
 
 /** The kind cell. */
-export function RowKindCell({ children }: { children: ReactNode }) {
+export function RowKindCell({
+    children,
+}: {
+    /** The kind's badge. */
+    children: ReactNode;
+}) {
     return (
         <span className="flex min-w-0 items-center" data-kind>
             {children}
@@ -70,7 +119,12 @@ export function RowKindCell({ children }: { children: ReactNode }) {
 }
 
 /** The title cell: the RowTitle and what it is part of. */
-export function RowTitleCell({ children }: { children: ReactNode }) {
+export function RowTitleCell({
+    children,
+}: {
+    /** The RowTitle and what it is part of. */
+    children: ReactNode;
+}) {
     return (
         <span className="flex min-w-0 items-center gap-2" data-title-cell>
             {children}
@@ -79,47 +133,85 @@ export function RowTitleCell({ children }: { children: ReactNode }) {
 }
 
 /** The row's title, truncating; `name` gives it whole. */
-export function RowTitle({ name, children }: { name: string; children: ReactNode }) {
+export function RowTitle({
+    name,
+    children,
+}: {
+    /** The title in full, as its tooltip. */
+    name: string;
+    /** The title, an ItemTitle. */
+    children: ReactNode;
+}) {
     return (
-        <span className="min-w-0 truncate text-sm leading-7 font-medium text-(--foreground)" title={name} data-title>
+        <span className="text-fg min-w-0 truncate text-sm leading-7 font-medium" title={name} data-title>
             {children}
         </span>
     );
 }
 
 /** After the title: which concept or parent the row's work belongs to, giving its room up first. */
-export function RowPartOf({ children }: { children: string }) {
+export function RowPartOf({
+    children,
+}: {
+    /** What the work belongs to, in words. */
+    children: string;
+}) {
     return (
         <span
             data-concept
             title={children}
-            className="max-w-44 min-w-16 shrink-[100] truncate rounded bg-(--muted) px-1.5 text-(--muted-foreground)"
+            className="bg-surface-sunken text-fg-muted max-w-44 min-w-16 shrink-[100] truncate rounded-xs px-1.5"
         >
             {children}
         </span>
     );
 }
 
-/** The state cell, which `clips` what overflows it unless what it holds keeps its own width. */
-export function RowStateCell({ clips = true, children }: { clips?: boolean; children: ReactNode }) {
+/** The state cell, which `clips` what overflows it unless what it holds keeps its own width. What follows the state,
+ *  such as a kind marker, wraps under it rather than being cut off. */
+export function RowStateCell({
+    clips = true,
+    children,
+}: {
+    /** Clips what overflows the cell. */
+    clips?: boolean;
+    /** The state and what follows it. */
+    children: ReactNode;
+}) {
     return (
-        <span className={`flex min-w-0 items-center gap-1.5${clips ? ' overflow-hidden' : ''}`} data-col="state">
+        <span
+            className={`flex min-w-0 items-center gap-x-1.5 leading-4${clips ? ' overflow-hidden' : ''}`}
+            data-col="state"
+        >
             {children}
         </span>
     );
 }
 
 /** The row's state in words; `title` says more. */
-export function RowState({ title, children }: { title?: string; children: ReactNode }) {
+export function RowState({
+    title,
+    children,
+}: {
+    /** More on the state, as its tooltip. */
+    title?: string;
+    /** The state in words. */
+    children: ReactNode;
+}) {
     return (
-        <span className="max-w-full shrink-0 truncate" title={title} data-state>
+        <span className="max-w-full min-w-0 truncate" title={title} data-state>
             {children}
         </span>
     );
 }
 
 /** A Queue row's state: how long it has waited. */
-export function QueueAge({ children }: { children: ReactNode }) {
+export function QueueAge({
+    children,
+}: {
+    /** How long the row has waited. */
+    children: ReactNode;
+}) {
     return (
         <span className="queue-age shrink-0 tabular-nums" data-state>
             {children}
@@ -128,32 +220,61 @@ export function QueueAge({ children }: { children: ReactNode }) {
 }
 
 /** The row's action slot, at its right. With `passEmpty`, clicks on its controls stay there, and a click beside them
- *  reaches the row. */
-export function RowSide({ passEmpty = false, children }: { passEmpty?: boolean; children: ReactNode }) {
+ *  reaches the row. `figures` lead the action on the same line, for a row with no second line to hold them, so it keeps
+ *  the height of a row with none; they truncate before the action does. */
+export function RowSide({
+    passEmpty = false,
+    figures,
+    children,
+}: {
+    /** Clicks beside its controls reach the row. */
+    passEmpty?: boolean;
+    /** Figures before the action, such as usage. */
+    figures?: ReactNode;
+    /** The row's action. */
+    children: ReactNode;
+}) {
+    const content = figures ? (
+        <>
+            <span data-col="figures" className="flex min-w-0 shrink justify-end">
+                {figures}
+            </span>
+            {children}
+        </>
+    ) : (
+        children
+    );
+    const action = `${ROW_ACTION}${figures ? ' flex-nowrap' : ''}`;
+
     if (!passEmpty)
         return (
-            <span data-col="side" className={`row-side ${ROW_ACTION}`}>
-                {children}
+            <span data-col="side" className={`row-side ${action}`}>
+                {content}
             </span>
         );
 
     return (
         <span data-col="side" className="row-side">
             <span
-                className={ROW_ACTION}
+                className={action}
                 onClick={(event) => {
                     if (event.target !== event.currentTarget) event.stopPropagation();
                 }}
             >
-                {children}
+                {content}
             </span>
         </span>
     );
 }
 
 /** Where to act on an item that waits on you, in its action slot. */
-export function OnYourDesk({ children }: { children: ReactNode }) {
-    return <span className="text-(--warning-foreground)">{children}</span>;
+export function OnYourDesk({
+    children,
+}: {
+    /** Where to act on the item. */
+    children: ReactNode;
+}) {
+    return <span className="text-warning-fg">{children}</span>;
 }
 
 /** A row's second line: `bar` and `count` on the left, `children` in its text slot, then its pull requests and
@@ -166,13 +287,17 @@ export function RowSecondLine({
     onClick,
     children,
 }: {
+    /** A bar on the left, such as a SliceBar. */
     bar?: ReactNode;
     /** A RowCount or RowSliceToggle; with none, its cell stays empty. */
     count?: ReactNode;
     /** The pull requests, as PullRequestRefs. */
     prs?: ReactNode;
+    /** Figures at the line's end. */
     figures?: ReactNode;
+    /** Called with a click on the line beside its controls. */
     onClick?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+    /** The line's text, after the bar and count. */
     children?: ReactNode;
 }) {
     return (
@@ -193,7 +318,15 @@ export function RowSecondLine({
 }
 
 /** The second line's count, such as `2/5 parts`. */
-export function RowCount({ title, children }: { title?: string; children: ReactNode }) {
+export function RowCount({
+    title,
+    children,
+}: {
+    /** The count in full, as its tooltip. */
+    title?: string;
+    /** The count, such as `2/5 parts`. */
+    children: ReactNode;
+}) {
     return (
         <span data-col="count" className="tabular-nums" title={title}>
             {children}
@@ -208,37 +341,44 @@ export function RowSliceToggle({
     onToggle,
     children,
 }: {
+    /** The slices are unfolded. */
     open: boolean;
     /** Names the button, as what it does now. */
     label: string;
+    /** Called as the reader folds or unfolds the slices. */
     onToggle: () => void;
+    /** The slice count. */
     children: ReactNode;
 }) {
     return (
         <button
             type="button"
             aria-expanded={open}
-            aria-label={label}
             onClick={onToggle}
             data-col="count"
-            className={`flex h-4 items-center gap-1 justify-self-start rounded tabular-nums hover:text-(--foreground) ${ROW_OPENS}`}
+            className={`hover:text-fg flex h-4 items-center gap-1 justify-self-start rounded-xs tabular-nums ${ROW_OPENS}`}
         >
-            {children}
+            <span className="sr-only">{label}:</span> {children}
             {open ? <ChevronDownIcon className="size-3" /> : <ChevronRightIcon className="size-3" />}
         </button>
     );
 }
 
-/** Why the row is blocked, as a danger badge in its second line that truncates. */
-export function RowBlocked({ children }: { children: string }) {
+/** A dependency holding the row, in its second line: the waiting light and what it waits on. */
+export function RowBlocked({
+    children,
+}: {
+    /** The dependency holding the row. */
+    children: string;
+}) {
     return (
-        <Badge tone="danger" className="min-w-0" title={children} data-blocked>
-            <span className="truncate">{children}</span>
-        </Badge>
+        <StateWord state="waiting" title={children} data-blocked>
+            {children}
+        </StateWord>
     );
 }
 
-const SLICE_TONE = { blocked: 'text-(--st-review)', active: 'text-(--st-now)' } as const;
+const SLICE_TONE = { blocked: 'text-warning-fg', active: 'text-primary-fg' } as const;
 
 /** The second line's word on the row's slices: its first blocked or active slice, `more` after it, and anything `after`
  *  that (such as that every slice is implemented); `title` lists them all. */
@@ -248,9 +388,13 @@ export function RowSliceNote({
     more,
     after,
 }: {
+    /** The note in full, as its tooltip. */
     title?: string | undefined;
+    /** The first blocked or active slice: its word, tone and title. */
     first?: { word: string; tone: keyof typeof SLICE_TONE; title: string } | undefined;
+    /** How many more, after it. */
     more?: string | undefined;
+    /** Anything after that, such as that every slice is implemented. */
     after?: string | undefined;
 }) {
     return (
@@ -258,7 +402,7 @@ export function RowSliceNote({
             {first && (
                 <>
                     <span className={`font-medium ${SLICE_TONE[first.tone]}`}>{first.word}</span>{' '}
-                    <span className="text-(--foreground)">{first.title}</span>
+                    <span className="text-fg">{first.title}</span>
                     {more}
                 </>
             )}
@@ -268,14 +412,24 @@ export function RowSliceNote({
 }
 
 /** Under a row: Start's message or error and what Auto-build says of it, taking no room when empty. */
-export function RowFoot({ children }: { children: ReactNode }) {
+export function RowFoot({
+    children,
+}: {
+    /** Start's message or error and what Auto-build says. */
+    children: ReactNode;
+}) {
     return <div className="pt-1 pr-3 pl-12 empty:hidden">{children}</div>;
 }
 
 /** Under a row: its unfolded slices. */
-export function RowSlices({ children }: { children: ReactNode }) {
+export function RowSlices({
+    children,
+}: {
+    /** The unfolded slices, a SliceList. */
+    children: ReactNode;
+}) {
     return (
-        <div className="pt-1 pr-3 pl-10" data-slices>
+        <div className="row-slices pt-1 pr-3 pl-10" data-slices>
             {children}
         </div>
     );
@@ -292,9 +446,13 @@ export function UsageFigures({
     partial,
     incomplete,
 }: {
+    /** The figures in full, as their tooltip. */
     title: string;
+    /** The figures, such as "$1.20 · 34k tokens". */
     text?: string | null | undefined;
+    /** What the figures say while they update. */
     updating?: string | undefined;
+    /** Keeps the updating mark from pulsing. */
     still?: boolean;
     /** Screen-reader words for the +. */
     partial?: string | undefined;
@@ -302,10 +460,7 @@ export function UsageFigures({
     incomplete?: string | undefined;
 }) {
     return (
-        <span
-            className="flex min-w-0 items-center justify-end gap-1 text-(--muted-foreground) tabular-nums"
-            title={title}
-        >
+        <span className="text-fg-muted flex min-w-0 items-center justify-end gap-1 tabular-nums" title={title}>
             {updating && <Loading presentation="inline" title={updating} still={still} />}
             {text && <span className="truncate">{text}</span>}
             {text

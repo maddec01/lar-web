@@ -1,36 +1,39 @@
 import type { MouseEvent, ReactNode } from 'react';
 
 import { BrandMark } from '../display/BrandMark';
-import { DismissButton } from '../feedback/DismissButton';
+import { AttentionList } from '../feedback/AttentionList';
 
 interface BoardWarningsProps {
-    /** A warning shown open above the rest, such as a lost board server, which every number on the page depends on. */
+    /** A warning shown open above the rest, such as a lost board server, which every number on the page depends on: a
+     *  BoardWarning. It turns the list's tone to danger and keeps it open. */
     lead?: ReactNode;
-    /** The collapsed list's summary, such as "2 connections need attention"; without it, no list. */
-    summary?: ReactNode;
-    /** The warnings in the collapsed list. */
+    /** The list's header when only `lead` shows, such as "Board disconnected". */
+    leadTitle?: string;
+    /** The list's header, such as "2 connections need attention"; without it, only the lead. */
+    summary?: string;
+    /** Names the header's fold toggle for screen readers, such as "Show connection warnings". */
+    toggleLabel: string;
+    /** The warnings, each a BoardWarning. */
     children?: ReactNode;
-    /** At the banner's right, such as Diagnostics. */
+    /** At the header's end, such as Diagnostics. */
     action: ReactNode;
 }
 
-/** The board's warnings, in a banner under the title bar: connection problems stay in a collapsed list, inline
- *  details that never open a notification or a dialog. */
-export function BoardWarnings({ lead, summary, children, action }: BoardWarningsProps) {
+/** The board's warnings, above the desk: the design system's AttentionList, as lar-server's "Needs attention", folded
+ *  under its header until opened (inline details that never open a notification or a dialog). A lead warning, such as
+ *  a lost board server, opens it in the danger tone. */
+export function BoardWarnings({ lead, leadTitle, summary, toggleLabel, children, action }: BoardWarningsProps) {
     return (
-        <aside data-board-notices className="shrink-0 border-b bg-(--warning-surface) px-6 py-2 text-(--foreground)">
-            <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                    {lead}
-                    {summary ? (
-                        <details>
-                            <summary className="cursor-pointer text-xs font-medium">{summary}</summary>
-                            <div className="mt-2 max-h-48 overflow-auto">{children}</div>
-                        </details>
-                    ) : null}
-                </div>
-                {action}
-            </div>
+        <aside data-board-notices className="shrink-0 px-6 pt-4">
+            <AttentionList
+                title={summary ?? leadTitle ?? ''}
+                tone={lead ? 'danger' : 'warning'}
+                action={action}
+                collapsible={summary ? { defaultOpen: Boolean(lead), toggleLabel } : undefined}
+            >
+                {lead}
+                {summary ? children : null}
+            </AttentionList>
         </aside>
     );
 }
@@ -38,45 +41,69 @@ export function BoardWarnings({ lead, summary, children, action }: BoardWarnings
 interface BoardWarningProps {
     /** What the warning is about, as `data-warning`. */
     name: string;
+    /** The warning's title. */
     title: string;
+    /** The close button's accessible name. */
     dismissLabel: string;
+    /** Called as the reader closes the warning. */
     onDismiss: (event: MouseEvent<HTMLButtonElement>) => void;
-    /** Under the text, such as a button that fixes it. */
+    /** At the row's end, such as a button that fixes it. */
     action?: ReactNode;
+    /** What to do about it. */
     children: ReactNode;
+    /** `danger` for a warning every number on the page depends on, such as a lost board server. */
+    tone?: 'warning' | 'danger';
 }
 
-/** One warning in the banner: its title, what to do, and a close button. Commands in it wrap anywhere. */
-export function BoardWarning({ name, title, dismissLabel, onDismiss, action, children }: BoardWarningProps) {
+/** One warning in the list: an AttentionList row with its title, what to do, its action and a close button. Commands
+ *  in it wrap anywhere. */
+export function BoardWarning({
+    name,
+    title,
+    dismissLabel,
+    onDismiss,
+    action,
+    children,
+    tone = 'warning',
+}: BoardWarningProps) {
     return (
-        <div data-slot="notice" className="relative border-t py-3 pr-8 text-xs first:border-t-0 first:py-1">
-            <div data-warning={name} className="[&_code]:wrap-anywhere">
-                <DismissButton label={dismissLabel} onClick={onDismiss} />
-                <div data-slot="title" className="font-medium">
-                    {title}
-                </div>
-                <div data-slot="description" className="text-base-700 mt-1">
-                    {children}
-                </div>
-                {action && <div className="mt-2">{action}</div>}
-            </div>
-        </div>
+        <AttentionList.Item
+            data-slot="notice"
+            data-warning={name}
+            tone={tone}
+            title={title}
+            description={children}
+            action={action}
+            dismissLabel={dismissLabel}
+            onDismiss={onDismiss}
+        />
     );
 }
 
 /** What fills the board's main area while a tool it can't work without is missing: the Lar mark, what's missing, why
  *  and how to fix it, and a way to look again. */
-export function ToolMissing({ title, children, action }: { title: string; children: ReactNode; action: ReactNode }) {
+export function ToolMissing({
+    title,
+    children,
+    action,
+}: {
+    /** What's missing. */
+    title: string;
+    /** Why it matters and how to fix it. */
+    children: ReactNode;
+    /** The way to look again. */
+    action: ReactNode;
+}) {
     return (
         <div className="tool-missing grid flex-1 place-items-center p-5">
             <div
-                className="tool-missing-box max-w-130 rounded-(--radius) border bg-(--card) px-6 py-5 [&_code]:wrap-anywhere [&_code]:text-(--foreground)"
+                className="tool-missing-box bg-surface-raised [&_code]:text-fg max-w-130 rounded-lg border px-6 py-5 [&_code]:wrap-anywhere"
                 role="alert"
             >
                 <BrandMark label="Lar" />
-                <h1 className="mt-3 mb-0 text-(length:--text-base) font-semibold tracking-[-0.01em]">{title}</h1>
-                <p className="mt-3 mb-0 text-(--muted-foreground)">{children}</p>
-                <p className="mt-3 mb-0 text-(--muted-foreground)">{action}</p>
+                <h1 className="tracking-heading mt-3 mb-0 text-(length:--text-base) font-semibold">{title}</h1>
+                <p className="text-fg-muted mt-3 mb-0">{children}</p>
+                <p className="text-fg-muted mt-3 mb-0">{action}</p>
             </div>
         </div>
     );

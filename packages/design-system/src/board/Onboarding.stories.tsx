@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
-import { CollectionState } from '../collections/CollectionState';
 import { Badge } from '../display/Badge';
 import { BrandMark } from '../display/BrandMark';
 import { InsetPanel } from '../display/InsetPanel';
 import { NoticeCard } from '../display/NoticeCard';
 import { RadioChoice } from '../display/RadioChoice';
+import { EmptyState } from '../feedback/EmptyState';
 import { Progress } from '../feedback/Progress';
 import { Disclosure, FormFieldset } from '../forms/FormSection';
 import { Input } from '../forms/Input';
@@ -40,12 +40,11 @@ export const Empty: Story = {
     render: () => (
         <div className="flex h-96 flex-col">
             <EmptyBoard data-empty-state>
-                <CollectionState
-                    variant="welcome"
-                    icon={<BrandMark label="Lar" />}
+                <EmptyState
+                    artwork={<BrandMark label="Lar" />}
                     title="Add your first Project"
                     description="Connect a Project to see its work and start agents from this board."
-                    action={<Button {...buttonKind('other')}>Add a Project</Button>}
+                    actions={<Button {...buttonKind('other')}>Add a Project</Button>}
                 />
             </EmptyBoard>
         </div>
@@ -61,7 +60,7 @@ export const SetupCards: Story = {
                     <NoticeCard
                         key={name}
                         tone="warning"
-                        icon={<span className="bg-base-300 size-5 rounded-md" />}
+                        icon={<span className="bg-fill-muted-hover size-5 rounded-md" />}
                         title={`maddec01/${name}`}
                         badge={<Badge tone="warning">Setting up</Badge>}
                         description="Stopped at the work step"
@@ -73,13 +72,13 @@ export const SetupCards: Story = {
     ),
 };
 
-const icon = <span className="bg-base-300 size-4 shrink-0 rounded-sm" />;
+const icon = <span className="bg-fill-muted-hover size-4 shrink-0 rounded-sm" />;
 
 /** The first step: the place and progress, then the T3 projects to pick, the folder to add, and those already added
- *  or that can't be added, folded. */
+ *  or that can’t be added, folded. */
 export const ProjectStep: Story = {
     render: () => (
-        <div className="grid max-w-xl gap-4">
+        <div className="grid w-full max-w-xl gap-4">
             <SetupHeader
                 icon={icon}
                 place={<Text tone="muted">Set up web.</Text>}
@@ -121,7 +120,7 @@ export const ProjectStep: Story = {
                         </ProjectListItem>
                     </ProjectList>
                 </Disclosure>
-                <Disclosure presentation="framed" label="Can't be added (1)" defaultOpen>
+                <Disclosure presentation="framed" label="Can’t be added (1)" defaultOpen>
                     <ProjectList>
                         <ProjectListItem reason="This folder is a git worktree. Add its main checkout instead.">
                             <ProjectLine
@@ -138,10 +137,10 @@ export const ProjectStep: Story = {
     ),
 };
 
-/** The work step's groups, further apart, with an optional group folded under its heading. */
+/** The work step’s groups, further apart, with an optional group folded under its heading. */
 export const WorkStep: Story = {
     render: () => (
-        <div className="max-w-xl">
+        <div className="w-full max-w-xl">
             <SetupStep presentation="form" data-work-step>
                 <Text variant="caption" tone="muted">
                     New labels wait until you add the Project.

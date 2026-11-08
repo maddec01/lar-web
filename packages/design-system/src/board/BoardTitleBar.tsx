@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 
 import { BrandMark } from '../display/BrandMark';
+import { StatusIndicator, type StatusTone } from '../feedback/StatusIndicator';
+import { GlassBarBase } from '../layout/GlassBar';
 import { TitleBar } from '../layout/TitleBar';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '../overlays/Tooltip';
 
@@ -15,13 +17,17 @@ interface BoardTitleBarProps {
     heading?: string;
     /** How the board is doing, in the status strip: the Refreshed time, then the counters after a divider. */
     refreshed?: ReactNode;
+    /** The board's counters, a BoardCounters, in the status strip. */
     counters?: ReactNode;
     /** The search field, up to 26rem wide beside the actions. */
     search?: ReactNode;
+    /** What you can do, at the bar's end, such as Add item. */
     actions: ReactNode;
-    /** In the Mac app, where macOS draws the traffic lights; in a browser, grey stand-ins hold their place. */
+    /** In the Mac app, whose window macOS draws its traffic lights over (a hidden-inset title bar). A browser has no
+     *  traffic lights, so the bar draws none and keeps only its own padding. */
     nativeWindow: boolean;
-    /** Starts the bar past the traffic lights; off while full screen hides them. */
+    /** Starts the bar past the native traffic lights; off while full screen hides them. Only the Mac app has them, so
+     *  outside it this changes nothing. */
     pastLights: boolean;
 }
 
@@ -41,13 +47,14 @@ export function BoardTitleBar({
     pastLights,
 }: BoardTitleBarProps) {
     const status = refreshed || counters;
+    const inset = nativeWindow && pastLights;
 
     return (
-        <div
+        <GlassBarBase
             data-native-window={nativeWindow || undefined}
-            className={`title-bar border-base-300 shrink-0 border-b select-none ${pastLights ? 'pl-[74px]' : ''} ${drag}`}
+            data-past-lights={inset || undefined}
+            className={`title-bar select-none ${inset ? 'pl-18.5' : ''} ${drag}`}
         >
-            {nativeWindow ? null : <TrafficLights />}
             {heading ? (
                 <h1 className="sr-only" tabIndex={-1}>
                     {heading}
@@ -59,13 +66,10 @@ export function BoardTitleBar({
                     status || search ? (
                         <>
                             {status ? (
-                                <div className="status-strip border-base-300 bg-base-200/60 flex shrink-0 items-center gap-0.5 rounded-lg border pr-0.5 pl-1.5">
+                                <div className="status-strip border-line bg-surface-sunken flex shrink-0 items-center gap-0.5 rounded-lg border pr-0.5 pl-1.5">
                                     {refreshed}
                                     {refreshed && counters ? (
-                                        <span
-                                            aria-hidden="true"
-                                            className="bg-base-300 mx-0.5 h-4 w-px @max-[40rem]:hidden"
-                                        />
+                                        <span aria-hidden="true" className="bg-line @max-pane:hidden mx-0.5 h-4 w-px" />
                                     ) : null}
                                     {counters}
                                 </div>
@@ -76,26 +80,18 @@ export function BoardTitleBar({
                 }
                 actions={actions}
             />
-        </div>
-    );
-}
-
-/** In a browser, the traffic lights' grey stand-ins, 16 px in and centred in the 52 px bar, where macOS draws them. */
-function TrafficLights() {
-    return (
-        <div className="browser-window-controls pointer-events-none fixed top-0 left-0 z-50 flex h-13 items-center">
-            <span className="traffic-lights absolute left-4 flex gap-2" aria-hidden="true">
-                {['close', 'minimize', 'zoom'].map((light) => (
-                    <span key={light} className="size-3 rounded-full bg-(--traffic-stand-in)" />
-                ))}
-            </span>
-        </div>
+        </GlassBarBase>
     );
 }
 
 /** The product's lockup in the title bar: the Lar mark, "ar" and the product's name. Screen readers skip it: the
  *  page's heading names the page. */
-export function BoardBrand({ product }: { product: string }) {
+export function BoardBrand({
+    product,
+}: {
+    /** The product's name after "Lar", such as "Factory". */
+    product: string;
+}) {
     return (
         <span className="brand inline-flex shrink-0" aria-hidden="true">
             <BrandMark label={`Lar ${product}`} product={product} />
@@ -105,19 +101,20 @@ export function BoardBrand({ product }: { product: string }) {
 
 /** A divider between groups of the title bar's actions. */
 export function TitleBarDivider() {
-    return <span aria-hidden="true" className="app-divider bg-base-300 mx-1 h-5 w-px shrink-0" />;
+    return <span aria-hidden="true" className="app-divider bg-line mx-1 h-5 w-px shrink-0" />;
 }
 
 export type RefreshHealth = 'waiting' | 'live' | 'stale' | 'disconnected';
 
-const dots: Record<RefreshHealth, string> = {
-    waiting: 'bg-base-500',
-    live: 'bg-success',
-    stale: 'bg-amber-500',
-    disconnected: 'bg-danger',
+const tones: Record<RefreshHealth, StatusTone> = {
+    waiting: 'neutral',
+    live: 'success',
+    stale: 'warning',
+    disconnected: 'danger',
 };
 
 interface RefreshIndicatorProps {
+    /** How fresh the board is: `waiting`, `live`, `stale` or `disconnected`. */
     health: RefreshHealth;
     /** What the time says, such as "12s" or "Stale · 2m"; hidden on a narrow bar, where the dot speaks alone. */
     label: ReactNode;
@@ -125,13 +122,14 @@ interface RefreshIndicatorProps {
     landed: number;
     /** The tooltip's two lines: when the board last read, then how it reads or what went wrong. */
     detail: string;
+    /** More on the health, in the tooltip. */
     secondaryDetail: string;
 }
 
 /**
  * How fresh the board is, in the title bar's status strip: a dot in the health's colour (amber when stale, red while
  * the page has lost the board server) and the time since the last read, with more in a tooltip. A tab stop, so
- * keyboard users reach its tooltip.
+ * keyboard users reach its tooltip. It names its health in `data-health`.
  */
 export function RefreshIndicator({ health, label, landed, detail, secondaryDetail }: RefreshIndicatorProps) {
     return (
@@ -139,9 +137,10 @@ export function RefreshIndicator({ health, label, landed, detail, secondaryDetai
             <TooltipTrigger asChild>
                 <span
                     tabIndex={0}
-                    className="refreshed text-base-700 focus-visible:ring-primary inline-flex h-6 shrink-0 items-center gap-1.5 rounded-sm px-1 text-xs whitespace-nowrap tabular-nums outline-none focus-visible:ring-2 @max-[40rem]:hidden @min-[48rem]:min-w-30"
+                    data-health={health}
+                    className="refreshed text-fg-muted focus-ring @max-pane:hidden inline-flex h-6 shrink-0 items-center gap-1.5 rounded-sm px-1 text-xs whitespace-nowrap tabular-nums @3xl:min-w-30"
                 >
-                    <span className="relative grid size-2 place-items-center">
+                    <span className="relative grid size-2.5 place-items-center">
                         {landed > 0 && health === 'live' && (
                             <span
                                 key={landed}
@@ -149,15 +148,15 @@ export function RefreshIndicator({ health, label, landed, detail, secondaryDetai
                                 className="bg-success absolute size-1.5 rounded-full motion-safe:animate-[refreshed-ping_1.2s_ease-out_forwards]"
                             />
                         )}
-                        <span data-dot className={`size-1.5 rounded-full ${dots[health]}`} />
+                        <StatusIndicator size="sm" tone={tones[health]} />
                     </span>
-                    <span className="@max-[48rem]:sr-only">{label}</span>
+                    <span className="@max-3xl:sr-only">{label}</span>
                 </span>
             </TooltipTrigger>
             <TooltipPopup side="bottom">
                 <span className="flex flex-col gap-0.5">
                     <span data-line>{detail}</span>
-                    <span data-line className="text-base-700">
+                    <span data-line className="text-fg-muted">
                         {secondaryDetail}
                     </span>
                 </span>

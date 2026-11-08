@@ -1,18 +1,24 @@
 import type { ReactNode } from 'react';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
-import { Inline, Stack } from '../layout/Flow';
+import { InlineBase, StackBase } from '../layout/Flow';
 import { Text } from '../typography/Typography';
 
 interface ActivityCardProps {
+    /** Draws the card as a skeleton while it loads. */
     loading?: boolean;
     /** Cover, poster, or icon; the card gives it a fixed square to fill. */
     artwork: ReactNode;
+    /** Badges under the details, such as the stream's quality or "Transcoding". */
     badges?: ReactNode;
-    /** A dense row of artwork and title with one subtitle, without the card chrome, detail, or badges. */
-    compact?: boolean;
+    /** `sm` is a dense row of artwork and title with one subtitle, without the card chrome, detail, or badges; `md`
+     *  (the default) the full card. */
+    size?: 'sm' | 'md';
+    /** A muted line under the subtitle, such as the device and the progress. */
     detail?: string;
+    /** Who has it or where it is from, such as the user or the artist. */
     subtitle?: string;
+    /** What it is, such as the track or the film. */
     title: string;
 }
 
@@ -20,7 +26,7 @@ interface ActivityCardProps {
 export function ActivityCard({
     artwork,
     badges,
-    compact = false,
+    size = 'md',
     detail,
     subtitle,
     title,
@@ -28,15 +34,15 @@ export function ActivityCard({
 }: ActivityCardProps) {
     return (
         <article
-            className={`flex min-w-0 items-center ${compact ? 'gap-3 rounded-lg p-2' : 'border-base-300 bg-base-100 gap-4 rounded-xl border p-3 shadow-xs'}`}
+            className={`flex min-w-0 items-center ${size === 'sm' ? 'gap-3 rounded-lg p-2' : 'surface-card gap-4 rounded-xl border p-3'}`}
         >
-            <div className={`shrink-0 ${compact ? 'size-10' : 'size-20'}`}>{artwork}</div>
-            <Stack space="tight" className="min-w-0 flex-1">
-                <Stack space="none" className="min-w-0">
+            <div className={`shrink-0 ${size === 'sm' ? 'size-10' : 'size-20'}`}>{artwork}</div>
+            <StackBase space="tight" className="min-w-0 flex-1">
+                <StackBase space="none" className="min-w-0">
                     <Text as="span" variant="label" truncate title={title} loading={loading}>
                         {title}
                     </Text>
-                    {Object.entries(compact ? { subtitle } : { subtitle, detail }).map(([key, line]) =>
+                    {Object.entries(size === 'sm' ? { subtitle } : { subtitle, detail }).map(([key, line]) =>
                         line ? (
                             <Text
                                 key={key}
@@ -51,13 +57,13 @@ export function ActivityCard({
                             </Text>
                         ) : null,
                     )}
-                </Stack>
-                {!compact && badges ? (
-                    <Inline wrap space="tight">
+                </StackBase>
+                {size !== 'sm' && badges ? (
+                    <InlineBase wrap space="tight">
                         {badges}
-                    </Inline>
+                    </InlineBase>
                 ) : null}
-            </Stack>
+            </StackBase>
         </article>
     );
 }

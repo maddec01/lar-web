@@ -12,7 +12,7 @@ import {
     type ServerBay,
     ServerUnit,
 } from './ServerUnit';
-import { AppIcon, type Readiness, StatusPill } from './Status';
+import { AppIcon, type Readiness, ReadinessStatus } from './Status';
 
 const statusLabels: Record<Readiness, string> = {
     available: 'Working',
@@ -84,15 +84,15 @@ const photos: AppReadiness = {
     icon: photosIcon,
     status: 'planned',
     summary:
-        "Your own photo cloud, in place of iCloud Photos or Google Photos. Every picture you take goes straight to your server, and you find any of them by what's in it.",
+        'Your own photo cloud, in place of iCloud Photos or Google Photos. Every picture you take goes straight to your server, and you find any of them by what’s in it.',
     server: [
         line('Every photo and video, on your own disks', 'planned'),
         line('Albums and a timeline of every year', 'planned'),
         line('Search by what is in the picture', 'planned'),
-        line("Recognition that runs on your server, not someone else's", 'planned'),
+        line('Recognition that runs on your server, not someone else’s', 'planned'),
     ],
     apps: [
-        line("Automatic backup from your iPhone's camera", 'planned'),
+        line('Automatic backup from your iPhone’s camera', 'planned'),
         line('Browse and share on iPhone, iPad, Mac and Apple TV', 'planned'),
     ],
 };
@@ -115,7 +115,7 @@ function AppPanel({ app }: { app: AppReadiness }) {
         <ReadinessPanel
             icon={<AppIcon src={app.icon} alt="" size="sm" />}
             title={app.title}
-            status={<StatusPill status={app.status}>{statusLabels[app.status]}</StatusPill>}
+            status={<ReadinessStatus status={app.status}>{statusLabels[app.status]}</ReadinessStatus>}
             summary={app.summary}
             groups={[
                 { title: 'On the server', items: app.server },
@@ -147,7 +147,7 @@ const meta = {
     component: ServerUnit,
     parameters: { layout: 'fullscreen' },
     args: {
-        label: "Lar Server's apps",
+        label: 'Lar Server’s apps',
         display: { name: 'LAR SERVER', state: 'BUILDING' },
         bays,
         legend,
@@ -155,7 +155,7 @@ const meta = {
     argTypes: { bays: { control: false }, legend: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px] px-5 py-12 sm:px-8">
+            <div className="max-w-page mx-auto px-5 py-12 sm:px-8">
                 <Story />
             </div>
         ),
@@ -166,17 +166,17 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Server's progress: a four-bay box, one drive per media app. Choose a drive, or use the arrow keys. */
+/** Lar Server’s progress: a four-bay box, one drive per media app. Choose a drive, or use the arrow keys. */
 export const Default: Story = {};
 
 /** Without the key under the unit. */
 export const WithoutLegend: Story = { args: { legend: undefined } };
 
-/** One app's panel on its own: what works, what is being built and what is planned. */
+/** One app’s panel on its own: what works, what is being built and what is planned. */
 export const AppStatusPanel: Story = {
     parameters: { layout: 'padded' },
     render: () => (
-        <div className="max-w-[480px]">
+        <div className="max-w-120">
             <AppPanel app={video} />
         </div>
     ),

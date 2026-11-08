@@ -67,7 +67,9 @@ describe('command palette results overflow', () => {
 
         expect(screen.getByRole('combobox')).toHaveFocus();
         expect(viewport).not.toContainElement(screen.getByRole('combobox'));
-        expect(viewport).not.toContainElement(screen.getByText('Arrow keys to move'));
+        expect(viewport).not.toContainElement(
+            document.querySelector<HTMLElement>('[data-slot="command-palette-hints"]'),
+        );
     });
 
     it('updates when results arrive, filtering empties the list and the viewport resizes without scrolling', () => {
@@ -124,7 +126,6 @@ function palette(options: string[]) {
             onClose={() => undefined}
             listLabel="Destinations"
             empty="No results"
-            footer="Arrow keys to move"
         >
             {options.map((option) => (
                 <div key={option} role="option" aria-selected={false}>

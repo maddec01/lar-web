@@ -1,17 +1,22 @@
 import type { ReactNode } from 'react';
 
-import { Button } from '../actions/Button';
+import { ButtonBase as Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
 import { Loading } from '../feedback/Loading';
+import { SectionTitle } from '../layout/SectionTitle';
 import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { buttonKind } from './ButtonKinds';
 
 interface ListButtonProps {
+    /** The button's text, such as "List". */
     label: string;
+    /** The button's icon. */
     icon: ReactNode;
     /** How many items are in List; none while the first read could still add some, which shows a loading cue. */
     count: number | undefined;
+    /** What the count says while it loads. */
     loadingLabel: string;
+    /** Called as the reader opens the List. */
     onOpen: () => void;
 }
 
@@ -20,7 +25,7 @@ interface ListButtonProps {
 export function ListButton({ label, icon, count, loadingLabel, onOpen }: ListButtonProps) {
     return (
         <Button {...buttonKind('control')} className="list-button px-2" leftIcon={icon} title={label} onClick={onOpen}>
-            <span className="@max-[70rem]:sr-only">{label}</span>
+            <span className="@max-6xl:sr-only">{label}</span>
             {count === undefined ? <Loading presentation="inline" title={loadingLabel} /> : <Badge>{count}</Badge>}
         </Button>
     );
@@ -35,17 +40,22 @@ export function ListGroupItem({
     active,
     onPick,
 }: {
+    /** The group's name. */
     label: string;
+    /** How many of its items match; none while it reads. */
     count?: number;
+    /** The group's icon. */
     icon: ReactNode;
+    /** The group shown now. */
     active: boolean;
+    /** Called as the reader picks the group. */
     onPick: () => void;
 }) {
     return (
         <SidebarNavigationItem active={active} onClick={onPick}>
             {icon}
             <span className="name min-w-0 flex-1 truncate text-left">{label}</span>
-            {count !== undefined && <span className="count text-base-700 text-xs tabular-nums">{count}</span>}
+            {count !== undefined && <span className="count text-fg-muted text-xs tabular-nums">{count}</span>}
         </SidebarNavigationItem>
     );
 }
@@ -53,13 +63,17 @@ export function ListGroupItem({
 interface ListHeaderProps {
     /** The search field, and beside it Add item. */
     search: ReactNode;
+    /** The search with Add item. */
     add: ReactNode;
     /** The chosen group's name and how many of its items show; no count while it's still reading. */
     title: string;
+    /** How many items the chosen group holds. */
     count?: number;
     /** After the count: a toggle that scopes the board to the group, and at the right the sort menu. */
     scope?: ReactNode;
+    /** The scope toggle and sort. */
     sort: ReactNode;
+    /** The filters, a FilterBar. */
     filters: ReactNode;
 }
 
@@ -73,8 +87,7 @@ export function ListHeader({ search, add, title, count, scope, sort, filters }: 
                 {add}
             </div>
             <div className="flex min-w-0 items-center gap-2">
-                <span className="text-base-content truncate text-sm font-semibold">{title}</span>
-                {count !== undefined && <Badge>{count}</Badge>}
+                <SectionTitle title={title} count={count} />
                 {scope}
                 <span className="sort ml-auto">{sort}</span>
             </div>
@@ -88,14 +101,17 @@ interface ListItemRowProps {
     item: string;
     /** Its title in full, for the tooltip. */
     name: string;
+    /** Called as the reader opens the item dialog. */
     onOpen: () => void;
     /** Where the item comes from. */
     source: ReactNode;
     /** The ticket's reference, such as "#61", before the title; none for an item with no ticket. */
     reference?: string;
+    /** The item's title. */
     title: string;
     /** The repository's icon, when the list mixes repositories, and the meta line's text: its name and age. */
     repoIcon?: ReactNode;
+    /** The item's facts on one line. */
     meta: string;
     /** After the meta line: the item's kind, labels and sync state. */
     chips?: ReactNode;
@@ -122,16 +138,16 @@ export function ListItemRow({
             onClick={onOpen}
             data-item={item}
             title={name}
-            className="hover:bg-base-200/70 focus-visible:outline-primary flex w-full min-w-0 items-start gap-2 rounded-md px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2"
+            className="hover:bg-fill-hover focus-ring-inset flex w-full min-w-0 items-start gap-2 rounded-md px-2 py-1.5 text-left"
         >
             {source}
             <span className="min-w-0 flex-1">
-                <span className="text-base-content block truncate text-[13px] leading-5 font-medium">
-                    {reference ? <span className="text-base-700 font-normal">{reference} </span> : null}
+                <span className="text-fg text-ui block truncate leading-5 font-medium">
+                    {reference ? <span className="text-fg-muted font-normal">{reference} </span> : null}
                     {title}
                 </span>
                 <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
-                    <span className="text-base-700 me-1 flex min-w-0 items-center gap-1 text-[11px] leading-4">
+                    <span className="text-fg-muted text-2xs me-1 flex min-w-0 items-center gap-1 leading-4">
                         {repoIcon}
                         <span className="min-w-0 truncate tabular-nums">{meta}</span>
                     </span>
@@ -145,9 +161,17 @@ export function ListItemRow({
 
 /** What the List says in place of items: nothing matches, nothing in List, or still loading. With `reading`, it
  *  follows items as more may arrive. */
-export function ListNote({ children, reading = false }: { children: ReactNode; reading?: boolean }) {
+export function ListNote({
+    children,
+    reading = false,
+}: {
+    /** What the List says, such as "Nothing matches". */
+    children: ReactNode;
+    /** More items may still arrive: the note follows them. */
+    reading?: boolean;
+}) {
     return (
-        <p className={`text-base-700 m-0 p-4 text-sm ${reading ? '' : 'empty'}`} data-reading={reading || undefined}>
+        <p className={`text-fg-muted m-0 p-4 text-sm ${reading ? '' : 'empty'}`} data-reading={reading || undefined}>
             {children}
         </p>
     );

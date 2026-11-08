@@ -7,8 +7,11 @@ import { expect, test } from 'vite-plus/test';
 const base = readFileSync(join(import.meta.dirname, 'base.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 const baseLayer = base.match(/@layer base \{([\s\S]*?)\n\}/)?.[1] ?? '';
 
-test("the board's focus outline sits in the base layer, so a design-system control's outline-none wins", () => {
-    expect(baseLayer).toMatch(/^\s*:focus-visible \{/m);
+test("the board takes the design system's one focus ring rather than a focus rule of its own", () => {
+    const theme = readFileSync(join(import.meta.dirname, '../foundations/theme.css'), 'utf8');
+
+    expect(base).not.toMatch(/:focus-visible/);
+    expect(theme).toMatch(/@layer base \{\s*:where\(:focus-visible\) \{/);
 });
 
 test("the board's link rules sit in the base layer, so a link styled as a button keeps its button's colours", () => {
@@ -23,8 +26,7 @@ test('the board.css entry imports the theme and every board sheet', () => {
         'board/tokens.css',
         'board/base.css',
         'board/title-bar.css',
-        'board/loading-screen.css',
-        'board/button-kinds.css',
+        'feedback/app-splash.css',
         'board/items.css',
         'board/rows.css',
     ])

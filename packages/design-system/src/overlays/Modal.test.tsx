@@ -82,7 +82,7 @@ describe('modal body overflow', () => {
         const view = renderDialog(
             <Modal onClose={() => undefined}>
                 <Modal.Content title="Overflow" focusFirstField={false}>
-                    <Modal.Body ref={ref} onScroll={onScroll} aria-label="Scrollable content" style={{ color: 'red' }}>
+                    <Modal.Body ref={ref} onScroll={onScroll} aria-label="Scrollable content">
                         <p>Content</p>
                     </Modal.Body>
                 </Modal.Content>
@@ -95,7 +95,6 @@ describe('modal body overflow', () => {
         };
 
         expect(ref).toHaveBeenCalledWith(body);
-        expect(body).toHaveStyle({ color: 'rgb(255, 0, 0)' });
         expectDistances(0, 0);
 
         metrics.scrollHeight = 300;
@@ -291,7 +290,7 @@ describe('modal dismissal', () => {
         });
 
         const notification = screen.getByRole('alert', { hidden: true });
-        const dismiss = within(notification).getByRole('button', { name: 'Close notification', hidden: true });
+        const dismiss = within(notification).getByRole('button', { name: 'Close', hidden: true });
 
         fireEvent.pointerDown(dismiss, { button: 0 });
         fireEvent.pointerUp(dismiss, { button: 0 });
@@ -424,7 +423,8 @@ describe('modal focus', () => {
         );
         const close = screen.getByRole('button', { name: 'Close' });
 
-        expect(close).toHaveFocus();
+        expect(screen.getByRole('dialog')).toHaveFocus();
+        act(() => close.focus());
 
         if (event === 'pointerdown') fireEvent.pointerDown(close);
         else fireEvent.keyDown(close, { key: 'Tab' });
@@ -491,8 +491,51 @@ describe('modal focus', () => {
             </ActionModal>,
         );
 
-        expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus();
+        expect(screen.getByRole('dialog')).toHaveFocus();
+        expect(screen.getByRole('button', { name: 'Delete' })).not.toHaveFocus();
         fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' });
         expect(onClose).toHaveBeenCalledOnce();
     });
+});
+
+it('provides stable modal content and close slots and closes through the shared close control', () => {
+    const onClose = vi.fn();
+
+    renderDialog(
+        <Modal onClose={onClose}>
+            <Modal.Content title="Edit settings">
+                <Modal.Body>Content</Modal.Body>
+            </Modal.Content>
+        </Modal>,
+    );
+
+    const dialog = screen.getByRole('dialog', { name: 'Edit settings' });
+
+    expect(dialog.getAttribute('data-slot')).toBe('modal-content');
+
+    const close = within(dialog).getByRole('button', { name: 'Close' });
+
+    expect(close.getAttribute('data-slot')).toBe('modal-close');
+    fireEvent.click(close);
+    expect(onClose).toHaveBeenCalledOnce();
+});
+
+it.each([0, 1, 2])('only shows a sidebar when there are at least two sections (%i)', (sections) => {
+    renderDialog(
+        <Modal onClose={() => undefined}>
+            <Modal.Content
+                title="Add catalog"
+                presentation="paned"
+                sidebarSections={sections}
+                sidebar={<nav aria-label="Catalog sections">General</nav>}
+            >
+                <Modal.Body>
+                    <Input aria-label="Catalog name" />
+                </Modal.Body>
+            </Modal.Content>
+        </Modal>,
+    );
+
+    expect(Boolean(screen.queryByRole('navigation', { name: 'Catalog sections' }))).toBe(sections >= 2);
+    expect(screen.getByRole('textbox', { name: 'Catalog name' })).toHaveFocus();
 });

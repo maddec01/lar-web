@@ -5,6 +5,7 @@ import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { Badge } from '../display/Badge';
+import { KindBadge } from '../display/KindBadge';
 import { LabelChip } from '../display/LabelChip';
 import { LabelPicker } from '../forms/LabelPicker';
 import { buttonKind } from './ButtonKinds';
@@ -31,7 +32,7 @@ function Demo() {
                             checked={picked.includes(kind.value)}
                             onToggle={() => toggle(kind.value)}
                         >
-                            <Badge hue={kind.hue}>{kind.name}</Badge>
+                            <KindBadge hue={kind.hue}>{kind.name}</KindBadge>
                         </FilterChoice>
                     ))}
                     <FilterChoice checked={false} onToggle={fn()}>
@@ -61,10 +62,10 @@ function Demo() {
             </FilterMenu>
             {picked.map((value) => (
                 <FilterChip key={value} removeLabel={`Remove ${value}`} onRemove={() => toggle(value)}>
-                    <Badge hue={kinds.find((kind) => kind.value === value)?.hue}>
+                    <KindBadge hue={kinds.find((kind) => kind.value === value)?.hue}>
                         {kinds.find((kind) => kind.value === value)?.name}
                         <span aria-hidden="true">×</span>
-                    </Badge>
+                    </KindBadge>
                 </FilterChip>
             ))}
             {labels.map((label) => (

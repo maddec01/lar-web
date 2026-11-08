@@ -30,3 +30,13 @@ lucide's name map lazily, from `@lar-works/design-system/icons/dynamic`.
 
 Apps compose these components and never style anything themselves; `@lar-works/config`'s lint rules enforce it.
 `@lar-works/design-system/testing` has helpers for apps' jsdom test setup.
+
+Story accessibility runs twice: fast markup checks in jsdom, and every story in Chromium with its real stylesheet,
+in light and dark, with axe's WCAG AA colour-contrast rule enabled. Install the browser once with
+`pnpm --filter @lar-works/design-system exec playwright install chromium` (Linux CI uses `install --with-deps chromium`).
+`pnpm test` includes both; `pnpm --filter @lar-works/design-system test:browser` runs only Chromium. The browser version
+is pinned by Playwright; after upgrading it, repeat the install. Page-level landmark rules are excluded because stories
+are component fixtures. Any component exception must have a reason beside its story's `parameters.a11y.config.rules`.
+
+Chromium uses reduced motion and finishes finite Web Animations before sampling contrast, so entrance fades are checked in
+their final visible state. The jsdom suite makes no theme or CSS-contrast claim.

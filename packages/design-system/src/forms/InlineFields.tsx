@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 interface InlineFieldsProps {
     /** Buttons after the fields, for example Cancel and Save. */
     actions: ReactNode;
+    /** The fields, side by side. */
     children: ReactNode;
 }
 

@@ -14,7 +14,7 @@ const meta = {
     component: ActivityLine,
     decorators: [
         (Story) => (
-            <div className="w-96 text-xs text-(--muted-foreground)">
+            <div className="text-fg-muted w-96 text-xs">
                 <Story />
             </div>
         ),
@@ -29,7 +29,7 @@ type Story = StoryObj<typeof meta>;
 /** At work, its agents listed in its tooltip. */
 export const Working: Story = {};
 
-/** Every state's mark and words. */
+/** Every state’s mark and words. */
 export const States: Story = {
     render: () => (
         <div className="grid gap-2">
@@ -42,12 +42,24 @@ export const States: Story = {
     ),
 };
 
-/** The agents at work in the item dialog, or why they can't be listed. */
+/** The agents at work in the item dialog, or why they can’t be listed. */
 export const Agents: Story = {
     render: () => (
         <div className="grid gap-4">
             <WorkingAgents heading="Working agents">{agents}</WorkingAgents>
             <WorkingAgents heading="Working agents" unavailable="Activity unavailable" />
         </div>
+    ),
+};
+
+/** A thread awaiting an answer uses the attention mark, beside an agent still at work. */
+export const WaitingAgents: Story = {
+    render: () => (
+        <WorkingAgents heading="Last activity">
+            <AgentList>
+                <AgentRow title="Lead thread" state="waiting" action="Waiting for your answer" />
+                <AgentRow title="Review" action="Reading the test results" />
+            </AgentList>
+        </WorkingAgents>
     ),
 };

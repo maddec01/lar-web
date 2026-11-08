@@ -2,9 +2,12 @@
 import { LucideProvider } from 'lucide-react';
 import { createContext, type ReactNode, useContext, useMemo } from 'react';
 
+import { TooltipProvider } from '../overlays/Tooltip';
+
 /** The design system's own words, in English. Apps pass their translations through DesignSystemProvider. */
 export const defaultDesignSystemLabels = {
     close: 'Close',
+    dateInvalid: 'Enter a valid date.',
     cancel: 'Cancel',
     retry: 'Try again',
     toolbar: 'Toolbar',
@@ -18,14 +21,14 @@ export const defaultDesignSystemLabels = {
         root: 'Root',
         upOneLevel: 'Up one level',
         loading: 'Loading folders',
-        loadFailed: 'Could not load folders',
-        empty: 'No folders',
+        loadFailed: 'Couldn’t load folders',
+        empty: 'No folders yet',
         loadMore: 'Load more',
         chooseThis: 'Choose this folder',
     },
     theme: {
         label: 'Appearance',
-        system: 'Match system',
+        system: 'Follow system',
         light: 'Light',
         dark: 'Dark',
     },
@@ -45,6 +48,19 @@ export const defaultDesignSystemLabels = {
     dialog: {
         expand: 'Expand',
         restoreSize: 'Restore size',
+        /** A dirty Modal's question as the reader dismisses it (Modal `dirty`). */
+        discardTitle: 'Discard changes?',
+        discardConsequence: 'Your changes haven’t been saved. Discarding them can’t be undone.',
+        discardConfirm: 'Discard changes',
+        keepEditing: 'Keep editing',
+    },
+    /** A CommandPalette's key hints, each after its key: "↑↓ move", "↵ select", "esc close", "⌫ remove filter". */
+    commandPalette: {
+        move: 'move',
+        select: 'select',
+        close: 'close',
+        removeFilter: 'remove filter',
+        leaveScope: 'back',
     },
 };
 
@@ -64,18 +80,24 @@ const LabelContext = createContext(defaultDesignSystemLabels);
 /** Lucide draws on a 24px grid at a 2px stroke; 1.75 matches the weight of Lar's type at the sizes icons use. */
 const iconStrokeWidth = 1.75;
 
+/** What every app wraps itself in once: the design system's labels in the app's language, Lar's icon weight, and one
+ *  shared tooltip delay, so any component may show a tooltip. */
 export function DesignSystemProvider({
     children,
     labels,
 }: {
+    /** The app. */
     children: ReactNode;
+    /** The app's translations of the design system's own words; any left out keep their English default. */
     labels?: DesignSystemLabelOverrides;
 }) {
     const value = useMemo(() => mergeLabels(labels), [labels]);
 
     return (
         <LabelContext.Provider value={value}>
-            <LucideProvider strokeWidth={iconStrokeWidth}>{children}</LucideProvider>
+            <LucideProvider strokeWidth={iconStrokeWidth}>
+                <TooltipProvider>{children}</TooltipProvider>
+            </LucideProvider>
         </LabelContext.Provider>
     );
 }
@@ -90,6 +112,7 @@ function mergeLabels(labels: DesignSystemLabelOverrides | undefined): DesignSyst
         theme: { ...defaultDesignSystemLabels.theme, ...labels.theme },
         editor: { ...defaultDesignSystemLabels.editor, ...labels.editor },
         dialog: { ...defaultDesignSystemLabels.dialog, ...labels.dialog },
+        commandPalette: { ...defaultDesignSystemLabels.commandPalette, ...labels.commandPalette },
     };
 }
 

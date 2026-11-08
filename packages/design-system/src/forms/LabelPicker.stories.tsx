@@ -5,7 +5,7 @@ import { fn } from 'storybook/test';
 import { type LabelChoice, LabelPicker } from './LabelPicker';
 
 const choices: LabelChoice[] = [
-    { name: 'bug', color: '#D73A4A', description: "Something isn't working" },
+    { name: 'bug', color: '#D73A4A', description: 'Something isn’t working' },
     { name: 'enhancement', color: '#A2EEEF', description: 'New feature or request' },
     { name: 'good first issue', color: '#7057FF' },
     { name: 'documentation', color: '#0075CA' },
@@ -45,7 +45,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** A label the item's kind sets is ticked but can't be changed here. */
+/** A label the item’s kind sets is ticked but can’t be changed here. */
 export const Locked: Story = {
     args: { picked: ['bug', 'enhancement'], locked: ['enhancement'], lockedNote: 'set by kind' },
 };

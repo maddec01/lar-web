@@ -3,6 +3,8 @@
    marketing showcase and Lar Factory's board are left out; a site that uses the showcase imports showcase.css, and
    the board imports board.css, instead. */
 @import './foundations/theme.css';
+@import './media/tokens.css';
+@import './feedback/app-splash.css';
 
 @source './';
 @source not './showcase';

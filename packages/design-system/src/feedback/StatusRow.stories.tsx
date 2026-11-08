@@ -40,7 +40,7 @@ export const WithIndicator: Story = {
     },
 };
 
-export const Compact: Story = { args: { compact: true, tone: 'danger', label: '/mnt/media/tv', value: 'Offline' } };
+export const Compact: Story = { args: { size: 'sm', tone: 'danger', label: '/mnt/media/tv', value: 'Offline' } };
 
 export const Loading: Story = {
     args: {
@@ -64,7 +64,41 @@ export const LongContent: Story = {
     args: {
         tone: 'warning',
         label: '/mnt/media/photos/Family/2019 - Summer holidays in Lisbon and Porto (edited)',
-        detail: '14 files could not be read because their names contain characters the filesystem rejects',
+        detail: '14 files couldn’t be read because their names contain characters the filesystem rejects',
         value: '14 issues',
+    },
+};
+
+/** A narrow popover row whose end holds the way to it and its state: `action` is the one "Review" look (a small
+ *  secondary button, as in every attention row), and `value` the state word after it. The label wraps instead of
+ *  truncating, and when even that can't fit, the end moves under the label, at the row's end. */
+export const NarrowWithLinkAndState: Story = {
+    decorators: [
+        (Story) => (
+            <div className="flex w-72 flex-col">
+                <StatusRow size="sm" state="ready" label="Server" value="Online" />
+                <Story />
+                <StatusRow size="sm" state="waiting" label="Photo library on the backup drive" value="1 unavailable" />
+            </div>
+        ),
+    ],
+    args: {
+        size: 'sm',
+        tone: 'warning',
+        label: 'Remote access',
+        detail: 'Your router hasn’t answered yet',
+        action: { label: 'Review', href: '#remote-access', onNavigate: fn() },
+        value: 'On, confirming',
+    },
+};
+
+/** A page row with the way to what it reports at its end; its value reads under the label. */
+export const WithReviewAction: Story = {
+    args: {
+        tone: 'danger',
+        label: 'Documentaries',
+        detail: 'The folder /mnt/media/docs is missing',
+        action: { label: 'Review', onClick: fn() },
+        value: 'Unavailable',
     },
 };

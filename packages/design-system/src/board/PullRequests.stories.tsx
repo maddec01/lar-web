@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Button } from '../actions/Button';
+import { Disclosure } from '../forms/FormDisclosure';
+import { Text } from '../typography/Typography';
 import { buttonKind } from './ButtonKinds';
 import {
     ChecksState,
@@ -8,6 +10,7 @@ import {
     PullRequestReadiness,
     PullRequestRef,
     PullRequestRow,
+    PullRequestState,
     ReadinessDetails,
 } from './PullRequests';
 
@@ -26,6 +29,8 @@ const meta = {
             <>
                 <PullRequestRow href="#210" label="PR #210" checks={<ChecksState state="passed" />} />
                 <PullRequestRow href="#211" label="PR #211 (draft)" checks={<ChecksState state="running" />} />
+                <PullRequestRow href="#208" label="PR #208" checks={<PullRequestState state="merged" />} />
+                <PullRequestRow href="#205" label="PR #205" checks={<PullRequestState state="closed" />} />
                 <PullRequestRow
                     href="#212"
                     label="PR #212"
@@ -66,4 +71,24 @@ export const List: Story = {};
 /** A pull request as a row names it. */
 export const Reference: Story = {
     render: () => <PullRequestRef label="PR #151" title="PR #151 Cache probe results" />,
+};
+
+/** A merged pull request with the work's recorded checks folded inside its card, not under it. */
+export const WithChecks: Story = {
+    args: {
+        children: (
+            <PullRequestRow
+                href="#182"
+                label="PR #182"
+                checks={<ChecksState state="passed" />}
+                details={
+                    <Disclosure presentation="section" label="Checks">
+                        <Text variant="caption" tone="muted">
+                            apps/server · passed · Run by the builder
+                        </Text>
+                    </Disclosure>
+                }
+            />
+        ),
+    },
 };

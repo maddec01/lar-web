@@ -9,7 +9,7 @@ const meta = {
     args: { children: 'M' },
     decorators: [
         (Story) => (
-            <div className="border-base-300 max-w-2xl overflow-hidden rounded-xl border">
+            <div className="border-line max-w-2xl overflow-hidden rounded-xl border">
                 <Story />
             </div>
         ),

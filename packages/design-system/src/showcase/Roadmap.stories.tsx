@@ -28,9 +28,9 @@ const planned: readonly RoadmapItem[] = [
     {
         icon: <KeyRoundIcon />,
         title: 'Sign in with a Lar account',
-        body: "One account for every server you're invited to: passkey, Apple or Google.",
+        body: 'One account for every server you’re invited to: passkey, Apple or Google.',
     },
-    { icon: <GlobeIcon />, title: 'Always findable', body: "Apps look up your server's new address when it changes." },
+    { icon: <GlobeIcon />, title: 'Always findable', body: 'Apps look up your server’s new address when it changes.' },
     {
         icon: <LayersIcon />,
         title: 'The Lar metadata service',
@@ -46,7 +46,7 @@ const planned: readonly RoadmapItem[] = [
 const photos: RoadmapItem = {
     icon: <ImageIcon />,
     title: 'Lar Photos: your own photo cloud',
-    body: "Every picture you take backs up to your server instead of iCloud or Google Photos, and search finds photos by what's in them.",
+    body: 'Every picture you take backs up to your server instead of iCloud or Google Photos, and search finds photos by what’s in them.',
     featured: {
         hue: 190,
         highlights: ['Every photo on your own disks'],
@@ -75,7 +75,7 @@ const meta = {
     argTypes: { items: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),
@@ -86,7 +86,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Server's roadmap: Photos featured in its hue with an illustration, then quiet dashed promises. */
+/** Lar Server’s roadmap: Photos featured in its hue with an illustration, then quiet dashed promises. */
 export const Default: Story = {};
 
 /** A featured item without a visual: its highlights and steps take the room. */
@@ -108,3 +108,8 @@ export const FeaturedWithoutVisual: Story = {
 
 /** Only planned items, no featured card. */
 export const PlannedOnly: Story = { args: { items: planned } };
+
+/** Closing a section that has its own SectionHeading: a heading of its own above the list. */
+export const WithTitle: Story = {
+    args: { title: 'Coming next', lead: 'Planned and on the way, after Music and Video ship.' },
+};

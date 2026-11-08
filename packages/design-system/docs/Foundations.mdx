@@ -14,7 +14,9 @@ import {
     TerminalIcon,
 } from 'lucide-react';
 
+import { Button } from '../src/actions/Button';
 import { DesignSystemProvider } from '../src/foundations/DesignSystemProvider';
+import { semanticColors } from '../src/foundations/tokens';
 import { GitHubIcon } from '../src/icons/BrandIcons';
 import { Heading, Text } from '../src/typography/Typography';
 
@@ -28,13 +30,13 @@ export const row = {
     alignItems: 'baseline',
     gap: '0.75rem 1.5rem',
     padding: '0.875rem 0',
-    borderBottom: '1px solid var(--color-base-300)',
+    borderBottom: '1px solid var(--color-line)',
 };
 
 export const tokenName = {
     fontFamily: 'var(--font-mono, ui-monospace, monospace)',
     fontSize: '0.75rem',
-    color: 'var(--color-base-700)',
+    color: 'var(--color-fg-muted)',
 };
 
 export const Specimen = ({ name, detail, children }) => (
@@ -52,9 +54,9 @@ export const Surface = ({ children }) => (
         <DesignSystemProvider>
             <div
                 style={{
-                    background: 'var(--color-base-50)',
-                    color: 'var(--color-base-content)',
-                    border: '1px solid var(--color-base-300)',
+                    background: 'var(--color-surface-page)',
+                    color: 'var(--color-fg)',
+                    border: '1px solid var(--color-line)',
                     borderRadius: '0.625rem',
                     padding: '0.5rem 1.25rem',
                     margin: '1rem 0 2rem',
@@ -68,38 +70,244 @@ export const Surface = ({ children }) => (
 
 # Foundations
 
-Lar's tokens live in `src/foundations/theme.css`. The palette is T3 Code's, on ninna-ui's scale, with Lar's navy as
-primary. It applies under `html[data-theme='minimal']`, and `.light` or `.dark` on `<html>` picks one scheme (with
-neither, it follows the system). Switch the toolbar theme to see every swatch below in both.
+Lar's tokens live in `src/foundations/theme.css`, in two layers:
 
-Components read these tokens through Tailwind utilities (`bg-base-100`, `text-primary`, `rounded-md`…). Apps never use
-them directly.
+1. **Primitives**: fixed `--color-palette-*` steps in zinc, neutral, navy, emerald, amber, red and blue, including
+   intermediate neutral and alpha steps. ninna-ui's `base-*`, `primary` and status names are compatibility aliases
+   selected per theme. Every semantic colour declaration references a fixed primitive directly; there are no exceptions.
+2. **Semantic tokens**: what a colour is _for_ (a surface, text, an edge, a status's fill or text), built on the
+   primitives. Components use these. Their values sit in one table, `src/foundations/tokens.ts`, which
+   `tokens.test.ts` checks theme.css against and holds to WCAG AA: 4.5:1 for every text pair, 3:1 for control edges
+   and the focus ring, in both themes.
+
+The palette applies under `html[data-theme='minimal']`; `.light` or `.dark` on `<html>` picks a scheme, and with
+neither it follows the system. Components read tokens through Tailwind utilities (`bg-surface-raised`,
+`text-fg-muted`, `rounded-md`, `text-ui`, `@pane:`…); apps never use them at all.
+
+### The vocabulary rule
+
+Components speak the semantic layer only, and `foundations/vocabulary.test.ts` fails on anything else outside
+`foundations/`:
+
+- **No primitive.** `text-base-700`, `bg-base-200`, `border-base-300`, `var(--color-base-600)`: each is a role
+  (`text-fg-muted`, `bg-fill-muted`, `border-line`, `var(--color-line-strong)`).
+- **No `dark:` colour override.** Every semantic token already has its dark value; a component that needs a different
+  colour in dark needs a token (or a value of an existing one) instead, which is then contrast-checked.
+- **No `color-mix()` in a component.** A mix a component needs is a token (a hover fill, a tint); a translucent
+  version of a role is Tailwind's opacity modifier (`bg-surface-page/85`, `border-warning/45`). Product sheets may mix
+  in CSS, where their roles are derived.
+- **Board roles colour glyphs, dots and bars, never text** (no `text-board-…`): text on the board is in a text token.
+
+A genuine exception goes in that test's allow-list, with its reason; there are none today.
+
+### Layering
+
+`foundations`, `typography`, `actions`, `forms`, `display`, `feedback`, `navigation`, `overlays`, `collections` and
+`layout` are **generic**: they carry no product nouns and read only foundation tokens (`tokens.test.ts` fails on any
+other custom property). **`media`** (Lar Server's compositions), **`showcase`** (the website) and **`board`** (Lar
+Factory) are **product layers**: they compose the generic layers and may add roles of their own, derived from the
+semantic tokens (the board's roles below, in `board/tokens.css`; the showcase's device metal, glow and grid in
+`showcase/tokens.css`). A product's sheets load only with its stylesheet (`board.css`, `showcase.css`), and Storybook
+does the same per story, so a generic component that leans on a product token shows the gap here.
+
+Each product layer has its own entry point, so an app imports only the layer it is:
+
+| Import                              | Holds                                                 | Used by     |
+| ----------------------------------- | ----------------------------------------------------- | ----------- |
+| `@lar-works/design-system`          | the generic layers and `media`                        | every app   |
+| `@lar-works/design-system/board`    | the board's compositions, `statusColor`, `boardColor` | Lar Factory |
+| `@lar-works/design-system/showcase` | the marketing sections and device frames              | the website |
+| `@lar-works/design-system/icons`    | every icon                                            | every app   |
+
+### The board's roles
+
+`board/tokens.css` names what a colour means on the board. Each is a Tailwind colour (`bg-board-active`,
+`stroke-board-done`, `border-board-idle`) for a status glyph, an activity dot, a stage track or a parts bar, never for
+text; an app that passes a colour to a board component takes it from `boardColor` (`boardColor.done`), `statusColor`
+or `stageColor`, never writes a `var(--…)` itself. A board status is a state of the one tone map (below): each status
+role **is** its state's colour, so a board status reads the same as the server's (`board/StatusColors.test.ts` fails
+otherwise).
+
+| Role           | Means                                                                         | State / drawn from     |
+| -------------- | ----------------------------------------------------------------------------- | ---------------------- |
+| `board-you`    | Needs you: your turn (an answer, a check to verify), a waiting agent, blocked | `waiting` (`warning`)  |
+| `board-active` | Work in motion: a running thread, an item being shaped, built or reviewed     | `active` (`info`)      |
+| `board-done`   | Finished: built and ready to merge, or done                                   | `ready` (`success`)    |
+| `board-idle`   | Not started or stopped: listed, queued ("Queued", never "Waiting"), stopped   | `off` (`line-strong`)  |
+| `board-review` | The Review **stage's identity** on a stage bar (`stageColor.Review`) only     | violet, never a status |
+| `board-past`   | A stage the work has already passed, on a stage track                         | `fg` at 28%            |
+
+`boardStatusState` maps each board status to its state (`StatusGlyph state` overrides it, such as `off` for stopped
+work); `sliceProgressState` and `attentionToneState` do the same for slices (blocked is `waiting`, not started is
+`off`) and attention rows.
 
 ## Colour
 
-### Brand and content
+### Semantic tokens
+
+Every swatch shows its light and dark value. Each name is a Tailwind colour: `bg-…`, `text-…`, `border-…`.
+
+export const SwatchPair = ({ name }) => (
+    <div
+        style={{
+            display: 'grid',
+            gridTemplateColumns: '11rem 1fr 1fr',
+            gap: '0.75rem',
+            alignItems: 'center',
+            padding: '0.375rem 0',
+            borderBottom: '1px solid var(--color-line)',
+        }}
+    >
+        <div style={tokenName}>{name}</div>
+        {['light', 'dark'].map((mode) => (
+            <div key={mode} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span
+                    style={{
+                        width: '2.5rem',
+                        height: '1.5rem',
+                        borderRadius: '0.375rem',
+                        background: semanticColors[name][mode],
+                        boxShadow: 'inset 0 0 0 1px rgb(127 127 127 / 35%)',
+                    }}
+                />
+                <span style={{ ...tokenName, opacity: 0.8 }}>{semanticColors[name][mode]}</span>
+            </div>
+        ))}
+    </div>
+);
+
+export const SwatchGroup = ({ title, children, names }) => (
+    <Surface>
+        <Text variant="label">{title}</Text>
+        <Text as="div" variant="caption" tone="muted">
+            {children}
+        </Text>
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: '11rem 1fr 1fr',
+                gap: '0.75rem',
+                padding: '0.75rem 0 0.25rem',
+            }}
+        >
+            <span />
+            <span style={tokenName}>light</span>
+            <span style={tokenName}>dark</span>
+        </div>
+        {names.map((name) => (
+            <SwatchPair key={name} name={name} />
+        ))}
+    </Surface>
+);
+
+<SwatchGroup
+    title="Surfaces"
+    names={[
+        'surface-page',
+        'surface-card',
+        'surface-raised',
+        'surface-sunken',
+        'surface-overlay',
+        'surface-control',
+        'surface-glass',
+    ]}
+>
+    The page; a card, panel or grouped list resting on it (the `surface-card` utility, with `line-card` and
+    `--shadow-card`); a raised panel or field that is not a card; a well inside a card (a footer, a table's header); a
+    menu, popover or dialog above it; the fill of a control (a text field, a select, a checkbox, an outlined button); a
+    translucent panel over a backdrop or artwork (the website's cards and bands). `surface-card` and `surface-raised`
+    share a value today; cards take their own role so they can move apart from fields and controls.
+</SwatchGroup>
+
+<SwatchGroup title="Fills" names={['fill-hover', 'fill-selected', 'fill-muted', 'fill-muted-hover', 'track']}>
+    A row or control under the pointer; the chosen item in a tab bar, segmented control, sidebar or menu (a step deeper,
+    so hovered and chosen differ); a quiet neutral fill that marks a thing rather than a state (a neutral badge, a key
+    cap, a subtle button, inline code) and its hover; the empty part of a progress bar.
+</SwatchGroup>
+
+<SwatchGroup title="Text and icons" names={['fg', 'fg-soft', 'fg-muted', 'fg-lead', 'fg-inverse']}>
+    Body text; secondary text that still reads as content; meta, captions and placeholders; muted long-form text (leads
+    and prose, a step lighter in dark); text on an fg fill. All reach 4.5:1 on every surface above.
+</SwatchGroup>
+
+<SwatchGroup
+    title="Edges and focus"
+    names={['line', 'line-card', 'line-hover', 'line-control', 'line-strong', 'line-strong-hover', 'focus']}
+>
+    line is decoration (dividers, a panel's edge), line-card a card's edge (half a step deeper than line in light and a
+    step lighter in dark, so a card holds its shape on the page), line-hover an edge under the pointer, and line-control
+    an outlined button's or chip's edge (its label identifies it). line-strong is an edge that identifies a control or
+    carries its state and reaches 3:1 on every surface and on the control's fill (WCAG 1.4.11): a text field, a select,
+    a checkbox, a switch's track, a dashed waiting slot; line-strong-hover is a field under the pointer. focus is the
+    one focus ring.
+</SwatchGroup>
+
+**Same value, different role.** A few roles share a value in one theme or both, on purpose: each names what it is
+for, so it can move on its own. `fill-hover` and `fill-muted` are both zinc-4 in light (the lightest fill that reads
+on white), but one is a state and the other marks a thing, and in dark the hover sits a step under a chip so a chip on
+a hovered row keeps its fill. `fg-lead` is `fg-muted` in light and a step lighter in dark, where long runs of mid-grey
+tire the eye. `line-hover` (a card's edge under the pointer) and `line-control` (an outlined control's edge at rest)
+are both the step after `line`; a deeper hover never deepens every outlined button with it. In dark, `fill-selected`
+shares `fill-muted`'s step (a lighter one would drop muted text on it under 4.5:1), and `line-strong-hover` shares
+`fg-muted`'s step in light. Use the role you mean, never the one whose value happens to match.
+
+<SwatchGroup
+    title="Brand"
+    names={[
+        'primary',
+        'primary-fill-hover',
+        'primary-content',
+        'primary-fg',
+        'primary-surface',
+        'primary-surface-hover',
+    ]}
+>
+    A filled primary control, that fill under the pointer, and its text; the primary as text, a link or an icon (lifted
+    in dark, where the fill would not read as text); the primary tint under primary-fg (a chosen row or choice, a tinted
+    button) and that tint under the pointer.
+</SwatchGroup>
+
+<SwatchGroup
+    title="Status"
+    names={[
+        ...['success', 'warning', 'danger', 'info'].flatMap((s) => [
+            s + '-fill',
+            s + '-on-fill',
+            s + '-fg',
+            s + '-surface',
+        ]),
+        'danger-fill-hover',
+    ]}
+>
+    For each status: a solid fill and the text on it (bg-danger-fill text-danger-on-fill, a destructive button), the
+    status as text or an icon on any surface (text-danger-fg), and a tinted surface under that text (bg-danger-surface
+    text-danger-fg, a badge or notice), on which fg, fg-soft and fg-muted read too; danger-fill-hover is a destructive
+    button under the pointer. The bare hues (bg-success) are for dots and bars only, never for text, and never at an
+    alpha of the moment: a tone's edge is a token.
+</SwatchGroup>
+
+<SwatchGroup
+    title="Tone edges"
+    names={['primary', 'success', 'warning', 'danger', 'info'].flatMap((s) => [s + '-edge', s + '-ring'])}
+>
+    Each tone's two edges, decoration that needs no contrast of its own: `-edge` borders a neutral box in the tone (an
+    Alert, a chosen option, a map part that asks; border-warning-edge), `-ring` is the hairline of a box already tinted
+    in it (a Badge, a warning panel, a chosen row, a toned focus ring; ring-success-ring). Amber takes a stronger alpha
+    than the others, as it reads lighter.
+</SwatchGroup>
+
+### Primitives
+
+One even twelve-step neutral ramp per theme (`--color-palette-zinc-1…12` in light, from the raised surface to text;
+`--color-palette-neutral-1…12` in dark, dense at the bottom where surfaces sit) and the hues, with fixed alpha steps for
+glass, tone edges and the scrollbar. The ramp and hues the semantic tokens are built on, in the current theme (switch
+it in the toolbar). Only
+`foundations/` reads them: ninna-ui's own components are drawn from them, and theme.css builds the semantic tokens on
+them. A component never names one (see the vocabulary rule).
 
 <ColorPalette>
     <ColorItem
-        title="Primary"
-        subtitle="Lar's mark navy; lifted in dark mode"
-        colors={tokens(['color-primary', 'color-primary-content'])}
-    />
-    <ColorItem
-        title="Content"
-        subtitle="Foreground, header icons and the brand mark"
-        colors={tokens(['color-base-content', 'color-header-icon', 'color-brand-ink'])}
-    />
-</ColorPalette>
-
-### Base ramp
-
-`base-50` is the page, `base-100` cards and popovers, `base-200` the accent fill, `base-300` borders and `base-400`
-inputs; `base-500` to `base-900` are the muted ramp, with `base-700` as the muted foreground.
-
-<ColorPalette>
-    <ColorItem
-        title="Surfaces"
+        title="Base ramp"
         subtitle="base-50 to base-400"
         colors={tokens(['color-base-50', 'color-base-100', 'color-base-200', 'color-base-300', 'color-base-400'])}
     />
@@ -109,107 +317,174 @@ inputs; `base-500` to `base-900` are the muted ramp, with `base-700` as the mute
         colors={tokens(['color-base-500', 'color-base-600', 'color-base-700', 'color-base-800', 'color-base-900'])}
     />
     <ColorItem
-        title="Borders"
-        subtitle="Resting, hovered, active and disabled"
-        colors={tokens(['color-border', 'color-border-hover', 'color-border-active', 'color-border-disabled'])}
+        title="Hues"
+        subtitle="Primary and the status hues"
+        colors={tokens(['color-primary', 'color-success', 'color-warning', 'color-danger', 'color-info'])}
+    />
+    <ColorItem
+        title="Content"
+        subtitle="Foreground, header icons and the brand mark"
+        colors={tokens(['color-base-content', 'color-header-icon', 'color-brand-ink'])}
     />
 </ColorPalette>
 
-### Status
+### Glass
 
-Each status has a fill colour, the content colour that sits on it, and a `--lar-*-text` colour for text in that tone
-on a neutral surface (badges, destructive-quiet buttons).
+Menus, popovers, selects, tooltips and toasts use the `glass-menu` surface (`surface-overlay` at
+`--lar-menu-opacity`, 94%, under a blur: nearly opaque, so a poster or album grid never reads through a menu's rows),
+dialogs `glass-dialog` and the navigation bar `glass-bar`, tuned by `--lar-glass-blur` (18px), `--lar-glass-opacity`
+(75%, the bar) and `--lar-glass-saturation` (1.14, 1.08 in dark).
 
-<ColorPalette>
-    <ColorItem
-        title="Success"
-        subtitle="Fill, content on fill, text"
-        colors={tokens(['color-success', 'color-success-content', 'lar-success-text'])}
-    />
-    <ColorItem
-        title="Danger"
-        subtitle="Fill, content on fill, text"
-        colors={tokens(['color-danger', 'color-danger-content', 'lar-danger-text'])}
-    />
-    <ColorItem
-        title="Warning"
-        subtitle="Fill, content on fill, text"
-        colors={tokens(['color-warning', 'color-warning-content', 'lar-warning-text'])}
-    />
-    <ColorItem
-        title="Info"
-        subtitle="Fill, content on fill, text"
-        colors={tokens(['color-info', 'color-info-content', 'lar-info-text'])}
-    />
-</ColorPalette>
+## Status and progress
 
-### Effects
+### One tone map
 
-The marketing pages' glow and grid, the scrollbar, and the showcase devices' metal.
+A status light and a progress bar take their colour from what the state **means**, the same in every app; the status
+word beside the light stays in neutral text (the status-word rule in the Introduction), since the light already carries
+the colour. Components take a `state` (`StatusState`); pick the state, never the colour. A `tone` remains for the rare case no
+state names (a data colour, the accent for "in development").
 
-<ColorPalette>
-    <ColorItem title="Glow" subtitle="Behind heroes and product bands" colors={tokens(['lar-glow', 'lar-glow-soft'])} />
-    <ColorItem
-        title="Lines"
-        subtitle="Grid lines and scrollbar thumbs"
-        colors={tokens(['lar-grid-line', 'lar-scrollbar-thumb', 'lar-scrollbar-thumb-hover'])}
-    />
-    <ColorItem
-        title="Laptop"
-        subtitle="Device frame gradients, highlight and shadow"
-        colors={tokens(['lar-laptop-base', 'lar-laptop-groove', 'lar-laptop-base-highlight', 'lar-device-shadow'])}
-    />
-</ColorPalette>
+| `state`   | Colour | Means                                                        | Examples                                            |
+| --------- | ------ | ------------------------------------------------------------ | --------------------------------------------------- |
+| `ready`   | green  | connected, ready, up to date, done                           | Lidarr connected, catalog up to date, merged        |
+| `active`  | blue   | running, working, live                                       | scanning, 5 active tasks, building                  |
+| `waiting` | amber  | waiting on something, needs attention, degraded, backing off | Remote access on, waiting; needs you; provider busy |
+| `failed`  | red    | failed, broken, unreachable                                  | scan failed, folder not found                       |
+| `off`     | grey   | off, idle, queued, not checked yet, unknown (no glow)        | turned off, not scanned yet                         |
 
-### Glass and shadows
+`StatusIndicator`, `StatusRow`, `ToolbarStatusItem`, `PopoverHeader`, `StatusPopoverContent` and `ProgressStatusRow`
+all take it. A state that is **more than one thing** ("5 active · 3 failed") is a `StatusSummary` (or an array of parts
+for `PopoverHeader status` / `StatusPopoverContent status`): each part keeps its own light and colour, so a failure
+never hides in the main state's blue. Leave out a part with nothing to count.
 
-Menus, popovers, selects, tooltips and toasts use the `glass-menu` surface; dialogs use `glass-dialog`; the navigation
-bar uses `glass-bar`. They are tuned by these tokens:
+### One progress grammar
+
+Every running piece of work (a scan, a job, an enrichment pass, a calibration) is a `ProgressStatusRow`, in a list, a
+card's footer, a popover or a dialog alike:
+
+1. **Identity first.** The light, then what or where (`label`: the catalog, "Video calibration"), never cut; it wraps.
+   Inside the object's own card or dialog, which already names it, the label is the work ("Comparing with Lidarr").
+2. **Second line, muted:** the phase (`operation`), the status word in neutral text (`statusLabel`: Queued, Waiting,
+   Done), then the numbers in one format: **count · percent · ETA** ("1,204 of 3,890 files · 31% · 12 min left"). The
+   caller words the count and the ETA; the row computes the percent. One extra fact may follow (`detail`); a full
+   counter list belongs in the details the row opens (`onDetails`), never in the row.
+3. **The bar**, in the status's colour: while running, determinate when the amount is known (`progress`), sweeping
+   when it isn't; while paused or backing off, held at its place in amber. Queued, failed and done draw none.
+4. **Why** it is held or failed (`reason`), in neutral text: "MusicBrainz is busy; trying again at 8:21 PM",
+   "Folder not found: /mnt/media/tv".
+5. **Actions** (Cancel, Retry, Review) at the end, centred on the text; the bar keeps to the text's column.
+
+| `status`  | State     | Bar               | Words                             |
+| --------- | --------- | ----------------- | --------------------------------- |
+| `queued`  | `off`     | none              | "Queued", and what it waits for   |
+| `running` | `active`  | fills, or sweeps  | count · percent · ETA             |
+| `paused`  | `waiting` | held at its place | "Waiting"/"Paused" and the reason |
+| `failed`  | `failed`  | none              | the reason, and Review or Retry   |
+| `done`    | `ready`   | none              | "Done", and when it finished      |
+
+Two densities: `compact` for card footers and popovers (12px label, 4px bar; an idle row keeps the bar's room so a
+grid of cards holds its height), regular for pages and dialogs (14px label, 6px bar).
+
+**What wraps and what stays on one line.** The label is the thing's identity and wraps, never cut. The meta line is
+one line on purpose, so a list of rows keeps one rhythm: out of room it ends in an ellipsis while the percent stays
+whole at its end, and the full line is the meta's hover title and, with the percent, the progress bar's accessible
+value. The reason under a bar keeps to one line the same way, with its full text as its title. A card's summary
+(`layout="line"`) puts the label in that one line too and ends it on the numbers, which stay whole with the percent:
+the label and the words before them (the task, the status, the reason) give way first, under the same hover title.
+The details it opens (`onDetails`) hold everything in full.
+
+### Lights and legends
+
+A **round** mark is a status light: only a state colours it. A **square** mark (`LegendSwatch`, drawn by `MeterLegend`)
+is a series' key in a meter or chart: its colour names what the series is, never how it is doing. A row that names a
+series and has a status (an encode device's playback job) takes the swatch as its indicator and says the status in
+words, or adds a light coloured by its state.
+
+A series takes its colour from its own set, never from a status hue: `series` 1, 2 and 3 (navy, teal, orange; the
+`series-1` to `series-3` tokens), in that order and never cycled, validated apart for every colour vision and 3:1 on a
+card in both themes. Past three series, fold the rest into one or split the chart.
+
+### One alignment rule
+
+Wherever a status has lines under it (`StatusRow` with a `detail`, `ProgressStatusRow`, an attention row), the light
+sits on the centre of the label's **first** line, never centred across the lines; a muted value reads with that line
+and controls stay centred on the row. Cards side by side in a row (check-up summary cards, dashboard cards) top-align
+their content, so their first lines line up whatever each card holds.
+
+A row's leading icons come in one order: the **status mark first** (a `StatusGlyph`, or a status light standing in
+for one), **then the source icon** (where its ticket is saved), then the title. Every status mark sits in the same
+fixed box (`StatusGlyph` draws one; wrap a `StatusIndicator` that stands in for a glyph in `StatusGlyphSlot`), so a
+list's titles start at the same x whichever mark each row has. Rows in one status list keep one rhythm: a row whose
+value is a control (`StatusRow trailing`) is as tall as a row whose value is a word.
+
+## Layout rules for actions and options
+
+- **Ghost actions sit flush.** In any action slot of a header or row (`SettingsSection action`, `SectionTitle actions`,
+  `FormSection action`, `PopoverHeader action`, `SettingsRow` controls), a ghost Button (`quiet`, `destructive-quiet`)
+  at the end lines its label up with the card's edge, like a bordered button's edge; the slot does it, so callers never
+  nudge a button. A caption about a section's action belongs in the section's `description`, never under the button.
+- **An action under prose is outlined.** Outside those slots nothing pulls a ghost's 12px inset back, so its label
+  would start off the text above it. An action that follows a paragraph or a caption ("This album isn’t in
+  MusicBrainz" under its explanation) is a `secondary` Button (`size="sm"` beside captions), whose edge lines up with
+  the text; supporting prose above it keeps the reading measure (`Text measure="reading"`).
+- **A footer option is a Checkbox.** `Modal.Footer leading` may hold a one-shot option for this submit
+  ("Scan for changes now", "Create issue") as a `Checkbox`. A `Switch` there is a misuse: a switch sets something that
+  stays, which is a row in the form.
+- **Empty lists.** An empty settings or archive list is `EmptyState size="compact"` in the list's panel, with the add
+  action when there is one ("No catalogs yet" · **Add catalog**).
+- **Menus keep one inset.** A menu row with a control at its end (the account menu's Appearance choice) is
+  `DropdownMenu.ControlRow`, which keeps the entries' 12px inset; never an app's `Inline` inside the menu. A menu's
+  entries either all lead with an icon or none do: a lone icon (only Sign out) reads as another kind of entry.
+- **No hard cuts.** Every region the design system scrolls (popovers, menus, modal and drawer bodies, image pickers,
+  counter lists) fades where content runs past an edge; an app never adds its own scroller inside one.
+- **Help opens beside what it explains.** `HelpTip` opens above its "?" (`side` for another side), so it never covers
+  the description under the setting's name.
+- **One splash.** `AppSplash` (and the board's `LoadingScreen`) shows one status line, which always ends in an
+  ellipsis, over the calm indeterminate track while the app waits, in every app.
+- **Every notice is an Alert, one recipe per tone.** The tone's quiet surface (`-surface`), its hairline (`-ring`) and
+  its icon; the words are the primary text colour, title semibold, message regular, at either size. ConfirmDialog's
+  reassurance note is an `info` Alert; no app or composition draws a notice box of its own.
+
+## Type scale
+
+Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe UI on Windows) at 14px (`text-sm`),
+with `--font-mono` for code. The scale is Tailwind's steps plus the ones Lar's density and marketing pages need, and
+nothing else: an arbitrary size such as `text-[13px]` fails `scales.test.ts`.
 
 <Surface>
-    <Specimen name="--lar-glass-blur" detail="18px">
-        <Text variant="caption" tone="muted">
-            Backdrop blur of the navigation bar.
-        </Text>
-    </Specimen>
-    <Specimen name="--lar-glass-opacity" detail="75%">
-        <Text variant="caption" tone="muted">
-            How much of the surface colour shows through the glass.
-        </Text>
-    </Specimen>
-    <Specimen name="--lar-glass-saturation" detail="1.14 · 1.08 dark">
-        <Text variant="caption" tone="muted">
-            Saturation boost of whatever is behind the glass.
-        </Text>
-    </Specimen>
-    {['lar-shadow-popup', 'lar-shadow-dialog'].map((name) => (
-        <Specimen key={name} name={`--${name}`} detail={name === 'lar-shadow-popup' ? 'Menus, popovers' : 'Dialogs'}>
-            <div
-                style={{
-                    width: '10rem',
-                    height: '4rem',
-                    margin: '0.5rem 0 1.5rem',
-                    borderRadius: '0.625rem',
-                    background: 'var(--color-base-100)',
-                    boxShadow: `var(--${name})`,
-                }}
-            />
+    {[
+        ['text-3xs', '10px', 'A counter or tag inside a tiny glyph'],
+        ['text-2xs', '11px', 'Overlines, meta, keyboard hints'],
+        ['text-xs', '12px', 'Captions, compact controls'],
+        ['text-ui', '13px', 'A dense title: a settings row, a board card'],
+        ['text-sm', '14px', 'Body and controls (the default)'],
+        ['text-md', '15px', 'A description, running prose, a subsection title'],
+        ['text-base', '16px', 'A section title'],
+        ['text-lg', '18px', 'A lead paragraph'],
+        ['text-xl', '20px', 'A feature title'],
+        ['text-title', '22px', 'A page title'],
+        ['text-2xl … 3xl', '24 · 30px', 'Metrics, a feature title from sm, a hero'],
+        ['text-4xl … 7xl', '36 · 48 · 60 · 72px', 'Marketing titles as the viewport grows'],
+        ['text-headline', '40px', 'A marketing section title from sm'],
+        ['text-display', '80px', 'The website’s one big statement at xl'],
+    ].map(([name, size, use]) => (
+        <Specimen key={name} name={name} detail={size}>
+            <Text variant="caption" tone="muted">
+                {use}
+            </Text>
         </Specimen>
     ))}
 </Surface>
 
-## Type scale
-
-Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe UI on Windows) at 14px, with
-`--font-mono` for code. Apps pick a semantic `variant` on `Text` and `Heading`, never a size. The marketing variants
-(`display`, `hero`, `headline`, `feature`, `lead`, `prose`) grow with the viewport.
+Apps never pick a size: they pick a semantic `variant` on `Text` and `Heading`. The marketing variants (`display`,
+`hero`, `headline`, `feature`, `lead`, `prose`) grow with the viewport.
 
 ### Heading
 
 <Surface>
     {[
-        ['display', 'A page’s one big statement. 42 → 80px'],
-        ['hero', 'Hero title. 30 → 46px'],
+        ['display', 'A page’s one big statement. 40 → 80px'],
+        ['hero', 'Hero title. 30 → 48px'],
         ['headline', 'A marketing section’s title. 30 → 48px'],
         ['feature', 'A feature inside a section. 20 → 24px'],
         ['page', 'An app page’s title. 22px'],
@@ -236,13 +511,13 @@ Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe U
     {[
         [
             'lead',
-            'The paragraph under a hero or section title. 17 → 18px',
-            'Lar streams your libraries and builds your repositories on hardware you own.',
+            'The paragraph under a hero or section title. 18px',
+            'Lar streams your libraries from hardware you own, and turns your issues into reviewed pull requests.',
         ],
         [
             'prose',
             'Running copy on marketing pages. 15px',
-            'Point Lar at a repository and it builds every push, keeps the artefacts and deploys the ones you approve.',
+            'Lar Factory is a local board: agents shape each issue, build it and review the pull request, and you merge.',
         ],
         [
             'description',
@@ -251,7 +526,7 @@ Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe U
         ],
         ['body', 'The default. 14px', 'Your music library holds 4,812 tracks across 362 albums.'],
         ['label', 'Form and row labels. 14px medium', 'Media folder'],
-        ['caption', 'Secondary detail. 12px', 'Last scanned 4 minutes ago · 12 new albums'],
+        ['caption', 'Secondary detail. 12px', 'Scanned 4 minutes ago · 12 new albums'],
         ['overline', 'A small heading above a title. 11px uppercase', 'Software factory'],
         ['metric', 'A number in a stat. 24px tabular', '4,812'],
     ].map(([variant, detail, sample]) => (
@@ -264,18 +539,29 @@ Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe U
 `Text` and `Heading` also take a `tone` (`default`, `muted`, `soft`, `danger`, `warning`, `success`), `truncate` and
 `loading`; see **Typography / Typography** for every combination.
 
+**Tracking** has four steps, tighter as type grows: `tracking-display` (−0.035em: a hero, a marketing headline, the
+brand word), `tracking-title` (−0.02em: a page title, a metric, a feature's title), `tracking-heading` (−0.01em: a
+section or card title, a lead, prose) and `tracking-caps` (0.08em: small uppercase, an overline). Body text keeps
+`tracking-normal`; no other letter-spacing is allowed (`scales.test.ts`).
+
 ## Radii
 
-T3 Code's corners: 6, 8, 10, 14 and 18px. Buttons and inputs use `md`, popovers `lg`, dialogs `2xl`.
+T3 Code's corners: 6, 8, 10, 14 and 18px, with 4px for the smallest things (a code chip, a swatch, a text button's
+focus box) and 24px for the website's cards and bands. Buttons and inputs use `md`, popovers `lg`, dialogs `2xl`.
+These are the only radii, with `full` and `none`: `scales.test.ts` fails on a bare `rounded`, Tailwind's own steps
+(`4xl`), an arbitrary `rounded-[…]` or a radius in rem in a stylesheet. The marketing devices' frames, drawn to scale,
+are the one exception.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', padding: '1rem 0' }}>
         {[
+            ['xs', '0.25rem', '4px'],
             ['sm', '0.375rem', '6px'],
             ['md', '0.5rem', '8px'],
             ['lg', '0.625rem', '10px'],
             ['xl', '0.875rem', '14px'],
             ['2xl', '1.125rem', '18px'],
+            ['3xl', '1.5rem', '24px'],
             ['full', '9999px', 'pill'],
         ].map(([name, value, detail]) => (
             <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
@@ -295,6 +581,152 @@ T3 Code's corners: 6, 8, 10, 14 and 18px. Buttons and inputs use `md`, popovers 
     </div>
 </Surface>
 
+## Links
+
+One link look, `typography/LinkRecipe.ts`, drawn by `Link`, `InlineLink`, RichText's and the Markdown editor's links
+and every link a composition draws itself (a linked fact, a reference, "Part of #12"): an underline at 40% of the
+link's colour that fills in on hover. Its tone is `accent` (`primary-fg`, the default: a link that stands on its own),
+`inherit` (the colour of the text around it, inside a note or an alert) or `muted` (a navigation trail, such as
+Breadcrumbs, whose underline shows on hover).
+
+## Spacing and density
+
+Every length is on Tailwind's 4px spacing scale (`--spacing: 0.25rem`): `p-3` is 12px, `max-w-160` 640px, `px-2.75`
+11px. Lar is dense, as T3 Code is: controls are 36px on touch and 32px with a pointer (`Button`'s default), 28px in
+dense tools (`compact`, the board's every button), and rows 28 to 32px. A page's content is at most `max-w-page`
+(1200px) wide. Arbitrary lengths (`w-[340px]`, `gap-[3px]`) fail `scales.test.ts`; the few pixel-exact glyphs it
+allows (a 1.5px ring, a 7px monogram) are listed there with their reasons.
+
+App shells use the compact 16px gutter; board workspaces use the roomy 24px gutter. Shell layout owns this spacing;
+individual pages do not add outer gutters. The two are spacing tokens, `px-gutter-app` (`--spacing-gutter-app`, 16px:
+`ContentContainer`, `TitleBar`) and `px-gutter-board` (`--spacing-gutter-board`, 24px: `BoardContent`).
+
+## Breakpoints
+
+The viewport breakpoints are Tailwind's: `sm` 40rem · `md` 48rem · `lg` 64rem · `xl` 80rem · `2xl` 96rem. A
+component that lays itself out answers to its **container** instead (`@container` on the parent), on Tailwind's
+container steps (`@md` 28rem · `@lg` 32rem · `@xl` 36rem · `@3xl` 48rem · `@4xl` 56rem · `@5xl` 64rem · `@6xl` 72rem)
+plus two of Lar's own:
+
+<Surface>
+    <Specimen name="@pane" detail="40rem">
+        <Text as="div" variant="caption" tone="muted">
+            Wide enough for a toolbar's labels or a text's wide form: below it (`@max-pane:`) the editor's toolbar folds
+            and `Text only="narrow"` shows.
+        </Text>
+    </Specimen>
+    <Specimen name="@split" detail="45rem">
+        <Text as="div" variant="caption" tone="muted">
+            Wide enough for a main column beside a 16rem aside, as in the board's item dialog.
+        </Text>
+    </Specimen>
+</Surface>
+
+## Elevation
+
+Shadows by role, deeper in the dark theme. They are plain variables, used as `shadow-(--shadow-raised)`;
+`glass-menu` and `glass-dialog` already carry theirs. A component never mixes a shadow of its own: `scales.test.ts`
+fails on a `shadow-[…]`, `drop-shadow-[…]` or `inset-shadow-[…]` that names a colour. Besides the four surfaces,
+a solid fill's lit top edge is `inset-shadow-(--shadow-highlight)` (pressed: `--shadow-pressed`), and a logo over
+artwork lifts off it with `drop-shadow-(--shadow-logo)`. The showcase adds its own (`--shadow-showcase-*`, in
+`showcase/tokens.css`).
+
+**Card, not raised.** A card, panel or grouped list resting on the page takes `surface-card` (its surface,
+`line-card` edge, `--shadow-card` and, in dark, a faint top sheen): in light a hairline drop and a soft, short lift
+so a white card reads off the near-white page; in dark a lit top edge, since a shadow barely reads on black. A control
+or a field resting on the page (an outlined button, a text field, a chip) takes the flatter `--shadow-raised`, so a
+control never reads as a card and a card full of controls keeps one level. Popups and dialogs sit above both.
+
+<Surface>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', padding: '1.25rem 0 1.75rem' }}>
+        {[
+            ['--shadow-card', 'A card, panel or grouped list on the page (surface-card)', 'surface-card'],
+            ['--shadow-raised', 'A control or field resting on the page'],
+            ['--shadow-popup', 'A menu, popover, tooltip or toast'],
+            ['--shadow-dialog', 'A dialog, a sheet, or a page’s one card (sign-in)'],
+        ].map(([name, use, surface]) => (
+            <div key={name} style={{ display: 'grid', gap: '0.75rem', width: '12rem' }}>
+                <div
+                    style={{
+                        height: '5rem',
+                        borderRadius: '0.625rem',
+                        background:
+                            surface === 'surface-card'
+                                ? 'var(--lar-card-sheen), var(--color-surface-card)'
+                                : 'var(--color-surface-raised)',
+                        border: surface === 'surface-card' ? '1px solid var(--color-line-card)' : undefined,
+                        boxShadow: `var(${name})`,
+                    }}
+                />
+                <div style={tokenName}>{name}</div>
+                <Text variant="caption" tone="muted">
+                    {use}
+                </Text>
+            </div>
+        ))}
+    </div>
+</Surface>
+
+## Motion
+
+Durations by role and two easings. A plain `transition-*` utility already runs at `--motion-duration-fast` on
+`ease-standard`; another duration is `duration-(--motion-duration-base)`.
+
+<Surface>
+    {[
+        ['--motion-duration-fast', '150ms', 'A control’s feedback: hover, press, colour'],
+        ['--motion-duration-base', '200ms', 'A small move or fade: an arrow nudging, an image appearing'],
+        ['--motion-duration-slow', '300ms', 'Progress filling, a panel easing in'],
+        ['--motion-duration-deliberate', '700ms', 'A showcase scene settling'],
+        ['--motion-loop-pulse', '1.6s', 'A board glyph’s pulse, a skeleton’s shine'],
+        ['--motion-loop-breath', '2.4s', 'A status light’s slow breath (StatusIndicator’s pulse)'],
+        ['--motion-loop-sweep', '1.8s', 'An indeterminate track'],
+        ['--motion-loop-spin', '2.4s', 'A running build’s glyph'],
+        ['ease-standard', 'cubic-bezier(0.2, 0, 0, 1)', 'Most transitions'],
+        ['ease-emphasized', 'cubic-bezier(0.16, 1, 0.3, 1)', 'An entrance that lands softly'],
+    ].map(([name, value, use]) => (
+        <Specimen key={name} name={name} detail={value}>
+            <Text variant="caption" tone="muted">
+                {use}
+            </Text>
+        </Specimen>
+    ))}
+</Surface>
+
+**Reduced motion.** Under `prefers-reduced-motion: reduce` the durations collapse to an instant (transitions still
+finish and fire their end events), the repeating loops stop (a pulse holds still, the indeterminate track turns into a
+static striped bar, the skeleton's shine stops) and the showcase's reveals and loops stay still. The one exception is a spinner that
+says an action is in flight (`SpinnerIcon motion="always"`, a busy `Button`), which keeps turning. Loops also pause
+while out of view or behind an open dialog (`ambientMotion`).
+
+## Focus
+
+One ring everywhere: 2px of `focus` outside the control, on keyboard focus (`:focus-visible`). Every element gets it
+by default; a component that sets its own outline uses one of these utilities, never its own `outline-*` or `ring-*`
+recipe:
+
+<Surface>
+    {[
+        ['focus-ring', 'The default: a button, a card that opens, a link.'],
+        ['focus-ring-inset', 'Inside the edge, where an outer ring would clip: a row in a scroller, a tab, a segment.'],
+        ['focus-ring-within', 'On a row that wraps a native control (a radio choice), drawn inside it.'],
+        ['focus-ring-stretched', 'On a link whose ::before covers its card, drawn around the card.'],
+        ['focus-field', 'A text field on any focus: the focus edge and a soft halo, since typing goes there.'],
+    ].map(([name, use]) => (
+        <Specimen key={name} name={name} detail="utility">
+            <Text variant="caption" tone="muted">
+                {use}
+            </Text>
+        </Specimen>
+    ))}
+    <Specimen name="try it" detail="Tab to these">
+        <div style={{ display: 'flex', gap: '0.75rem', padding: '0.25rem 0' }}>
+            <Button>Primary</Button>
+            <Button variant="secondary">Secondary</Button>
+        </div>
+    </Specimen>
+</Surface>
+
 ## Icons
 
 Every icon is from [lucide](https://lucide.dev/icons), under lucide's `…Icon` names, plus the brand marks lucide does
@@ -310,6 +742,8 @@ import { PlusIcon } from '@lar-works/design-system/icons';
 
 `DesignSystemProvider` draws them at a 1.75 stroke, which matches the weight of Lar's type, and components size them
 (16px in buttons, 18px in header icon buttons). Inside the design system, components import icons from `lucide-react`.
+A concept with its one icon (activity, diagnostics, metadata, check-up, scans, updates, settings sections…) is drawn
+from `conceptIcons`; [Writing/Icons](?path=/docs/writing-icons--docs) is the glossary.
 
 <style>
     {'.lar-foundations-icon { display: inline-flex; } .lar-foundations-icon svg { width: 20px; height: 20px; }'}
@@ -317,7 +751,7 @@ import { PlusIcon } from '@lar-works/design-system/icons';
 
 <Surface>
     <div
-        style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', padding: '1rem 0', color: 'var(--color-base-800)' }}
+        style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', padding: '1rem 0', color: 'var(--color-fg-soft)' }}
     >
         {[
             ['MusicIcon', MusicIcon],
@@ -352,3 +786,20 @@ import { PlusIcon } from '@lar-works/design-system/icons';
         ))}
     </div>
 </Surface>
+
+## Destructive actions
+
+The quiet-destructive rule (Introduction): a trigger that opens a destructive confirmation is named in the danger text
+colour at rest, in a quiet weight, and gains the danger surface on hover or keyboard focus: `Button
+variant="destructive-quiet"`, `IconButton tone="danger"` and `DropdownMenu.Item destructive`. It is never neutral grey
+text. Only the confirming action in `ConfirmDialog` uses a solid danger fill (`Button variant="destructive"`). This
+applies equally to catalog Delete, log deletion and Factory Abandon. A state word is never in the danger text colour
+(the status-word rule); a problem's explanation stays in neutral text. The one sentence in the danger text colour is a
+field's error under its invalid control (`Field errorText`), which pairs with the control's danger edge.
+
+## Writing
+
+The **Writing / Content** foundations page defines the shared glossary: sentence case, no trailing full stops in
+headings or labels, UK English with **catalog** as the deliberate product term, chart units in axes and values, and
+one arrow after standalone navigation instructions (`Link arrow`). Settings headings and actions remain in place
+while their row values load; use row-shaped skeletons rather than a single block.

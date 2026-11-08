@@ -7,7 +7,7 @@ import musicIcon from '../../.storybook/assets/music.webp';
 import photosIcon from '../../.storybook/assets/photos.webp';
 import serverIcon from '../../.storybook/assets/server.webp';
 import videoIcon from '../../.storybook/assets/video.webp';
-import { Announcement, AppIcon, type Readiness, StatusLight, StatusPill } from './Status';
+import { Announcement, AppIcon, type Readiness, StatusLight, ReadinessStatus } from './Status';
 
 const readiness: readonly { status: Readiness; label: string }[] = [
     { status: 'available', label: 'Available for Mac' },
@@ -17,31 +17,32 @@ const readiness: readonly { status: Readiness; label: string }[] = [
 
 const meta = {
     title: 'Showcase/Status',
-    component: StatusPill,
+    component: ReadinessStatus,
     args: { status: 'available', children: 'Available for Mac' },
     argTypes: { status: { control: 'inline-radio', options: ['available', 'development', 'planned'] } },
-} satisfies Meta<typeof StatusPill>;
+} satisfies Meta<typeof ReadinessStatus>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 /** Where a product or feature stands: out now, being built, or planned. */
-export const Pill: Story = {};
+export const Default: Story = {};
 
-export const Pills: Story = {
+/** Each readiness: the apps' status light and label, in its tone. */
+export const Readinesses: Story = {
     render: () => (
         <div className="flex flex-wrap items-center gap-2">
             {readiness.map((item) => (
-                <StatusPill key={item.status} status={item.status}>
+                <ReadinessStatus key={item.status} status={item.status}>
                     {item.label}
-                </StatusPill>
+                </ReadinessStatus>
             ))}
         </div>
     ),
 };
 
-/** The bare light, as in readiness lists; the announcement's pulses. */
+/** The bare light, as in readiness lists; the announcement’s pulses. */
 export const Lights: Story = {
     render: () => (
         <div className="flex items-center gap-4">
@@ -70,7 +71,7 @@ export const Announcements: Story = {
     ),
 };
 
-/** Lar's app icons, cut to the platform's continuous corner, in each size. */
+/** Lar’s app icons, cut to the platform’s continuous corner, in each size. */
 export const AppIcons: Story = {
     render: () => (
         <div className="flex flex-col gap-4">

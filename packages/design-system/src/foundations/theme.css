@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 @import '@ninna-ui/core/theme/presets/minimal.css';
 
+/* Lar's tokens come in two layers. Primitives are fixed --color-palette-* steps; ninna-ui's base/status names are compatibility
+   aliases selected by the palettes below. The semantic layer names what a colour is for (a surface, text, an
+   edge, a status's fill or text) and is what components use; it is built on the primitives, and its values are
+   checked for contrast against the table in tokens.ts (tokens.test.ts). Product layers (board/, showcase/) add only
+   roles of their own, derived from these. */
+
 /* Dark follows an explicit .dark class, or the system while neither .light nor .dark is set, so dark:
    utilities match the palette in both cases. */
 @custom-variant dark {
@@ -14,114 +20,391 @@
     }
 }
 
-/* T3 Code's type and radius scale: the platform UI font at 14px with a dense 11px step below text-xs, and
-   6, 8, 10, 14 and 18px corners. */
-@theme {
+/* Scales: T3 Code's type and radius scale, the named container breakpoints, elevation and motion. */
+@theme static {
     --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
     --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-    --text-2xs: 0.6875rem;
+
+    /* Type: Tailwind's steps (xs 12 · sm 14 · base 16 · lg 18 · xl 20 · 2xl 24 · 3xl 30 · 4xl 36 · 5xl 48 · 6xl 60 ·
+       7xl 72) plus the ones Lar's density and marketing pages need. The platform UI font sits at 14px (text-sm). */
+    --text-3xs: 0.625rem; /* 10px: a counter or a tag inside a tiny glyph */
+    --text-3xs--line-height: calc(0.875 / 0.625);
+    --text-2xs: 0.6875rem; /* 11px: overlines, meta, keyboard hints */
     --text-2xs--line-height: calc(1 / 0.6875);
+    --text-ui: 0.8125rem; /* 13px: a dense title: a settings row, a board card */
+    --text-ui--line-height: calc(1.125 / 0.8125);
+    --text-md: 0.9375rem; /* 15px: a description, running prose, a subsection title */
+    --text-md--line-height: calc(1.375 / 0.9375);
+    --text-title: 1.375rem; /* 22px: a page's title */
+    --text-title--line-height: calc(1.75 / 1.375);
+    --text-headline: 2.5rem; /* 40px: a marketing section's title from sm */
+    --text-headline--line-height: 1.08;
+    --text-display: 5rem; /* 80px: the website's one big statement at xl */
+    --text-display--line-height: 1.04;
+
+    /* Tracking: four steps, tighter as type grows (scales.test.ts). display a hero, a marketing headline or the brand
+       word · title a page title, a metric, a feature's title · heading a section or card title and long-form leads ·
+       caps small uppercase labels (an overline). Body text keeps tracking-normal. */
+    --tracking-display: -0.035em;
+    --tracking-title: -0.02em;
+    --tracking-heading: -0.01em;
+    --tracking-caps: 0.08em;
+
+    /* Radii: the only ones a component uses (scales.test.ts), plus rounded-full and rounded-none. xs 4px a code chip,
+       a swatch or a text button's focus box · sm 6px a menu row, a tooltip, a small control · md 8px a control ·
+       lg 10px a card or a menu · xl 14px a panel · 2xl 18px a dialog · 3xl 24px a marketing card or band. */
+    --radius-xs: 0.25rem;
     --radius-sm: 0.375rem;
     --radius-md: 0.5rem;
     --radius-lg: 0.625rem;
     --radius-xl: 0.875rem;
     --radius-2xl: 1.125rem;
+    --radius-3xl: 1.5rem;
+
+    /* Breakpoints. The viewport ones are Tailwind's (sm 40rem · md 48rem · lg 64rem · xl 80rem · 2xl 96rem).
+       Components answer to their container (@container) on Tailwind's container steps (@md 28rem · @lg 32rem ·
+       @xl 36rem · @3xl 48rem · @4xl 56rem · @5xl 64rem · @6xl 72rem) plus two of Lar's own: */
+    --container-pane: 40rem; /* wide enough for a toolbar's labels or a text's wide form */
+    --container-split: 45rem; /* wide enough for a main column beside a 16rem aside */
+    --container-page: 75rem; /* a website page's content width (max-w-page) */
+    --container-reading: 75ch; /* paragraphs, lists and supporting prose (max-w-reading) */
+
+    /* Motion: durations by role and the easings. Reduced motion collapses the durations and stops the loops. */
+    --motion-duration-fast: 150ms; /* a control's feedback: hover, press, colour */
+    --motion-duration-base: 200ms; /* a small move or fade */
+    --motion-duration-slow: 300ms; /* progress filling, a panel easing in */
+    --motion-duration-deliberate: 700ms; /* a showcase scene settling */
+    --motion-loop-pulse: 1.6s; /* a board glyph's pulse, a skeleton's shine */
+    --motion-loop-breath: 2.4s; /* a status light's slow breath (StatusIndicator's pulse, the server unit's LEDs) */
+    --motion-loop-sweep: 1.8s; /* an indeterminate track */
+    --motion-loop-spin: 2.4s; /* a running build's glyph */
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+    --default-transition-duration: var(--motion-duration-fast);
+    --default-transition-timing-function: var(--ease-standard);
+}
+
+/* Elevation: a surface's shadow by role, deeper in the dark palette. Plain variables rather than Tailwind's shadow
+   theme, which would inline the light value: use them as shadow-(--shadow-raised). Every shadow in a component is one
+   of these (scales.test.ts fails on a shadow mixed in a class). */
+:root {
+    --shadow-raised: 0 1px 2px rgb(0 0 0 / 5%); /* a control resting on the page */
+    /* A card, panel or grouped list on the page (the surface-card utility): a hairline drop and a soft, short lift, so
+       a white card reads off the near-white page as the website's do. Dark lights its top edge instead. */
+    --shadow-card: 0 1px 2px rgb(24 24 27 / 4%), 0 4px 14px -8px rgb(24 24 27 / 12%);
+    /* A card's sheen: none in light; in dark a faint light from the top, so a card has depth, not a flat grey. */
+    --lar-card-sheen: none;
+    --shadow-popup: 0 16px 40px -18px rgb(0 0 0 / 55%); /* a menu, popover, tooltip or toast */
+    --shadow-dialog: 0 24px 64px -24px rgb(0 0 0 / 65%); /* a dialog, a sheet, or a page's one card (sign-in) */
+    /* A solid fill's lit top edge (a primary or destructive button), and the shade that replaces it while pressed:
+       inset-shadow-(--shadow-highlight), active:inset-shadow-(--shadow-pressed). */
+    --shadow-highlight: 0 1px rgb(255 255 255 / 16%);
+    --shadow-pressed: 0 1px rgb(0 0 0 / 8%);
+    /* A logo set over artwork, lifted off it in both themes: drop-shadow-(--shadow-logo). */
+    --shadow-logo: 0 1px 12px rgb(0 0 0 / 45%);
+}
+
+/* Fixed colour primitives: one twelve-step neutral ramp per theme (zinc for light, neutral for dark), the hues, and
+   alpha steps, which are fixed primitives too; semantic roles never mix or inline a colour. The 975 hue steps are
+   low-chroma dark tints. ninna-ui's base/status names below are compatibility aliases into this palette. */
+@theme static {
+    /* The light theme's neutral ramp, twelve even steps of zinc: 1 a raised surface, 2 the page, 3 a sunken well,
+       4 a quiet fill or hover, 5 a chosen item, 6 a fill under the pointer, 7 a line, 8 a control's edge, 9 a strong
+       edge, 10 muted text, 11 soft text, 12 text. */
+    --color-palette-zinc-1: #ffffff;
+    --color-palette-zinc-2: #fcfcfc;
+    --color-palette-zinc-3: #f9f9fa;
+    --color-palette-zinc-4: #f4f4f5;
+    --color-palette-zinc-5: #eeeef0;
+    --color-palette-zinc-6: #e9e9ec;
+    --color-palette-zinc-7: #e4e4e7;
+    --color-palette-zinc-7-5: #dedee3;
+    --color-palette-zinc-8: #d4d4d8;
+    --color-palette-zinc-9: #8b8b94;
+    --color-palette-zinc-10: #6b6b74;
+    --color-palette-zinc-11: #3f3f46;
+    --color-palette-zinc-12: #27272a;
+    --color-palette-zinc-1-a70: #ffffffb3;
+    /* The dark theme's neutral ramp, twelve steps of pure grey, dense at the bottom where surfaces sit: 1 the page,
+       2 a raised surface, 3 a sunken, overlay or control surface, 4 a hover, 5 a quiet or chosen fill and a line,
+       6 a fill under the pointer and a control's edge, 7 a deep edge, 8 a strong edge, 9 muted text, 10 long-form
+       muted text, 11 soft text, 12 text. */
+    --color-palette-neutral-1: #0a0a0a;
+    --color-palette-neutral-2: #111111;
+    --color-palette-neutral-3: #161616;
+    --color-palette-neutral-4: #1c1c1c;
+    --color-palette-neutral-5: #222222;
+    --color-palette-neutral-6: #282828;
+    --color-palette-neutral-7: #404040;
+    --color-palette-neutral-8: #6b6b6b;
+    --color-palette-neutral-9: #8a8a8a;
+    --color-palette-neutral-10: #a1a1a1;
+    --color-palette-neutral-11: #c7c7c7;
+    --color-palette-neutral-12: #f5f5f5;
+    --color-palette-neutral-2-a50: #11111180;
+    /* The brand's near-black ink, outside the ramps. */
+    --color-palette-ink: #0b0b0c;
+    /* A scrollbar's thumb, translucent so it sits on any surface. */
+    --color-palette-black-a15: #00000026;
+    --color-palette-black-a25: #00000040;
+    --color-palette-white-a3: #ffffff08;
+    --color-palette-white-a8: #ffffff14;
+    --color-palette-white-a12: #ffffff1f;
+    --color-palette-navy-50: #ebeef4;
+    --color-palette-navy-100: #dbe0eb;
+    --color-palette-navy-300: #9db7eb;
+    --color-palette-navy-500: #5072bb;
+    --color-palette-navy-500-a30: #5072bb4d;
+    --color-palette-navy-500-a60: #5072bb99;
+    --color-palette-navy-550: #4a68aa;
+    --color-palette-navy-650: #49639d;
+    --color-palette-navy-700: #355292;
+    --color-palette-navy-700-a30: #3552924d;
+    --color-palette-navy-700-a60: #35529299;
+    --color-palette-navy-850: #25304a;
+    --color-palette-navy-900: #1c2230;
+    --color-palette-emerald-50: #ecfdf5;
+    --color-palette-emerald-400: #34d399;
+    --color-palette-emerald-500: #10b981;
+    --color-palette-emerald-500-a20: #10b98133;
+    --color-palette-emerald-500-a45: #10b98173;
+    --color-palette-emerald-700: #047857;
+    --color-palette-emerald-950: #022c22;
+    --color-palette-emerald-975: #121d18;
+    --color-palette-amber-50: #fffbeb;
+    --color-palette-amber-400: #fbbf24;
+    --color-palette-amber-500: #f59e0b;
+    --color-palette-amber-500-a25: #f59e0b40;
+    --color-palette-amber-500-a55: #f59e0b8c;
+    --color-palette-amber-700: #b45309;
+    --color-palette-amber-950: #1c1917;
+    --color-palette-amber-975: #1f1b12;
+    --color-palette-red-50: #fef2f2;
+    --color-palette-red-400: #f87171;
+    --color-palette-red-500: #ef4444;
+    --color-palette-red-500-a20: #ef444433;
+    --color-palette-red-500-a45: #ef444473;
+    --color-palette-red-600: #dc2626;
+    --color-palette-red-600-a20: #dc262633;
+    --color-palette-red-600-a45: #dc262673;
+    --color-palette-red-650: #c22121;
+    --color-palette-red-700: #b91c1c;
+    --color-palette-red-950: #190404;
+    --color-palette-red-975: #221616;
+    --color-palette-blue-50: #eff6ff;
+    --color-palette-blue-400: #60a5fa;
+    --color-palette-blue-500: #3b82f6;
+    --color-palette-blue-500-a25: #3b82f640;
+    --color-palette-blue-500-a45: #3b82f673;
+    --color-palette-blue-600: #2563eb;
+    --color-palette-blue-700: #1d4ed8;
+    --color-palette-blue-950: #0b1a33;
+    --color-palette-blue-975: #141b26;
+    /* Data-series hues, never a status: with navy, a validated categorical set (distinct to every colour vision). */
+    --color-palette-teal-600: #169c88;
+    --color-palette-orange-600: #d9663f;
+}
+
+/* The semantic layer (see tokens.ts for what each is for). Light values, built on the primitives; the dark palette
+   sets the ones that are not. */
+@theme static {
+    --color-surface-page: var(--color-palette-zinc-2);
+    --color-surface-raised: var(--color-palette-zinc-1);
+    --color-surface-card: var(--color-palette-zinc-1);
+    --color-surface-sunken: var(--color-palette-zinc-3);
+    --color-surface-overlay: var(--color-palette-zinc-1);
+    --color-surface-control: var(--color-palette-zinc-1);
+    --color-surface-glass: var(--color-palette-zinc-1-a70);
+    --color-fill-hover: var(--color-palette-zinc-4);
+    --color-fill-selected: var(--color-palette-zinc-5);
+    --color-fill-muted: var(--color-palette-zinc-4);
+    --color-fill-muted-hover: var(--color-palette-zinc-6);
+    --color-track: var(--color-palette-zinc-7);
+
+    --color-fg: var(--color-palette-zinc-12);
+    --color-fg-soft: var(--color-palette-zinc-11);
+    --color-fg-muted: var(--color-palette-zinc-10);
+    --color-fg-lead: var(--color-palette-zinc-10);
+    --color-fg-inverse: var(--color-palette-zinc-2);
+
+    --color-line: var(--color-palette-zinc-7);
+    --color-line-card: var(--color-palette-zinc-7-5);
+    --color-line-hover: var(--color-palette-zinc-8);
+    --color-line-control: var(--color-palette-zinc-8);
+    --color-line-strong: var(--color-palette-zinc-9);
+    --color-line-strong-hover: var(--color-palette-zinc-10);
+    --color-focus: var(--color-palette-navy-700);
+
+    --color-primary-fg: var(--color-palette-navy-700);
+    --color-primary-surface: var(--color-palette-navy-50);
+    --color-primary-surface-hover: var(--color-palette-navy-100);
+    --color-primary-fill-hover: var(--color-palette-navy-650);
+
+    /* A tone's edges (tokens.ts): -edge borders a neutral box in the tone (an Alert, a chosen option), -ring is the
+       hairline of a tinted one (a Badge, a warning panel, a chosen row). */
+    --color-primary-edge: var(--color-palette-navy-700-a60);
+    --color-primary-ring: var(--color-palette-navy-700-a30);
+    --color-success-edge: var(--color-palette-emerald-500-a45);
+    --color-success-ring: var(--color-palette-emerald-500-a20);
+    --color-warning-edge: var(--color-palette-amber-500-a55);
+    --color-warning-ring: var(--color-palette-amber-500-a25);
+    --color-danger-edge: var(--color-palette-red-600-a45);
+    --color-danger-ring: var(--color-palette-red-600-a20);
+    --color-info-edge: var(--color-palette-blue-500-a45);
+    --color-info-ring: var(--color-palette-blue-500-a25);
+
+    --color-success-fill: var(--color-palette-emerald-700);
+    --color-success-on-fill: var(--color-palette-zinc-1);
+    --color-success-fg: var(--color-palette-emerald-700);
+    --color-success-surface: var(--color-palette-emerald-50);
+    --color-warning-fill: var(--color-palette-amber-500);
+    --color-warning-on-fill: var(--color-palette-amber-950);
+    --color-warning-fg: var(--color-palette-amber-700);
+    --color-warning-surface: var(--color-palette-amber-50);
+    --color-danger-fill: var(--color-palette-red-600);
+    --color-danger-fill-hover: var(--color-palette-red-650);
+    --color-danger-on-fill: var(--color-palette-zinc-1);
+    --color-danger-fg: var(--color-palette-red-700);
+    --color-danger-surface: var(--color-palette-red-50);
+    --color-info-fill: var(--color-palette-blue-600);
+    --color-info-on-fill: var(--color-palette-zinc-1);
+    --color-info-fg: var(--color-palette-blue-700);
+    --color-info-surface: var(--color-palette-blue-50);
+    --color-series-1: var(--color-palette-navy-700);
+    --color-series-2: var(--color-palette-teal-600);
+    --color-series-3: var(--color-palette-orange-600);
 }
 
 /* T3 Code's palette (pingdotgg/t3code apps/web/src/index.css) on ninna-ui's scale:
    base-50 page · base-100 card and popover · base-200 accent fill · base-300 border · base-400 input
-   base-500…900 the muted ramp, base-700 being T3's muted foreground · base-content foreground.
-   Primary is lar's mark navy (#355292, oklch 0.45 0.11 264); dark mode lifts it to keep white text readable. */
+   base-500…900 the muted ramp, base-600 a control's edge, base-700 muted text · base-content foreground.
+   Primary is lar's mark navy; dark mode lifts it to keep white text readable. Every status hue's -content is the
+   text ninna-ui writes on a solid fill of it. */
 @utility lar-light-palette {
     color-scheme: light;
-    --color-primary: oklch(0.45 0.11 264);
-    --color-primary-content: #ffffff;
-    --color-base-50: oklch(0.992 0 0);
-    --color-base-100: #ffffff;
-    --color-base-200: #f4f4f5;
-    --color-base-300: #e4e4e7;
-    --color-base-400: #d4d4d8;
-    --color-base-500: #a1a1aa;
-    --color-base-600: #8b8b94;
-    --color-base-700: #71717a;
-    --color-base-800: #3f3f46;
-    --color-base-900: #27272a;
-    --color-base-content: #27272a;
-    --color-border: #e4e4e7;
-    --color-border-hover: #d4d4d8;
-    --color-border-active: oklch(0.45 0.11 264);
-    --color-border-disabled: #f4f4f5;
-    --color-success: #10b981;
-    --color-success-content: #ffffff;
-    --color-danger: #ef4444;
-    --color-danger-content: #ffffff;
-    --color-warning: #f59e0b;
-    --color-warning-content: #1c1917;
-    --color-info: #3b82f6;
-    --color-info-content: #ffffff;
-    --color-header-icon: #27272a;
-    --color-brand-ink: #0b0b0c;
-    --lar-success-text: #047857;
-    --lar-danger-text: #b91c1c;
-    --lar-warning-text: #b45309;
-    --lar-info-text: #1d4ed8;
+    --color-primary: var(--color-palette-navy-700);
+    --color-primary-content: var(--color-palette-zinc-1);
+    --color-base-50: var(--color-palette-zinc-2);
+    --color-base-100: var(--color-palette-zinc-1);
+    --color-base-200: var(--color-palette-zinc-4);
+    --color-base-300: var(--color-palette-zinc-7);
+    --color-base-400: var(--color-palette-zinc-8);
+    --color-base-500: var(--color-palette-zinc-9);
+    --color-base-600: var(--color-palette-zinc-9);
+    --color-base-700: var(--color-palette-zinc-10);
+    --color-base-800: var(--color-palette-zinc-11);
+    --color-base-900: var(--color-palette-zinc-12);
+    --color-base-content: var(--color-palette-zinc-12);
+    --color-border: var(--color-palette-zinc-7);
+    --color-border-hover: var(--color-palette-zinc-8);
+    --color-border-active: var(--color-palette-navy-700);
+    --color-border-disabled: var(--color-palette-zinc-4);
+    --color-success: var(--color-palette-emerald-500);
+    --color-success-content: var(--color-palette-emerald-950);
+    --color-danger: var(--color-palette-red-600);
+    --color-danger-content: var(--color-palette-zinc-1);
+    --color-warning: var(--color-palette-amber-500);
+    --color-warning-content: var(--color-palette-amber-950);
+    --color-info: var(--color-palette-blue-500);
+    --color-info-content: var(--color-palette-blue-950);
+    --color-header-icon: var(--color-palette-zinc-12);
+    --color-brand-ink: var(--color-palette-ink);
+    --color-brand-mark: var(--color-palette-navy-700);
     --lar-glass-blur: 18px;
     --lar-glass-opacity: 75%;
+    /* A menu's rows sit over whatever is behind it, often artwork: nearly opaque, so a poster grid can't show
+       through its words, with the blur only softening the edge of what's behind. */
+    --lar-menu-opacity: 94%;
     --lar-glass-saturation: 1.14;
-    --lar-shadow-popup: 0 16px 40px -18px rgb(0 0 0 / 55%);
-    --lar-shadow-dialog: 0 24px 64px -24px rgb(0 0 0 / 65%);
-    --lar-scrollbar-thumb: rgb(217 217 217);
-    --lar-scrollbar-thumb-hover: rgb(191 191 191);
-    --lar-laptop-base: linear-gradient(180deg, #e8e9eb 0%, #c9cbcf 30%, #9fa2a8 72%, #75787e 100%);
-    --lar-laptop-base-highlight: rgb(255 255 255 / 70%);
-    --lar-laptop-groove: linear-gradient(180deg, #a8abb1, #c4c6ca);
-    --lar-device-shadow: rgb(15 23 42 / 22%);
-    --lar-glow: oklch(0.62 0.13 264 / 0.2);
-    --lar-glow-soft: oklch(0.7 0.1 264 / 0.12);
-    --lar-grid-line: rgb(0 0 0 / 4.5%);
+    --color-scrollbar-thumb: var(--color-palette-black-a15);
+    --color-scrollbar-thumb-hover: var(--color-palette-black-a25);
 }
 
 @utility lar-dark-palette {
     color-scheme: dark;
-    --color-primary: oklch(0.56 0.12 264);
-    --color-primary-content: #ffffff;
-    --color-base-50: #0a0a0a;
-    --color-base-100: #111111;
-    --color-base-200: #161616;
-    --color-base-300: #1f1f1f;
-    --color-base-400: #282828;
-    --color-base-500: #404040;
-    --color-base-600: #5e5e5e;
-    --color-base-700: #818181;
-    --color-base-800: #c7c7c7;
-    --color-base-900: #e5e5e5;
-    --color-base-content: #f5f5f5;
-    --color-border: #1f1f1f;
-    --color-border-hover: #282828;
-    --color-border-active: oklch(0.56 0.12 264);
-    --color-border-disabled: #161616;
-    --color-success: #10b981;
-    --color-danger: color-mix(in srgb, #ef4444 90%, #ffffff);
-    --color-warning: #f59e0b;
-    --color-info: #3b82f6;
-    --color-header-icon: #f5f5f5;
-    --color-brand-ink: #f4f4f5;
-    --lar-success-text: #34d399;
-    --lar-danger-text: #f87171;
-    --lar-warning-text: #fbbf24;
-    --lar-info-text: #60a5fa;
+    --color-primary: var(--color-palette-navy-500);
+    --color-primary-content: var(--color-palette-zinc-1);
+    --color-base-50: var(--color-palette-neutral-1);
+    --color-base-100: var(--color-palette-neutral-2);
+    --color-base-200: var(--color-palette-neutral-3);
+    --color-base-300: var(--color-palette-neutral-5);
+    --color-base-400: var(--color-palette-neutral-6);
+    --color-base-500: var(--color-palette-neutral-7);
+    --color-base-600: var(--color-palette-neutral-8);
+    --color-base-700: var(--color-palette-neutral-9);
+    --color-base-800: var(--color-palette-neutral-11);
+    --color-base-900: var(--color-palette-neutral-12);
+    --color-base-content: var(--color-palette-neutral-12);
+    --color-border: var(--color-palette-neutral-5);
+    --color-border-hover: var(--color-palette-neutral-6);
+    --color-border-active: var(--color-palette-navy-500);
+    --color-border-disabled: var(--color-palette-neutral-3);
+    --color-success: var(--color-palette-emerald-500);
+    --color-success-content: var(--color-palette-emerald-950);
+    --color-danger: var(--color-palette-red-500);
+    --color-danger-content: var(--color-palette-red-950);
+    --color-warning: var(--color-palette-amber-500);
+    --color-warning-content: var(--color-palette-amber-950);
+    --color-info: var(--color-palette-blue-500);
+    --color-info-content: var(--color-palette-blue-950);
+    --color-header-icon: var(--color-palette-neutral-12);
+    --color-brand-ink: var(--color-palette-zinc-4);
     --lar-glass-saturation: 1.08;
-    --lar-shadow-popup: 0 18px 44px -18px rgb(0 0 0 / 80%);
-    --lar-shadow-dialog: inset 0 1px rgb(255 255 255 / 4%), 0 24px 72px -20px rgb(0 0 0 / 90%);
-    --lar-scrollbar-thumb: rgb(255 255 255 / 8%);
-    --lar-scrollbar-thumb-hover: rgb(255 255 255 / 12%);
-    --lar-laptop-base: linear-gradient(180deg, #4a4b50 0%, #2f3034 34%, #1f2023 76%, #141517 100%);
-    --lar-laptop-base-highlight: rgb(255 255 255 / 18%);
-    --lar-laptop-groove: linear-gradient(180deg, #1b1c1f, #2c2d31);
-    --lar-device-shadow: rgb(0 0 0 / 70%);
-    --lar-glow: oklch(0.5 0.14 264 / 0.38);
-    --lar-glow-soft: oklch(0.55 0.12 264 / 0.16);
-    --lar-grid-line: rgb(255 255 255 / 4%);
+    --color-scrollbar-thumb: var(--color-palette-white-a8);
+    --color-scrollbar-thumb-hover: var(--color-palette-white-a12);
+
+    --color-surface-sunken: var(--color-palette-neutral-3);
+    --color-surface-overlay: var(--color-palette-neutral-3);
+    --color-surface-control: var(--color-palette-neutral-3);
+    --color-surface-glass: var(--color-palette-neutral-2-a50);
+    --color-fill-hover: var(--color-palette-neutral-4);
+    --color-fill-selected: var(--color-palette-neutral-5);
+    --color-fill-muted: var(--color-palette-neutral-5);
+    --color-fill-muted-hover: var(--color-palette-neutral-6);
+    --color-track: var(--color-palette-neutral-6);
+    --color-line-hover: var(--color-palette-neutral-6);
+    --color-line-control: var(--color-palette-neutral-6);
+    --color-line-strong-hover: var(--color-palette-neutral-9);
+    --color-primary-fg: var(--color-palette-navy-300);
+    --color-primary-surface: var(--color-palette-navy-900);
+    --color-primary-surface-hover: var(--color-palette-navy-850);
+    --color-primary-fill-hover: var(--color-palette-navy-550);
+    --color-primary-edge: var(--color-palette-navy-500-a60);
+    --color-primary-ring: var(--color-palette-navy-500-a30);
+    --color-danger-edge: var(--color-palette-red-500-a45);
+    --color-danger-ring: var(--color-palette-red-500-a20);
+    --color-success-fg: var(--color-palette-emerald-400);
+    --color-success-surface: var(--color-palette-emerald-975);
+    --color-warning-fg: var(--color-palette-amber-400);
+    --color-warning-surface: var(--color-palette-amber-975);
+    --color-danger-fg: var(--color-palette-red-400);
+    --color-danger-surface: var(--color-palette-red-975);
+    --color-info-fg: var(--color-palette-blue-400);
+    --color-info-surface: var(--color-palette-blue-975);
+
+    /* The semantic aliases again, so an element that scopes this palette (class="dark lar-dark-palette", such as
+       DetailHero's stage on a light page) resolves them against its own primitives rather than inheriting :root's. */
+    --color-surface-page: var(--color-palette-neutral-1);
+    --color-surface-raised: var(--color-palette-neutral-2);
+    --color-fg: var(--color-palette-neutral-12);
+    --color-fg-soft: var(--color-palette-neutral-11);
+    --color-fg-muted: var(--color-palette-neutral-9);
+    --color-fg-lead: var(--color-palette-neutral-10);
+    --color-fg-inverse: var(--color-palette-neutral-1);
+    --color-line: var(--color-palette-neutral-5);
+    --color-line-card: var(--color-palette-neutral-6);
+    --color-surface-card: var(--color-palette-neutral-2);
+    --color-line-strong: var(--color-palette-neutral-8);
+    --color-focus: var(--color-palette-navy-500);
+    --color-warning-fill: var(--color-palette-amber-500);
+    --color-warning-on-fill: var(--color-palette-amber-950);
+    --color-series-1: var(--color-palette-navy-500);
+
+    --shadow-raised: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-card: inset 0 1px rgb(255 255 255 / 4.5%), 0 1px 2px rgb(0 0 0 / 50%);
+    --lar-card-sheen: linear-gradient(180deg, var(--color-palette-white-a3), transparent 7rem);
+    --shadow-popup: 0 18px 44px -18px rgb(0 0 0 / 80%);
+    --shadow-dialog: inset 0 1px rgb(255 255 255 / 4%), 0 24px 72px -20px rgb(0 0 0 / 90%);
 }
 
 html[data-theme='minimal'] {
@@ -138,8 +421,75 @@ html[data-theme='minimal'].dark {
     }
 }
 
+/* Reduced motion: transitions finish at once (still firing their end events) and the loops below stop; a spinner
+   that says an action is in flight keeps turning (SpinnerIcon's motion="always"). */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-duration-fast: 0.01ms;
+        --motion-duration-base: 0.01ms;
+        --motion-duration-slow: 0.01ms;
+        --motion-duration-deliberate: 0.01ms;
+    }
+}
+
+/* The one focus ring: 2px of --color-focus outside the control, on keyboard focus. Every element gets it by
+   default; a component that sets its own outline uses one of these utilities: focus-ring, focus-ring-inset where the
+   ring would clip (a row in a scroller, a tab, a segment of a group), focus-ring-within on a row wrapping a native
+   control, and focus-ring-stretched on a link whose ::before covers its card. A text field shows where typing goes
+   on any focus with focus-field: the focus edge and a soft halo. */
+@layer base {
+    :where(:focus-visible) {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+}
+
+@utility focus-ring {
+    outline: none;
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+}
+
+@utility focus-ring-inset {
+    outline: none;
+
+    &:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: -2px;
+    }
+}
+
+@utility focus-ring-within {
+    &:has(:focus-visible) {
+        outline: 2px solid var(--color-focus);
+        outline-offset: -2px;
+    }
+}
+
+@utility focus-ring-stretched {
+    outline: none;
+
+    &:focus-visible::before {
+        outline: 2px solid var(--color-focus);
+        outline-offset: -2px;
+    }
+}
+
+@utility focus-field {
+    &:focus-within {
+        @apply border-focus ring-focus/20 ring-3 outline-none;
+    }
+}
+
+/* Native controls a component leaves to the browser (a range, a progress, a date picker's days) take the primary
+   colour, and a tap draws the control's own pressed state rather than WebKit's grey flash. */
 html {
-    background: var(--color-base-50);
+    background: var(--color-surface-page);
+    accent-color: var(--color-primary);
+    -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
 }
 
@@ -150,8 +500,8 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100dvh;
-    background: var(--color-base-50);
-    color: var(--color-base-content);
+    background: var(--color-surface-page);
+    color: var(--color-fg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -162,11 +512,11 @@ body {
 
 * {
     scrollbar-width: thin;
-    scrollbar-color: var(--lar-scrollbar-thumb) transparent;
+    scrollbar-color: var(--color-scrollbar-thumb) transparent;
 }
 
 *:hover {
-    scrollbar-color: var(--lar-scrollbar-thumb-hover) transparent;
+    scrollbar-color: var(--color-scrollbar-thumb-hover) transparent;
 }
 
 .lar-brand-mark {
@@ -176,50 +526,75 @@ body {
 
 /* t3.codes' navigation glass: the page colour at 75% under an 18px blur. The document is what scrolls,
    so content runs under the bar and Safari's own toolbar picks up the same surface. */
+/* A card, panel or grouped list resting on the page, in every app: its own surface, edge, elevation and (in dark) sheen,
+   so cards move together and apart from fields and controls. Use with `border` and the card's radius. */
+@utility surface-card {
+    background-color: var(--color-surface-card);
+    background-image: var(--lar-card-sheen);
+    border-color: var(--color-line-card);
+    box-shadow: var(--shadow-card);
+}
+
 @utility glass-bar {
-    background: color-mix(in srgb, var(--color-base-50) var(--lar-glass-opacity), transparent);
+    background: color-mix(in srgb, var(--color-surface-page) var(--lar-glass-opacity), transparent);
     -webkit-backdrop-filter: blur(var(--lar-glass-blur)) saturate(var(--lar-glass-saturation));
     backdrop-filter: blur(var(--lar-glass-blur)) saturate(var(--lar-glass-saturation));
 
     @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-        background: var(--color-base-50);
+        background: var(--color-surface-page);
     }
 }
 
-/* T3's dropdown-glass, for menus, popovers, selects, tooltips and toasts. */
+/* T3's dropdown-glass, for menus, popovers, selects, tooltips and toasts: nearly opaque (--lar-menu-opacity), so
+   artwork behind a menu never reads through its rows. */
 @utility glass-menu {
-    background: color-mix(
-        in srgb,
-        var(--color-base-100) 18%,
-        color-mix(in srgb, var(--color-base-100) var(--lar-glass-opacity), transparent)
-    );
-    -webkit-backdrop-filter: blur(12px) saturate(var(--lar-glass-saturation));
-    backdrop-filter: blur(12px) saturate(var(--lar-glass-saturation));
-    border: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
-    box-shadow: var(--lar-shadow-popup);
+    background: color-mix(in srgb, var(--color-surface-overlay) var(--lar-menu-opacity), transparent);
+    -webkit-backdrop-filter: blur(var(--lar-glass-blur)) saturate(var(--lar-glass-saturation));
+    backdrop-filter: blur(var(--lar-glass-blur)) saturate(var(--lar-glass-saturation));
+    border: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
+    box-shadow: var(--shadow-popup);
 
     @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-        background: var(--color-base-100);
+        background: var(--color-surface-overlay);
     }
 }
 
 /* T3's dialog-glass and dialog-backdrop. */
 @utility glass-dialog {
-    background: color-mix(in srgb, var(--color-base-50) 88%, transparent);
+    background: color-mix(in srgb, var(--color-surface-page) 88%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(var(--lar-glass-saturation));
     backdrop-filter: blur(16px) saturate(var(--lar-glass-saturation));
-    border: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
-    box-shadow: var(--lar-shadow-dialog);
+    border: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
+    box-shadow: var(--shadow-dialog);
 
     @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-        background: var(--color-base-100);
+        background: var(--color-surface-raised);
     }
 }
 
 @utility dialog-backdrop {
-    background: color-mix(in srgb, var(--color-base-50) 60%, transparent);
+    background: color-mix(in srgb, var(--color-surface-page) 60%, transparent);
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
+}
+
+/* A status light's halo, from the dot's own colour (--status-dot, set by StatusIndicator): a soft ring of it and a
+   faint glow. status-halo-overlay is the light over an icon's corner: a cutout of the page colour instead of the ring,
+   so the halo never covers the icon; status-cutout is that cutout alone, for a light that doesn't glow. */
+@utility status-halo {
+    box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--status-dot) 22%, transparent),
+        0 0 6px color-mix(in srgb, var(--status-dot) 40%, transparent);
+}
+
+@utility status-halo-overlay {
+    box-shadow:
+        0 0 0 2px var(--color-surface-page),
+        0 0 6px 1px color-mix(in srgb, var(--status-dot) 50%, transparent);
+}
+
+@utility status-cutout {
+    box-shadow: 0 0 0 2px var(--color-surface-page);
 }
 
 /* An icon in a muted, low-chroma version of a lar-brand app hue (--lar-kind-hue). */
@@ -236,10 +611,12 @@ body {
 @utility kind-badge {
     background-color: oklch(0.62 0.12 var(--lar-kind-hue) / 0.14);
     color: oklch(0.45 0.11 var(--lar-kind-hue));
+    --tw-ring-color: oklch(0.62 0.12 var(--lar-kind-hue) / 0.28);
 
     @variant dark {
         background-color: oklch(0.62 0.12 var(--lar-kind-hue) / 0.2);
         color: oklch(0.82 0.08 var(--lar-kind-hue));
+        --tw-ring-color: oklch(0.62 0.12 var(--lar-kind-hue) / 0.32);
     }
 }
 
@@ -251,8 +628,8 @@ body {
 [data-slot='content'][role='listbox'],
 [data-slot='toast'] {
     @apply glass-menu;
-    border-radius: 0.625rem;
-    color: var(--color-base-content);
+    border-radius: var(--radius-lg);
+    color: var(--color-fg);
 }
 
 [data-slot='dropdown-content'],
@@ -264,6 +641,15 @@ body {
     overscroll-behavior: contain;
 }
 
+/* A menu's entries scroll in its own fading region (DropdownMenu.tsx's MenuScroll), which carries the padding, so a
+   long menu fades at an edge instead of a hard cut and the glass box never fades with it. */
+[data-slot='dropdown-content'] {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
 [data-slot='popover-content'] {
     max-width: min(var(--radix-popover-content-available-width), calc(100dvw - 2rem));
     max-height: min(var(--radix-popover-content-available-height), calc(100dvh - 1rem));
@@ -271,20 +657,54 @@ body {
     overscroll-behavior: contain;
 }
 
-[data-slot='popover-content'][data-layout='fill'] {
+/* Both layouts are a column that clips: `fill` content manages its own scrolling, and `scroll` content scrolls in the
+   popover's own fading region (Popover.tsx's PopoverScroll), so the glass box never fades with it. */
+[data-slot='popover-content'][data-layout='fill'],
+[data-slot='popover-content'][data-layout='scroll'] {
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-[data-slot='content'][role='listbox'] {
-    width: var(--radix-select-trigger-width);
-    max-width: var(--radix-select-content-available-width);
-    max-height: min(24rem, var(--radix-select-content-available-height));
+/* A status popover stops at 32rem: its rows scroll under its header, so the popover keeps a steady height. */
+[data-slot='popover-content'][data-height='capped'] {
+    max-height: min(32rem, var(--radix-popover-content-available-height), calc(100dvh - 1rem));
 }
 
+/* A select's list is as wide as its trigger or its longest option, whichever is wider, up to the window: an option's
+   label never clips (one past the window wraps). The chosen option's tick sits at the end, as a menu's does. It shows
+   eight rows at most and scrolls the rest (the chosen one in view), so a long list (sizes, days to keep) fits below its
+   trigger in a dialog instead of rising over the dialog's title and close button. */
+[data-slot='content'][role='listbox'] {
+    width: max-content;
+    min-width: var(--radix-select-trigger-width);
+    max-width: min(var(--radix-select-content-available-width), calc(100dvw - 2rem));
+    /* Eight 28px rows, the list's 4px inset above and below and its hairline. */
+    max-height: min(calc(8 * 1.75rem + 0.5rem + 2px), var(--radix-select-content-available-height));
+}
+
+[data-slot='content'][role='listbox'] [role='option'] {
+    padding-left: 0.5rem;
+    padding-right: 2rem;
+    overflow-wrap: anywhere;
+}
+
+[data-slot='content'][role='listbox'] [role='option'] > span[aria-hidden='true'] {
+    left: auto;
+    right: 0.5rem;
+    color: var(--color-primary-fg);
+}
+
+/* Scroll buttons take their own space outside the viewport. Align options inside that remaining space, leaving
+   one row of breathing room when revealing the selection, so both it and the first visible row stay whole. */
 [data-radix-select-viewport] {
     overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+    scroll-padding-block-end: 1.75rem;
+}
+
+[data-radix-select-viewport] [role='option'] {
+    scroll-snap-align: start;
 }
 
 /* Menu rows: T3's 28px rows with a 6px radius and an accent highlight. */
@@ -294,7 +714,7 @@ body {
 [data-slot='dropdown-sub-trigger'],
 [data-slot='content'][role='listbox'] [role='option'] {
     min-height: 1.75rem;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-sm);
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     font-size: var(--text-sm);
@@ -303,21 +723,77 @@ body {
 [data-slot='dropdown-item'] > svg,
 [data-slot='dropdown-radio-item'] > svg,
 [data-slot='dropdown-sub-trigger'] > svg {
-    color: var(--color-base-700);
+    color: var(--color-fg-muted);
 }
 
-/* T3 marks the chosen option with a faint fill rather than a radio dot. */
-[data-slot='dropdown-radio-item'][data-presentation='default'] {
+/* A segment's icon is its words (ThemeSwitch's look): it takes the segment's colour, muted at rest and full when chosen
+   or focused. */
+[data-slot='dropdown-radio-item'][data-presentation='segmented'] > svg {
+    color: currentColor;
+}
+
+/* A segment is a pill, not a menu row: none of the rows' radius, padding or text size. */
+[data-slot='dropdown-radio-item'][data-presentation='segmented'] {
+    border-radius: 9999px;
+    padding: 0;
+}
+
+/* The quiet-destructive rule (docs/Introduction.mdx): a control that opens a destructive confirmation is named in the
+   danger text colour at rest, in a quiet weight, and gains the danger surface on intent; only its confirm button is
+   solid red. */
+[data-destructive-trigger='true'] {
+    color: var(--color-danger-fg);
+}
+
+[data-destructive-trigger='true'] > svg {
+    color: currentColor;
+}
+
+[data-destructive-trigger='true']:is(:hover, :focus-visible, [data-highlighted]) {
+    color: var(--color-danger-fg);
+    background: var(--color-danger-surface);
+}
+
+/* Loading settings keep the actual content's footprint. The inert, hidden children reserve the loaded layout. */
+.settings-loading {
+    position: relative;
+    color: transparent;
+    visibility: hidden;
+}
+
+.settings-loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    max-width: 18rem;
+    visibility: visible;
+    border-radius: var(--radius-sm);
+    background: var(--color-fill-muted);
+}
+
+.settings-loading * {
+    visibility: hidden;
+}
+
+.settings-row-title.settings-loading::after {
+    inset-block: 0.25rem;
+    max-width: 10rem;
+}
+
+.settings-row-title + .settings-loading::after {
+    inset-block: 0.125rem;
+}
+
+/* A chosen radio or checkbox entry carries a tick at its end (DropdownMenu.tsx's MenuCheck), never a fill alone, which
+   reads as the pointer's highlight; ninna-ui's leading dot and its indent go. */
+[data-slot='dropdown-radio-item'][data-presentation='default'],
+[data-slot='dropdown-checkbox-item'][data-presentation='default'] {
     padding-left: 0.5rem;
 }
 
-[data-slot='dropdown-radio-item'][data-presentation='default'] > span:first-child:not(:only-child) {
+[data-slot='dropdown-radio-item'][data-presentation='default'] > span:first-child:not(:only-child),
+[data-slot='dropdown-checkbox-item'][data-presentation='default'] > span:first-child:not(:only-child) {
     display: none;
-}
-
-[data-slot='dropdown-radio-item'][data-presentation='default'][data-state='checked'] {
-    background: color-mix(in srgb, var(--color-base-content) 7%, transparent);
-    font-weight: 500;
 }
 
 [data-slot='dropdown-label'] {
@@ -326,18 +802,18 @@ body {
     font-weight: 500;
     letter-spacing: 0;
     text-transform: none;
-    color: var(--color-base-700);
+    color: var(--color-fg-muted);
 }
 
 [data-slot='dropdown-separator'] {
     margin: 0.25rem 0.5rem;
-    background: var(--color-base-300);
+    background: var(--color-line);
 }
 
 /* Notifications' stack presentation: every notification, oldest above the newest, in the bottom right corner with the
    same gap from the window's bottom and right edges, and from the title bar (h-13) when it's full, above every dialog
    (z-50) and full-screen cover (z-60). Each carries its slice of the stack's edge fade (Notifications.tsx), off while
-   one has keyboard focus, as in a Modal's body. Successes and failures are tinted. */
+   one has keyboard focus, as in a Modal's body. Every notification's tint follows below. */
 .notification-stack {
     --notice-edge: calc(var(--spacing) * 4);
     right: var(--notice-edge);
@@ -380,24 +856,53 @@ body {
     min-width: 0;
 }
 
-.notification-stack [data-slot='toast'][data-toast-color='warning'] {
-    @apply bg-warning/10 border-warning/20 text-(--lar-warning-text);
+/* Every notification, in either presentation (Notifications.tsx), is a popup: the body is the neutral glass of every
+   popup, the tone colours only the icon and the edge, and the words stay in the text colours (an Alert in the page
+   takes its tone's quiet surface instead). A success and a failure differ by their icon, not only by hue. */
+[data-slot='toast'][data-toast-color] {
+    border-color: var(--toast-edge);
+    color: var(--color-fg);
 }
 
-.notification-stack [data-slot='toast'][data-toast-color='success'] {
-    @apply bg-success/10 border-success/20 text-(--lar-success-text);
+[data-slot='toast'][data-toast-color] [data-slot='notification-icon'] {
+    color: var(--toast-icon);
 }
 
-.notification-stack [data-slot='toast'][data-toast-color='danger'] {
-    @apply bg-danger/10 border-danger/20 text-(--lar-danger-text);
+[data-slot='toast'] [data-slot='content'] > div {
+    opacity: 1;
+}
+
+[data-slot='toast'][data-toast-color='success'] {
+    --toast-edge: var(--color-success-edge);
+    --toast-icon: var(--color-success-fg);
+}
+
+[data-slot='toast'][data-toast-color='info'] {
+    --toast-edge: var(--color-info-edge);
+    --toast-icon: var(--color-info-fg);
+}
+
+[data-slot='toast'][data-toast-color='warning'] {
+    --toast-edge: var(--color-warning-edge);
+    --toast-icon: var(--color-warning-fg);
+}
+
+[data-slot='toast'][data-toast-color='danger'] {
+    --toast-edge: var(--color-danger-edge);
+    --toast-icon: var(--color-danger-fg);
+}
+
+/* ninna-ui's toast is as wide as its viewport (up to 420px); the corner presentation takes the stack's width. */
+[data-slot='toaster']:not(.notification-stack) {
+    width: min(calc(var(--spacing) * 104), calc(100vw - var(--spacing) * 8));
 }
 
 [data-slot='tooltip-content'] {
     @apply glass-menu;
     max-width: min(var(--radix-tooltip-content-available-width), var(--container-xs));
     overflow-wrap: anywhere;
-    border-radius: 0.375rem;
-    color: var(--color-base-content);
+    border-radius: var(--radius-sm);
+    color: var(--color-fg);
     font-size: var(--text-xs);
     padding: 0.25rem 0.5rem;
 }
@@ -409,7 +914,7 @@ body {
 
 [data-slot='modal-content'] {
     @apply glass-dialog;
-    border-radius: 1.125rem;
+    border-radius: var(--radius-2xl);
 }
 
 [data-slot='drawer-content'] {
@@ -417,15 +922,15 @@ body {
 }
 
 [data-slot='code'] {
-    border-radius: 0.375rem;
-    background: var(--color-base-200);
+    border-radius: var(--radius-sm);
+    background: var(--color-fill-muted);
     font-family: var(--font-mono);
 }
 
 .lar-skeleton {
     position: relative;
     overflow: hidden;
-    background: var(--color-base-200);
+    background: var(--color-fill-muted);
 }
 
 .lar-skeleton::before {
@@ -435,10 +940,10 @@ body {
     background: linear-gradient(
         90deg,
         transparent,
-        color-mix(in srgb, var(--color-base-50) 65%, transparent),
+        color-mix(in srgb, var(--color-surface-page) 65%, transparent),
         transparent
     );
-    animation: lar-skeleton-shine 1.6s ease-in-out infinite;
+    animation: lar-skeleton-shine var(--motion-loop-pulse) ease-in-out infinite;
 }
 
 @keyframes lar-skeleton-shine {
@@ -464,7 +969,7 @@ body {
 
 .lar-progress-indeterminate {
     width: 35%;
-    animation: lar-progress-travel 1.8s ease-in-out infinite alternate;
+    animation: lar-progress-travel var(--motion-loop-sweep) ease-in-out infinite alternate;
 }
 
 @keyframes lar-progress-travel {
@@ -479,8 +984,64 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .lar-progress-indeterminate {
         animation: none;
+        /* Still, an unknown amount reads as soft diagonal stripes across the whole track, never as dashes or as a
+           full bar. */
         width: 100%;
-        opacity: 0.6;
-        background-image: repeating-linear-gradient(90deg, transparent 0 6px, var(--color-base-300) 6px 10px);
+        opacity: 0.45;
+        background-image: repeating-linear-gradient(
+            -45deg,
+            transparent 0 5px,
+            color-mix(in srgb, var(--color-surface-raised) 55%, transparent) 5px 10px
+        );
     }
+}
+
+/* A status light's slow breath (StatusIndicator's pulse, the server unit's LEDs), off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+    .lar-led-pulse {
+        animation: lar-led-pulse var(--motion-loop-breath) ease-in-out infinite;
+        animation-delay: var(--lar-led-delay, 0ms);
+    }
+}
+
+@keyframes lar-led-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+/* Shell-owned horizontal rhythm: app lists prioritise space; a board workspace gives cards more breathing room. */
+@theme static {
+    --spacing-gutter-app: 1rem;
+    --spacing-gutter-board: 1.5rem;
+    /* How far a row of cards (ScrollRow, the board's desk) fades into the card cut at its edge; a row whose cards
+       carry more padding sets its own. */
+    --scroll-fade-row: 3rem;
+}
+
+/* Each loop behind an open blurred overlay stops repainting that blur. Ninna-ui portals every overlay as a child of
+   body in opening order, so this covers the page and lower modals and leaves the topmost modal and anything opened
+   from it. The toaster mounts earlier but sits above every dialog. Named animations only: a one-shot entrance starts
+   at opacity 0, so pausing it would hide what it enters. The title bar's refreshed ping is the one one-shot here: it
+   starts visible at opacity 0.6 and repaints the blur for 1.2 s on each landed read, and it finishes once the modal
+   closes. */
+body
+    > :not([data-slot='toaster']):has(~ [data-slot$='-overlay'][data-state='open'])
+    :is(
+        .status-spin,
+        .status-pulse,
+        .activity-sweep,
+        .animate-spin,
+        .motion-safe\:animate-spin,
+        .animate-pulse,
+        [data-ping]
+    ) {
+    animation-play-state: paused;
+}
+body > :not([data-slot='toaster']):has(~ [data-slot$='-overlay'][data-state='open']) .lar-skeleton::before {
+    animation-play-state: paused;
 }

@@ -1,20 +1,24 @@
 import { XIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { IconButton } from '../actions/IconButton';
-import { Badge } from '../display/Badge';
+import { IconButtonBase } from '../actions/IconButton';
+import { BadgeBase as Badge } from '../display/Badge';
 import { Input } from './Input';
 
 interface TagInputProps {
     /** Names the field that adds a value. */
     addLabel: string;
+    /** Holds the field and the remove buttons. */
     disabled?: boolean;
     /** Names the list of values. */
     label: string;
+    /** Called with the whole new list after a value is added or removed. */
     onChange: (values: string[]) => void;
+    /** A hint in the empty field, such as "Add a folder". */
     placeholder?: string;
     /** Names the button that removes a value. */
     removeLabel: (value: string) => string;
+    /** The values, in order. */
     values: readonly string[];
 }
 
@@ -42,7 +46,7 @@ export function TagInput({ addLabel, disabled, label, onChange, placeholder, rem
                         <li key={value} className="max-w-full min-w-0">
                             <Badge className="max-w-full pr-0.5">
                                 <span className="truncate">{value}</span>
-                                <IconButton
+                                <IconButtonBase
                                     type="button"
                                     aria-label={removeLabel(value)}
                                     title={removeLabel(value)}

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { Text } from '../typography/Typography';
+import { Alert } from '../feedback/Alert';
 
 /** A row's actions at its right, with what they last did and an error under them. */
 export function ActionStack({
@@ -8,19 +8,18 @@ export function ActionStack({
     below,
     error,
 }: {
+    /** The row's actions. */
     children: ReactNode;
+    /** What the actions last did, under them. */
     below?: ReactNode;
+    /** Why the last action failed, under them. */
     error?: string | null;
 }) {
     return (
         <span className="flex flex-col items-end gap-1">
             <span className="flex flex-wrap items-center gap-2">{children}</span>
             {below}
-            {error && (
-                <Text variant="caption" tone="danger" role="alert">
-                    {error}
-                </Text>
-            )}
+            {error && <Alert size="sm" tone="danger" message={error} />}
         </span>
     );
 }
@@ -33,14 +32,18 @@ export function SettingConfirm({
     items,
     actions,
 }: {
+    /** Names the confirmation for screen readers. */
     label: string;
+    /** What saving the setting would do now. */
     message: string;
+    /** The work the setting would touch, listed. */
     items: readonly string[];
+    /** The buttons that cancel or go ahead. */
     actions: ReactNode;
 }) {
     return (
         <div
-            className="grid gap-2 rounded-lg border border-(--border) p-3 text-sm"
+            className="border-line grid gap-2 rounded-lg border p-3 text-sm"
             role="alertdialog"
             aria-label={label}
             data-delete-confirm
@@ -59,9 +62,17 @@ export function SettingConfirm({
 }
 
 /** What a setting's last run did, and each thing it kept with why. */
-export function SettingLastRun({ summary, kept }: { summary: string; kept: readonly string[] }) {
+export function SettingLastRun({
+    summary,
+    kept,
+}: {
+    /** What the last run did, in a sentence. */
+    summary: string;
+    /** Each thing it kept, with why. */
+    kept: readonly string[];
+}) {
     return (
-        <div className="grid gap-1 text-xs text-(--muted-foreground)" data-last-delete>
+        <div className="text-fg-muted grid gap-1 text-xs" data-last-delete>
             <p className="m-0">{summary}</p>
             {kept.length > 0 && (
                 <ul className="m-0 grid gap-0.5 pl-4">

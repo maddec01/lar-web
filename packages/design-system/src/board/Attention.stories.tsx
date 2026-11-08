@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { MessageSquareTextIcon, PlayIcon } from 'lucide-react';
+import { ChevronDownIcon, MessageSquareTextIcon, PlayIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import {
     AttentionEntry,
-    AttentionList,
+    BoardAttentionList,
     AttentionMark,
     AttentionNone,
     EntryButton,
@@ -31,10 +31,10 @@ const part = (n: number, title: string, status: 'Needs you' | 'Ready' | 'Queued'
 
 const meta = {
     title: 'Board/Attention',
-    component: AttentionList,
+    component: BoardAttentionList,
     decorators: [
         (Story) => (
-            <div className="w-[40rem]">
+            <div className="w-full max-w-160">
                 <Story />
             </div>
         ),
@@ -72,11 +72,11 @@ const meta = {
                         }
                         side={
                             <>
-                                slice of{' '}
+                                slice of (
                                 <RefButton title="Relay endpoint" onOpen={fn()}>
                                     #203
-                                </RefButton>{' '}
-                                · waits on a re-slice
+                                </RefButton>
+                                ) · waits on a re-slice
                             </>
                         }
                     />,
@@ -91,8 +91,8 @@ const meta = {
                         key="r"
                         main={part(205, 'Owner accounts', 'Ready')}
                         side={
-                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />}>
-                                Start ▾
+                            <Button {...buttonKind('start')} leftIcon={<PlayIcon />} rightIcon={<ChevronDownIcon />}>
+                                Start
                             </Button>
                         }
                     />,
@@ -112,15 +112,19 @@ const meta = {
             },
             {
                 key: 'fog',
-                label: 'Fog',
+                label: 'Open questions',
                 tone: 'fog',
                 entries: [
                     <AttentionEntry key="f" main={<AttentionMark mark="fog">Who pays for the relay?</AttentionMark>} />,
+                    <AttentionEntry
+                        key="g"
+                        main={<AttentionMark mark="fog">Which networks need a relay?</AttentionMark>}
+                    />,
                 ],
             },
         ],
     },
-} satisfies Meta<typeof AttentionList>;
+} satisfies Meta<typeof BoardAttentionList>;
 
 export default meta;
 

@@ -92,6 +92,14 @@ tester.run('boundaries', rules.boundaries, {
 tester.run('no-visual-recipes', rules['no-visual-recipes'], {
     valid: [
         {
+            code: 'import { Button } from \'@lar-works/design-system\'; export const A = () => <Button size="sm" />;',
+            filename: app('features/home/A.tsx'),
+        },
+        {
+            code: 'import { Alert } from \'@lar-works/design-system\'; export const A = () => <Alert size="sm" message="Try again." />;',
+            filename: app('features/home/A.tsx'),
+        },
+        {
             code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text variant="lead">Hi</Text>;',
             filename: app('features/home/A.tsx'),
         },
@@ -115,7 +123,7 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             errors: [{ messageId: 'element' }],
         },
         {
-            code: 'import { Button } from \'@lar-works/design-system\';\nexport const A = () => <Button size="sm" />;',
+            code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text size="sm" />;',
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'lookProp' }],
         },

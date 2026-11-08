@@ -21,3 +21,5 @@ export declare function lint(options?: LintOptions): LintConfig;
 
 /** Test settings every package's `test` block spreads. */
 export declare const test: TestConfig;
+
+export { checkUiCopy, type UiCopyIssue } from './copy.js';

@@ -18,12 +18,10 @@ export const Initials: Story = { args: { src: undefined, name: 'Rui Costa' } };
 
 export const FallbackIcon: Story = { args: { src: undefined, name: undefined, showFallbackIcon: true } };
 
-export const Square: Story = { args: { shape: 'square' } };
+/** The 24px avatar beside a name in a dense list, such as a comment’s author. */
+export const Compact: Story = { args: { src: undefined, name: 'Ana Silva', size: 'sm' } };
 
-/** The 24px avatar beside a name in a dense list, such as a comment's author. */
-export const Compact: Story = { args: { src: undefined, name: 'Ana Silva', compact: true } };
-
-/** The household's users, with and without a photo. */
+/** The household’s users, with and without a photo. */
 export const Household: Story = {
     render: (args) => (
         <div className="flex items-center gap-3">

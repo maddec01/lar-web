@@ -73,8 +73,8 @@ function MatchChoices() {
 /** A group of choices inside a settings panel, as when matching a file to a movie. */
 export const Group: Story = { render: () => <MatchChoices /> };
 
-/** A long title truncates rather than pushing the row wider, as Lar Factory's onboarding lists the T3 projects to add;
- *  `data-choice` names each row's value. */
+/** A long title truncates rather than pushing the row wider, as Lar Factory’s onboarding lists the T3 projects to add;
+ *  `data-choice` names each row’s value. */
 export const LongTitles: Story = {
     render: () => (
         <div className="max-w-md">

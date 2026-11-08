@@ -12,9 +12,9 @@ const meta = {
     args: {
         tone: 'warning',
         icon: <TriangleAlertIcon />,
-        title: '12 files could not be matched',
+        title: '12 files couldn’t be matched',
         description:
-            'Lar found these files in Movies but could not tell which film they are. Rename them or match them by hand.',
+            'Lar found these files in Movies but couldn’t tell which film they are. Rename them or match them by hand.',
         badge: <Badge tone="warning">Needs review</Badge>,
         actions: (
             <>
@@ -49,6 +49,24 @@ export const Danger: Story = {
     },
 };
 
+/** On a wide page a long explanation keeps a reading measure (about 75 characters a line) instead of the card's width. */
+export const WideLongDescription: Story = {
+    args: {
+        title: 'Different editions share one folder',
+        description:
+            'This folder holds 2 editions of the same album, so tracks show up more than once and players can mix them up. You can keep them all, each in its own folder, or keep just one and Lar sets the others aside. Lidarr tracks one edition per album, and whichever you keep, you choose which one it uses.',
+        badge: <Badge tone="warning">Worth fixing</Badge>,
+    },
+    decorators: [
+        (Story) => (
+            <div className="w-full max-w-7xl">
+                <Story />
+            </div>
+        ),
+    ],
+    parameters: { layout: 'fullscreen' },
+};
+
 export const WithDetails: Story = {
     args: {
         children: (
@@ -62,7 +80,7 @@ export const WithDetails: Story = {
             />
         ),
         footer: (
-            <details className="text-base-700 text-xs">
+            <details className="text-fg-muted text-xs">
                 <summary className="cursor-pointer">Technical details</summary>
                 <p className="mt-2 font-mono">matcher: tmdb · confidence threshold 0.82 · job 7f3a</p>
             </details>

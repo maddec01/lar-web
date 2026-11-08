@@ -169,7 +169,12 @@ const noVisualRecipes = {
                     element?.type === 'JSXIdentifier' &&
                     designSystemNames.has(element.name) &&
                     typeof name === 'string' &&
-                    ((recipeComponents.test(element.name) && lookProps.test(name)) ||
+                    ((recipeComponents.test(element.name) &&
+                        lookProps.test(name) &&
+                        !(
+                            name === 'size' &&
+                            /^(Button|IconButton|Avatar|Loading|StatusIndicator|Alert)$/.test(element.name)
+                        )) ||
                         (formControls.test(element.name) && formLookProps.test(name)))
                 )
                     context.report({ node, messageId: 'lookProp', data: { prop: name } });

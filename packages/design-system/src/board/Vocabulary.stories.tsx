@@ -28,7 +28,7 @@ const type = (
 );
 
 const chooseButton = (label: string) => (
-    <Button {...buttonKind('control')} aria-label="Choose Bug labels">
+    <Button {...buttonKind('control')} aria-label={`${label}: Choose Bug labels`}>
         {label}
     </Button>
 );
@@ -58,7 +58,7 @@ const meta = {
         chooser: chooseButton('Edit'),
     },
     render: (args) => (
-        <div className="max-w-2xl">
+        <div className="w-full max-w-2xl">
             <InsetPanel presentation="settings">
                 <VocabularyRow {...args} />
             </InsetPanel>
@@ -86,7 +86,7 @@ export const Suggested: Story = {
                     action={<InlineLink onClick={fn()}>Recheck</InlineLink>}
                 />
                 <Text variant="caption" tone="danger" role="alert">
-                    Could not save the Bug mapping. <InlineLink onClick={fn()}>Retry</InlineLink>
+                    Couldn’t save the Bug mapping. <InlineLink onClick={fn()}>Try again</InlineLink>
                 </Text>
             </>
         ),

@@ -5,8 +5,9 @@ import { Meta } from '@storybook/addon-docs/blocks';
 # Lar's design system
 
 `@lar-works/design-system` holds Lar's tokens, base styles and **every visual component** the Lar web apps use: the
-media server's libraries, players and settings, and the software factory's repositories, pipelines and deploys all
-render with the components documented here.
+website, Lar Server's libraries, players and settings, and Lar Factory's board, the local app where agents turn a
+repository's issues into reviewed pull requests (shape, build, review) for you to merge, all render with the
+components documented here.
 
 It is built on ninna-ui and Tailwind 4 for behaviour and utilities, with
 [lucide](https://lucide.dev/icons) for icons. Apps never reach for those directly: they compose the components this
@@ -27,6 +28,9 @@ package exports.
     @import '@lar-works/design-system/styles.css';
     ```
 
+    A website that uses the marketing showcase imports `showcase.css` instead, and Lar Factory's board `board.css`;
+    each is `styles.css` plus that layer's own sheets.
+
 3. Wrap the app in `DesignSystemProvider`. It sets the icons' stroke width and supplies the design system's own words
    (Close, Cancel, Appearance…), which an app translates through its `labels` prop:
 
@@ -41,7 +45,9 @@ package exports.
     ```
 
 Components come from `@lar-works/design-system`, icons from `@lar-works/design-system/icons`, and test helpers from
-`@lar-works/design-system/testing`.
+`@lar-works/design-system/testing`. The product layers have entries of their own: Lar Factory's board compositions
+come from `@lar-works/design-system/board` and the website's marketing sections from
+`@lar-works/design-system/showcase`, each beside its stylesheet (`board.css`, `showcase.css`).
 
 ## Apps never style
 
@@ -66,13 +72,107 @@ If a screen needs a look that no component offers, **add or extend a component h
 Give it a semantic name, cover its states (loading, empty, error, disabled, long text) and add a colocated
 `<Component>.stories.tsx`: every story is rendered by the package's tests, so a story that throws fails the build.
 
+### Prop conventions
+
+Components name their options the same way, so an app reads them alike:
+
+- **`variant`** is a component's look among equals: `<Button variant="secondary">`, `<Text variant="caption">`.
+- **`tone`** is a status colour, from one vocabulary: `neutral`, `info`, `success`, `warning`, `danger` (plus `accent`
+  where a highlight is not a status). It never means a look of its own (`raised` is a `variant`), and a failure is
+  `danger`, never `error`. Only the text components (Text, Heading, Link) add the colours of words: `default`,
+  `muted`, `lead`, `soft` and a link's `inherit`. A confirmation's kind is ConfirmDialog's `intent`
+  (`destructive` or `default`), not a tone.
+- **`size`** is an object's scale on one ladder, `'xs' | 'sm' | 'md' | 'lg' | 'xl'`, of which each component takes
+  the steps it has (StatusIndicator, Badge, StatusGlyph, ProjectIcon, BrandMark, ButtonLink). A single control or row
+  that comes tighter is `size="sm"` (Button, Alert, StatusRow, ProgressStatusRow, Avatar, ResourceCard, ActivityCard,
+  CollectionViewToggle, ScrollRow), never a boolean such as `compact`; a part's own scale is `…Size` on the same ladder
+  (DeviceStage's `startSize`). EmptyState and PageError name where they sit instead
+  (`'hero' | 'start' | 'page' | 'panel' | 'compact' | 'inline'`). **`density`** is how tightly rows in a list or table pack
+  (`'default' | 'compact'`).
+- **`presentation`** is only for a structurally different layout of the same content (such as ResourceCard's
+  `overview` and `row`), never a colour or a size. `foundations/propVocabulary.test.ts` checks `tone`, every `size` and
+  `…Size`, `presentation`, and that no boolean size flag (`compact`, `dense`, `small`, …) exists, across every public
+  component at the type level.
+- **Labels are props** (`label`, `backLabel`, `moreLabel`, …): components hold no copy, routing or i18n.
+- **No `className`** on public props: an app cannot style a component, and the public types of components such as
+  Button, Badge and Alert leave it out. The design system's own compositions use the `…Base` export of such a
+  component (`ButtonBase`, `BadgeBase`, `AlertBase`), which stays out of the package's public API.
+
+### Empty, not-found and failed states
+
+One grammar everywhere: an icon, what is (not) here, why, and the way forward.
+
+- **EmptyState**: a region with nothing in it yet, or no results (`size` hero · start · page · panel · compact · inline).
+  `compact` is centred and frameless with a small tile, for an empty list inside a settings panel or a popover.
+- **PageError**: a page or region that could not be shown. Its `tone` says which of three different things happened:
+    - **absence**, `neutral`: there is nothing here, such as a 404 (a `code="404"` is always neutral, whatever `tone`
+      says) or no access. Say what isn't here and offer the way home, never a warning;
+    - **temporary unavailability**, `warning`: it exists but can't be reached right now, such as a catalog whose folder
+      is offline or a server restarting. Say when or why it comes back and what the reader can do meanwhile;
+    - **load failure**, `danger`: reading it failed. Say what failed and offer **Try again**; technical details go in
+      its `footer`.
+- **AsyncState** owns a region's loading geometry and an inline load failure inside a form or dialog; **Alert** reports
+  an operation's result or a condition of the surface. Write the notice **message first**: most Alerts are one
+  sentence, `<Alert tone="warning" message="Metadata refresh is retrying." />`, in the regular weight. Add a `title`
+  only when a few bold status words help scanning before the sentence (`title="Read-only folder"` with the sentence in
+  `message`); a `title` alone still reads as the regular-weight message, for older callers, and `description` or
+  children are the same slot as `message`. Its size follows the surface: inside a Modal, Drawer, pane, form or panel an
+  Alert is `size="sm"` (the surfaces set it), so one notice (such as a shared-metadata notice) looks the same in every
+  pane it appears in; `size="md"` is for a page-level alert only. **One recipe per tone, for every notice:** the
+  tone's quiet surface, its hairline and its icon, with the words in the primary text colour. Never a grey box with a
+  coloured edge, a plain bordered box, or a box without the tone's icon; ConfirmDialog's "what stays safe" note is an
+  `info` Alert. Notifications (toasts) are popups: the neutral glass with the tone's icon and edge.
+
+### Status words
+
+One rule, the **status-word rule**: a **state**, what condition something is in (Merged, Failed, Running, Unavailable,
+On, Problem, Waiting on #12), is a **StatusIndicator**: the state's coloured light, then its word in neutral text
+(`<StatusIndicator state="failed" label="Failed" />`; ProgressStatusRow, ChecksState, PullRequestState and the board's
+StateWord follow it). Pick the `state` (ready, active, waiting, failed, off), never the colour. A **tone Badge** is only
+for a **verdict or a category**, a judgement or a kind that isn't a condition: "Worth fixing", "Serious", "Probably this
+one", "Check carefully", "Beta". A state is never a tinted pill, and never a word in a tone's text colour beside its
+dot: the dot already carries the tone, and a row of coloured words reads as a row of alarms. A toolbar icon with
+nothing to report is ToolbarStatusItem's quiet state (no `state` or `tone`), in the same box as a lit one.
+`statusWordViolations` in `@lar-works/design-system/testing` finds tinted state words in an app's sources, beside
+`problemBodyViolations`.
+
+### Destructive actions
+
+One rule, the **quiet-destructive rule**: a control that starts a destructive action (Delete, Abandon, Remove,
+Revoke) is named in the danger text colour at rest, in a quiet weight, and gains the danger surface on hover or
+keyboard focus. That is `<Button variant="destructive-quiet">` for an inline or footer trigger, `IconButton
+tone="danger"` for an icon-only one and `DropdownMenu.Item destructive` in a menu. It opens a ConfirmDialog
+(`intent="destructive"`), whose confirm button is the only solid red control (`variant="destructive"`). A destructive
+trigger is never neutral grey text: it must not read as a harmless action. On the board, `buttonKind('other', 'danger')`
+is the quiet-destructive trigger (a notice's Abandon) and `buttonKind('main', 'danger')` the confirm.
+
+### Leaving a dialog with unsaved changes
+
+A Modal with `dirty` asks "Discard changes?" before Escape, a click outside, the close button or `Modal.Cancel` closes
+it. A control inside it that leaves for somewhere else (another item's dialog, a link) calls `useModalClose()`'s
+`requestClose(next)`: the same question, then `next` on Discard. Never a second discard dialog of the app's own.
+That question, like every confirmation (`presentation="confirm"`, ConfirmDialog), has no close button and opens with
+the focus on its safe answer (Keep editing, Cancel); Escape gives that answer too.
+
+### Menus
+
+A menu's entries are actions. When what it acts on is in a state worth knowing first (a catalog that is scanning), that
+state heads the menu as `DropdownMenu.Status` (light, word, optional detail), never a disabled entry standing in for
+it. Menus and popovers keep the app's 16px gutter from the window's edges and are nearly opaque, so artwork behind them
+never reads through their rows.
+
 ## Finding your way around
 
-- **Foundations**: colour tokens, the type scale, radii and icons.
+- **Foundations**: the semantic tokens and the vocabulary rule, the board's roles, the scales (type, spacing,
+  breakpoints, radii, elevation, motion), links, focus, the layering rule and entry points, and icons.
 - **Typography**, **Actions**, **Forms**, **Display**, **Feedback**, **Navigation**, **Overlays**, **Collections** and
   **Layout**: the components, grouped as they are in `src/`.
-- **Showcase**: the marketing pages' heroes, device frames and feature sections.
+- **Media**: Lar Server's media compositions (artwork, people, ratings and their brand colours, devices, pairing and
+  remedies). Generic categories carry no product nouns; these do.
+- **Showcase**: the marketing pages' heroes, device frames and feature sections, imported from
+  `@lar-works/design-system/showcase`.
 - **Board**: Lar Factory's own compositions (its title bar, counters, desk cards, List, warnings and loading screen)
-  and its button kinds. The board imports `@lar-works/design-system/board.css` in place of `styles.css`.
+  and its button kinds, imported from `@lar-works/design-system/board`. The board imports
+  `@lar-works/design-system/board.css` in place of `styles.css`.
 
 Use the toolbar's theme switch to check every story in light and dark.

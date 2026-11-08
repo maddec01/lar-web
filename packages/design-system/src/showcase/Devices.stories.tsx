@@ -2,8 +2,14 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import albumDark from '../../.storybook/assets/album-dark.webp';
 import albumLight from '../../.storybook/assets/album-light.webp';
+import albumsDark from '../../.storybook/assets/albums-dark.webp';
+import albumsLight from '../../.storybook/assets/albums-light.webp';
 import boardDark from '../../.storybook/assets/board-dark.webp';
 import boardLight from '../../.storybook/assets/board-light.webp';
+import buildNarrowDark from '../../.storybook/assets/build-narrow-dark.webp';
+import buildNarrowLight from '../../.storybook/assets/build-narrow-light.webp';
+import conceptMapDark from '../../.storybook/assets/concept-map-dark.webp';
+import conceptMapLight from '../../.storybook/assets/concept-map-light.webp';
 import dashboardDark from '../../.storybook/assets/dashboard-dark.webp';
 import dashboardLight from '../../.storybook/assets/dashboard-light.webp';
 import deskDark from '../../.storybook/assets/desk-dark.webp';
@@ -38,14 +44,14 @@ const meta = {
             <Screenshot
                 dark={dashboardDark}
                 light={dashboardLight}
-                alt="The Lar Server dashboard: catalogs, the machine's resources and who's listening right now."
+                alt="The Lar Server dashboard: catalogs, the machine’s resources and who’s listening right now."
             />
         ),
     },
     argTypes: { children: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[900px] p-6">
+            <div className="mx-auto max-w-225 p-6">
                 <Story />
             </div>
         ),
@@ -56,14 +62,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A Safari-style window around the server's web app. The screenshot follows the page's theme. */
+/** A Safari-style window around the server’s web app. The screenshot follows the page’s theme. */
 export const Browser: Story = {};
 
 /** A dark-only capture in a dark window, its lower edge fading under the page. */
 export const BrowserDark: Story = {
     args: {
         aspect: '1400 / 605',
-        tone: 'dark',
+        scheme: 'dark',
         fade: 'under',
         children: <Screenshot dark={moviesDark} alt="Films in the Lar Server web app." />,
     },
@@ -94,7 +100,7 @@ export const Laptop: Story = {
 /** An iPhone Pro, for an iOS capture at 1206 × 2622. */
 export const Phone: Story = {
     render: () => (
-        <div className="mx-auto w-[260px]">
+        <div className="mx-auto w-65">
             <PhoneFrame>
                 <Screenshot dark={musicPlayer} alt="Lar Music on iPhone, playing a symphony." />
             </PhoneFrame>
@@ -129,7 +135,7 @@ export const MacAppWindow: Story = {
     ),
 };
 
-/** A bezel sets the capture in a dark display edge, and a fade dissolves its cropped bottom. */
+/** A bezel sets the capture in a theme-aware display edge, and a fade dissolves its cropped bottom. */
 export const MacAppWindowWithBezel: Story = {
     render: () => (
         <AppWindow bezel fade="bottom">
@@ -141,7 +147,7 @@ export const MacAppWindowWithBezel: Story = {
 /** A close-up cut from a screenshot, raised on glass. */
 export const CloseUp: Story = {
     render: () => (
-        <Callout compact>
+        <Callout size="sm">
             <Screenshot dark={deskDark} light={deskLight} alt="A change waiting for you to verify on your desk." />
         </Callout>
     ),
@@ -150,7 +156,7 @@ export const CloseUp: Story = {
 /** A close-up with a smaller detail card over its corner, as phones see the Factory hero. */
 export const CloseUpPair: Story = {
     render: () => (
-        <div className="mx-auto max-w-[420px]">
+        <div className="mx-auto max-w-105">
             <CalloutPair
                 base={
                     <Callout fade>
@@ -181,7 +187,7 @@ export const CloseUpStack: Story = {
     ),
 };
 
-/** A numbered reading guide floating over a quiet corner of the media on wide screens, under it on phones. */
+/** A numbered reading guide below the media, preserving every label and action. */
 export const Guided: Story = {
     render: () => (
         <GuidedMedia
@@ -203,5 +209,85 @@ export const Guided: Story = {
 export const ThemedScreenshot: Story = {
     render: () => (
         <Screenshot dark={albumDark} light={albumLight} alt="An album in the Lar Server web app." width={1400} />
+    ),
+};
+
+/** At phone width, show the slice count and a complete slice instead of shrinking the whole build dialog. */
+export const BuildDetail: Story = {
+    render: () => (
+        <div className="mx-auto max-w-82.5">
+            <Callout>
+                <Screenshot
+                    dark={buildNarrowDark}
+                    light={buildNarrowLight}
+                    alt="Slice progress and one complete slice with its Done status."
+                    detail="build-slices"
+                />
+            </Callout>
+        </div>
+    ),
+};
+
+/** Keep the creation action and a complete tracker identity at the same UI scale on phones. */
+export const CreateItemDetail: Story = {
+    render: () => (
+        <CalloutStack>
+            <Callout size="sm">
+                <Screenshot
+                    dark={boardDark}
+                    light={boardLight}
+                    alt="Add an item straight from the board."
+                    detail="item-create"
+                />
+            </Callout>
+            <Callout>
+                <Screenshot dark={deskDark} light={deskLight} alt="An item with its tracker, project and title." />
+            </Callout>
+        </CalloutStack>
+    ),
+};
+
+export const AlbumShelf: Story = {
+    args: {
+        aspect: '1490 / 400',
+        children: (
+            <Screenshot dark={albumsDark} light={albumsLight} alt="Five albums with cover art." detail="album-shelf" />
+        ),
+    },
+};
+
+/** A phone-width close-up preserves three complete user identities and their catalog access. */
+export const ServerUsersDetail: Story = {
+    render: () => (
+        <div className="mx-auto max-w-87.5">
+            <BrowserFrame address="lar-server.local" aspect="575 / 363">
+                <Screenshot
+                    dark={usersDark}
+                    light={usersLight}
+                    alt="Three users, their account states and catalog access."
+                    detail="server-users"
+                    width={1400}
+                    height={689}
+                />
+            </BrowserFrame>
+        </div>
+    ),
+};
+
+export const CompleteDependencies: Story = {
+    render: () => (
+        <GuidedMedia
+            label="How to read the concept map"
+            guide={['Settle the question', 'Start the builds it unblocks', 'Check the outcome after the builds merge']}
+        >
+            <AppWindow>
+                <Screenshot
+                    dark={conceptMapDark}
+                    light={conceptMapLight}
+                    alt="A complete concept map: the decisions, the build they unblock and the outcome check."
+                    detail="concept-dependencies"
+                />
+            </AppWindow>
+        </GuidedMedia>
     ),
 };

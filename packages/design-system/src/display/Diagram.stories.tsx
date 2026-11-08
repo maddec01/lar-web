@@ -23,7 +23,7 @@ const meta = {
         source,
         draw: drawBoxes,
         label: 'Concept map diagram',
-        failedLabel: 'The diagram could not be drawn. Its source is available below.',
+        failedLabel: 'The diagram couldn’t be drawn. Its source is available below.',
         sourceLabel: 'Diagram source',
     },
 } satisfies Meta<typeof Diagram>;

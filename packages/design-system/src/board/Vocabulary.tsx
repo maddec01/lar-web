@@ -19,17 +19,23 @@ export function VocabularyRow({
     children,
     ...data
 }: {
+    /** The kind's name. */
     title: string;
+    /** The kind's type control. */
     type: ReactNode;
+    /** The labels' chips. */
     labels: ReactNode;
+    /** Names the labels' group. */
     labelsLabel: string;
+    /** The control that adds a label. */
     chooser: ReactNode;
+    /** What the row says under it, such as a suggestion. */
     children?: ReactNode;
 } & DataAttributes) {
     return (
         <div {...data} className="grid min-w-0 gap-2 px-3 py-3">
             <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_8.5rem] items-center gap-x-3 gap-y-2 sm:grid-cols-[5.5rem_8.5rem_minmax(0,1fr)]">
-                <span className="text-[13px] font-medium">{title}</span>
+                <span className="text-ui font-medium">{title}</span>
                 {type}
                 <div
                     role="group"
@@ -46,11 +52,22 @@ export function VocabularyRow({
 }
 
 /** The chip that stands for the labels past the first few, which opens the chooser (`label` names it). */
-export function VocabularyMore({ label, onClick, children }: { label: string; onClick: () => void; children: string }) {
+export function VocabularyMore({
+    label,
+    onClick,
+    children,
+}: {
+    /** The chip's accessible name, which opens the chooser. */
+    label: string;
+    /** Called as the reader opens the chooser. */
+    onClick: () => void;
+    /** How many more labels, such as "+3". */
+    children: string;
+}) {
     return (
         <button
             type="button"
-            className="cursor-pointer rounded-full bg-(--muted) px-2 text-xs"
+            className="bg-surface-sunken cursor-pointer rounded-full px-2 text-xs"
             aria-label={label}
             onClick={onClick}
         >
@@ -65,15 +82,18 @@ export function VocabularySuggestion({
     onClick,
     children,
 }: {
+    /** Can't be mapped now. */
     disabled?: boolean;
+    /** Called as the reader maps the label. */
     onClick: () => void;
+    /** The suggested label. */
     children: ReactNode;
 }) {
     return (
         <button
             type="button"
             disabled={disabled}
-            className="cursor-pointer rounded-full border border-dashed border-(--border) px-2 py-0.5 text-xs"
+            className="border-line cursor-pointer rounded-full border border-dashed px-2 py-0.5 text-xs"
             onClick={onClick}
         >
             {children}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
+import { ImageCard } from '../display/ImageCard';
 import { Text } from '../typography/Typography';
 import { ScrollRow, ScrollRowArrows, ScrollRowItem } from './ScrollRow';
 import { useScrollRow } from './useScrollRow';
@@ -45,15 +46,13 @@ function EpisodeRow({ count, loading = false }: { count: number; loading?: boole
             <ScrollRow ref={setRow} label="Season 1 episodes" loading={loading} loadingLabel="Loading episodes">
                 {episodes.slice(0, count).map((title, index) => (
                     <ScrollRowItem key={title} value={`s1e${index + 1}`}>
-                        <div className="flex flex-col gap-2">
-                            <Still index={index} />
-                            <Text as="span" variant="label" truncate>
-                                {index + 1}. {title}
-                            </Text>
-                            <Text as="span" variant="caption" tone="muted">
-                                {47 + (index % 3)} min
-                            </Text>
-                        </div>
+                        <ImageCard
+                            title={`${index + 1}. ${title}`}
+                            subtitle="Vince Gilligan"
+                            meta={`${47 + (index % 3)} min`}
+                            artwork={<Still index={index} />}
+                            href={`#s1e${index + 1}`}
+                        />
                     </ScrollRowItem>
                 ))}
             </ScrollRow>

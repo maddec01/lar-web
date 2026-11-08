@@ -1,23 +1,13 @@
+import { type SplashLine, type SplashMark, SplashView } from '../feedback/AppSplash';
+
 /** The Lar mark's paths on its viewBox, drawn in the order the screen animates them. */
-export interface LoadingMark {
-    viewBox: string;
-    /** The block, which springs in first, in the brand's block colour. */
-    block: string;
-    blockColor: string;
-    /** The L's centre line, which a stroke `bar` wide traces around the block. */
-    centreLine: string;
-    bar: number;
-    /** The filled L, which stands in for the trace once it is drawn. */
-    l: string;
-}
+export type LoadingMark = SplashMark;
 
 /** A line of the screen's step text; a new `id` rolls it in. */
-export interface LoadingLine {
-    id: number;
-    text: string;
-}
+export type LoadingLine = SplashLine;
 
 interface LoadingScreenProps {
+    /** The Lar mark's shape and its drawing. */
     mark: LoadingMark;
     /** The product's name after the lockup's "ar", such as "Factory". */
     product: string;
@@ -27,52 +17,20 @@ interface LoadingScreenProps {
     leaving: boolean;
     /** The step line, and for a moment after a change the old one rolling out. */
     line: LoadingLine;
+    /** The line on its way out as the next step's comes in. */
     leavingLine?: LoadingLine;
     /** Whether the line rolled in; the first line and every line under reduced motion just show. */
     rolled: boolean;
+    /** The calm progress track: `indeterminate` (the default) while how far is unknown, or a fraction from 0 to 1. */
+    progress?: number | 'indeterminate';
 }
 
 /**
- * The board's loading screen: the Lar lockup, whose L draws itself around the block, over one line naming the first
- * read's step. It covers the window, drags it, and fades out once.
+ * The board's loading screen: the shared AppSplash (the same status-line rule and indeterminate track), with the line
+ * driven by the board, which times each step of its
+ * first read and the desktop's hand-off itself. A board with nothing to time can render AppSplash directly.
  */
-export function LoadingScreen({ mark, product, drawn, leaving, line, leavingLine, rolled }: LoadingScreenProps) {
-    return (
-        <div className={`loading-screen ${drawn ? 'is-drawn' : ''} ${leaving ? 'is-leaving' : ''}`}>
-            <div className="loading-lockup">
-                <div className="loading-wordmark">
-                    <svg className="loading-mark" viewBox={mark.viewBox} aria-hidden>
-                        <path className="loading-mark-block" d={mark.block} fill={mark.blockColor} />
-                        <path
-                            className="loading-mark-trace"
-                            d={mark.centreLine}
-                            pathLength={1}
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={mark.bar}
-                            strokeLinecap="butt"
-                            strokeLinejoin="miter"
-                        />
-                        <path className="loading-mark-fill" d={mark.l} fill="currentColor" />
-                    </svg>
-                    <span className="loading-lar">
-                        <span className="loading-lar-slide">ar</span>
-                    </span>
-                    <span className="loading-factory">{product}</span>
-                </div>
-                <p className="loading-line" role="status">
-                    <span className="loading-line-slot">
-                        {leavingLine && (
-                            <span key={leavingLine.id} className="loading-roll-out" aria-hidden>
-                                {leavingLine.text}
-                            </span>
-                        )}
-                        <span key={line.id} className={rolled ? 'loading-roll-in' : undefined}>
-                            {line.text}
-                        </span>
-                    </span>
-                </p>
-            </div>
-        </div>
-    );
+export function LoadingScreen(props: LoadingScreenProps) {
+    // The board runs in the desktop app's frameless window, under its title bar.
+    return <SplashView {...props} chrome="desktop" />;
 }

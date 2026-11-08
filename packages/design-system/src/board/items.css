@@ -10,7 +10,7 @@
     text-decoration: underline;
 }
 .ref {
-    color: var(--muted-foreground);
+    color: var(--color-fg-muted);
     font-weight: 500;
     font-variant-numeric: tabular-nums;
 }
@@ -42,7 +42,7 @@
     --k: var(--color-indigo-500);
 }
 .repo-tone-none {
-    --k: var(--muted-foreground);
+    --k: var(--color-fg-muted);
 }
 
 /* The Start control's group, and the line under it with Start's message or error. */
@@ -69,7 +69,7 @@ p[data-start-result] {
     order: 1;
     flex: 1 1 100%;
     min-width: 0;
-    color: var(--danger-text);
+    color: var(--color-danger-fg);
     font-weight: 600;
     overflow-wrap: anywhere;
 }

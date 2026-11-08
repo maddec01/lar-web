@@ -27,28 +27,29 @@ const meta = {
     component: WorkflowSteps,
     decorators: [
         (Story) => (
-            <div className="w-[36rem]">
+            <div className="w-144">
                 <ItemProgressPanel data-progress>
                     <Story />
                 </ItemProgressPanel>
             </div>
         ),
     ],
-    args: { steps, at: 3, name: 'Ready', color: statusColor.Ready },
+    args: { steps, at: 3, name: 'Ready', ordinal: 'Stage 4 of 8', color: statusColor.Ready },
 } satisfies Meta<typeof WorkflowSteps>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The current step widest and named, in its status's gradient; the past darker, the upcoming faint. */
+/** The current stage is named with an explicit ordinal (Stage 4 of 8), distinct from the slice count. */
 export const Steps: Story = {};
 
-/** While a build runs, its slices take the current step's place. */
+/** While a build runs, its slices take the current step’s place. */
 export const SplitBySlices: Story = {
     args: {
         at: 4,
         name: 'Working',
+        ordinal: 'Stage 5 of 8',
         color: statusColor['In progress'],
         bar: <SliceBar slices={slices.map((s) => ({ name: s.title, progress: s.progress }))} />,
     },
@@ -67,7 +68,7 @@ export const WithActivity: Story = {
     ),
 };
 
-/** A concept's parts done out of its parts. */
+/** A concept’s parts done out of its parts. */
 export const Parts: Story = {
     render: () => (
         <PartsProgress label="Parts" completed={5} total={9}>
@@ -76,7 +77,7 @@ export const Parts: Story = {
     ),
 };
 
-/** The slices as chips under their count, with their bar when the steps don't hold it. */
+/** The slices as chips under their count, with their bar when the steps don’t hold it. */
 export const Slices: Story = {
     render: () => (
         <SliceChips
@@ -95,4 +96,29 @@ export const Slices: Story = {
             ))}
         </SliceChips>
     ),
+};
+
+/** Slices whose chips open their tickets, as the item dialog shows them instead of a separate sub-ticket list. */
+export const LinkedSlices: Story = {
+    render: () => (
+        <SliceChips count={<ProgressCount label="Slices">1/3 done</ProgressCount>}>
+            {slices.map((s) => (
+                <SliceChip
+                    key={s.number}
+                    title={`#${s.number} ${s.title} (${s.progress})`}
+                    source={<SourceIcon source="github" label="GitHub issue" />}
+                    progress={s.progress}
+                    number={s.number}
+                    name={s.title}
+                    href={`https://github.com/lar-works/lar-server/issues/${s.number}`}
+                />
+            ))}
+        </SliceChips>
+    ),
+};
+
+/** Waiting work takes one equal-width step, outlined until it starts. */
+export const Queued: Story = { args: { at: 0, name: 'Queue', ordinal: 'Stage 1 of 7', waiting: true } };
+export const FailedChecks: Story = {
+    args: { at: 5, name: 'Verify', color: 'var(--color-danger)', ordinal: 'Stage 6 of 7' },
 };

@@ -47,7 +47,7 @@ const meta = {
     },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px] px-5 py-12 sm:px-8 sm:pb-28">
+            <div className="max-w-page mx-auto px-5 py-12 sm:px-8 sm:pb-28">
                 <Story />
             </div>
         ),
@@ -100,7 +100,7 @@ export const WithCallout: Story = {
 export const LargeEndOnLeft: Story = {
     args: {
         pitch: 0,
-        endSize: 'large',
+        endSize: 'lg',
         endSide: 'left',
         main: (
             <BrowserFrame address="lar-server.local" aspect="1600 / 1040" fade="tail">
@@ -110,7 +110,7 @@ export const LargeEndOnLeft: Story = {
     },
 };
 
-/** On a phone-width screen only the phone shows, where the laptop's text would be too small to read. */
+/** On a phone-width screen only the phone shows, where the laptop’s text would be too small to read. */
 export const NarrowShowsEnd: Story = {
     args: { narrow: 'end' },
     globals: { viewport: { value: 'mobile1' } },
@@ -127,7 +127,7 @@ export const Angles: Story = {
                     </Text>
                     <AngledDevice angle={angle}>
                         <BrowserFrame address="lar-server.local" aspect="1400 / 689">
-                            <Screenshot dark={usersDark} light={usersLight} alt="Lar Server's users." />
+                            <Screenshot dark={usersDark} light={usersLight} alt="Lar Server’s users." />
                         </BrowserFrame>
                     </AngledDevice>
                 </div>
@@ -136,7 +136,7 @@ export const Angles: Story = {
     ),
 };
 
-/** The navy glow and fading grid behind a hero, and the same tinted with Lar Server's hue. */
+/** The navy glow and fading grid behind a hero, and the same tinted with Lar Server’s hue. */
 export const Backdrops: Story = {
     render: () => (
         <div className="grid sm:grid-cols-2">

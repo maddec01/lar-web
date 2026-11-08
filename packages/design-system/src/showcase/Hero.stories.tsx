@@ -19,7 +19,7 @@ import { AppWindow, BrowserFrame, Callout, LaptopFrame, PhoneFrame, Screenshot }
 import { Hero } from './Hero';
 import { ProductIndex } from './ProductBand';
 import { DeviceStage } from './Stage';
-import { Announcement, AppIcon, StatusPill } from './Status';
+import { Announcement, AppIcon, ReadinessStatus } from './Status';
 
 const navigate = fn();
 
@@ -44,14 +44,14 @@ const meta = {
                     {
                         name: 'Lar Factory',
                         icon: <AppIcon src={factoryIcon} alt="" size="sm" />,
-                        status: <StatusPill status="available">Available for Mac</StatusPill>,
+                        status: <ReadinessStatus status="available">Available for Mac</ReadinessStatus>,
                         summary: 'Turn repository issues into reviewed pull requests.',
                         href: '/factory',
                     },
                     {
                         name: 'Lar Server',
                         icon: <AppIcon src={serverIcon} alt="" size="sm" />,
-                        status: <StatusPill status="development">In development</StatusPill>,
+                        status: <ReadinessStatus status="development">In development</ReadinessStatus>,
                         summary: 'Stream your own music and films to native apps.',
                         href: '/server',
                     },
@@ -83,7 +83,7 @@ export const Factory: Story = {
             </Announcement>
         ),
         title: 'Your software factory, running on your Mac.',
-        lead: "Lar Factory lets AI agents turn your issues and ideas into reviewed pull requests. Shape the work on a board, start a build when it's ready, and merge every pull request yourself.",
+        lead: 'Lar Factory lets AI agents turn your issues and ideas into reviewed pull requests. Shape the work on a board, start a build when it’s ready, and merge every pull request yourself.',
         actions: (
             <>
                 <ButtonLink
@@ -192,7 +192,7 @@ export const Server: Story = {
 export const TextOnly: Story = {
     args: {
         announcement: undefined,
-        title: "This page isn't home.",
+        title: 'This page isn’t home',
         lead: 'The address may have changed, or it never existed. Everything Lar makes is one click away.',
         note: undefined,
         visual: undefined,

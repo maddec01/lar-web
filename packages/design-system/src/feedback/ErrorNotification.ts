@@ -1,10 +1,14 @@
 import { toast } from '@ninna-ui/feedback';
 
-import { forgetNotificationSlots } from './Notifications';
+import { forgetNotificationSlots, type NotificationAction, showNotification } from './Notifications';
 
 export interface ErrorNotification {
-    description: string;
+    /** What failed, specifically, such as "Couldn't save Music". */
     title: string;
+    /** Why, or what to do, in a sentence. */
+    description: string;
+    /** A follow-up, such as "Try again". */
+    action?: NotificationAction;
 }
 
 export function dismissAllNotifications(): void {
@@ -12,16 +16,17 @@ export function dismissAllNotifications(): void {
     forgetNotificationSlots();
 }
 
+/** A failure as a `danger` Notification, which stays until it's closed. The same failure again replaces it rather
+ *  than stacking a copy. */
 export function showErrorNotification(notification: ErrorNotification): void {
-    toast.create({
+    showNotification({
+        slot: `error:${notification.title}:${notification.description}`,
+        tone: 'danger',
         ...notification,
-        color: 'danger',
     });
 }
 
+/** A success as a `success` Notification, which clears itself; a new success replaces the last. */
 export function showSuccessNotification(message: string): void {
-    toast.create({
-        color: 'success',
-        title: message,
-    });
+    showNotification({ slot: 'success', tone: 'success', title: message });
 }

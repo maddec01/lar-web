@@ -26,7 +26,7 @@ const counters = (
         <BoardCounter
             label="need you"
             value={2}
-            icon={<HandIcon style={{ color: 'var(--you)' }} strokeWidth={2.25} />}
+            icon={<HandIcon style={{ color: 'var(--color-board-you)' }} strokeWidth={2.25} />}
             title="Needs you"
             sub={2}
             hint="2 items waiting on your answer, verification or merge"
@@ -75,13 +75,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** In a browser, grey stand-ins hold the traffic lights' place and the bar starts past them. */
+/** In a browser there are no traffic lights: the bar keeps only its own padding. */
 export const InABrowser: Story = {};
 
-/** In the Mac app, macOS draws the traffic lights. */
+/** In the Mac app macOS draws its traffic lights over the bar’s left, so the bar starts past them. */
 export const NativeWindow: Story = { args: { nativeWindow: true } };
 
-/** Full screen hides the traffic lights, so the brand moves to the bar's own padding. */
+/** Full screen hides the traffic lights, so the brand moves to the bar’s own padding. */
 export const FullScreen: Story = { args: { nativeWindow: true, pastLights: false } };
 
 /** With no board to count or search, only the brand and Settings. */
@@ -97,7 +97,7 @@ export const BrandOnly: Story = {
 
 export const RefreshStates: StoryObj<typeof RefreshIndicator> = {
     render: () => (
-        <div className="@container flex w-[60rem] flex-col items-start gap-2">
+        <div className="@container flex w-240 flex-col items-start gap-2">
             {(['waiting', 'live', 'stale', 'disconnected'] as const).map((health) => (
                 <RefreshIndicator
                     key={health}

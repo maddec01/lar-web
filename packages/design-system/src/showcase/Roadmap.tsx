@@ -1,6 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { type CSSProperties, type ReactNode, useId } from 'react';
 
-import { StatusPill } from './Status';
+import { Heading, Text } from '../typography/Typography';
+import { ReadinessStatus } from './Status';
 
 export interface RoadmapItem {
     icon: ReactNode;
@@ -16,36 +17,62 @@ export function Roadmap({
     items,
     label,
     statusLabel,
+    title,
+    lead,
 }: {
+    /** What is planned, the first featured. */
     items: readonly RoadmapItem[];
+    /** Names the list for screen readers. */
     label: string;
+    /** The status every item carries, such as "Planned". */
     statusLabel: string;
+    /** A heading above the list, when the roadmap closes a section that has its own SectionHeading. */
+    title?: string;
+    /** A sentence under the title. */
+    lead?: string;
 }) {
+    const titleId = useId();
     const featured = items.filter((item) => item.featured);
     const rest = items.filter((item) => !item.featured);
 
     return (
-        <div aria-label={label} role="group" className="flex flex-col gap-3">
+        <div
+            role="group"
+            {...(title ? { 'aria-labelledby': titleId } : { 'aria-label': label })}
+            className="flex flex-col gap-3"
+        >
+            {title ? (
+                <header className="mb-3 flex flex-col gap-1.5 sm:mb-5">
+                    <Heading id={titleId} as="h3" variant="feature">
+                        {title}
+                    </Heading>
+                    {lead ? (
+                        <Text variant="prose" tone="muted">
+                            {lead}
+                        </Text>
+                    ) : null}
+                </header>
+            ) : null}
             {featured.map((item) => (
                 <FeaturedCard key={item.title} item={item} statusLabel={statusLabel} />
             ))}
-            <ul className="divide-base-300/70 border-base-400/80 bg-base-100/50 dark:bg-base-100/30 grid divide-y rounded-2xl border border-dashed sm:gap-3 sm:divide-y-0 sm:rounded-none sm:border-0 sm:bg-transparent md:grid-cols-2 lg:grid-cols-3 sm:dark:bg-transparent">
+            <ul className="divide-line/70 border-line-control bg-surface-glass grid divide-y rounded-2xl border border-dashed sm:gap-3 sm:divide-y-0 sm:rounded-none sm:border-0 sm:bg-transparent md:grid-cols-2 lg:grid-cols-3">
                 {rest.map((item) => (
                     <li
                         key={item.title}
-                        className="sm:border-base-400/80 flex gap-3 p-4 sm:gap-4 sm:rounded-2xl sm:border sm:border-dashed sm:p-5"
+                        className="sm:border-line-control flex gap-3 p-4 sm:gap-4 sm:rounded-2xl sm:border sm:border-dashed sm:p-5"
                     >
                         <RoadmapIcon>{item.icon}</RoadmapIcon>
                         <div className="flex min-w-0 flex-1 flex-col gap-1">
                             <span className="flex items-start justify-between gap-3">
-                                <span className="text-base-content text-[15px] font-semibold tracking-[-0.01em] text-balance">
+                                <span className="text-fg text-md tracking-heading font-semibold text-balance">
                                     {item.title}
                                 </span>
                                 <span className="shrink-0">
-                                    <StatusPill status="planned">{statusLabel}</StatusPill>
+                                    <ReadinessStatus status="planned">{statusLabel}</ReadinessStatus>
                                 </span>
                             </span>
-                            <span className="text-base-700 text-sm leading-6">{item.body}</span>
+                            <span className="text-fg-muted text-sm leading-6">{item.body}</span>
                         </div>
                     </li>
                 ))}
@@ -63,24 +90,24 @@ function FeaturedCard({ item, statusLabel }: { item: RoadmapItem; statusLabel: s
             <span className="flex items-center justify-between gap-3 sm:block">
                 <RoadmapIcon>{item.icon}</RoadmapIcon>
                 <span className="sm:hidden">
-                    <StatusPill status="planned">{statusLabel}</StatusPill>
+                    <ReadinessStatus status="planned">{statusLabel}</ReadinessStatus>
                 </span>
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <span className="flex items-start justify-between gap-3">
-                    <span className="text-base-content text-lg font-semibold tracking-[-0.01em] text-balance sm:text-xl">
+                    <span className="text-fg tracking-heading text-lg font-semibold text-balance sm:text-xl">
                         {item.title}
                     </span>
                     <span className="hidden shrink-0 sm:block">
-                        <StatusPill status="planned">{statusLabel}</StatusPill>
+                        <ReadinessStatus status="planned">{statusLabel}</ReadinessStatus>
                     </span>
                 </span>
-                <span className="text-base-700 max-w-[620px] text-[15px] leading-6">{item.body}</span>
+                <span className="text-fg-muted text-md max-w-155 leading-6">{item.body}</span>
                 {item.featured?.steps ? (
-                    <ol className="text-base-800 mt-2 flex flex-col gap-2.5 text-sm">
+                    <ol className="text-fg-soft mt-2 flex flex-col gap-2.5 text-sm">
                         {item.featured.steps.map((step, index) => (
                             <li key={step} className="flex items-center gap-2">
-                                <span className="bg-base-200 text-base-800 dark:bg-base-300 inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums">
+                                <span className="bg-fill-muted text-fg-soft text-2xs inline-flex size-5 shrink-0 items-center justify-center rounded-full font-semibold tabular-nums">
                                     {index + 1}
                                 </span>
                                 {step}
@@ -99,16 +126,14 @@ function FeaturedCard({ item, statusLabel }: { item: RoadmapItem; statusLabel: s
                     ))}
                 </span>
             </div>
-            {item.featured?.visual ? (
-                <div className="shrink-0 sm:w-[300px] lg:w-[340px]">{item.featured.visual}</div>
-            ) : null}
+            {item.featured?.visual ? <div className="shrink-0 sm:w-75 lg:w-85">{item.featured.visual}</div> : null}
         </article>
     );
 }
 
 function RoadmapIcon({ children }: { children: ReactNode }) {
     return (
-        <span className="bg-base-200 text-base-800 ring-base-300/70 dark:bg-base-300/40 inline-flex size-8 shrink-0 items-center justify-center rounded-[0.6rem] ring-1 ring-inset sm:size-10 sm:rounded-[0.7rem] [&>svg]:size-4 sm:[&>svg]:size-5">
+        <span className="bg-fill-muted text-fg-soft ring-line/70 inline-flex size-8 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset sm:size-10 sm:rounded-lg [&>svg]:size-4 sm:[&>svg]:size-5">
             {children}
         </span>
     );

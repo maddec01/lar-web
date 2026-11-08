@@ -62,6 +62,7 @@ it('the workflow steps mark the current one, named with its number, and label ev
             }))}
             at={1}
             name="Working"
+            ordinal="Stage 2 of 3"
             color="red"
         />,
     );
@@ -69,6 +70,6 @@ it('the workflow steps mark the current one, named with its number, and label ev
     const current = screen.getByLabelText('Step 2 of 3: Shaping');
 
     expect(current).toHaveAttribute('aria-current', 'step');
-    expect(current).toHaveTextContent('Working2/3');
+    expect(current.parentElement!.previousElementSibling).toHaveTextContent('WorkingStage 2 of 3');
     expect(screen.getByLabelText('Step 3 of 3: Ready')).not.toHaveAttribute('aria-current');
 });

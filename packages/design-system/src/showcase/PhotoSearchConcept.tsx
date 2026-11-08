@@ -14,19 +14,22 @@ export function PhotoSearchConcept({
     photos,
     label,
 }: {
+    /** The search typed in the illustration. */
     query: string;
+    /** The library's photos, the matches marked. */
     photos: readonly ConceptPhoto[];
+    /** Names the illustration and says it is a concept. */
     label: string;
 }) {
     return (
         <figure className="flex flex-col gap-3">
-            <div className="border-base-300 bg-base-100/80 text-base-content dark:bg-base-200/70 [&>svg]:text-base-600 flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm [&>svg]:size-4">
+            <div className="border-line bg-surface-glass text-fg [&>svg]:text-fg-muted flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm [&>svg]:size-4">
                 <SearchIcon />
                 <span className="truncate">{query}</span>
             </div>
             <ul className="grid grid-cols-3 gap-1.5">
                 {photos.map((photo) => (
-                    <li key={photo.src} className="relative overflow-hidden rounded-md">
+                    <li key={photo.src} className="bg-fill-muted relative overflow-hidden rounded-md">
                         <img
                             src={photo.src}
                             alt={photo.alt}
@@ -44,7 +47,7 @@ export function PhotoSearchConcept({
                     </li>
                 ))}
             </ul>
-            <figcaption className="text-base-700 text-xs">{label}</figcaption>
+            <figcaption className="text-fg-muted text-xs">{label}</figcaption>
         </figure>
     );
 }

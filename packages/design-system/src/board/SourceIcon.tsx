@@ -9,9 +9,20 @@ export type ItemSource = 'github' | 'azure' | 'local';
  * Where an item's ticket is saved, as a small muted mark named by `label`: a bordered square in rows and details, or
  * with `corner` a tab in a card's top right corner, which lets clicks through to the card.
  */
-export function SourceIcon({ source, label, corner = false }: { source: ItemSource; label: string; corner?: boolean }) {
+export function SourceIcon({
+    source,
+    label,
+    corner = false,
+}: {
+    /** Where the ticket is saved: `github`, `azure` or `local`. */
+    source: ItemSource;
+    /** Names the source for screen readers. */
+    label: string;
+    /** Drawn as a tab in a card's top right corner. */
+    corner?: boolean;
+}) {
     const shape = corner
-        ? 'absolute right-0 top-0 z-10 size-6 rounded-bl-lg rounded-tr-[inherit] border-b border-l pointer-events-none'
+        ? 'absolute right-2 top-2 z-10 size-5 rounded-md border pointer-events-none'
         : 'size-5 shrink-0 rounded-md border';
 
     return (
@@ -19,7 +30,7 @@ export function SourceIcon({ source, label, corner = false }: { source: ItemSour
             role="img"
             aria-label={label}
             title={label}
-            className={`grid place-items-center border-(--border) bg-(--soft) text-(--muted-foreground) ${shape}`}
+            className={`border-line bg-fill-hover text-fg-muted grid place-items-center ${shape}`}
         >
             {source === 'local' ? (
                 <LaptopIcon className="size-3" strokeWidth={1.75} aria-hidden="true" />

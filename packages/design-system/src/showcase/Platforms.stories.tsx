@@ -41,7 +41,7 @@ const meta = {
     },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),

@@ -15,7 +15,7 @@ import { ButtonLink } from '../actions/ButtonLink';
 import { AppWindow, BrowserFrame, Callout, PhoneFrame, Screenshot } from './Devices';
 import { ProductBand, ProductBands, ProductIndex } from './ProductBand';
 import { DeviceStage, ResponsiveMedia } from './Stage';
-import { AppIcon, StatusPill } from './Status';
+import { AppIcon, ReadinessStatus } from './Status';
 
 const navigate = fn();
 
@@ -27,7 +27,7 @@ const meta = {
         chroma: 0.09,
         icon: <AppIcon src={factoryIcon} alt="" size="sm" />,
         name: 'Lar Factory',
-        status: <StatusPill status="available">Available for Mac</StatusPill>,
+        status: <ReadinessStatus status="available">Available for Mac</ReadinessStatus>,
         title: 'Turn issues into reviewed pull requests.',
         description:
             'Shape ideas on a board. Let agents build them in isolated worktrees. Review and merge every pull request yourself.',
@@ -82,7 +82,7 @@ const meta = {
     },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),
@@ -93,10 +93,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Factory's band: its warm hue, the board, and a download. */
+/** Lar Factory’s band: its warm hue, the board, and a download. */
 export const Factory: Story = {};
 
-/** Lar Server's band, media on the left: the web app with the phone standing in front. */
+/** Lar Server’s band, media on the left: the web app with the phone standing in front. */
 export const Server: Story = {
     args: {
         reverse: true,
@@ -104,7 +104,7 @@ export const Server: Story = {
         chroma: undefined,
         icon: <AppIcon src={serverIcon} alt="" size="sm" />,
         name: 'Lar Server',
-        status: <StatusPill status="development">In development</StatusPill>,
+        status: <ReadinessStatus status="development">In development</ReadinessStatus>,
         title: 'Your music and films, on every screen.',
         description:
             'Indexed on a server you own and streamed to native apps on your phone, tablet and computer, with the TV next.',
@@ -116,7 +116,7 @@ export const Server: Story = {
         ),
         media: (
             <DeviceStage
-                endSize="large"
+                endSize="lg"
                 main={
                     <BrowserFrame address="lar-server.local" aspect="1600 / 1040" fade="tail">
                         <Screenshot dark={dashboardDark} light={dashboardLight} alt="The Lar Server dashboard." />
@@ -152,14 +152,14 @@ export const Index: Story = {
                 {
                     name: 'Lar Factory',
                     icon: <AppIcon src={factoryIcon} alt="" size="sm" />,
-                    status: <StatusPill status="available">Available for Mac</StatusPill>,
+                    status: <ReadinessStatus status="available">Available for Mac</ReadinessStatus>,
                     summary: 'Turn repository issues into reviewed pull requests.',
                     href: '/factory',
                 },
                 {
                     name: 'Lar Server',
                     icon: <AppIcon src={serverIcon} alt="" size="sm" />,
-                    status: <StatusPill status="development">In development</StatusPill>,
+                    status: <ReadinessStatus status="development">In development</ReadinessStatus>,
                     summary: 'Stream your own music and films to native apps.',
                     href: '/server',
                 },

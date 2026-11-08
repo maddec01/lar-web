@@ -30,5 +30,7 @@ export {
     ServerUnit,
 } from './ServerUnit';
 export { AngledDevice, Backdrop, DeviceStage, ResponsiveMedia, Reveal } from './Stage';
-export { Announcement, AppIcon, type Readiness, StatusLight, StatusPill } from './Status';
+export { Announcement, AppIcon, type Readiness, StatusLight, ReadinessStatus } from './Status';
 export { type Step, StepFlow } from './StepFlow';
+
+export { StateStage } from './StateStage';

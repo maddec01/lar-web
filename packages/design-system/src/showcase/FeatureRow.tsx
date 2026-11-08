@@ -5,10 +5,15 @@ import { Eyebrow } from '../layout/PageSection';
 import { Heading, Text } from '../typography/Typography';
 
 interface FeatureRowProps {
+    /** A short label above the title. */
     eyebrow?: string;
+    /** The feature's title. */
     title: string;
+    /** A sentence or two on the feature. */
     children: ReactNode;
+    /** Checked lines under the copy. */
     points?: readonly string[];
+    /** The feature shown on a device, opposite the copy. */
     media: ReactNode;
     /** Puts the media on the left. */
     reverse?: boolean;
@@ -56,7 +61,7 @@ export function FeatureRow({
                         </div>
                     ) : null}
                 </div>
-                <div className={`mx-auto w-full ${mediaWidth === 'full' ? '' : 'max-w-[780px]'}`}>{media}</div>
+                <div className={`mx-auto w-full ${mediaWidth === 'full' ? '' : 'max-w-195'}`}>{media}</div>
             </article>
         );
 
@@ -86,12 +91,17 @@ export function FeatureRow({
 }
 
 /** Checked lines under a feature. */
-export function PointList({ points }: { points: readonly string[] }) {
+export function PointList({
+    points,
+}: {
+    /** The checked lines. */
+    points: readonly string[];
+}) {
     return (
         <ul className="mt-2 flex flex-col gap-2.5">
             {points.map((point) => (
-                <li key={point} className="text-base-800 flex gap-2.5 text-[15px] leading-6">
-                    <span className="bg-primary/12 text-primary dark:bg-primary/25 mt-[3px] inline-flex size-[18px] shrink-0 items-center justify-center rounded-full dark:text-[color-mix(in_srgb,var(--color-primary)_45%,white)] [&>svg]:size-3">
+                <li key={point} className="text-fg-soft text-md flex gap-2.5 leading-6">
+                    <span className="bg-primary-surface text-primary-fg mt-0.75 inline-flex size-4.5 shrink-0 items-center justify-center rounded-full [&>svg]:size-3">
                         <CheckIcon />
                     </span>
                     {point}
@@ -101,7 +111,12 @@ export function PointList({ points }: { points: readonly string[] }) {
     );
 }
 
-/** A stack of feature rows with room between them. */
-export function FeatureRows({ children }: { children: ReactNode }) {
+/** A stack of feature rows, or other showcase blocks that share a section, with room between them. */
+export function FeatureRows({
+    children,
+}: {
+    /** The FeatureRows, or the section's blocks. */
+    children: ReactNode;
+}) {
     return <div className="flex flex-col gap-16 sm:gap-24">{children}</div>;
 }

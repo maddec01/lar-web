@@ -4,25 +4,19 @@
 import { BanIcon, CheckIcon, CircleHelpIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
+import { StatusIndicator } from '../feedback/StatusIndicator';
 import type { DataAttributes } from './DataAttributes';
 import { ROW_OPENS } from './RowStyles';
+import { type AttentionTone, attentionToneState } from './StatusColors';
 
-const TONE = {
-    yours: 'text-(--warning-foreground)',
-    decision: 'text-(--primary)',
-    blocked: 'text-(--st-review)',
-    waiting: 'text-(--muted-foreground)',
-    ready: 'text-(--st-now)',
-    fog: 'text-(--st-amber)',
-} as const;
+export type { AttentionTone };
 
-/** An attention row's tone, which colours its label. */
-export type AttentionTone = keyof typeof TONE;
-
-/** The attention rows, each a label in its tone with how many entries it has, then its entries. */
-export function AttentionList({
+/** The attention rows, each a top-aligned sentence-case label with its count, then its entries. A status dot carries
+ *  the tone; open questions have no status dot. */
+export function BoardAttentionList({
     rows,
 }: {
+    /** The attention rows, each with its label, tone and entries. */
     rows: { key: string; label: string; tone: AttentionTone; entries: ReactNode[] }[];
 }) {
     return (
@@ -30,10 +24,11 @@ export function AttentionList({
         <dl className="m-0 grid grid-cols-[minmax(7.5rem,max-content)_minmax(0,1fr)] gap-x-4 gap-y-2" data-attention>
             {rows.map((r) => (
                 <div key={r.key} className="contents" data-attention-row={r.key}>
-                    <dt
-                        className={`pt-2 text-[11px] font-medium tracking-wide whitespace-nowrap uppercase ${TONE[r.tone]}`}
-                    >
-                        {r.label} <span className="tabular-nums">{r.entries.length}</span>
+                    <dt className="text-fg-soft flex items-center gap-1.5 self-start pt-2 text-xs font-medium whitespace-nowrap">
+                        {r.tone !== 'fog' && <StatusIndicator size="sm" state={attentionToneState[r.tone]} />}
+                        <span>
+                            {r.label} <span className="tabular-nums">{r.entries.length}</span>
+                        </span>
                     </dt>
                     <dd className="m-0 grid gap-1">{r.entries}</dd>
                 </div>
@@ -43,26 +38,47 @@ export function AttentionList({
 }
 
 /** What the attention list says when nothing holds the work up. */
-export function AttentionNone({ children }: { children: ReactNode }) {
+export function AttentionNone({
+    children,
+}: {
+    /** What the list says, such as "Nothing holds this up". */
+    children: ReactNode;
+}) {
     return (
-        <p className="m-0 text-[13px] text-(--muted-foreground)" data-attention-none>
+        <p className="text-ui text-fg-muted m-0" data-attention-none>
             {children}
         </p>
     );
 }
 
 /** One entry of an attention row, with what it waits on or its next action at the right. */
-export function AttentionEntry({ main, side }: { main: ReactNode; side?: ReactNode }) {
+export function AttentionEntry({
+    main,
+    side,
+}: {
+    /** The entry's text, such as a PartLink. */
+    main: ReactNode;
+    /** What it waits on or its next action, at the right. */
+    side?: ReactNode;
+}) {
     return (
-        <div className="flex min-h-9 min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-md px-2 py-1.5 hover:bg-(--soft)">
+        <div className="hover:bg-fill-hover flex min-h-9 min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-md px-2 py-1.5">
             <span className="min-w-0 flex-1 basis-64">{main}</span>
-            {side && <span className="ml-auto shrink-0 text-xs text-(--muted-foreground)">{side}</span>}
+            {side && <span className="text-fg-muted ml-auto shrink-0 text-xs">{side}</span>}
         </div>
     );
 }
 
 /** An entry's text as a plain button that opens what it names. */
-export function EntryButton({ onOpen, children }: { onOpen: () => void; children: ReactNode }) {
+export function EntryButton({
+    onOpen,
+    children,
+}: {
+    /** Called as the reader opens what the entry names. */
+    onOpen: () => void;
+    /** The entry's text. */
+    children: ReactNode;
+}) {
     return (
         <button type="button" onClick={onOpen}>
             {children}
@@ -71,13 +87,24 @@ export function EntryButton({ onOpen, children }: { onOpen: () => void; children
 }
 
 /** A reference to an item, such as `#12`, as a button that opens it; `title` names it. */
-export function RefButton({ title, onOpen, children }: { title: string; onOpen: () => void; children: ReactNode }) {
+export function RefButton({
+    title,
+    onOpen,
+    children,
+}: {
+    /** Names the item in full, as the tooltip. */
+    title: string;
+    /** Called as the reader opens the item. */
+    onOpen: () => void;
+    /** The reference, such as `#12`. */
+    children: ReactNode;
+}) {
     return (
         <button
             type="button"
             onClick={onOpen}
             title={title}
-            className="rounded px-0.5 font-medium text-(--primary) tabular-nums hover:bg-(--accent)"
+            className="text-primary-fg hover:bg-fill-hover focus-ring rounded-xs font-medium tabular-nums"
         >
             {children}
         </button>
@@ -85,9 +112,9 @@ export function RefButton({ title, onOpen, children }: { title: string; onOpen: 
 }
 
 const MARKS = {
-    blocked: <BanIcon className="mt-0.5 size-3.5 shrink-0 text-(--st-review)" />,
-    met: <CheckIcon className="mt-0.5 size-3.5 shrink-0 text-(--st-done)" />,
-    fog: <CircleHelpIcon className="mt-0.5 size-3.5 shrink-0 text-(--st-amber)" />,
+    blocked: <BanIcon className="stroke-warning mt-0.5 size-3.5 shrink-0" />,
+    met: <CheckIcon className="stroke-success mt-0.5 size-3.5 shrink-0" />,
+    fog: <CircleHelpIcon className="text-fg-muted mt-0.5 size-3.5 shrink-0" />,
 } as const;
 
 /** An entry's text after a mark: blocked, met, or an open question (fog). `clamp` keeps it to two lines. */
@@ -97,37 +124,64 @@ export function AttentionMark({
     children,
     ...data
 }: {
+    /** The mark: `blocked`, `met` or `fog` for an open question. */
     mark: keyof typeof MARKS;
+    /** Keeps the text to two lines. */
     clamp?: boolean;
+    /** The entry's text. */
     children: ReactNode;
 } & DataAttributes) {
     return (
-        <span {...data} className={`flex ${clamp ? 'min-w-0 ' : ''}items-start gap-1.5 text-[13px]`}>
+        <span {...data} className={`flex ${clamp ? 'min-w-0 ' : ''}items-start text-ui gap-1.5`}>
             {MARKS[mark]}
             <span className={clamp ? 'line-clamp-2' : undefined}>{children}</span>
         </span>
     );
 }
 
-/** A part's source, status glyph and title, up to two lines. */
-export function PartName({ source, glyph, children }: { source: ReactNode; glyph: ReactNode; children: ReactNode }) {
+/** A part's status glyph, source and title, in that order, the title up to two lines. */
+export function PartName({
+    source,
+    glyph,
+    children,
+}: {
+    /** Where the part's ticket is saved, as a SourceIcon. */
+    source: ReactNode;
+    /** The part's status glyph. */
+    glyph: ReactNode;
+    /** The part's title. */
+    children: ReactNode;
+}) {
     return (
         <span className="flex min-w-0 items-start gap-1.5 text-sm">
+            <span className="mt-0.5 inline-flex shrink-0">{glyph}</span>
             {source}
-            <span className="mt-0.5 inline-flex">{glyph}</span>
-            <span className="line-clamp-2">{children}</span>
+            <span className="line-clamp-2 min-w-0 flex-1" data-part-title>
+                {children}
+            </span>
         </span>
     );
 }
 
 /** A part's PartName as a button that opens it; `title` names it. */
-export function PartLink({ title, onOpen, children }: { title: string; onOpen: () => void; children: ReactNode }) {
+export function PartLink({
+    title,
+    onOpen,
+    children,
+}: {
+    /** Names the part in full, as the tooltip. */
+    title: string;
+    /** Called as the reader opens the part. */
+    onOpen: () => void;
+    /** The part's PartName. */
+    children: ReactNode;
+}) {
     return (
         <button
             type="button"
             onClick={onOpen}
             title={title}
-            className={`min-w-0 rounded text-left hover:underline ${ROW_OPENS}`}
+            className={`min-w-0 rounded-xs text-left hover:underline ${ROW_OPENS}`}
         >
             {children}
         </button>

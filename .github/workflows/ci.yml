@@ -30,7 +30,8 @@ jobs:
 
     test:
         name: Tests
-        runs-on: ubuntu-latest
+        # Playwright 1.56 installs Chromium's system libraries only up to Ubuntu 24.04.
+        runs-on: ubuntu-24.04
         timeout-minutes: 15
         steps:
             - uses: actions/checkout@v7
@@ -39,6 +40,8 @@ jobs:
             - uses: ./.github/actions/setup
             - name: Build packages
               run: pnpm --filter './packages/*' build
+            - name: Install Chromium and system libraries
+              run: pnpm --filter @lar-works/design-system exec playwright install --with-deps chromium
             - name: Test
               run: pnpm test
 

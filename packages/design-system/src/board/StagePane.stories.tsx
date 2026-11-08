@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Loading } from '../feedback/Loading';
 import { Switch } from '../forms/Switch';
 import { BuildLimit, HeaderSwitch, StageList, StagePane, StagePaneEmpty, StageSections } from './StagePane';
-import { statusColor } from './StatusColors';
 import { StatusGlyph } from './StatusGlyph';
 
 const meta = {
@@ -15,13 +14,8 @@ const meta = {
         glyph: <StatusGlyph status="In progress" running />,
         count: 0,
         right: (
-            <BuildLimit
-                building={3}
-                limit={4}
-                color={statusColor['In progress']}
-                title="Builds at work against the build limit"
-            >
-                3/4 building
+            <BuildLimit building={3} limit={4} title="Builds at work against the build limit">
+                3 running · limit 4
             </BuildLimit>
         ),
         children: <StagePaneEmpty>Nothing in build.</StagePaneEmpty>,
@@ -49,7 +43,7 @@ export const StillLoading: Story = {
     },
 };
 
-/** Ready to build's header holds the Auto-build switch, and anything that holds it. */
+/** Ready to build’s header holds the Auto-build switch, and anything that holds it. */
 export const WithSwitch: Story = {
     args: {
         id: 'ready',
@@ -70,13 +64,8 @@ export const WithSwitch: Story = {
 export const OverTheLimit: Story = {
     args: {
         right: (
-            <BuildLimit
-                building={5}
-                limit={3}
-                color={statusColor['In progress']}
-                title="Builds at work against the build limit"
-            >
-                5/3 building
+            <BuildLimit building={5} limit={3} title="Builds at work against the build limit">
+                5 running · limit 3
             </BuildLimit>
         ),
     },

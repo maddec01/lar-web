@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BookOpenIcon, FilmIcon, MusicIcon } from 'lucide-react';
 
+import { Artwork } from '../media/Artwork';
 import { ActivityCard, ActivityCardSkeleton } from './ActivityCard';
-import { Artwork } from './Artwork';
 import { Badge } from './Badge';
 
 const cover = (hue: number) =>
@@ -66,7 +66,7 @@ export const IconArtwork: Story = {
     },
 };
 
-export const Compact: Story = { args: { compact: true } };
+export const Compact: Story = { args: { size: 'sm' } };
 
 export const LongText: Story = {
     args: {

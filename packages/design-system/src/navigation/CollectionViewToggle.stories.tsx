@@ -38,12 +38,12 @@ export const Table: Story = { args: { value: 'table' } };
 /** Photos only make sense as a grid. */
 export const TableDisabled: Story = { args: { disabledViews: ['table'] } };
 
-function MapOrList({ compact }: { compact?: boolean }) {
+function MapOrList({ size }: { size?: 'sm' | 'md' }) {
     const [value, setValue] = useState<'map' | 'list'>('map');
 
     return (
         <ViewToggle
-            compact={compact}
+            size={size}
             value={value}
             onChange={setValue}
             options={[
@@ -54,12 +54,12 @@ function MapOrList({ compact }: { compact?: boolean }) {
     );
 }
 
-/** Any views, as Lar Factory's board draws a dossier as a Work map or a parts list; compact in a row's line. */
+/** Any views, as Lar Factory’s board draws a dossier as a Work map or a parts list; compact in a row’s line. */
 export const OtherViews: Story = {
     render: () => (
         <div className="flex items-center gap-4">
             <MapOrList />
-            <MapOrList compact />
+            <MapOrList size="sm" />
         </div>
     ),
 };
@@ -81,5 +81,25 @@ function Panes() {
     );
 }
 
-/** Text options, as Lar Factory's Add item dialog switches between its panes in its header. */
+/** Text options, as Lar Factory’s Add item dialog switches between its panes in its header. */
 export const TextOptions: Story = { render: () => <Panes /> };
+
+/** Text segments keep full labels and reveal the chosen segment within the row. */
+export const NarrowTextOptions: Story = {
+    render: () => (
+        <div className="w-64">
+            <ViewToggle
+                label="Metadata"
+                presentation="text"
+                value="background"
+                onChange={() => {}}
+                options={[
+                    { value: 'details', label: 'Details' },
+                    { value: 'match', label: 'Match' },
+                    { value: 'poster', label: 'Poster' },
+                    { value: 'background', label: 'Background' },
+                ]}
+            />
+        </div>
+    ),
+};

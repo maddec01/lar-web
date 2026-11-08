@@ -2,26 +2,29 @@
 import type { ReactNode } from 'react';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
-import { LinkBox } from '../typography/Link';
-import { Text } from '../typography/Typography';
+import { LinkBoxBase } from '../typography/Link';
+import { TextBase } from '../typography/Typography';
 
 function DataRowRoot({
     children,
     interactive,
     rowIndex,
 }: {
+    /** The row's cells. */
     children: ReactNode;
+    /** The row opens something: it highlights under the pointer and with focus inside. */
     interactive?: boolean;
+    /** The row's 1-based position in the whole table, for screen readers in a virtual list. */
     rowIndex: number;
 }) {
     return (
-        <LinkBox
+        <LinkBoxBase
             role="row"
             aria-rowindex={rowIndex}
-            className={`group group/media-item border-base-300/60 grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 border-b px-3 transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-base-100 focus-within:bg-base-100' : ''}`}
+            className={`group group/media-item border-line/60 grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 border-b px-3 transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-surface-raised focus-within:bg-surface-raised' : ''}`}
         >
             {children}
-        </LinkBox>
+        </LinkBoxBase>
     );
 }
 
@@ -47,9 +50,11 @@ function DataRowPrimary(props: DataRowPrimaryProps) {
 
     return (
         <span className="flex min-w-0 items-center gap-3">
-            {artwork ? <span className="size-10 shrink-0">{artwork}</span> : null}
+            {artwork ? (
+                <span className="size-10 shrink-0 group-data-[density=compact]/list:size-7">{artwork}</span>
+            ) : null}
             <span className="min-w-0 flex-1">
-                <Text
+                <TextBase
                     as="span"
                     className="block"
                     truncate
@@ -58,17 +63,24 @@ function DataRowPrimary(props: DataRowPrimaryProps) {
                     title={props.loading ? undefined : props.title}
                 >
                     {!props.loading && props.title}
-                </Text>
+                </TextBase>
                 {subtitle ? (
-                    <Text as="span" className="block" truncate variant="caption" tone="muted" loading={props.loading}>
+                    <TextBase
+                        as="span"
+                        className="block"
+                        truncate
+                        variant="caption"
+                        tone="muted"
+                        loading={props.loading}
+                    >
                         {!props.loading && props.subtitle}
-                    </Text>
+                    </TextBase>
                 ) : null}
             </span>
             {!props.loading && props.detail ? (
-                <Text as="span" className="ml-auto shrink-0" variant="caption" tone="muted">
+                <TextBase as="span" className="ml-auto shrink-0" variant="caption" tone="muted">
                     {props.detail}
-                </Text>
+                </TextBase>
             ) : null}
         </span>
     );

@@ -4,11 +4,11 @@
 // the field's `text-xs`.
 import { type RefObject, useLayoutEffect, useState } from 'react';
 
-/** The field's left padding, magnifier, gap and right padding. */
-const CHROME = 34;
-const SEARCH_WORD = 42;
+/** The field's borders, left padding, 16px magnifier, gap and right padding. */
+const CHROME = 48;
+const SEARCH_WORD = 48;
 const COUNT = 24;
-const KEY_HINT = 34;
+const KEY_HINT = 26;
 const GAP = 4;
 /** lar-server's trigger width, which the field keeps until its tokens ask for more. */
 const MIN_WIDTH = 224;

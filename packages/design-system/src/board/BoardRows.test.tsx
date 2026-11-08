@@ -4,6 +4,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it, vi } from 'vite-plus/test';
 
+import { DesignSystemProvider } from '../foundations/DesignSystemProvider';
 import { ViewToggle } from '../navigation/CollectionViewToggle';
 import { DossierChips, DossierLine, DossierNote, DossierTitle, DossierToggle } from './Dossier';
 import { SliceBar } from './Slices';
@@ -32,14 +33,16 @@ it("a dossier line's toggle, title, chips and note keep their clicks from the li
     const open = vi.fn();
 
     render(
-        <DossierLine item="I_1" picked={false} onClick={line}>
-            <DossierToggle open={false} label="Expand #1" onToggle={toggle} />
-            <DossierTitle name="#1 A concept" onOpen={open}>
-                #1 A concept
-            </DossierTitle>
-            <DossierChips first={{ words: '2 need you', tone: 'warning' }} more={['1 decision']} />
-            <DossierNote>On this Mac</DossierNote>
-        </DossierLine>,
+        <DesignSystemProvider>
+            <DossierLine item="I_1" picked={false} onClick={line}>
+                <DossierToggle open={false} label="Expand #1" onToggle={toggle} />
+                <DossierTitle name="#1 A concept" onOpen={open}>
+                    #1 A concept
+                </DossierTitle>
+                <DossierChips first={{ words: '2 need you', tone: 'warning' }} more={['1 decision']} />
+                <DossierNote>On this Mac</DossierNote>
+            </DossierLine>
+        </DesignSystemProvider>,
     );
     fireEvent.click(screen.getByRole('button', { name: 'Expand #1' }));
     fireEvent.click(screen.getByRole('button', { name: '#1 A concept' }));
@@ -47,6 +50,7 @@ it("a dossier line's toggle, title, chips and note keep their clicks from the li
     fireEvent.click(screen.getByText('On this Mac'));
     expect([toggle.mock.calls.length, open.mock.calls.length, line.mock.calls.length]).toEqual([1, 1, 0]);
     expect(screen.getByText('1 decision')).toHaveClass('sr-only');
+    expect(screen.getByRole('img', { name: '1 decision' })).toHaveAttribute('tabindex', '0');
 });
 
 it('a status glyph spins In progress and pulses the others only while running', () => {
@@ -55,7 +59,7 @@ it('a status glyph spins In progress and pulses the others only while running', 
     expect(container.querySelector('.status-spin svg')).not.toBeNull();
     rerender(<StatusGlyph status="Verify" running />);
     expect(container.querySelector('svg.status-pulse.lucide-circle-dot')).not.toBeNull();
-    expect(container.querySelector('svg')!.style.color).toBe('var(--st-amber)');
+    expect(container.querySelector('svg')!.style.color).toBe('var(--color-warning)');
     rerender(<StatusGlyph status="Verify" />);
     expect(container.querySelector('.status-pulse, .status-spin')).toBeNull();
 });
@@ -80,7 +84,7 @@ it('a view toggle presses the chosen view and offers the others', () => {
 
     render(
         <ViewToggle
-            compact
+            size="sm"
             value="map"
             onChange={change}
             options={[

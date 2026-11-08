@@ -12,6 +12,7 @@ const gh = (
         title="GitHub CLI is logged out."
         dismissLabel="Dismiss: GitHub CLI is logged out."
         onDismiss={fn()}
+        action={<Button {...buttonKind('other')}>Recheck</Button>}
     >
         The board reads GitHub through <code>gh</code>. Run <code>gh auth login</code>{' '}
         <CopyButton
@@ -21,7 +22,7 @@ const gh = (
             copiedLabel="Copied"
             value="gh auth login"
         />{' '}
-        in a terminal, then press Recheck. <Button {...buttonKind('other')}>Recheck</Button>
+        in a terminal, then press Recheck.
     </BoardWarning>
 );
 
@@ -31,11 +32,12 @@ const meta = {
     parameters: { layout: 'fullscreen' },
     args: {
         summary: '2 connections need attention',
+        toggleLabel: 'Show connection warnings',
         children: (
             <>
                 {gh}
                 <BoardWarning name="jq" title="jq not found." dismissLabel="Dismiss: jq not found." onDismiss={fn()}>
-                    lar-shape's scripts read gh's answers with <code>jq</code>. Install it with{' '}
+                    lar-shape’s scripts read gh’s answers with <code>jq</code>. Install it with{' '}
                     <code>brew install jq</code>, then press Recheck.
                 </BoardWarning>
             </>
@@ -48,11 +50,12 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Collapsed: only the summary shows until it's opened. */
+/** Collapsed: only the header shows until it’s opened. */
 export const Collapsed: Story = {};
 
 export const Open: Story = {
-    play: async ({ canvasElement }) => canvasElement.querySelector('summary')?.click(),
+    play: async ({ canvasElement }) =>
+        canvasElement.querySelector<HTMLButtonElement>('[aria-label="Show connection warnings"]')?.click(),
 };
 
 /** A lost board server shows open, above the list. */
@@ -61,6 +64,7 @@ export const WithLead: Story = {
         lead: (
             <BoardWarning
                 name="client-error"
+                tone="danger"
                 title="Board disconnected — showing last received data"
                 dismissLabel="Dismiss: board disconnected"
                 onDismiss={fn()}
@@ -68,6 +72,7 @@ export const WithLead: Story = {
                 Failed to fetch
             </BoardWarning>
         ),
+        leadTitle: 'Board disconnected',
         summary: undefined,
         children: undefined,
     },
@@ -77,8 +82,8 @@ export const Missing: StoryObj<typeof ToolMissing> = {
     render: () => (
         <div className="flex h-96 flex-col">
             <ToolMissing title="T3 Code not found" action={<Button {...buttonKind('other')}>Recheck</Button>}>
-                The board starts threads through T3 Code's <code>t3</code> command and didn't find it on the login
-                shell's PATH. Install T3 Code, then press Recheck. The board also looks again every 10 seconds.
+                The board starts threads through T3 Code’s <code>t3</code> command and didn’t find it on the login
+                shell’s PATH. Install T3 Code, then press Recheck. The board also looks again every 10 seconds.
             </ToolMissing>
         </div>
     ),

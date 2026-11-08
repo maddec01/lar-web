@@ -1,53 +1,59 @@
 import { ArrowRightIcon } from 'lucide-react';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
+import { type StatusDotTone, StatusIndicator, StatusIndicatorBase } from '../feedback/StatusIndicator';
+import type { StatusColour } from '../feedback/StatusState';
 import { tabbable } from '../foundations/KeyboardFocus';
 
 /** Where a product or feature stands: out now, being built, or planned. */
 export type Readiness = 'available' | 'development' | 'planned';
 
-const readinessClasses: Record<Readiness, { pill: string; dot: string }> = {
-    available: {
-        pill: 'bg-success/10 text-(--lar-success-text) ring-success/20 dark:bg-success/14',
-        dot: 'bg-success shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-success)_22%,transparent)]',
-    },
-    development: {
-        pill: 'bg-primary/10 text-primary ring-primary/20 dark:bg-primary/22 dark:text-[color-mix(in_srgb,var(--color-primary)_42%,white)] dark:ring-primary/35',
-        dot: 'bg-primary dark:bg-[color-mix(in_srgb,var(--color-primary)_60%,white)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_24%,transparent)]',
-    },
-    planned: {
-        pill: 'bg-base-200 text-base-800 ring-base-300 dark:bg-base-300/70',
-        dot: 'bg-base-500 dark:bg-base-600',
-    },
+/** Each readiness on the apps' one status map: out now is ready, planned is off, and being built takes the accent the
+ *  status light keeps for "In development". */
+const readinessColours: Record<Readiness, StatusColour<StatusDotTone>> = {
+    available: { state: 'ready' },
+    development: { tone: 'accent' },
+    planned: { state: 'off' },
 };
 
-/** A readiness label with its light. */
-export function StatusPill({ status, children }: { status: Readiness; children: ReactNode }) {
-    return (
-        <span
-            className={`inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium whitespace-nowrap ring-1 ring-inset ${readinessClasses[status].pill}`}
-        >
-            <StatusLight status={status} />
-            {children}
-        </span>
-    );
+/** A readiness in words beside its light: the apps' StatusIndicator dot and label, in the readiness's tone. */
+export function ReadinessStatus({
+    status,
+    children,
+}: {
+    /** The readiness: `available`, `development` or `planned`. */
+    status: Readiness;
+    /** The readiness in words. */
+    children: string;
+}) {
+    return <StatusIndicatorBase {...readinessColours[status]} size="sm" label={children} className="shrink-0" />;
 }
 
-export function StatusLight({ status, pulse }: { status: Readiness; pulse?: boolean }) {
-    return (
-        <span
-            aria-hidden="true"
-            className={`inline-block size-1.5 shrink-0 rounded-full ${readinessClasses[status].dot} ${pulse ? 'lar-led-pulse' : ''}`}
-        />
-    );
+/** A readiness as the design system's status light; the label beside it says what it means. */
+export function StatusLight({
+    status,
+    pulse,
+}: {
+    /** The readiness: `available`, `development` or `planned`. */
+    status: Readiness;
+    /** Breathes slowly, for something in development. */
+    pulse?: boolean;
+}) {
+    return <StatusIndicator {...readinessColours[status]} size="sm" pulse={pulse} />;
 }
 
-interface AnnouncementProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'style'> {
+interface AnnouncementProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'color' | 'style'> {
+    /** The news's page. */
     href: string;
+    /** A short tag before the text, such as "New". */
     tag: string;
+    /** The readiness whose light the tag carries; `available` by default. */
     status?: Readiness;
+    /** The news, in a few words. */
     children: ReactNode;
+    /** Opens in a new tab, for news on another site. */
     external?: boolean;
+    /** Called with the href as the link is followed, for client-side routing. */
     onNavigate?: (href: string) => void;
 }
 
@@ -74,16 +80,12 @@ export function Announcement({
                 event.preventDefault();
                 onNavigate(href);
             }}
-            className="group/announcement border-base-300 bg-base-100/80 text-base-800 hover:border-base-400 hover:text-base-content focus-visible:outline-primary dark:bg-base-200/60 inline-flex h-8 max-w-full items-center gap-2 rounded-full border py-1 pr-3 pl-1 text-[13px] shadow-xs/5 backdrop-blur transition-colors focus-visible:outline-2"
+            className="group/announcement border-line bg-surface-glass text-fg-soft hover:border-line-hover hover:text-fg focus-ring text-ui inline-flex h-8 max-w-full items-center gap-2 rounded-full border py-1 pr-3 pl-3 shadow-(--shadow-raised) backdrop-blur transition-colors"
         >
-            <span
-                className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2 text-xs font-semibold ${readinessClasses[status].pill}`}
-            >
-                <StatusLight status={status} pulse />
-                {tag}
-            </span>
+            <StatusIndicatorBase {...readinessColours[status]} size="sm" label={tag} pulse />
+            <span aria-hidden="true" className="bg-line h-3.5 w-px shrink-0" />
             <span className="truncate">{children}</span>
-            <span className="text-base-600 inline-flex transition-transform duration-200 group-hover/announcement:translate-x-0.5 [&_svg]:size-3.5">
+            <span className="text-fg-muted inline-flex transition-transform duration-(--motion-duration-base) group-hover/announcement:translate-x-0.5 [&_svg]:size-3.5">
                 <ArrowRightIcon />
             </span>
         </a>
@@ -91,8 +93,19 @@ export function Announcement({
 }
 
 /** A Lar app icon, cut to the platform's continuous corner. */
-export function AppIcon({ src, alt, size = 'md' }: { src: string; alt: string; size?: 'sm' | 'md' | 'lg' }) {
-    const sizes = { sm: 'size-9 rounded-[0.55rem]', md: 'size-12 rounded-[0.75rem]', lg: 'size-16 rounded-[1rem]' };
+export function AppIcon({
+    src,
+    alt,
+    size = 'md',
+}: {
+    /** The icon's image. */
+    src: string;
+    /** The app's name. */
+    alt: string;
+    /** `sm` 36px, `md` 48px (the default) or `lg` 64px. */
+    size?: 'sm' | 'md' | 'lg';
+}) {
+    const sizes = { sm: 'size-9 rounded-md', md: 'size-12 rounded-xl', lg: 'size-16 rounded-xl' };
 
     return (
         <img
@@ -101,7 +114,7 @@ export function AppIcon({ src, alt, size = 'md' }: { src: string; alt: string; s
             width={128}
             height={128}
             loading="lazy"
-            className={`shrink-0 shadow-[0_6px_16px_-6px_rgb(0_0_0/45%),inset_0_0_0_0.5px_rgb(255_255_255/12%)] ${sizes[size]}`}
+            className={`shrink-0 shadow-(--shadow-showcase-app-icon) ${sizes[size]}`}
         />
     );
 }

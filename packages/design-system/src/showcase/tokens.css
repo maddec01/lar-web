@@ -1,0 +1,42 @@
+/* The marketing showcase's own tokens: the device frames' metal and shadow, and the stage's glow and grid. Only
+   showcase.css loads them; the apps' palette (foundations/theme.css) carries none of them. */
+:root {
+    --lar-laptop-base: linear-gradient(180deg, #e8e9eb 0%, #c9cbcf 30%, #9fa2a8 72%, #75787e 100%);
+    --lar-laptop-base-highlight: rgb(255 255 255 / 70%);
+    --lar-laptop-groove: linear-gradient(180deg, #a8abb1, #c4c6ca);
+    --lar-app-bezel: #e8e9eb;
+    --lar-app-bezel-edge: #c9cbcf;
+    --lar-app-bezel-rim: #9fa2a8;
+    --lar-device-shadow: rgb(15 23 42 / 22%);
+    --lar-glow: oklch(0.62 0.13 264 / 0.2);
+    --lar-glow-soft: oklch(0.7 0.1 264 / 0.12);
+    --lar-grid-line: rgb(0 0 0 / 4.5%);
+    /* A product card's and band's hue glow (oklch lightness and alpha; the hue and chroma are the product's). */
+    --lar-card-glow-lightness: 0.6;
+    --lar-card-glow-alpha: 0.16;
+    --lar-band-glow-lightness: 0.6;
+    --lar-band-glow-alpha: 0.24;
+    /* The showcase's elevations: a node or step tile standing off the page, an app icon, and a product card's lit top
+       edge at rest and its long shadow on hover. */
+    --shadow-showcase-tile: 0 12px 28px -14px rgb(0 0 0 / 45%);
+    --shadow-showcase-app-icon: 0 6px 16px -6px rgb(0 0 0 / 45%), inset 0 0 0 0.5px rgb(255 255 255 / 12%);
+    --shadow-showcase-card: inset 0 1px rgb(255 255 255 / 4%);
+    --shadow-showcase-card-hover: 0 30px 80px -40px rgb(0 0 0 / 45%);
+
+    @variant dark {
+        --lar-laptop-base: linear-gradient(180deg, #4a4b50 0%, #2f3034 34%, #1f2023 76%, #141517 100%);
+        --lar-laptop-base-highlight: rgb(255 255 255 / 18%);
+        --lar-laptop-groove: linear-gradient(180deg, #1b1c1f, #2c2d31);
+        --lar-app-bezel: #0c0c0e;
+        --lar-app-bezel-edge: #2c2d31;
+        --lar-app-bezel-rim: #5d5f65;
+        --lar-device-shadow: rgb(0 0 0 / 70%);
+        --lar-glow: oklch(0.5 0.14 264 / 0.38);
+        --lar-glow-soft: oklch(0.55 0.12 264 / 0.16);
+        --lar-grid-line: rgb(255 255 255 / 4%);
+        --lar-card-glow-lightness: 0.5;
+        --lar-card-glow-alpha: 0.3;
+        --lar-band-glow-lightness: 0.42;
+        --lar-band-glow-alpha: 0.45;
+    }
+}

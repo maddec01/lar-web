@@ -8,8 +8,8 @@ const meta = {
     component: LossList,
     decorators: [
         (Story) => (
-            <div className="w-96">
-                <Alert tone="danger" title="Deleting local work will lose these files and commits">
+            <div className="w-full max-w-2xl">
+                <Alert size="sm" tone="danger" title="Deleting local work will lose these files and commits">
                     <Story />
                 </Alert>
             </div>
@@ -27,5 +27,5 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** What removing old branches and worktrees would lose, inside its confirmation's danger alert. */
+/** What removing old branches and worktrees would lose, inside its confirmation’s danger alert. */
 export const Losses: Story = {};

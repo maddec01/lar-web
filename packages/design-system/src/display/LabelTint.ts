@@ -1,16 +1,18 @@
 // A tracker's label colour (GitHub's, say) as a chip's style. A label's colour says nothing about what it sits on, so the text starts from a
 // mix with the foreground and moves towards the foreground, in each mode, until it reaches the contrast a chip's name needs.
 
+import { semanticColors } from '../foundations/tokens';
+
 type Rgb = readonly [number, number, number];
 type Mode = 'light' | 'dark';
 
 /** WCAG AA for text this small. */
 export const CONTRAST_FLOOR = 4.5;
 
-/** The palette's foreground, and the surface a chip's text contrasts least with: the accent a hovered or picked row fills with. */
+/** The palette's foreground, and the surface a chip's text contrasts least with: the fill a picked row takes. */
 export const PALETTE: Record<Mode, { foreground: string; surface: string }> = {
-    light: { foreground: '#27272a', surface: '#f4f4f5' },
-    dark: { foreground: '#f5f5f5', surface: '#161616' },
+    light: { foreground: semanticColors.fg.light, surface: semanticColors['fill-selected'].light },
+    dark: { foreground: semanticColors.fg.dark, surface: semanticColors['fill-selected'].dark },
 };
 
 const FILL = 0.16;
@@ -42,7 +44,7 @@ export function contrastRatio(a: string, b: string): number {
     return (lighter + 0.05) / (darker + 0.05);
 }
 
-/** A chip's fill in `mode`, as tint's `color-mix` paints it over the palette's surface. */
+/** A chip's fill in `mode`, as tint's translucent colour paints it over the palette's surface. */
 export const chipFill = (color: string, mode: Mode): string =>
     hexOf(mixed(rgbOf(color)!, rgbOf(PALETTE[mode].surface)!, FILL));
 
@@ -62,11 +64,14 @@ export function chipText(color: string, mode: Mode): string {
 }
 
 /** A soft tint of a tracker's label colour with its name readable in both modes; none, or one that isn't a colour, keeps the Badge's neutral style. */
-export const tint = (color: string | undefined) =>
-    color && rgbOf(color)
+export const tint = (color: string | undefined) => {
+    const rgb = color ? rgbOf(color) : null;
+
+    return color && rgb
         ? {
-              backgroundColor: `color-mix(in srgb, ${color} ${FILL * 100}%, transparent)`,
+              backgroundColor: `rgb(${rgb.join(' ')} / ${FILL * 100}%)`,
               color: `light-dark(${chipText(color, 'light')}, ${chipText(color, 'dark')})`,
-              boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${color} 40%, transparent)`,
+              boxShadow: `inset 0 0 0 1px rgb(${rgb.join(' ')} / 40%)`,
           }
         : undefined;
+};

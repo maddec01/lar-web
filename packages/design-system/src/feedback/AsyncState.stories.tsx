@@ -9,7 +9,7 @@ const meta = {
     component: AsyncState,
     args: {
         label: 'Loading albums',
-        errorTitle: 'Could not load albums',
+        errorTitle: 'Couldn’t load albums',
         loading: true,
     },
     decorators: [
@@ -49,7 +49,7 @@ export const LoadFailed: Story = {
         loading: false,
         error: 'The server returned 503 Service Unavailable.',
         onRetry: fn(),
-        retryLabel: 'Retry',
+        retryLabel: 'Try again',
     },
 };
 

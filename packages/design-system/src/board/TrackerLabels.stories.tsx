@@ -54,7 +54,7 @@ const meta = {
     component: TrackerLabelList,
     args: { children: null },
     render: () => (
-        <div className="grid max-w-2xl gap-3">
+        <div className="grid w-full max-w-2xl gap-3">
             <InsetPanel presentation="settings">
                 <FormRow layout="flow" label="New label">
                     <CreateLabelForm onSubmit={(event) => event.preventDefault()}>
@@ -69,7 +69,7 @@ const meta = {
                 <TrackerLabelRow
                     data-label="bug"
                     chip={<LabelChip label="bug" color="#D73A4A" />}
-                    detail="Something isn't working"
+                    detail="Something isn’t working"
                     actions={actions('bug')}
                     editor={editor}
                 />

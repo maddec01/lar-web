@@ -8,7 +8,7 @@ const notes = (
         releases={[
             {
                 version: '1.4.0',
-                title: "What's changed",
+                title: 'What’s changed',
                 items: ['The title bar comes from the design system.', 'Counters fold earlier on narrow windows.'],
                 more: '3 more changes in this Release',
             },

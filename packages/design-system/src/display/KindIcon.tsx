@@ -6,7 +6,7 @@ export function KindIcon({ hue, children }: { hue?: number; children: ReactNode 
     return (
         <span
             aria-hidden="true"
-            className={`contents ${hue === undefined ? 'text-base-500 dark:text-base-600' : 'kind-icon'}`}
+            className={`contents ${hue === undefined ? 'text-fg-muted' : 'kind-icon'}`}
             style={hue === undefined ? undefined : ({ '--lar-kind-hue': hue } as CSSProperties)}
         >
             {children}

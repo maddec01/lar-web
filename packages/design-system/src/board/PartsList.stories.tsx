@@ -57,10 +57,11 @@ function Parts() {
                 }
                 action={
                     <Button
-                        {...buttonKind('open')}
+                        {...buttonKind('control')}
                         iconOnly
                         leftIcon={<MessageSquareTextIcon />}
                         aria-label="Open thread"
+                        title="Open thread"
                     />
                 }
                 second={
@@ -70,7 +71,7 @@ function Parts() {
                     >
                         <ThreadLine
                             title="Build the relay endpoint"
-                            glyph={<StatusGlyph status="In progress" running presentation="compact" />}
+                            glyph={<StatusGlyph status="In progress" running size="sm" />}
                             name="T3 · Build the relay endpoint"
                             state="running"
                         />
@@ -102,7 +103,7 @@ const meta = {
     component: PartsList,
     args: { children: null },
     render: () => (
-        <div className="@container w-[48rem]">
+        <div className="@container w-192">
             <Parts />
         </div>
     ),
@@ -115,7 +116,7 @@ type Story = StoryObj<typeof meta>;
 /** A part at work and a picked one waiting, and the button that unfolds the done ones. */
 export const Parts_: Story = { name: 'Parts' };
 
-/** Each kind's label. */
+/** Each kind’s label. */
 export const Kinds: Story = {
     render: () => (
         <div className="flex flex-wrap gap-3">
@@ -124,6 +125,58 @@ export const Kinds: Story = {
                     {kind}
                 </PartKindLabel>
             ))}
+        </div>
+    ),
+};
+
+const conceptParts = [
+    { ref: '#203', title: 'Direct connections: automatic port mapping', status: 'Complete', glyph: 'Done' },
+    { ref: '#202', title: 'Sign-in screen', status: 'Needs you', glyph: 'Needs you' },
+    { ref: '#201', title: 'Direct connections: fallback guidance', status: 'Shaping', glyph: 'Shaping' },
+    { ref: '#140', title: 'Owner accounts', status: 'Blocked · starts after #202', glyph: 'Ready' },
+] as const;
+
+/** A concept's parts as its dialog lists them, in a column a dialog's width gives it: each part's status, source and
+ *  title, its status under them on one line, its usage on its own line, and only a quiet thread icon with a label/tooltip beside it. Two
+ *  parts left the board, which the count says beside "2/6 done". */
+export const ConceptParts: Story = {
+    render: () => (
+        <div className="@container grid w-160 max-w-full gap-3">
+            <PartsList>
+                {conceptParts.map((part) => (
+                    <PartRow
+                        key={part.ref}
+                        id={part.ref}
+                        picked={false}
+                        title={`${part.ref} ${part.title}`}
+                        onOpen={fn()}
+                        name={
+                            <PartName
+                                source={<SourceIcon source="github" label="GitHub issue." />}
+                                glyph={
+                                    <StatusGlyph
+                                        status={part.glyph}
+                                        state={part.glyph === 'Ready' ? 'waiting' : undefined}
+                                    />
+                                }
+                            >
+                                <ItemTitle reference={part.ref} title={part.title} />
+                            </PartName>
+                        }
+                        meta={part.status}
+                        usage="Agent time 22m · 1.41M tokens · $2.05"
+                        action={
+                            <Button
+                                {...buttonKind('control')}
+                                iconOnly
+                                leftIcon={<MessageSquareTextIcon />}
+                                aria-label="Open thread"
+                                title="Open thread"
+                            />
+                        }
+                    />
+                ))}
+            </PartsList>
         </div>
     ),
 };

@@ -6,10 +6,10 @@ import { Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
 import { Comment, CommentList } from '../display/Comment';
 import { LabelChip } from '../display/LabelChip';
-import { Person } from '../display/Person';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Disclosure } from '../forms/FormSection';
 import { Inline } from '../layout/Flow';
+import { Person } from '../media/Person';
 import { Text } from '../typography/Typography';
 import { PartName } from './Attention';
 import { buttonKind } from './ButtonKinds';
@@ -46,7 +46,7 @@ const meta = {
     component: MetaArea,
     decorators: [
         (Story) => (
-            <div className="max-w-2xl">
+            <div className="w-full max-w-3xl">
                 <Story />
             </div>
         ),
@@ -70,7 +70,7 @@ const meta = {
                             <LabelChip
                                 label="linked-work"
                                 locked
-                                lockedLabel="The factory manages this for saved links, so it can't be edited."
+                                lockedLabel="The factory manages this for saved links, so it can’t be edited."
                             />
                         </ChipGroup>
                         <IconButton variant="inline" aria-label="Edit labels" icon={<PencilIcon />} />
@@ -81,7 +81,7 @@ const meta = {
                 </DetailFact>
                 <DetailFact label="Updated">3h ago</DetailFact>
                 <Text variant="caption" tone="muted" ownLine role="status">
-                    Changed the ticket's labels: bug → feature.
+                    Changed the ticket’s labels: bug → feature.
                 </Text>
             </>
         ),
@@ -92,10 +92,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The meta area's facts, people and labels, wrapping, with a placeholder while the details load. */
+/** The meta area’s facts, people and labels, wrapping, with a placeholder while the details load. */
 export const Meta_: Story = { name: 'Meta area' };
 
-/** A kind change that failed, with what it changed so far and Retry. */
+/** A kind change that failed, with what it changed so far and Try again. */
 export const KindChangeFailed: Story = {
     args: {
         children: (
@@ -103,7 +103,7 @@ export const KindChangeFailed: Story = {
                 lines={['GitHub refused the label change.', 'Nothing changed on the ticket.']}
                 action={
                     <Button {...buttonKind('other')} onClick={fn()}>
-                        Retry
+                        Try again
                     </Button>
                 }
             />
@@ -111,10 +111,21 @@ export const KindChangeFailed: Story = {
     },
 };
 
-/** Where the item's kind and its ticket's disagree, with the two answers. */
+/** Where the item’s kind and its ticket’s disagree, with the two answers. */
 export const KindDisagreement: Story = {
     args: {
         children: (
+            <>
+                <DetailFact label="Author">
+                    <Person name="Ana Silva" />
+                </DetailFact>
+                <DetailFact label="Labels">
+                    <LabelChip label="bug" />
+                </DetailFact>
+                <DetailFact label="Updated">3h ago</DetailFact>
+            </>
+        ),
+        notice: (
             <KindQuestion
                 message="Shaping decided this is a Feature. The ticket still says Bug."
                 actions={
@@ -136,13 +147,13 @@ export const KindDisagreement: Story = {
     },
 };
 
-/** The description: its header with Edit, a Spec's sync notice, its text and a folded original. */
+/** The description: its header with Edit, a Spec’s sync notice, its text and a folded original. */
 export const Description: StoryObj<typeof MainSection> = {
     render: () => (
         <MainSection
             header={
                 <SectionHeader heading="Spec">
-                    <HeaderStatus>Saved; could not reload the details</HeaderStatus>
+                    <HeaderStatus>Saved; couldn’t reload the details</HeaderStatus>
                     <Button {...buttonKind('other')} onClick={fn()}>
                         Edit
                     </Button>
@@ -151,7 +162,7 @@ export const Description: StoryObj<typeof MainSection> = {
         >
             <SpecSync status="The Spec is waiting to save to the tracker." error="GitHub timed out.">
                 <Button {...buttonKind('other')} onClick={fn()}>
-                    Retry Spec sync
+                    Try again Spec sync
                 </Button>
             </SpecSync>
             <Text>Owners sign in with a passkey.</Text>
@@ -165,28 +176,32 @@ export const Description: StoryObj<typeof MainSection> = {
     ),
 };
 
-/** The editor's actions: whether it changed, or the save's error in its place, then Cancel and Save. */
+/** The editor’s unsaved state, with one Cancel and one Save. */
 export const Editing: StoryObj<typeof EditActions> = {
     render: () => (
-        <div className="grid gap-3">
-            <EditActions status="Unsaved changes">
-                <Button {...buttonKind('other')} onClick={fn()}>
-                    Cancel
-                </Button>
-                <Button {...buttonKind('main')} onClick={fn()}>
-                    Save
-                </Button>
-            </EditActions>
-            <EditActions status="Unsaved changes" error="GitHub refused the edit: the issue is locked.">
-                <Button {...buttonKind('other')} onClick={fn()}>
-                    Cancel
-                </Button>
-            </EditActions>
-        </div>
+        <EditActions status="Unsaved changes">
+            <Button {...buttonKind('other')} onClick={fn()}>
+                Cancel
+            </Button>
+            <Button {...buttonKind('main')} onClick={fn()}>
+                Save
+            </Button>
+        </EditActions>
     ),
 };
 
-/** A work record's facts: its build phase and review rounds. */
+/** A refused edit retains its error and one way to cancel. */
+export const EditFailed: StoryObj<typeof EditActions> = {
+    render: () => (
+        <EditActions status="Unsaved changes" error="GitHub refused the edit: the issue is locked.">
+            <Button {...buttonKind('other')} onClick={fn()}>
+                Cancel
+            </Button>
+        </EditActions>
+    ),
+};
+
+/** A work record’s facts: its build phase and review rounds. */
 export const RecordFacts: StoryObj<typeof DetailFact> = {
     render: () => (
         <MainSection as="section" header={<SectionHeader heading="Brief" />}>
@@ -219,7 +234,7 @@ export const Comments: StoryObj<typeof CommentList> = {
     ),
 };
 
-/** The sidebar's lists: what the item waits on, a sprint's children, attachments, and an error. */
+/** The sidebar’s lists: what the item waits on, a sprint’s children, attachments, and an error. */
 export const Sidebar: StoryObj<typeof DetailsSection> = {
     render: () => (
         <div className="grid w-64 gap-4">
@@ -243,12 +258,12 @@ export const Sidebar: StoryObj<typeof DetailsSection> = {
                     <AttachmentLink href="#flow" name="sign-up-flow.png" />
                 </TicketLinkList>
             </DetailsSection>
-            <DetailsText tone="error">Could not load linked work items: Timed out</DetailsText>
+            <DetailsText tone="danger">Couldn’t load linked work items: Timed out</DetailsText>
         </div>
     ),
 };
 
-/** A concept's parts, each opening its item: the dossier's PartRow, its state in its meta line and its figures as its
+/** A concept’s parts, each opening its item: the dossier’s PartRow, its state in its meta line and its figures as its
  *  action. */
 export const ConceptParts: StoryObj<typeof PartRow> = {
     render: () => (
@@ -295,7 +310,7 @@ export const ConceptParts: StoryObj<typeof PartRow> = {
     ),
 };
 
-/** Create issue's outgoing title and text. */
+/** Create issue’s outgoing title and text. */
 export const Outgoing: StoryObj<typeof OutgoingTicket> = {
     render: () => (
         <div className="grid w-96 gap-3">
@@ -309,7 +324,7 @@ export const Outgoing: StoryObj<typeof OutgoingTicket> = {
     ),
 };
 
-/** A build's checks, folded until opened. */
+/** A build’s checks, folded until opened. */
 export const Checks: StoryObj<typeof CheckRun> = {
     render: () => (
         <Disclosure presentation="section" label="Checks" lazy onOpenChange={fn()}>

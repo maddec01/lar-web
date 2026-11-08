@@ -6,7 +6,12 @@ import type { FormEvent, ReactNode } from 'react';
 import type { DataAttributes } from './DataAttributes';
 
 /** The tracker's labels, a row each, in a bordered list that never grows past its section. */
-export function TrackerLabelList({ children }: { children: ReactNode }) {
+export function TrackerLabelList({
+    children,
+}: {
+    /** The labels, one TrackerLabelRow each. */
+    children: ReactNode;
+}) {
     return (
         <ul className="m-0 grid list-none grid-cols-[minmax(0,1fr)] overflow-hidden rounded-lg border p-0">
             {children}
@@ -25,16 +30,20 @@ export function TrackerLabelRow({
     editor,
     ...data
 }: {
+    /** The label's chip. */
     chip: ReactNode;
+    /** The label's description, truncating. */
     detail?: string | undefined;
+    /** The row's actions, such as Edit. */
     actions?: ReactNode;
+    /** The editor it has open, a TrackerLabelEditor. */
     editor?: ReactNode;
 } & DataAttributes) {
     return (
         <li {...data} className="border-b last:border-b-0">
             <div className="flex min-w-0 items-center gap-3 px-3 py-1.5">
                 <span className="max-w-[45%] min-w-0">{chip}</span>
-                <span className="text-base-700 min-w-0 flex-1 truncate text-xs" title={detail}>
+                <span className="text-fg-muted min-w-0 flex-1 truncate text-xs" title={detail}>
                     {detail}
                 </span>
                 {actions && <span className="flex shrink-0 gap-1">{actions}</span>}
@@ -49,11 +58,13 @@ export function TrackerLabelEditor({
     onSubmit,
     children,
 }: {
+    /** Called as the reader saves the label. */
     onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+    /** The editor's fields and buttons. */
     children: ReactNode;
 }) {
     return (
-        <form className="bg-base-200/40 grid gap-3 border-t p-3" onSubmit={onSubmit}>
+        <form className="bg-surface-sunken grid gap-3 border-t p-3" onSubmit={onSubmit}>
             {children}
         </form>
     );
@@ -64,7 +75,9 @@ export function CreateLabelForm({
     onSubmit,
     children,
 }: {
+    /** Called as the reader creates the label. */
     onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+    /** The name field and the submit button. */
     children: ReactNode;
 }) {
     return (

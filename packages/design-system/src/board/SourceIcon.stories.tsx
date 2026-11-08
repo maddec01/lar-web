@@ -18,11 +18,11 @@ export const Azure: Story = { args: { source: 'azure', label: 'Azure DevOps work
 
 export const OnThisMachine: Story = { args: { source: 'local', label: 'Saved only on this machine.' } };
 
-/** A tab in a card's top right corner. */
+/** A tab in a card’s top right corner. */
 export const Corner: Story = {
     decorators: [
         (Story) => (
-            <div className="relative h-20 w-60 rounded-lg border border-(--border) bg-(--card)">
+            <div className="border-line bg-surface-raised relative h-20 w-60 rounded-lg border">
                 <Story />
             </div>
         ),

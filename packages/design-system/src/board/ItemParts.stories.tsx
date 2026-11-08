@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SparklesIcon } from 'lucide-react';
 
 import { Badge } from '../display/Badge';
+import { KindBadge } from '../display/KindBadge';
 import { LabelChip } from '../display/LabelChip';
 import { Inline } from '../layout/Flow';
 import { Text } from '../typography/Typography';
 import { ItemFields, ItemTitle, KindMarker, RepoIdentity, RepoTag, TitleLink } from './ItemParts';
 
-const icon = <span className="grid size-3.5 place-items-center rounded-sm bg-sky-500 text-[9px] text-white">L</span>;
+const icon = <span className="text-3xs grid size-3.5 place-items-center rounded-sm bg-sky-500 text-white">L</span>;
 
 const meta = {
     title: 'Board/ItemParts',
@@ -54,16 +55,16 @@ export const Repositories: Story = {
     ),
 };
 
-/** The badges and notes beside an item's kind. */
+/** The badges and notes beside an item’s kind. */
 export const KindAndLabels: Story = {
     render: () => (
         <div className="grid w-80 gap-2">
             <Inline as="span" inline wrap space="tight">
-                <Badge hue={150}>
+                <KindBadge hue={150}>
                     <SparklesIcon aria-hidden="true" />
                     Feature
-                </Badge>
-                <KindMarker said="Bug" label="The ticket says Bug." title="The ticket says Bug. Open to choose." />
+                    <KindMarker said="ticket says Bug" title="The ticket says Bug. Open to choose." />
+                </KindBadge>
                 <Badge>Part of a concept</Badge>
             </Inline>
             <span className="flex flex-wrap gap-1">

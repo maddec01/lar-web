@@ -29,7 +29,7 @@ const meta = {
     argTypes: { actions: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),
@@ -40,14 +40,14 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The home page's closing panel. */
+/** The home page’s closing panel. */
 export const Default: Story = {};
 
-/** Lar Server's closing panel, with a note under the actions. */
+/** Lar Server’s closing panel, with a note under the actions. */
 export const WithNote: Story = {
     args: {
         title: 'Lar Server is on its way home.',
-        lead: "It's being built one app at a time, on real hardware. Want to hear the moment it's ready?",
+        lead: 'It’s being built one app at a time, on real hardware. Want to hear the moment it’s ready?',
         note: 'Opens your email app with a note asking for one launch email.',
         actions: (
             <>

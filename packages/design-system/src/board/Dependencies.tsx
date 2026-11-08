@@ -2,8 +2,15 @@
 
 import type { ReactNode } from 'react';
 
+import { Alert } from '../feedback/Alert';
+
 /** The Dependencies, one DependencyItem each. */
-export function DependencyList({ children }: { children: ReactNode }) {
+export function DependencyList({
+    children,
+}: {
+    /** The Dependencies, one DependencyItem each. */
+    children: ReactNode;
+}) {
     return <ul className="m-0 grid list-none gap-3 p-0 text-sm">{children}</ul>;
 }
 
@@ -18,12 +25,19 @@ export function DependencyItem({
     notice,
     action,
 }: {
+    /** The Dependency's id, for its anchor. */
     id: string;
+    /** Who owns it and whether it is met. */
     owner: ReactNode;
+    /** What it needs. */
     need: ReactNode;
+    /** The board's latest read of it. */
     read: ReactNode;
+    /** What the read rests on. */
     evidence: ReactNode;
+    /** What the board asks about it. */
     notice?: ReactNode;
+    /** What you can do about it. */
     action: ReactNode;
 }) {
     return (
@@ -32,16 +46,16 @@ export function DependencyItem({
                 {owner}
             </span>
             <span>{need}</span>
-            <span className="text-xs text-(--muted-foreground)" data-dependency-read>
+            <span className="text-fg-muted text-xs" data-dependency-read>
                 {read}
             </span>
-            <span className="text-xs text-(--muted-foreground)" data-dependency-evidence>
+            <span className="text-fg-muted text-xs" data-dependency-evidence>
                 {evidence}
             </span>
             {notice && (
-                <p className="m-0 text-xs font-medium text-(--warning-foreground)" data-dependency-notice>
-                    {notice}
-                </p>
+                <div data-dependency-notice>
+                    <Alert size="sm" tone="warning" message={notice} />
+                </div>
             )}
             <span>{action}</span>
         </li>

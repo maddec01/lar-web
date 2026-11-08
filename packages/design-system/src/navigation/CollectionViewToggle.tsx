@@ -1,8 +1,10 @@
 import { LayoutGridIcon, TableIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useCallback, useRef } from 'react';
 
-import { IconButton } from '../actions/IconButton';
+import { IconButtonBase } from '../actions/IconButton';
 import { tabbable } from '../foundations/KeyboardFocus';
+import { useScrollFade } from '../overlays/useScrollFade';
+import { useRevealSelection } from './useRevealSelection';
 
 export type CollectionView = 'grid' | 'table';
 
@@ -17,7 +19,7 @@ export interface ViewToggleOption<V extends string> {
 }
 
 /**
- * A group of icon buttons that picks one way of drawing a view, the picked one raised. `compact` draws 24px buttons with
+ * A group of icon buttons that picks one way of drawing a view, the picked one raised. `size="sm"` draws 24px buttons with
  * 14px icons, for a row's line. As `text`, each button is its label in small type, such as a dialog's panes in its
  * header.
  */
@@ -26,20 +28,42 @@ export function ViewToggle<V extends string>({
     options,
     value,
     onChange,
-    compact = false,
+    size = 'md',
     presentation = 'icons',
 }: {
     /** Names the group; with none, the group is named by its options alone. */
     label?: string;
+    /** The ways to draw the view, each with its icon and label. */
     options: readonly ViewToggleOption<V>[];
+    /** The way the view is drawn now. */
     value: V;
+    /** Called with the way the reader picks. */
     onChange: (view: V) => void;
-    compact?: boolean;
+    /** 24px buttons with 14px icons, for a row's line. */
+    size?: 'sm' | 'md';
+    /** `icons` (the default) shows icons named by their labels; `text` shows the labels. */
     presentation?: 'icons' | 'text';
 }) {
+    const row = useRef<HTMLDivElement>(null);
+    const { setViewport, className: fade } = useScrollFade({ axis: 'horizontal' });
+    const attachRow = useCallback(
+        (element: HTMLDivElement | null) => {
+            row.current = element;
+            setViewport(element);
+        },
+        [setViewport],
+    );
+
+    useRevealSelection(row, value);
+
     if (presentation === 'text')
         return (
-            <div role="group" aria-label={label} className="bg-base-200 flex gap-0.5 rounded-lg p-0.5">
+            <div
+                ref={attachRow}
+                role="group"
+                aria-label={label}
+                className={`bg-fill-muted flex max-w-full min-w-0 gap-0.5 overflow-x-auto overflow-y-hidden rounded-lg p-0.5 ${fade}`}
+            >
                 {options.map((option) => (
                     <button
                         key={option.value}
@@ -49,7 +73,7 @@ export function ViewToggle<V extends string>({
                         aria-pressed={value === option.value}
                         disabled={option.disabled}
                         onClick={() => onChange(option.value)}
-                        className={`focus-visible:ring-primary h-7 rounded-md px-2.5 text-xs font-medium outline-none focus-visible:ring-2 ${value === option.value ? 'bg-base-100 text-base-content shadow-sm' : 'hover:text-base-content text-(--muted-foreground)'}`}
+                        className={`focus-ring h-7 shrink-0 rounded-md px-2.5 text-xs font-medium whitespace-nowrap ${value === option.value ? 'bg-surface-raised text-fg shadow-(--shadow-raised)' : 'hover:text-fg text-fg-muted'}`}
                     >
                         {option.label}
                     </button>
@@ -58,9 +82,14 @@ export function ViewToggle<V extends string>({
         );
 
     return (
-        <div role="group" aria-label={label} className="bg-base-200/70 flex gap-0.5 rounded-lg p-0.5">
+        <div
+            ref={attachRow}
+            role="group"
+            aria-label={label}
+            className={`bg-fill-muted flex max-w-full min-w-0 gap-0.5 overflow-x-auto overflow-y-hidden rounded-lg p-0.5 ${fade}`}
+        >
             {options.map((option) => (
-                <IconButton
+                <IconButtonBase
                     key={option.value}
                     {...option.attributes}
                     aria-label={option.label}
@@ -68,7 +97,7 @@ export function ViewToggle<V extends string>({
                     disabled={option.disabled}
                     icon={option.icon}
                     title={option.label}
-                    className={buttonClasses(value === option.value, compact)}
+                    className={buttonClasses(value === option.value, size)}
                     onClick={() => onChange(option.value)}
                     tone="neutral"
                 />
@@ -78,11 +107,17 @@ export function ViewToggle<V extends string>({
 }
 
 interface CollectionViewToggleProps {
+    /** Views that can't show this collection now, offered but disabled. */
     disabledViews?: readonly CollectionView[];
+    /** The grid button's accessible name, such as "Grid". */
     gridLabel: string;
+    /** Names the group, such as "View". */
     label: string;
+    /** Called with the view the reader picks. */
     onChange: (view: CollectionView) => void;
+    /** The table button's accessible name, such as "Table". */
     tableLabel: string;
+    /** The view shown now. */
     value: CollectionView;
 }
 
@@ -117,6 +152,6 @@ export function CollectionViewToggle({
     );
 }
 
-function buttonClasses(active: boolean, compact: boolean): string {
-    return `${compact ? 'size-6 **:data-[slot=icon]:size-3.5' : 'size-8'} p-0 ${active ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-600'}`;
+function buttonClasses(active: boolean, size: 'sm' | 'md'): string {
+    return `${size === 'sm' ? 'size-6 **:data-[slot=icon]:size-3.5' : 'size-8'} p-0 ${active ? 'bg-surface-raised text-fg shadow-(--shadow-raised)' : 'text-fg-muted'}`;
 }

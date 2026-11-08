@@ -2,37 +2,53 @@
 
 import type { ReactNode } from 'react';
 
+import { linkRecipe } from '../typography/LinkRecipe';
+
 /** The earlier threads, one EarlierThread each, in small muted text. */
-export function EarlierThreadList({ children }: { children: ReactNode }) {
+export function EarlierThreadList({
+    children,
+}: {
+    /** The threads, one EarlierThread each. */
+    children: ReactNode;
+}) {
     return (
-        <ul className="m-0 grid list-none gap-1 p-0 text-xs text-(--muted-foreground)" data-earlier-threads>
+        <ul className="text-fg-muted m-0 grid list-none gap-1 p-0 text-xs" data-earlier-threads>
             {children}
         </ul>
     );
 }
 
-/** An earlier thread: its `name`, linked when `href` opens it, then its `state`; `title` names it in full. */
+/** An earlier thread: its `name`, linked when `href` opens it, then its `state`; `title` names it in full. The name
+ *  truncates alone, so the state stays in view. */
 export function EarlierThread({
     name,
     title,
     href,
     state,
 }: {
+    /** The thread's name, which truncates alone. */
     name: string;
+    /** The thread in full, as its tooltip. */
     title: string;
+    /** The thread's page; the name is plain text without one. */
     href?: string | undefined;
+    /** The thread's state. */
     state: ReactNode;
 }) {
     return (
         <li className="flex min-w-0 items-center gap-1.5" title={title}>
             {href ? (
-                <a href={href} className="truncate underline">
+                <a href={href} data-thread-name className={`truncate ${linkRecipe.accent}`}>
                     {name}
                 </a>
             ) : (
-                <span className="truncate">{name}</span>
+                <span data-thread-name className="truncate">
+                    {name}
+                </span>
             )}{' '}
-            <span className="shrink-0">· {state}</span>
+            <span data-thread-state className="shrink-0">
+                · {state}
+            </span>
         </li>
     );
 }

@@ -40,10 +40,11 @@ export type ProjectIconSource =
 /** The board's palette of repository colours, which the repositories take in their list order. */
 const REPO_TONES = 8;
 
+/** An emoji's glyph fills about as much of its square as a lucide icon's strokes do, so a row's icons line up. */
 const SIZES = {
-    small: { square: 'size-3.5 text-[8px]', emoji: 'text-[10px]', monogram: 'text-[7px]' },
-    row: { square: 'size-4 text-[9px]', emoji: 'text-xs', monogram: 'text-[8px]' },
-    medium: { square: 'size-5 text-[10px]', emoji: 'text-sm', monogram: 'text-[10px]' },
+    sm: { square: 'size-3.5 text-[8px]', emoji: 'text-xs', monogram: 'text-[7px]' },
+    md: { square: 'size-4 text-[9px]', emoji: 'text-sm', monogram: 'text-[8px]' },
+    lg: { square: 'size-5 text-3xs', emoji: 'text-base', monogram: 'text-3xs' },
 };
 
 export type ProjectIconSize = keyof typeof SIZES;
@@ -70,7 +71,7 @@ const COLORS: Record<ProjectIconColor, string> = {
     rose: 'text-rose-500',
 };
 
-const OVERLAY = 'absolute inset-0 size-full bg-base-100';
+const OVERLAY = 'absolute inset-0 size-full bg-surface-raised';
 
 /** lucide's name map and its icons are lazy chunks, loaded when first shown. DynamicIcon draws nothing for a name
  *  lucide lacks or an icon that won't load, and a name map that won't load draws nothing here. */
@@ -94,7 +95,7 @@ function Favicon({ src }: { src: string }) {
             hidden={!loaded}
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
-            className={`${OVERLAY} object-contain`}
+            className={`${OVERLAY} object-contain${loaded ? '' : ' hidden'}`}
         />
     );
 }
@@ -125,9 +126,13 @@ export function ProjectIcon({
     size,
     ...data
 }: {
+    /** The project's own icon: an image, an SVG or a loader; none draws its initial. */
     icon?: ProjectIconSource | null | undefined;
+    /** The project's name, whose initial stands in for a missing icon. */
     name: string;
+    /** The project's place among the board's repositories, which picks the initial's colour; none mutes it. */
     place?: number | undefined;
+    /** The square's size on the board's icon scale: `sm` 14px, `md` 16px (a row's) or `lg` 20px. */
     size: ProjectIconSize;
 } & DataAttributes) {
     const { square, emoji, monogram } = SIZES[size];
@@ -136,7 +141,7 @@ export function ProjectIcon({
     if (icon?.kind === 'emoji')
         return (
             <span {...data} data-project-icon className={shared} aria-hidden="true">
-                <span className={emoji}>{icon.emoji}</span>
+                <span className={`${emoji} leading-none`}>{icon.emoji}</span>
             </span>
         );
 
@@ -153,19 +158,24 @@ export function ProjectIcon({
         <span
             {...data}
             data-project-icon
-            className={`${tone} ${shared} bg-[var(--k,var(--color-base-600))] text-white`}
+            className={`${tone} ${shared} bg-[var(--k,var(--color-fg-muted))] text-white`}
             aria-hidden="true"
         >
             {firstGraphemes(name, 1).toUpperCase()}
             {icon?.kind === 'favicon' && <Favicon key={icon.src} src={icon.src} />}
             {icon?.kind === 'lucide' && (
-                <Suspense fallback={null}>
-                    <LucideIcon
-                        key={icon.name}
-                        name={icon.name as ComponentProps<typeof DynamicIcon>['name']}
-                        className={`${OVERLAY} ${COLORS[icon.color]}`}
-                    />
-                </Suspense>
+                // The colour is the wrapper's and the icon draws in currentColor, so a container that recolours every
+                // svg in it (a palette row's icon box) can't turn it white on white. The wrapper draws nothing of its
+                // own, so the initial shows until the icon has loaded, the same in either theme.
+                <span className={`absolute inset-0 ${COLORS[icon.color]}`}>
+                    <Suspense fallback={null}>
+                        <LucideIcon
+                            key={icon.name}
+                            name={icon.name as ComponentProps<typeof DynamicIcon>['name']}
+                            className={`${OVERLAY} text-current`}
+                        />
+                    </Suspense>
+                </span>
             )}
         </span>
     );

@@ -1,20 +1,29 @@
 // The bits every view of Lar Factory's board draws for a piece of work: its numbered title, title link, repository,
 // tracker fields, kind marker, label chips and planning notes.
 
-import { ArrowLeftRightIcon } from 'lucide-react';
+import { CircleAlertIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { Badge } from '../display/Badge';
+import { BadgeBase as Badge } from '../display/Badge';
+import { Tooltip, TooltipTrigger, TooltipPopup } from '../overlays/Tooltip';
 import type { DataAttributes } from './DataAttributes';
 
 /** A title with its ticket's reference (`#12`) before it, muted, the way the board lists every item; captured work has
  *  no reference. */
-export function ItemTitle({ reference, title }: { reference?: string | undefined; title: string }) {
+export function ItemTitle({
+    reference,
+    title,
+}: {
+    /** The ticket's reference, such as `#12`; captured work has none. */
+    reference?: string | undefined;
+    /** The item's title. */
+    title: string;
+}) {
     return (
         <>
             {reference ? (
                 <>
-                    <span className="font-normal text-(--muted-foreground) tabular-nums">{reference}</span>{' '}
+                    <span className="text-fg-muted font-normal tabular-nums">{reference}</span>{' '}
                 </>
             ) : null}
             {title}
@@ -29,8 +38,11 @@ export function TitleLink({
     title,
     href,
 }: {
+    /** The ticket's reference, such as `#12`. */
     reference?: string | undefined;
+    /** The item's title. */
     title: string;
+    /** The ticket's page, opened in a new tab; the reference is text without one. */
     href?: string | undefined;
 }) {
     const text = (
@@ -54,7 +66,15 @@ export function TitleLink({
 }
 
 /** A repository as a badge: its project icon and name. */
-export function RepoTag({ icon, name }: { icon: ReactNode; name: string }) {
+export function RepoTag({
+    icon,
+    name,
+}: {
+    /** The repository's project icon. */
+    icon: ReactNode;
+    /** The repository's name. */
+    name: string;
+}) {
     return (
         <Badge className="gap-1.5">
             {icon}
@@ -79,9 +99,13 @@ export function RepoIdentity({
     presentation = 'row',
     ...data
 }: {
+    /** The repository's project icon. */
     icon: ReactNode;
+    /** The repository's name, truncating. */
     name: string;
+    /** The name in full, as its tooltip on the work map. */
     title?: string;
+    /** `row` in a row's line, `map` roomier on the work map, `wrap` when the name may wrap. */
     presentation?: 'row' | 'map' | 'wrap';
 } & DataAttributes) {
     return (
@@ -94,35 +118,46 @@ export function RepoIdentity({
 
 /** A tracker's fields for the item (such as Azure's type, state and assignee) as one muted line that truncates, its
  *  tooltip giving it whole. */
-export function ItemFields({ text, ...data }: { text: string } & DataAttributes) {
+export function ItemFields({
+    text,
+    ...data
+}: {
+    /** The tracker's fields as one line, such as "Bug · Active · Ana". */
+    text: string;
+} & DataAttributes) {
     return (
-        <span {...data} title={text} className="block min-w-0 truncate text-xs text-(--muted-foreground)">
+        <span {...data} title={text} className="text-fg-muted block min-w-0 truncate text-xs">
             {text}
         </span>
     );
 }
 
-/** Beside a kind badge, in muted text: the kind the ticket says instead, `said`, until someone answers. */
+/** Beside a kind badge, in muted text: what the ticket says instead, in words such as "ticket says Bug", until
+ *  someone answers; `title` says what to do about it. */
 export function KindMarker({
     said,
-    label,
     title,
     ...data
 }: {
+    /** What the ticket says the kind is, such as "Bug". */
     said: string;
-    /** The sentence assistive technology reads. */
-    label: string;
+    /** What to do about the disagreement, as its tooltip. */
     title: string;
 } & DataAttributes) {
     return (
-        <span
-            {...data}
-            title={title}
-            aria-label={label}
-            className="inline-flex items-center gap-0.5 text-[11px] text-(--muted-foreground)"
-        >
-            <ArrowLeftRightIcon className="size-2.5" aria-hidden="true" />
-            {said}
-        </span>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <span
+                    {...data}
+                    tabIndex={0}
+                    role="img"
+                    aria-label={said}
+                    className="focus-ring inline-flex shrink-0 rounded-xs"
+                >
+                    <CircleAlertIcon aria-hidden="true" className="size-3" />
+                </span>
+            </TooltipTrigger>
+            <TooltipPopup>{title}</TooltipPopup>
+        </Tooltip>
     );
 }

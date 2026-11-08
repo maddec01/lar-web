@@ -18,7 +18,7 @@ const meta = {
     argTypes: { nodes: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[720px]">
+            <div className="mx-auto max-w-180">
                 <Story />
             </div>
         ),

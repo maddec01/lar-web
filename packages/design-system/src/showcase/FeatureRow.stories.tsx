@@ -11,7 +11,7 @@ import { BrowserFrame, AppWindow, Screenshot } from './Devices';
 import { FeatureRow, FeatureRows, PointList } from './FeatureRow';
 import { RouteDiagram } from './RouteDiagram';
 import { AngledDevice } from './Stage';
-import { StatusPill } from './Status';
+import { ReadinessStatus } from './Status';
 
 const meta = {
     title: 'Showcase/FeatureRow',
@@ -20,7 +20,7 @@ const meta = {
         eyebrow: 'The web app',
         title: 'Run the whole house from any browser.',
         children:
-            "The server's own web app is where you run it: add catalogs, invite people, choose what each person can see, and check what's playing.",
+            'The server’s own web app is where you run it: add catalogs, invite people, choose what each person can see, and check what’s playing.',
         points: [
             'Invitations, roles and per-catalog access',
             'Devices you can see and revoke',
@@ -32,7 +32,7 @@ const meta = {
                     <Screenshot
                         dark={usersDark}
                         light={usersLight}
-                        alt="Lar Server's users: everyone you invited, their access to each catalog and their sign-in."
+                        alt="Lar Server’s users: everyone you invited, their access to each catalog and their sign-in."
                         width={1400}
                         height={689}
                     />
@@ -43,7 +43,7 @@ const meta = {
     argTypes: { media: { control: false }, badge: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px] px-5 py-10 sm:px-8">
+            <div className="max-w-page mx-auto px-5 py-10 sm:px-8">
                 <Story />
             </div>
         ),
@@ -65,12 +65,12 @@ export const WithBadge: Story = {
     args: {
         largeMedia: true,
         eyebrow: 'Lar Music',
-        badge: <StatusPill status="available">Working</StatusPill>,
+        badge: <ReadinessStatus status="available">Working</ReadinessStatus>,
         title: 'Your music, the way you tagged it.',
         children: "Browse albums, artists and playlists built from your files' own tags.",
         points: [
             'Lossless at home, converted to fit the connection away, always with the format in view',
-            "Downloads and an offline cache for when you're away",
+            'Downloads and an offline cache for when you’re away',
             'On iPhone, iPad and Mac, with Apple TV in development',
         ],
         media: (
@@ -109,7 +109,7 @@ export const WithDiagram: Story = {
         eyebrow: 'Remote access',
         title: 'Stream straight from home, with no relay in between.',
         children:
-            "Use automatic router setup, forward a port by hand, or keep your VPN. Apps pin your server's own certificate, so joining needs no domain.",
+            'Use automatic router setup, forward a port by hand, or keep your VPN. Apps pin your server’s own certificate, so joining needs no domain.',
         points: [
             'Automatic router forwarding, or clear manual steps',
             'Works over the VPN or Tailscale you already use',

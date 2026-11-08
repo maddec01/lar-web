@@ -24,7 +24,7 @@ import factoryIcon from '../../.storybook/assets/factory.webp';
 import serverIcon from '../../.storybook/assets/server.webp';
 import { FeatureGrid, FeatureTile, ProductCard, ProductGrid } from './Cards';
 import { AppWindow, BrowserFrame, Screenshot } from './Devices';
-import { AppIcon, StatusPill } from './Status';
+import { AppIcon, ReadinessStatus } from './Status';
 
 const meta = {
     title: 'Showcase/Cards',
@@ -33,7 +33,7 @@ const meta = {
         hue: 264,
         icon: <AppIcon src={serverIcon} alt="" size="sm" />,
         name: 'Lar Server',
-        status: <StatusPill status="development">In development</StatusPill>,
+        status: <ReadinessStatus status="development">In development</ReadinessStatus>,
         title: 'Your music and films, on every screen.',
         description:
             'Indexed on a server you own and streamed to native apps on your phone, tablet and computer, with the TV next.',
@@ -49,7 +49,7 @@ const meta = {
     argTypes: { icon: { control: false }, status: { control: false }, media: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),
@@ -64,7 +64,7 @@ type Story = StoryObj<typeof meta>;
 export const Product: Story = {
     decorators: [
         (Story) => (
-            <div className="max-w-[580px]">
+            <div className="max-w-145">
                 <Story />
             </div>
         ),
@@ -80,7 +80,7 @@ export const Products: Story = {
                 hue={undefined}
                 icon={<AppIcon src={factoryIcon} alt="" size="sm" />}
                 name="Lar Factory"
-                status={<StatusPill status="available">Available for Mac</StatusPill>}
+                status={<ReadinessStatus status="available">Available for Mac</ReadinessStatus>}
                 title="Turn issues into reviewed pull requests."
                 description="Shape ideas on a board. Let agents build them in isolated worktrees. Review and merge every pull request yourself."
                 linkLabel="How it works"
@@ -115,7 +115,7 @@ export const Features: Story = {
     ),
 };
 
-/** Lar Server's collector features, six tiles in three columns. */
+/** Lar Server’s collector features, six tiles in three columns. */
 export const ManyFeatures: Story = {
     render: () => (
         <FeatureGrid>

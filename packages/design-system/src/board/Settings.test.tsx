@@ -6,18 +6,18 @@ import { expect, it, vi } from 'vite-plus/test';
 import { FormResult } from '../feedback/FormResult';
 import { OpenSettingsButton, SettingsNav } from './Settings';
 
-it('the Settings button is an icon-only App control named by its label that opens Settings', () => {
+it('the Settings button is the title bar’s icon button, lar-server’s, named by its label, and opens Settings', () => {
     const onOpen = vi.fn();
 
     render(<OpenSettingsButton label="Settings" onOpen={onOpen} />);
 
     const button = screen.getByRole('button', { name: 'Settings' });
 
-    expect([button.getAttribute('data-kind'), button.hasAttribute('data-icon-only'), button.textContent]).toEqual([
-        'control',
-        true,
-        '',
-    ]);
+    expect([
+        button.classList.contains('open-settings'),
+        button.classList.contains('size-7'),
+        button.textContent,
+    ]).toEqual([true, true, '']);
     fireEvent.click(button);
     expect(onOpen).toHaveBeenCalledOnce();
 });

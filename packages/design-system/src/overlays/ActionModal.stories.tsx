@@ -15,7 +15,7 @@ function ActionModalDemo(args: ComponentProps<typeof ActionModal>) {
 
     return (
         <>
-            <Button variant={args.actionColor === 'danger' ? 'destructive' : 'secondary'} onClick={() => setOpen(true)}>
+            <Button variant="secondary" onClick={() => setOpen(true)}>
                 {args.title}
             </Button>
             {open ? (
@@ -64,7 +64,7 @@ export const Default: Story = {};
 export const Destructive: Story = {
     args: {
         title: 'Delete catalog',
-        description: 'This removes “Family photos” from Lar. The files on disk are not touched.',
+        description: 'This removes “Family photos” from Lar. The files on disk aren’t touched.',
         actionLabel: 'Delete',
         actionColor: 'danger',
         children: <Text>4,812 photos and 37 albums will disappear from every device.</Text>,

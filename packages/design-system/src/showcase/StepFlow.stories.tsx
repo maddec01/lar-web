@@ -44,7 +44,7 @@ const meta = {
     argTypes: { steps: { control: false } },
     decorators: [
         (Story) => (
-            <div className="mx-auto max-w-[1200px]">
+            <div className="max-w-page mx-auto">
                 <Story />
             </div>
         ),
@@ -55,5 +55,5 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Factory's five steps from idea to merged: joined by a line on wide screens, numbered rows on phones. */
+/** Lar Factory’s five steps from idea to merged: joined by a line on wide screens, numbered rows on phones. */
 export const Default: Story = {};

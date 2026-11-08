@@ -34,3 +34,13 @@ export const AutoResize: Story = { args: { autoResize: true, minRows: 2, maxRows
 export const Invalid: Story = { args: { invalid: true, defaultValue: '' } };
 
 export const Disabled: Story = { args: { disabled: true, defaultValue: 'Release notes are locked once published.' } };
+
+/** Metadata biographies request ten visible rows; the browser’s rows sizing must take effect. */
+export const Biography: Story = {
+    args: {
+        rows: 10,
+        'aria-label': 'Biography',
+        defaultValue:
+            'The Mariner Collective formed in Rotterdam in 2009. Their recordings bring together ambient textures and acoustic instruments.',
+    },
+};

@@ -70,7 +70,7 @@ const columns: ListColumn<Track>[] = [
 ];
 
 /**
- * Virtualized against the window's scroll, not a scroll container of its own, so it sits directly in the page:
+ * Virtualized against the window’s scroll, not a scroll container of its own, so it sits directly in the page:
  * scroll the canvas to mount more rows. Columns with a lower priority appear as the table widens.
  */
 const meta = {
@@ -103,6 +103,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Tracks: Story = {};
 
+/** 40px rows, so a long track list reads line by line: twice as many rows fit. */
+export const Compact: Story = { args: { density: 'compact' } };
+
 /** Sorted by duration, descending: the sorted column always shows. */
 export const SortedByDuration: Story = {
     args: {
@@ -123,7 +126,7 @@ export const Sectioned: Story = {
     },
 };
 
-/** Rows whose page has not loaded yet show each column's placeholder. */
+/** Rows whose page hasn’t loaded yet show each column’s placeholder. */
 export const LoadingPages: Story = {
     args: { loading: true, itemAt: (index) => (index < 20 ? tracks[index] : undefined) },
 };

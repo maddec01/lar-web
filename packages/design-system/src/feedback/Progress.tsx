@@ -2,12 +2,14 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import { Text } from '../typography/Typography';
 
-type ProgressProps = Omit<ComponentProps<'div'>, 'children' | 'className' | 'style'> & {
+interface ProgressProps extends Omit<ComponentProps<'div'>, 'children' | 'className' | 'style' | 'color'> {
+    /** How far along it is, out of `max`; clamped to the track. */
     value: number;
+    /** The value that fills the track (100 by default). */
     max?: number;
     /** Muted text after the bar, such as "Step 2 of 4". */
     caption?: ReactNode;
-};
+}
 
 /**
  * A determinate progress bar: a rounded track filled to value / max, then an optional caption. Its props (an
@@ -24,7 +26,7 @@ export function Progress({ caption, value, max = 100, ...props }: ProgressProps)
                 aria-valuemin={0}
                 aria-valuemax={max}
                 aria-valuenow={value}
-                className="bg-base-200 h-2 max-w-65 flex-1 overflow-hidden rounded-full"
+                className="bg-track h-2 max-w-65 flex-1 overflow-hidden rounded-full"
                 data-slot="progress-bar"
                 {...props}
             >

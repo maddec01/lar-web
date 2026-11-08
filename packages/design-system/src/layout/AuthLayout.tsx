@@ -2,12 +2,16 @@ import { type ReactNode, useId } from 'react';
 
 import { BrandMark } from '../display/BrandMark';
 import { Heading, Text } from '../typography/Typography';
-import { Inline, Stack } from './Flow';
+import { InlineBase, StackBase } from './Flow';
 
 interface AuthLayoutProps {
+    /** The Lar mark's accessible name, such as "Lar Server". */
     brandLabel: string;
+    /** The card's form. */
     children: ReactNode;
+    /** A line under the title that says what to do. */
     description?: string;
+    /** The card's heading, such as "Sign in". */
     title: string;
 }
 
@@ -19,21 +23,21 @@ export function AuthLayout({ brandLabel, children, description, title }: AuthLay
         <main className="flex min-h-dvh items-center justify-center px-4 py-10">
             <section
                 aria-labelledby={titleId}
-                className="border-base-300 bg-base-100 w-full max-w-sm rounded-2xl border p-6 shadow-[0_24px_64px_-32px_rgb(0_0_0/35%)] sm:p-8"
+                className="border-line bg-surface-raised w-full max-w-sm rounded-2xl border p-6 shadow-(--shadow-dialog) sm:p-8"
             >
-                <Stack space="page">
-                    <Stack space="related" className="items-center text-center">
-                        <Inline align="baseline" space="tight" className="text-xl leading-none">
+                <StackBase space="page">
+                    <StackBase space="related" className="items-center text-center">
+                        <InlineBase align="baseline" space="tight" className="text-xl leading-none">
                             <BrandMark label={brandLabel} />
                             <span className="font-medium">Server</span>
-                        </Inline>
-                        <Heading id={titleId} as="h1" variant="section">
+                        </InlineBase>
+                        <Heading id={titleId} as="h1" variant="page">
                             {title}
                         </Heading>
                         {description ? <Text tone="muted">{description}</Text> : null}
-                    </Stack>
+                    </StackBase>
                     {children}
-                </Stack>
+                </StackBase>
             </section>
         </main>
     );

@@ -63,6 +63,29 @@ export const LongValues: Story = {
                         label: 'Path',
                         from: '/mnt/storage/media/music/lossless/archive/2019-and-earlier',
                         to: '/srv/lar/libraries/music/lossless/archive/2019-and-earlier',
+                        kind: 'code',
+                    },
+                ],
+            },
+        ],
+    },
+};
+
+/** People's words (names, titles) read in the reading font; a machine's values (paths, ids) sit on code chips. */
+export const TextAndCode: Story = {
+    args: {
+        items: [
+            {
+                key: 'track-1',
+                title: '01 - Station Identification.flac',
+                changes: [
+                    { key: 'album-artist', label: 'Album artist', from: '(empty)', to: 'Various Artists' },
+                    {
+                        key: 'mbid',
+                        label: 'MusicBrainz release',
+                        from: '(empty)',
+                        to: '5b11f4ce-a62d-471e-81fc-a69a8278c7da',
+                        kind: 'code',
                     },
                 ],
             },

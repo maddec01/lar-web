@@ -107,7 +107,7 @@ export const CheckingServer: Story = {
             <AsyncState
                 loading
                 label="Checking the server"
-                errorTitle="The server could not be checked."
+                errorTitle="The server couldn’t be checked."
                 presentation="line"
             />
         ),

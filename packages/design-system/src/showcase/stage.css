@@ -94,27 +94,9 @@
     }
 }
 
-/* The server unit's activity lights. */
-@media (prefers-reduced-motion: no-preference) {
-    .lar-led-pulse {
-        animation: lar-led-pulse 2.4s ease-in-out infinite;
-        animation-delay: var(--lar-led-delay, 0ms);
-    }
-}
-
-@keyframes lar-led-pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.35;
-    }
-}
-
 /* A dashed link whose light travels toward the next node. */
 .lar-route-line {
-    background: color-mix(in srgb, var(--color-base-content) 40%, transparent);
+    background: color-mix(in srgb, var(--color-fg) 40%, transparent);
 }
 
 .lar-route-line::after {
@@ -172,4 +154,15 @@
         left: 100%;
         opacity: 0;
     }
+}
+
+/* The website keeps its hero typography and glow while sharing the page-state structure with the apps. */
+.lar-state-stage [data-slot='state-message'][data-size='hero'] {
+    @apply max-w-page gap-6 px-5 pt-12 pb-16 sm:px-8 sm:pt-20 sm:pb-24;
+}
+.lar-state-stage [data-slot='state-title'] {
+    @apply text-headline xl:text-display tracking-display max-w-230 leading-[1.04] sm:text-6xl lg:text-7xl;
+}
+.lar-state-stage [data-slot='state-description'] {
+    @apply mt-5 max-w-160;
 }

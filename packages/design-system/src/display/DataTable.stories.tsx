@@ -25,7 +25,7 @@ const meta = {
                         text: 'Transcode',
                         detail: 'To H.264 1080p',
                         tone: 'warning',
-                        title: 'The browser cannot decode HEVC',
+                        title: 'The browser can’t decode HEVC',
                     },
                 ],
             },
@@ -56,6 +56,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+/** Tighter rows for a long table read line by line. */
+export const Compact: Story = { args: { density: 'compact' } };
 
 export const Empty: Story = { args: { rows: [] } };
 

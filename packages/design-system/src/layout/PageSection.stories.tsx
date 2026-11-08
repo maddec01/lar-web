@@ -49,12 +49,12 @@ export const Default: Story = {};
 /** A raised band sets a section apart from the ones around it. */
 export const Raised: Story = {
     args: {
-        tone: 'raised',
+        variant: 'raised',
         heading: (
             <SectionHeading
                 eyebrow="Development preview"
-                title="What works, what's next."
-                lead="Lar Server isn't publicly released yet. It's being built in the open on real hardware, Music and Video first."
+                title="What works, what’s next."
+                lead="Lar Server isn’t publicly released yet. It’s being built in the open on real hardware, Music and Video first."
             />
         ),
     },
@@ -90,14 +90,14 @@ export const LabelledWithBackground: Story = {
     },
 };
 
-/** The page's opening statement as a display-size h1. */
+/** The page’s opening statement as a display-size h1. */
 export const DisplayHeading: Story = {
     args: {
         space: 'hero',
         heading: (
             <SectionHeading
                 level="h1"
-                size="display"
+                variant="display"
                 title="Software that stays home."
                 lead="Lar makes software that runs on machines you own. Each product does one job well, and leaves the final word to you."
             />

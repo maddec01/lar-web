@@ -26,7 +26,7 @@ import { BrandMark } from '../display/BrandMark';
 import { StatusIndicator, type StatusTone } from '../feedback/StatusIndicator';
 import { Heading, Text } from '../typography/Typography';
 import { AppShell } from './AppShell';
-import { Grid, Inline, Stack } from './Flow';
+import { Grid, InlineBase, StackBase } from './Flow';
 import { PageLayout } from './PageLayout';
 import { Section } from './Section';
 import { SidebarNavigationItem } from './sidebar/SidebarNavigationItem';
@@ -36,13 +36,13 @@ import { CommandPaletteTrigger } from './toolbar/CommandPaletteTrigger';
 import { ToolbarStatusGroup } from './toolbar/ToolbarStatusGroup';
 import { ToolbarStatusItem } from './toolbar/ToolbarStatusItem';
 
-/** Lar Server's title bar, as the admin app draws it: the brand, where you are, the palette, the server's
+/** Lar Server’s title bar, as the admin app draws it: the brand, where you are, the palette, the server’s
  *  status, Settings and the account. */
 function ServerTitleBar({ page = 'Dashboard', icon = <LayoutGridIcon /> }: { page?: string; icon?: ReactNode }) {
     return (
         <TitleBar
             brand={
-                <a href="#dashboard" aria-label="Go to home">
+                <a href="#dashboard">
                     <BrandMark label="Lar" />
                 </a>
             }
@@ -72,7 +72,7 @@ function ServerTitleBar({ page = 'Dashboard', icon = <LayoutGridIcon /> }: { pag
                         notification="1 sign-in request to approve"
                         variant="title-bar"
                     />
-                    <Button aria-label="Open account menu" variant="avatar">
+                    <Button aria-label="PG: Open account menu" variant="avatar">
                         <Avatar name="Pedro Gomes" />
                     </Button>
                 </>
@@ -90,16 +90,16 @@ const catalogs: readonly { name: string; icon: ReactNode; items: string; tone: S
 
 function CatalogCard({ catalog }: { catalog: (typeof catalogs)[number] }) {
     return (
-        <div className="border-base-300 bg-base-100/60 flex flex-col gap-3 rounded-lg border p-4">
-            <Inline align="center" justify="between">
-                <Inline align="center" className="[&>svg]:text-base-700 [&>svg]:size-4">
+        <div className="border-line bg-surface-raised flex flex-col gap-3 rounded-lg border p-4">
+            <InlineBase align="center" justify="between">
+                <InlineBase align="center" className="[&>svg]:text-fg-muted [&>svg]:size-4">
                     {catalog.icon}
                     <Heading as="h3" variant="subsection">
                         {catalog.name}
                     </Heading>
-                </Inline>
+                </InlineBase>
                 <Badge tone={catalog.tone}>{catalog.state}</Badge>
-            </Inline>
+            </InlineBase>
             <Text tone="muted">{catalog.items}</Text>
         </div>
     );
@@ -108,7 +108,7 @@ function CatalogCard({ catalog }: { catalog: (typeof catalogs)[number] }) {
 function DashboardPage() {
     return (
         <PageLayout label="Dashboard">
-            <Stack space="page">
+            <StackBase space="page">
                 <Section
                     title="Media catalogs"
                     count={catalogs.length}
@@ -121,20 +121,20 @@ function DashboardPage() {
                     </Grid>
                 </Section>
                 <Section title="Now playing" count={1} description="Whatever is played on this server shows up here.">
-                    <div className="border-base-300 bg-base-100/60 flex items-center gap-3 rounded-lg border p-4">
+                    <div className="border-line bg-surface-raised flex items-center gap-3 rounded-lg border p-4">
                         <StatusIndicator tone="success" />
-                        <Stack space="none" className="min-w-0 flex-1">
+                        <StackBase space="none" className="min-w-0 flex-1">
                             <Text as="span" variant="label">
                                 Kind of Blue — So What
                             </Text>
                             <Text as="span" variant="caption" tone="muted">
                                 Ana · iPhone · Direct · FLAC 24/96
                             </Text>
-                        </Stack>
+                        </StackBase>
                         <Badge tone="accent">Lossless</Badge>
                     </div>
                 </Section>
-            </Stack>
+            </StackBase>
         </PageLayout>
     );
 }
@@ -205,19 +205,19 @@ function ShellWithSidebar() {
                     description="Accounts, invitations, roles, catalog permissions, and active sessions."
                 >
                     <Section title="People" count={3} actions={<Button>Invite someone</Button>}>
-                        <Stack space="related">
+                        <StackBase space="related">
                             {['Pedro Gomes · Administrator', 'Ana Ribeiro · Member', 'Tomás Gomes · Member'].map(
                                 (person) => (
                                     <div
                                         key={person}
-                                        className="border-base-300 bg-base-100/60 flex items-center gap-3 rounded-lg border p-3"
+                                        className="border-line bg-surface-raised flex items-center gap-3 rounded-lg border p-3"
                                     >
                                         <Avatar name={person} />
                                         <Text as="span">{person}</Text>
                                     </div>
                                 ),
                             )}
-                        </Stack>
+                        </StackBase>
                     </Section>
                 </PageLayout>
             </div>
@@ -237,7 +237,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Server's dashboard: the glass title bar over a page that scrolls under it. */
+/** Lar Server’s dashboard: the glass title bar over a page that scrolls under it. */
 export const Default: Story = {};
 
 /** The top-level app shell: title bar, a sidebar of sections and the page beside it. */

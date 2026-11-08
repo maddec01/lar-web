@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react';
 
+import { FormRowsContext } from '../forms/FormRows';
 import { tabbable } from '../foundations/KeyboardFocus';
 import { Stack } from '../layout/Flow';
 
 interface InsetPanelProps {
+    /** The panel's content. */
     children: ReactNode;
+    /** Makes the whole panel a button that calls this. */
     onClick?: () => void;
+    /** `default` groups content on the raised surface; `settings` is a settings group's panel of rows, divided by
+     *  lines. */
     presentation?: 'default' | 'settings';
     /** Under a `settings` panel's rows, on the muted surface: the group's own action, such as an add button. */
     footer?: ReactNode;
@@ -18,9 +23,9 @@ interface InsetPanelProps {
 export function InsetPanel({ children, onClick, presentation = 'default', footer }: InsetPanelProps) {
     if (presentation === 'settings') {
         return (
-            <div className="divide-base-300 border-base-300 bg-base-100 divide-y overflow-hidden rounded-lg border shadow-xs/5">
-                {children}
-                {footer && <div className="rounded-b-xl bg-(--muted) px-4 py-2">{footer}</div>}
+            <div className="divide-line surface-card divide-y overflow-hidden rounded-lg border">
+                <FormRowsContext value="panel">{children}</FormRowsContext>
+                {footer && <div className="bg-surface-sunken rounded-b-xl px-4 py-2">{footer}</div>}
             </div>
         );
     }
@@ -32,7 +37,7 @@ export function InsetPanel({ children, onClick, presentation = 'default', footer
             tabIndex={onClick ? tabbable.tabIndex : undefined}
             onClick={onClick}
             space="related"
-            className={`border-base-300 bg-base-100 rounded-lg border p-5 ${onClick ? 'focus-visible:outline-primary w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-2' : ''}`}
+            className={`surface-card rounded-lg border p-5 ${onClick ? 'focus-ring w-full cursor-pointer text-left' : ''}`}
         >
             {children}
         </Stack>

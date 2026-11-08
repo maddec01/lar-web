@@ -5,8 +5,9 @@
 import { ArrowDownToLineIcon, RotateCcwIcon } from 'lucide-react';
 import { type PointerEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 
-import { Button } from '../actions/Button';
+import { ButtonBase as Button } from '../actions/Button';
 import { Popover } from '../overlays/Popover';
+import { ScrollFadeRegion } from '../overlays/ScrollFadeRegion';
 import { Tooltip, TooltipPopup, TooltipTrigger } from '../overlays/Tooltip';
 import { buttonKind } from './ButtonKinds';
 
@@ -20,6 +21,7 @@ export function UpdateStatusIcon({
     status,
     percent = 0,
 }: {
+    /** The update's step: `available`, `downloading` or `downloaded`. */
     status: 'available' | 'downloading' | 'downloaded';
     /** The download's whole percentage, 0 to 100. */
     percent?: number;
@@ -41,7 +43,7 @@ export function UpdateStatusIcon({
                     cy="10"
                     r={RADIUS}
                     fill="none"
-                    className="stroke-primary transition-[stroke-dashoffset] duration-300 ease-out motion-reduce:transition-none"
+                    className="stroke-primary transition-[stroke-dashoffset] duration-(--motion-duration-slow) ease-out motion-reduce:transition-none"
                     strokeDasharray={CIRCUMFERENCE}
                     strokeDashoffset={CIRCUMFERENCE * (1 - percent / 100)}
                     strokeLinecap="round"
@@ -63,9 +65,13 @@ export function UpdateDownloading({
     label,
     tooltip,
 }: {
+    /** How much has downloaded, 0 to 100. */
     percent: number;
+    /** What it says before the percentage, such as "Downloading". */
     text: string;
+    /** Names the progress bar for screen readers. */
     label: string;
+    /** More on the download, in the tooltip. */
     tooltip: string;
 }) {
     return (
@@ -79,7 +85,7 @@ export function UpdateDownloading({
                     aria-valuemax={100}
                     aria-valuenow={percent}
                     data-kind="control"
-                    className="update-button text-primary focus-visible:ring-primary inline-flex h-7 items-center gap-1.5 rounded-md bg-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-base-100))] px-[11px] text-xs font-medium outline-none hover:bg-[color-mix(in_srgb,var(--color-primary)_18%,var(--color-base-100))] focus-visible:ring-2"
+                    className="update-button text-primary-fg focus-ring bg-primary-surface hover:bg-primary-surface-hover inline-flex h-7 items-center gap-1.5 rounded-md px-2.75 text-xs font-medium"
                 >
                     <UpdateStatusIcon status="downloading" percent={percent} />
                     {text} <span className="w-7 tabular-nums">{percent}%</span>
@@ -130,6 +136,7 @@ interface UpdatePillProps {
     notes?: ReactNode;
     /** The popover's button, such as "Download". */
     actionLabel: string;
+    /** The step can't run now. */
     disabled: boolean;
     /** Runs the step: the pill and the popover's button both run it. */
     onRun: () => void;
@@ -172,8 +179,10 @@ export function UpdatePill({ status, label, heading, notes, actionLabel, disable
                 {...hover}
             >
                 <div className="grid w-80 max-w-full gap-3 text-left">
-                    <p className="update-heading text-base-content m-0 text-sm font-medium">{heading}</p>
-                    {notes ? <div className="max-h-[min(28rem,calc(100vh-10rem))] overflow-y-auto">{notes}</div> : null}
+                    <p className="update-heading text-fg m-0 text-sm font-medium">{heading}</p>
+                    {notes ? (
+                        <ScrollFadeRegion className="max-h-[min(28rem,calc(100vh-10rem))]">{notes}</ScrollFadeRegion>
+                    ) : null}
                     <span className="justify-self-start">
                         <Button {...buttonKind('main')} className="update-next" disabled={disabled} onClick={onRun}>
                             {actionLabel}
@@ -195,27 +204,35 @@ export interface ReleaseNote {
 }
 
 /** Each Release's changes, newest first, and a note of older Releases left out. */
-export function ReleaseNotes({ releases, older }: { releases: readonly ReleaseNote[]; older?: string }) {
+export function ReleaseNotes({
+    releases,
+    older,
+}: {
+    /** Each Release with its changes, newest first. */
+    releases: readonly ReleaseNote[];
+    /** A note of older Releases left out. */
+    older?: string;
+}) {
     return (
         <>
             {releases.map((note) => (
                 <section
-                    className="not-first:border-base-300 not-first:mt-3 not-first:border-t not-first:pt-3"
+                    className="not-first:border-line not-first:mt-3 not-first:border-t not-first:pt-3"
                     key={note.version}
                 >
-                    <h3 className="text-base-content m-0 text-xs leading-4 font-semibold">{note.title}</h3>
-                    <ul className="text-base-700 m-0 mt-2 space-y-1.5 pl-4 text-xs leading-5">
+                    <h3 className="text-fg m-0 text-xs leading-4 font-semibold">{note.title}</h3>
+                    <ul className="text-fg-muted m-0 mt-2 space-y-1.5 pl-4 text-xs leading-5">
                         {note.items.map((item, i) => (
                             <li className="list-disc break-words" key={i}>
                                 {item}
                             </li>
                         ))}
                     </ul>
-                    {note.more ? <p className="text-base-700 m-0 mt-2 text-xs leading-5">{note.more}</p> : null}
+                    {note.more ? <p className="text-fg-muted m-0 mt-2 text-xs leading-5">{note.more}</p> : null}
                 </section>
             ))}
             {older ? (
-                <p className="border-base-300 text-base-700 m-0 mt-3 border-t pt-3 text-xs leading-5">{older}</p>
+                <p className="border-line text-fg-muted m-0 mt-3 border-t pt-3 text-xs leading-5">{older}</p>
             ) : null}
         </>
     );

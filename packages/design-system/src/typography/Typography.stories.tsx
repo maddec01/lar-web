@@ -50,6 +50,15 @@ type Story = StoryObj<typeof meta>;
 /** Text with its controls: pick a variant, tone, element, truncation or the loading state. */
 export const TextPlayground: Story = {};
 
+/** Supporting prose shares RichText's reading measure at every text size. */
+export const ReadingMeasure: Story = {
+    args: {
+        measure: 'reading',
+        children:
+            'Can’t find the right release? Search by album title, artist or barcode. Bootlegs and local recordings may not appear in the catalog. You can keep the files’ existing metadata and match them later, when you have more information about the release.',
+    },
+};
+
 /** Every Text variant, from running copy to the dense overline. */
 export const TextVariants: Story = {
     render: (args) => (
@@ -70,7 +79,7 @@ export const TextVariants: Story = {
     ),
 };
 
-/** Every Heading variant, from the page's one big statement down to a row label. */
+/** Every Heading variant, from the page’s one big statement down to a row label. */
 export const HeadingVariants: Story = {
     render: () => (
         <div className="grid max-w-4xl grid-cols-[7rem_1fr] items-baseline gap-x-6 gap-y-6">
@@ -108,15 +117,15 @@ export const Tones: Story = {
     ),
 };
 
-/** `inherit` takes the surrounding text's size and colour, such as a message inside a note that sets its own type. */
+/** `inherit` takes the surrounding text’s size and colour, such as a message inside a note that sets its own type. */
 export const Inherited: Story = {
     render: () => (
-        <div className="text-base-700 grid gap-1 text-xs">
+        <div className="text-fg-muted grid gap-1 text-xs">
             <Text variant="inherit" role="status">
                 Reading outgoing issue text…
             </Text>
             <Text variant="inherit" tone="danger" role="alert">
-                Could not read the outgoing issue text.
+                Couldn’t read the outgoing issue text.
             </Text>
         </div>
     ),
@@ -154,12 +163,14 @@ export const Truncated: Story = {
 /** `nowrap` keeps a short phrase, such as a date, on one line while the sentence around it wraps. */
 export const NoWrap: Story = {
     render: () => (
-        <Text variant="caption" tone="muted" className="w-48">
-            Matt Pocock · MIT ·{' '}
-            <Text as="span" variant="inherit" nowrap>
-                updated 19 Oct 2026
+        <div className="w-48">
+            <Text variant="caption" tone="muted">
+                Matt Pocock · MIT ·{' '}
+                <Text as="span" variant="inherit" nowrap>
+                    updated 19 Oct 2026
+                </Text>
             </Text>
-        </Text>
+        </div>
     ),
 };
 

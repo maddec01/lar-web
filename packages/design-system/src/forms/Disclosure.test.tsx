@@ -51,3 +51,15 @@ it('tells its owner each time it opens or closes', () => {
     fireEvent(details, new Event('toggle'));
     expect(heard).toEqual([true, false]);
 });
+
+it('a lazy section honors defaultOpen and keeps its native disclosure control', () => {
+    const { container } = render(
+        <Disclosure presentation="section" label="Checks" defaultOpen lazy>
+            <p>All checks passed.</p>
+        </Disclosure>,
+    );
+
+    expect(container.querySelector('details')!.open).toBe(true);
+    expect(container.querySelector('summary')!.textContent).toBe('Checks');
+    expect(screen.getByText('All checks passed.')).toBeTruthy();
+});

@@ -1,7 +1,12 @@
 import { type CSSProperties, type PointerEvent, type ReactNode, useRef } from 'react';
 
 /** The navy glow and fading grid behind a hero. A hue tints the glow with a product's colour. */
-export function Backdrop({ hue }: { hue?: number }) {
+export function Backdrop({
+    hue,
+}: {
+    /** A product's hue that tints the glow; the brand navy without one. */
+    hue?: number;
+}) {
     return (
         <div
             aria-hidden="true"
@@ -21,12 +26,12 @@ interface DeviceStageProps {
     start?: ReactNode;
     /** How far the scene leans back, in degrees. */
     pitch?: number;
-    /** The start device's width: a tablet or TV at 'wide', a phone at 'narrow'. */
-    startSize?: 'wide' | 'narrow';
+    /** The start device's width: a tablet or TV at `lg` (the default), a phone at `sm`. */
+    startSize?: 'sm' | 'lg';
     /** A close-up that floats in front, across the lower left; hidden on narrow screens. */
     callout?: ReactNode;
-    /** How big the end device is: 'small' beside a hero laptop, 'large' when the phone is the point. */
-    endSize?: 'small' | 'large';
+    /** How big the end device is: `sm` (the default) beside a hero laptop, `lg` when the phone is the point. */
+    endSize?: 'sm' | 'lg';
     /** What a phone-width screen shows, where a laptop's text would be too small to read: the end device or the
      *  callout alone, or a readable close-up with the end device overlapping its corner. */
     narrow?: 'stage' | 'end' | 'callout' | 'pair';
@@ -45,8 +50,8 @@ export function DeviceStage({
     start,
     callout,
     pitch = 0,
-    startSize = 'wide',
-    endSize = 'small',
+    startSize = 'lg',
+    endSize = 'sm',
     narrow = 'stage',
     narrowMain,
     endSide = 'right',
@@ -81,7 +86,7 @@ export function DeviceStage({
                 <div className={`relative sm:hidden ${end ? 'mr-6 mb-10' : ''}`}>
                     {narrowMain}
                     {end ? (
-                        <div className="absolute -right-6 -bottom-10 w-[30%] max-w-[120px] rotate-[3deg]">{end}</div>
+                        <div className="absolute -right-6 -bottom-10 w-[30%] max-w-30 rotate-[3deg]">{end}</div>
                     ) : null}
                 </div>
             ) : null}
@@ -92,17 +97,17 @@ export function DeviceStage({
             >
                 <div
                     ref={scene}
-                    className={`lar-stage__scene ${endSize === 'large' ? 'grid grid-cols-1' : ''}`}
+                    className={`lar-stage__scene ${endSize === 'lg' ? 'grid grid-cols-1' : ''}`}
                     style={{ '--lar-stage-pitch': `${pitch}deg` } as CSSProperties}
                 >
                     <div
-                        className={`lar-stage__slot relative ${endSize === 'large' ? `col-start-1 row-start-1 w-[92%] self-start sm:mt-[8%] sm:w-[84%] ${endSide === 'left' ? 'justify-self-end' : ''}` : ''}`}
+                        className={`lar-stage__slot relative ${endSize === 'lg' ? `col-start-1 row-start-1 w-[92%] self-start sm:mt-[8%] sm:w-[84%] ${endSide === 'left' ? 'justify-self-end' : ''}` : ''}`}
                     >
                         {main}
                     </div>
                     {start ? (
                         <div
-                            className={`lar-stage__slot absolute bottom-[-7%] left-[-2%] hidden [transform:translateZ(60px)_rotateY(9deg)] sm:block ${startSize === 'wide' ? 'w-[34%]' : 'w-[17%]'}`}
+                            className={`lar-stage__slot absolute bottom-[-7%] left-[-2%] hidden [transform:translateZ(60px)_rotateY(9deg)] sm:block ${startSize === 'lg' ? 'w-[34%]' : 'w-[17%]'}`}
                         >
                             {start}
                         </div>
@@ -114,7 +119,7 @@ export function DeviceStage({
                     ) : null}
                     {end ? (
                         <div
-                            className={`lar-stage__slot ${endSize === 'large' ? `relative col-start-1 row-start-1 mt-[24%] w-[36%] self-start sm:mt-0 sm:w-[30%] ${endSide === 'left' ? 'justify-self-start sm:[transform:translateZ(90px)_rotateY(9deg)_rotateZ(-1deg)]' : 'justify-self-end sm:[transform:translateZ(90px)_rotateY(-9deg)_rotateZ(1deg)]'}` : 'absolute right-[-1%] bottom-[2%] w-[30%] [transform:translateZ(90px)_rotateY(-11deg)_rotateZ(1deg)] sm:w-[18%]'}`}
+                            className={`lar-stage__slot ${endSize === 'lg' ? `relative col-start-1 row-start-1 mt-[24%] w-[36%] self-start sm:mt-0 sm:w-[30%] ${endSide === 'left' ? 'justify-self-start sm:[transform:translateZ(90px)_rotateY(9deg)_rotateZ(-1deg)]' : 'justify-self-end sm:[transform:translateZ(90px)_rotateY(-9deg)_rotateZ(1deg)]'}` : 'absolute right-[-1%] bottom-[2%] w-[30%] [transform:translateZ(90px)_rotateY(-11deg)_rotateZ(1deg)] sm:w-[18%]'}`}
                         >
                             {end}
                         </div>
@@ -130,7 +135,9 @@ export function AngledDevice({
     children,
     angle = 'left',
 }: {
+    /** The device. */
     children: ReactNode;
+    /** How the device is turned: `left`, `right`, `lean`, `tilt` or `flat`. */
     angle?: 'left' | 'right' | 'flat' | 'lean' | 'tilt';
 }) {
     const angles = {
@@ -141,16 +148,33 @@ export function AngledDevice({
         flat: '',
     } as const;
 
-    return <div className={`transition-transform duration-700 ${angles[angle]}`}>{children}</div>;
+    return (
+        <div className={`transition-transform duration-(--motion-duration-deliberate) ${angles[angle]}`}>
+            {children}
+        </div>
+    );
 }
 
 /** Fades and lifts its content into place as it scrolls into view. */
-export function Reveal({ children }: { children: ReactNode }) {
+export function Reveal({
+    children,
+}: {
+    /** What fades into place. */
+    children: ReactNode;
+}) {
     return <div className="lar-reveal">{children}</div>;
 }
 
 /** Shows the full composition on wider screens and a readable close-up on phones. */
-export function ResponsiveMedia({ wide, narrow }: { wide: ReactNode; narrow: ReactNode }) {
+export function ResponsiveMedia({
+    wide,
+    narrow,
+}: {
+    /** The full composition, on wider screens. */
+    wide: ReactNode;
+    /** A readable close-up, on phones. */
+    narrow: ReactNode;
+}) {
     return (
         <>
             <div className="hidden sm:block">{wide}</div>

@@ -1,7 +1,7 @@
 export { CollectionSectionHeader } from './CollectionSectionHeader';
-export { CollectionState } from './CollectionState';
 export { DataRow } from './DataRow';
-export { ResultEmpty, ResultList, ResultRow, type ResultRowProps } from './ResultList';
+export { ResultChoice } from './ResultChoice';
+export { ResultList, ResultRow, type ResultRowProps } from './ResultList';
 export { ScrollRow, ScrollRowArrows, ScrollRowItem } from './ScrollRow';
 export { useCollectionMotion } from './useCollectionMotion';
 export { revealInRow, useScrollRow } from './useScrollRow';

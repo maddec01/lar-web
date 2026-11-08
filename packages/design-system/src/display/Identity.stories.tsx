@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FolderGitIcon } from 'lucide-react';
 
-import { Artwork } from './Artwork';
+import { Artwork } from '../media/Artwork';
 import { Identity } from './Identity';
 
 const meta = {
@@ -38,7 +38,7 @@ export const Poster: Story = {
     },
 };
 
-/** Heads its page: a larger poster, an overline and the title as the page's h1. */
+/** Heads its page: a larger poster, an overline and the title as the page’s h1. */
 export const PageHeading: Story = {
     args: {
         presentation: 'poster',

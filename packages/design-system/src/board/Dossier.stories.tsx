@@ -3,7 +3,7 @@ import { CircleHelpIcon, LightbulbIcon, ListChecksIcon, MapIcon, MessagesSquareI
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
-import { Badge } from '../display/Badge';
+import { KindBadge } from '../display/KindBadge';
 import { ViewToggle } from '../navigation/CollectionViewToggle';
 import { Text } from '../typography/Typography';
 import {
@@ -64,10 +64,10 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
                             <span className="truncate">lar-server</span>
                         </RowIdentity>
                         <RowKindCell>
-                            <Badge hue={300}>
+                            <KindBadge hue={300}>
                                 <LightbulbIcon aria-hidden="true" />
                                 Concept
-                            </Badge>
+                            </KindBadge>
                         </RowKindCell>
                         <DossierTitleCell>
                             <DossierTitle name="lar cloud: website sign-in and relay" onOpen={fn()}>
@@ -93,9 +93,9 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
                                 first={{
                                     words: '2 need you',
                                     tone: 'warning',
-                                    icon: <StatusGlyph status="Needs you" presentation="compact" />,
+                                    icon: <StatusGlyph status="Needs you" size="sm" />,
                                 }}
-                                more={['1 decision', '2 fog']}
+                                more={['1 decision', '2 open questions']}
                             />
                         </RowStateCell>
                     </RowCells>
@@ -103,7 +103,7 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
                         {open && (
                             <DossierTools>
                                 <ViewToggle
-                                    compact
+                                    size="sm"
                                     value={view}
                                     onChange={setView}
                                     options={[
@@ -121,11 +121,11 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
                             title="2/6 parts done"
                             unread={1}
                             parts={[
-                                { key: 'a', title: '#201: Complete', color: 'var(--st-done)' },
-                                { key: 'b', title: '#202: Complete', color: 'var(--st-done)' },
+                                { key: 'a', title: '#201: Complete', color: 'var(--color-board-done)' },
+                                { key: 'b', title: '#202: Complete', color: 'var(--color-board-done)' },
                                 { key: 'c', title: '#203: Working', color: statusColor['In progress'], pulse: true },
                                 { key: 'd', title: '#204: Needs you', color: statusColor['Needs you'] },
-                                { key: 'e', title: '#205: Queued', color: 'var(--soft)' },
+                                { key: 'e', title: '#205: Queued', color: 'var(--color-track)' },
                             ]}
                         />
                     }
@@ -147,7 +147,7 @@ function Concept({ startOpen = false }: { startOpen?: boolean }) {
                         No delivery planned.
                     </Text>
                     <Text variant="caption" tone="muted">
-                        1 part the board doesn't read. A Project may no longer be on the board.
+                        1 part the board doesn’t read. A Project may no longer be on the board.
                     </Text>
                 </DossierBody>
             )}
@@ -176,7 +176,7 @@ type Story = StoryObj<typeof meta>;
 /** An expanded dossier with its planning note and view toggle, and a folded one. */
 export const Dock: Story = {};
 
-/** What's next in each tone, and chips of each kind. */
+/** What’s next in each tone, and chips of each kind. */
 export const NextAndChips: Story = {
     render: () => (
         <div className="grid w-96 gap-2 text-xs">
@@ -184,8 +184,11 @@ export const NextAndChips: Story = {
             <DossierNext word="Moving" text="#203 Relay endpoint" />
             <DossierNext text="Nothing waits on you" />
             <DossierChips first={{ words: '1 decision', tone: 'accent', icon: <MessagesSquareIcon /> }} more={[]} />
-            <DossierChips first={{ words: 'Refined', tone: 'success', refined: true }} more={['2 fog']} />
-            <DossierChips first={{ words: '2 fog', tone: 'neutral', icon: <CircleHelpIcon /> }} more={[]} />
+            <DossierChips
+                first={{ words: 'Refined', tone: 'success', refined: true }}
+                more={['1 decision', '2 open questions']}
+            />
+            <DossierChips first={{ words: '2 open questions', tone: 'neutral', icon: <CircleHelpIcon /> }} more={[]} />
         </div>
     ),
 };

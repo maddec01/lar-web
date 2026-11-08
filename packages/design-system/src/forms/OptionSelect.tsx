@@ -1,16 +1,19 @@
-import { type KeyboardEvent, type ReactNode, type Ref, useRef } from 'react';
+import { type CSSProperties, type KeyboardEvent, type ReactNode, type Ref, useRef } from 'react';
 import { flushSync } from 'react-dom';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
-import { Select, SelectItem, type SelectProps } from './Select';
+import { SelectBase, SelectItem, type SelectProps } from './Select';
 
 const NONE = '__none';
 
 export interface OptionSelectOption<Value extends string = string> {
+    /** The option's name in the list and, once picked, in the field. */
     label: string;
+    /** What `onChange` hears when it is picked. */
     value: Value;
     /** Disabled options stay visible but cannot be chosen. */
     disabled?: boolean;
+    /** An icon before the label. */
     icon?: ReactNode;
     /** A lar-brand app hue that colours the icon, such as a kind's. */
     hue?: number;
@@ -22,8 +25,11 @@ interface LoadedOptionSelectProps<Value extends string> extends Omit<
 > {
     /** The select's accessible name; leave it out when a label names the select by its `id`. */
     label?: string;
+    /** Draws a control-shaped skeleton while the options load; a loading select needs only its `label`. */
     loading?: false;
+    /** Called with the value of the option the reader picks. */
     onChange: (value: Value) => void;
+    /** The options, in order. */
     options: readonly OptionSelectOption<Value>[];
     /** An empty value shows the placeholder, or `none`. */
     value: Value | '';
@@ -37,13 +43,17 @@ interface LoadedOptionSelectProps<Value extends string> extends Omit<
     writesOnPick?: boolean;
     /** Busy rather than disabled while a pick it made saves: it keeps the focus and ignores picks. */
     busy?: boolean;
-    /** `setting` is a settings row's 11rem dropdown; a `field` fills its container. */
-    presentation?: 'field' | 'setting';
+    /** `setting` is a settings row's 13rem dropdown; a `field` fills its container; `inline` is a value in a row of facts
+     *  that edits in place: the value and its chevron, no field edge, a fill under the pointer. `badge` is an editable kind badge in the selected option’s hue. */
+    presentation?: 'field' | 'setting' | 'inline' | 'badge';
+    /** The select's trigger button. */
     ref?: Ref<HTMLButtonElement>;
 }
 
 interface LoadingOptionSelectProps {
+    /** Names what is loading for screen readers. */
     label: string;
+    /** Draws a control-shaped skeleton in the select's place. */
     loading: true;
 }
 
@@ -55,6 +65,9 @@ const withoutClosedTypeahead = (event: KeyboardEvent) => {
     if (event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.altKey && !event.metaKey)
         event.preventDefault();
 };
+
+const inlineClasses =
+    'text-fg hover:bg-fill-hover data-[state=open]:bg-fill-selected focus-ring h-7 w-max gap-1.5 rounded-md px-1.5 text-sm disabled:opacity-50';
 
 /** A Select over plain options, each with an optional icon; while they load, a control-shaped skeleton. */
 export function OptionSelect<Value extends string>(props: OptionSelectProps<Value>) {
@@ -80,6 +93,7 @@ export function OptionSelect<Value extends string>(props: OptionSelectProps<Valu
         presentation = 'field',
         ...select
     } = props;
+    const selectedHue = options.find((option) => option.value === value)?.hue;
     const pick = (next: string) => {
         if (busy) return;
 
@@ -103,11 +117,17 @@ export function OptionSelect<Value extends string>(props: OptionSelectProps<Valu
     const control = (
         <>
             {name && <input ref={field} type="hidden" name={name} value={value} />}
-            <Select
+            <SelectBase
                 {...select}
                 {...(label !== undefined && { 'aria-label': label })}
                 {...(writesOnPick && { onKeyDown: withoutClosedTypeahead })}
                 {...(busy && { 'aria-disabled': true })}
+                {...(presentation === 'inline' && { variant: 'unstyled', className: inlineClasses })}
+                {...(presentation === 'badge' && {
+                    variant: 'unstyled',
+                    className: `focus-ring h-5 w-max gap-1 rounded-full px-2 text-xs font-medium ring-1 ring-inset hover:brightness-95 disabled:opacity-50 ${selectedHue === undefined ? 'bg-fill-muted text-fg ring-line' : 'kind-badge!'}`,
+                    style: selectedHue === undefined ? undefined : ({ '--lar-kind-hue': selectedHue } as CSSProperties),
+                })}
                 value={value || (none ? NONE : '')}
                 onValueChange={pick}
             >
@@ -126,9 +146,11 @@ export function OptionSelect<Value extends string>(props: OptionSelectProps<Valu
                         {option.label}
                     </SelectItem>
                 ))}
-            </Select>
+            </SelectBase>
         </>
     );
 
-    return presentation === 'setting' ? <span className="block w-44 max-w-full">{control}</span> : control;
+    if (presentation === 'setting') return <span className="block w-52 max-w-full">{control}</span>;
+
+    return presentation === 'inline' ? <span className="-mx-1.5 inline-block max-w-full">{control}</span> : control;
 }

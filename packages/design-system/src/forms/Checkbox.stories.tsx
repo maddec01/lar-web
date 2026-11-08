@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn } from 'storybook/test';
 
+import { Button } from '../actions/Button';
+import { Modal } from '../overlays/Modal';
 import { Checkbox } from './Checkbox';
 
 const meta = {
@@ -48,5 +50,23 @@ export const AllStates: Story = {
             <Checkbox {...args} label="Disabled" disabled />
             <Checkbox {...args} label="Disabled, checked" disabled defaultChecked />
         </div>
+    ),
+};
+
+/** A ticked box as a dialog footer’s leading option ("Add another"), where the tick must sit inside its box. */
+export const InModalFooterLeading: Story = {
+    render: (args) => (
+        <>
+            <Button variant="secondary">Add item</Button>
+            <Modal onClose={fn()}>
+                <Modal.Content title="Add item" description="Queue a new piece of work for this project.">
+                    <Modal.Body>The item joins the queue as soon as you add it.</Modal.Body>
+                    <Modal.Footer leading={<Checkbox {...args} label="Add another" defaultChecked />}>
+                        <Button variant="secondary">Cancel</Button>
+                        <Button variant="primary">Add item</Button>
+                    </Modal.Footer>
+                </Modal.Content>
+            </Modal>
+        </>
     ),
 };

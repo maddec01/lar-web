@@ -6,7 +6,7 @@ import { Button } from './Button';
 import { ButtonLink } from './ButtonLink';
 
 it('an icon-only button is square, named by its label, and marks itself', () => {
-    render(<Button compact iconOnly leftIcon={<PlayIcon />} aria-label="Start" />);
+    render(<Button size="sm" iconOnly leftIcon={<PlayIcon />} aria-label="Start" />);
 
     const button = screen.getByRole('button', { name: 'Start' });
 
@@ -16,7 +16,7 @@ it('an icon-only button is square, named by its label, and marks itself', () => 
 });
 
 it("a caller's own data-icon-only mark stays", () => {
-    render(<Button compact data-icon-only="large" aria-label="Settings" />);
+    render(<Button size="sm" data-icon-only="large" aria-label="Settings" />);
     expect(screen.getByRole('button', { name: 'Settings' })).toHaveAttribute('data-icon-only', 'large');
 });
 
@@ -56,7 +56,7 @@ it('a shrinking button truncates its label and keeps its mark', () => {
 
 it("a compact link draws the app Button's compact look, its icon in the button's icon slot", () => {
     render(
-        <ButtonLink href="#pr" compact variant="secondary" icon={<PlayIcon />} data-kind="open">
+        <ButtonLink href="#pr" size="sm" variant="secondary" icon={<PlayIcon />} data-kind="open">
             Open PR
         </ButtonLink>,
     );

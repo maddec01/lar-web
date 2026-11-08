@@ -5,9 +5,13 @@ import type { ReactNode } from 'react';
 import { Heading, Text } from '../typography/Typography';
 
 interface InfoBoxProps {
+    /** What the guidance is about, in a sentence. */
     description: string;
+    /** An icon for the subject, at the box's start. */
     icon: ReactNode;
+    /** Opens the guidance, such as a guide in a drawer. */
     onClick: () => void;
+    /** The guidance's title, such as "Setting up remote access". */
     title: string;
 }
 
@@ -21,7 +25,7 @@ export function InfoBox({ description, icon, onClick, title }: InfoBoxProps) {
         <button
             type="button"
             onClick={onClick}
-            className="group border-primary/40 border-l-primary bg-primary/10 hover:bg-primary/15 focus-visible:outline-primary relative w-full cursor-pointer rounded-lg border border-l-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+            className="group border-primary-ring border-l-primary bg-primary-surface hover:border-primary-edge focus-ring relative w-full cursor-pointer rounded-lg border border-l-4 text-left transition-colors motion-reduce:transition-none"
         >
             <Alert
                 role="presentation"
@@ -35,11 +39,11 @@ export function InfoBox({ description, icon, onClick, title }: InfoBoxProps) {
                     </Heading>
                 }
                 description={<Text tone="muted">{description}</Text>}
-                className="text-primary [&_[data-slot=icon]]:bg-primary/15 bg-transparent pr-12 [&_[data-slot=icon]]:mt-0 [&_[data-slot=icon]]:flex [&_[data-slot=icon]]:size-9 [&_[data-slot=icon]]:items-center [&_[data-slot=icon]]:justify-center [&_[data-slot=icon]]:rounded-lg [&_[data-slot=icon]>svg]:size-5"
+                className="text-primary-fg [&_[data-slot=icon]]:bg-primary-surface-hover bg-transparent pr-12 [&_[data-slot=description]]:opacity-100 [&_[data-slot=icon]]:mt-0 [&_[data-slot=icon]]:flex [&_[data-slot=icon]]:size-9 [&_[data-slot=icon]]:items-center [&_[data-slot=icon]]:justify-center [&_[data-slot=icon]]:rounded-lg [&_[data-slot=icon]>svg]:size-5"
             />
             <span
                 aria-hidden="true"
-                className="text-primary absolute inset-y-0 right-4 flex items-center transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none [&>svg]:size-5"
+                className="text-primary-fg absolute inset-y-0 right-4 flex items-center transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none [&>svg]:size-5"
             >
                 <ChevronRightIcon />
             </span>

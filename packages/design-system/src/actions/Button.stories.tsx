@@ -18,6 +18,10 @@ export const Primary: Story = {};
 export const WithIcon: Story = { args: { leftIcon: <PlusIcon />, children: 'Add library' } };
 
 export const Destructive: Story = { args: { variant: 'destructive', leftIcon: <Trash2Icon />, children: 'Delete' } };
+/** Opens the confirmation; neutral until hover or keyboard focus. */
+export const DestructiveTrigger: Story = {
+    args: { variant: 'destructive-quiet', leftIcon: <Trash2Icon />, children: 'Delete catalog' },
+};
 
 export const Loading: Story = { args: { loading: true } };
 
@@ -55,16 +59,16 @@ export const Recipes: Story = {
     ),
 };
 
-/** The dense 28px control with 12px text, as Lar Factory's board draws every button, in each recipe it uses. */
+/** The dense 28px control with 12px text, as Lar Factory’s board draws every button, in each recipe it uses. */
 export const Compact: Story = {
     render: (args) => (
         <div className="flex flex-wrap items-center gap-3">
             {(['primary', 'tinted', 'secondary', 'quiet', 'destructive'] as const).map((variant) => (
-                <Button key={variant} {...args} compact variant={variant}>
+                <Button key={variant} {...args} size="sm" variant={variant}>
                     {variant}
                 </Button>
             ))}
-            <Button {...args} compact variant="tinted" leftIcon={<PlusIcon />}>
+            <Button {...args} size="sm" variant="tinted" leftIcon={<PlusIcon />}>
                 Start build
             </Button>
         </div>
@@ -75,7 +79,7 @@ export const Compact: Story = {
 export const Wrapping: Story = {
     render: (args) => (
         <div className="w-48">
-            <Button {...args} compact wrap variant="secondary">
+            <Button {...args} size="sm" wrap variant="secondary">
                 Close the ticket and delete the branch with its worktree
             </Button>
         </div>
@@ -84,6 +88,7 @@ export const Wrapping: Story = {
 
 /** A square button with its icon alone, named for assistive technology, at both sizes. */
 export const IconOnly: Story = {
+    args: { children: undefined },
     render: (args) => (
         <div className="flex flex-wrap items-center gap-3">
             <Button
@@ -95,7 +100,7 @@ export const IconOnly: Story = {
             />
             <Button
                 {...args}
-                compact
+                size="sm"
                 variant="secondary"
                 iconOnly
                 leftIcon={<MessageSquareTextIcon />}
@@ -109,7 +114,7 @@ export const IconOnly: Story = {
 export const Pending: Story = {
     args: {
         variant: 'secondary',
-        compact: true,
+        size: 'sm',
         pendingLook: true,
         'aria-disabled': true,
         children: 'Moving to List…',
@@ -121,23 +126,23 @@ export const Pending: Story = {
 export const HeldDisabled: Story = {
     args: {
         variant: 'secondary',
-        compact: true,
+        size: 'sm',
         pendingLook: 'disabled',
         'aria-disabled': true,
         children: 'Save',
     },
 };
 
-/** While its action is in flight, a spinner takes the icon's place. */
+/** While its action is in flight, a spinner takes the icon’s place. */
 export const Busy: Story = {
-    args: { variant: 'tinted', compact: true, busy: true, 'aria-disabled': true, children: 'Starting…' },
+    args: { variant: 'tinted', size: 'sm', busy: true, 'aria-disabled': true, children: 'Starting…' },
 };
 
 /** In a crowded row, the label truncates while its trailing mark stays. */
 export const Shrinking: Story = {
     render: (args) => (
         <div className="flex w-40">
-            <Button {...args} compact variant="tinted" shrinks mark="▾" leftIcon={<PlusIcon />}>
+            <Button {...args} size="sm" variant="tinted" shrinks mark="▾" leftIcon={<PlusIcon />}>
                 Start after owner/repository#1234
             </Button>
         </div>

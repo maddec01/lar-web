@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { ChevronDownIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
@@ -44,10 +45,10 @@ const reason = (
     />
 );
 
-/** A project's page: its groups, one with a setting that can't be changed and why. */
+/** A project’s page: its groups, one with a setting that can’t be changed and why. */
 export const Page: Story = {
     render: () => (
-        <div className="max-w-2xl">
+        <div className="w-full max-w-2xl">
             <Stack space="page" data-project-page="maddec01/lar-web">
                 <FormSection presentation="dense" title="Project">
                     <InsetPanel presentation="settings">
@@ -71,7 +72,7 @@ export const Checking: Story = {
     render: () => (
         <ReasonNote
             reason="Not checked yet."
-            explanation="The factory hasn't checked this access yet."
+            explanation="The factory hasn’t checked this access yet."
             helpLabel="access"
             action={
                 <InlineLink disabled onClick={fn()}>
@@ -82,7 +83,7 @@ export const Checking: Story = {
     ),
 };
 
-/** The title bar's Settings button: icon-only, its 20px icon in the text colour. */
+/** The title bar’s Settings button: icon-only, its 20px icon in the text colour. */
 export const OpenButton: Story = {
     render: () => <OpenSettingsButton label="Settings" onOpen={fn()} />,
 };
@@ -126,7 +127,7 @@ export const SidebarNoMatch: Story = {
             <SettingsNav
                 label="Settings sections"
                 search={<Input type="search" aria-label="Search settings" defaultValue="zzz" />}
-                empty="No settings match."
+                empty="Nothing matches"
             >
                 {null}
             </SettingsNav>
@@ -134,11 +135,11 @@ export const SidebarNoMatch: Story = {
     ),
 };
 
-/** The Skills page: a skill folder with its readers and an install in progress, the group's note with what its last
+/** The Skills page: a skill folder with its readers and an install in progress, the group’s note with what its last
  *  call did, and a bundled skill with its source. */
 export const SkillsPage: Story = {
     render: () => (
-        <div className="max-w-2xl">
+        <div className="w-full max-w-2xl">
             <Stack space="page">
                 <FormSection presentation="dense" title="Skill folders" help="The app installs its skills here.">
                     <InsetPanel presentation="settings">
@@ -178,7 +179,7 @@ export const SkillsPage: Story = {
                         <FormResult
                             id="settings-result"
                             tone="warning"
-                            text="Couldn't remove the links Lar Factory didn't make:"
+                            text="Couldn’t remove the links Lar Factory didn’t make:"
                             list={[<code key="path">~/.claude-work/skills/lar-work</code>]}
                         />
                     </SettingsNote>
@@ -202,16 +203,16 @@ export const SkillsPage: Story = {
     ),
 };
 
-/** A setting's control with its error under it, and each Project's value for it. */
+/** A setting’s control with its error under it, and each Project’s value for it. */
 export const ControlWithProjects: Story = {
     render: () => (
-        <div className="grid max-w-md gap-3">
+        <div className="grid w-full max-w-md gap-3">
             <SettingControl>
-                <Button {...buttonKind('other')} shrinks mark="▾">
+                <Button {...buttonKind('other')} shrinks rightIcon={<ChevronDownIcon />}>
                     T3 Project default
                 </Button>
                 <Text variant="caption" tone="danger" role="alert">
-                    Couldn't save the model.
+                    Couldn’t save the model.
                 </Text>
             </SettingControl>
             <ProjectValueList

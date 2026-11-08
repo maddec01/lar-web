@@ -29,7 +29,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** Struck items read as warnings: here, audio tracks the player can't decode. */
+/** Struck items read as warnings: here, audio tracks the player can’t decode. */
 export const WithStruckItems: Story = {
     args: {
         label: 'Audio tracks',

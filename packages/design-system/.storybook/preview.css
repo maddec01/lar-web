@@ -1,6 +1,0 @@
-/* Storybook shows every component, so it takes the board entry (styles.css plus Lar Factory's board) and the
-   marketing showcase's sheets. */
-@import '../src/board.css';
-@import '../src/showcase/devices.css';
-@import '../src/showcase/stage.css';
-@import '../src/showcase/server-unit.css';
