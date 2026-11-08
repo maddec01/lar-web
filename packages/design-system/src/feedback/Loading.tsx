@@ -31,7 +31,8 @@ export function SpinnerIcon({ motion = 'spin', ...icon }: SpinnerIconProps) {
     );
 }
 
-type LoadingProps = Omit<NinnaLoadingProps, 'title'> & {
+/** A loader's look is its presentation, never a class, size or colour of the caller's. */
+interface LoadingProps extends Omit<NinnaLoadingProps, 'title' | 'className' | 'style' | 'color' | 'size' | 'variant'> {
     /** What loads. Without a `presentation` it names ninna-ui's spinner for screen readers only; with one it shows
      *  beside the spinner. */
     label?: string;
@@ -43,7 +44,7 @@ type LoadingProps = Omit<NinnaLoadingProps, 'title'> & {
      *  `line` stands on its own line of body text; `status` is a step's own loading line, announced, muted body text
      *  with room above and below that keeps turning as a pending action's spinner does. */
     presentation?: 'inline' | 'line' | 'status';
-};
+}
 
 /** What shows in place of something still loading: ninna-ui's announced spinner, or with a `presentation`, a small
  *  spinner, still under reduced motion, and what loads. */
@@ -53,7 +54,7 @@ export const Loading = forwardRef<HTMLDivElement, LoadingProps>(
 
         if (presentation === 'status')
             return (
-                <p role="status" className="text-base-700 m-0 flex items-center gap-2 py-4 text-sm">
+                <p role="status" className="text-fg-muted m-0 flex items-center gap-2 py-4 text-sm">
                     <SpinnerIcon motion={still ? 'still' : 'always'} aria-hidden="true" className="size-4" />
                     {label}
                 </p>

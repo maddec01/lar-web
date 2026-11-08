@@ -3,22 +3,37 @@ import { forwardRef } from 'react';
 
 import { formControlClasses, formControlDefaults } from './FormControlStyles';
 
-export type InputProps = Omit<NinnaInputProps, 'fullWidth'> & {
+/** A text field's look is its `presentation`, never a class, style, size or variant of the caller's. */
+export interface InputProps extends Omit<
+    NinnaInputProps,
+    'fullWidth' | 'className' | 'style' | 'size' | 'variant' | 'color' | 'floatingLabel'
+> {
     /** A `field` fills its container; `setting` is a settings row's 16rem text field, narrower where the row is; `short`
      *  holds a few characters, such as a hex colour; `count` a small whole number; `title` is a document's title typed
      *  in place, borderless in large semibold type, such as a new item's. */
     presentation?: 'field' | 'setting' | 'short' | 'count' | 'title';
-};
+    /** Marks the value as wrong: the danger edge, and `aria-invalid` for assistive technology. */
+    invalid?: boolean;
+    /** Shows a clear button while it holds a value, such as a search field's. */
+    clearable?: boolean;
+    /** Called when the clear button empties it. */
+    onClear?: () => void;
+    /** Shows a count of characters against `maxLength` under it. */
+    showCounter?: boolean;
+}
+
+type InputBaseProps = InputProps & Pick<NinnaInputProps, 'className' | 'style' | 'size' | 'variant'>;
 
 const presentations = {
     field: '',
     setting: 'w-64 max-w-full',
     short: 'w-24',
     count: 'w-20',
-    title: 'text-base-content w-full shrink-0 border-0 bg-transparent p-0 text-xl font-semibold tracking-tight outline-none placeholder:font-medium placeholder:text-(--muted-foreground)',
+    title: 'text-fg w-full shrink-0 border-0 bg-transparent p-0 text-xl font-semibold tracking-title outline-none placeholder:font-medium placeholder:text-fg-muted',
 } as const;
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
+/** The text field for the design system's own compositions, which may fit it to their layout with a class. */
+export const InputBase = forwardRef<HTMLInputElement, InputBaseProps>(
     (
         {
             size = formControlDefaults.size,
@@ -40,5 +55,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         />
     ),
 );
+
+InputBase.displayName = 'InputBase';
+
+/** Lar's one-line text field, as T3 Code draws it; Field gives it a label, a description and an error. */
+export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => <InputBase ref={ref} {...props} />);
 
 Input.displayName = 'Input';

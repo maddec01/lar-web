@@ -56,19 +56,19 @@ export const Recipes: Story = {
     ),
 };
 
-/** The app Button's compact look as a link, as Lar Factory's board opens a pull request or a T3 thread. */
+/** The app Button’s compact look as a link, as Lar Factory’s board opens a pull request or a T3 thread. */
 export const Compact: Story = {
     render: () => (
         <div className="flex items-center gap-3">
-            <ButtonLink href="#pr" compact variant="secondary" icon={<GitPullRequestIcon />}>
+            <ButtonLink href="#pr" size="sm" variant="secondary" icon={<GitPullRequestIcon />}>
                 Open PR
             </ButtonLink>
-            <ButtonLink href="#main" compact variant="primary">
+            <ButtonLink href="#main" size="sm" variant="primary">
                 Open on GitHub
             </ButtonLink>
             <ButtonLink
                 href="#thread"
-                compact
+                size="sm"
                 iconOnly
                 variant="secondary"
                 icon={<MessageSquareTextIcon />}

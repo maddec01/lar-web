@@ -1,7 +1,7 @@
 import {
     Link as NinnaLink,
     LinkBox as NinnaLinkBox,
-    type LinkBoxProps,
+    type LinkBoxProps as NinnaLinkBoxProps,
     LinkOverlay as NinnaLinkOverlay,
     type LinkOverlayProps as NinnaLinkOverlayProps,
     type LinkProps as NinnaLinkProps,
@@ -9,16 +9,63 @@ import {
 import { forwardRef, type ReactNode } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
+import { linkRecipe } from './LinkRecipe';
 
-export type LinkProps = Omit<NinnaLinkProps, 'size' | 'color'> & {
+/** A link's look is its variant and tone, never a class of the caller's. */
+export interface LinkProps extends Omit<
+    NinnaLinkProps,
+    'size' | 'color' | 'underline' | 'externalIcon' | 'className' | 'style'
+> {
+    /** Where it goes. */
+    href?: string;
+    /** The link's text. */
+    children?: ReactNode;
+    /** Opens in a new tab, safely (`target="_blank"` with `rel="noopener noreferrer"`), and is left to the browser. */
+    external?: boolean;
+    /** Marks an `external` link with the external-link icon after its text. */
+    showExternalIcon?: boolean;
+    /** `body` (14px) for a link on its own line, `caption` (12px) for one among small text. */
     variant?: 'body' | 'caption';
+    /** A standalone navigation instruction ("Go to the dashboard"): appends a decorative right arrow.
+     *  Omit for inline prose, navigation labels, downloads and external links with their own icon. */
+    arrow?: boolean;
+    /** `accent` (the default) for a link that stands on its own, `muted` for a navigation trail's quiet link,
+     *  `inherit` for a link inside text of another colour (a note, an alert), and `default` for a cluster of parts
+     *  that reads as one fact (a rating), in body text with its underline on hover. */
+    tone?: keyof typeof linkRecipe;
+    /** Called with the `href` on a plain left click, in place of the browser's navigation, for the app's router; a
+     *  modified click (new tab, download) is left to the browser. */
     onNavigate?: (href: string) => void;
-};
+}
 
-export type LinkOverlayProps = NinnaLinkOverlayProps & Pick<LinkProps, 'onNavigate'>;
+type LinkBaseProps = LinkProps & Pick<NinnaLinkProps, 'className' | 'style'>;
 
-/** Keep secondary links and buttons above the stretched primary link or action. */
-export function LinkBox({ className = '', ...props }: LinkBoxProps) {
+/** The stretched link's look is fixed, never a class of the caller's. */
+export interface LinkOverlayProps extends Omit<NinnaLinkOverlayProps, 'className' | 'style' | 'color'> {
+    /** Where the whole box goes. */
+    href?: string;
+    /** The link's text, usually the box's title. */
+    children?: ReactNode;
+    /** Opens in a new tab, safely, and is left to the browser. */
+    external?: boolean;
+    /** Called with the `href` on a plain left click, in place of the browser's navigation, for the app's router. */
+    onNavigate?: (href: string) => void;
+}
+
+type LinkOverlayBaseProps = LinkOverlayProps & Pick<NinnaLinkOverlayProps, 'className' | 'style'>;
+
+/** The box's look comes from what it holds, never a class of the caller's. */
+export interface LinkBoxProps extends Omit<NinnaLinkBoxProps, 'className' | 'style' | 'color'> {
+    /** The element it renders: a `div` (the default), or a landmark such as `article` or `li`'s content. */
+    as?: NinnaLinkBoxProps['as'];
+    /** The box's content: a `LinkOverlay` for its one destination, and any secondary links or buttons. */
+    children?: ReactNode;
+}
+
+type LinkBoxBaseProps = LinkBoxProps & Pick<NinnaLinkBoxProps, 'className' | 'style'>;
+
+/** The link box for the design system's own compositions, which may fit it to their layout with a class. */
+export function LinkBoxBase({ className = '', ...props }: LinkBoxBaseProps) {
     return (
         <NinnaLinkBox
             {...props}
@@ -27,32 +74,58 @@ export function LinkBox({ className = '', ...props }: LinkBoxProps) {
     );
 }
 
-export const LinkOverlay = forwardRef<HTMLAnchorElement, LinkOverlayProps>(
+/** A box, such as a card, that one link covers: secondary links and buttons inside it stay above that link. */
+export function LinkBox(props: LinkBoxProps) {
+    return <LinkBoxBase {...props} />;
+}
+
+/** The stretched link for the design system's own compositions, which may fit it to their layout with a class. */
+export const LinkOverlayBase = forwardRef<HTMLAnchorElement, LinkOverlayBaseProps>(
     ({ onNavigate, onClick, className = '', ...props }, ref) => (
         <NinnaLinkOverlay
             {...tabbable}
             {...props}
             ref={ref}
-            className={`focus-visible:before:outline-primary before:z-1 before:rounded-[inherit] focus-visible:outline-none focus-visible:before:outline-2 focus-visible:before:-outline-offset-2 ${className}`}
+            className={`focus-ring-stretched before:z-1 before:rounded-[inherit] ${className}`}
             onClick={navigationClick({ ...props, onClick, onNavigate })}
         />
     ),
 );
 
+LinkOverlayBase.displayName = 'LinkOverlayBase';
+
+/** A box's one link, stretched over the whole of its `LinkBox`, focus ring and all. */
+export const LinkOverlay = forwardRef<HTMLAnchorElement, LinkOverlayProps>((props, ref) => (
+    <LinkOverlayBase ref={ref} {...props} />
+));
+
 LinkOverlay.displayName = 'LinkOverlay';
 
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-    ({ variant = 'body', onNavigate, onClick, ...props }, ref) => (
+/** The link for the design system's own compositions, which may fit it to their layout with a class. */
+export const LinkBase = forwardRef<HTMLAnchorElement, LinkBaseProps>(
+    (
+        { variant = 'body', tone = 'accent', arrow = false, children, onNavigate, onClick, className = '', ...props },
+        ref,
+    ) => (
         <NinnaLink
             {...tabbable}
             {...props}
             ref={ref}
             size={variant === 'caption' ? 'xs' : 'sm'}
-            underline="hover"
+            underline="none"
+            className={`${linkRecipe[tone]} ${className}`}
             onClick={navigationClick({ ...props, onClick, onNavigate })}
-        />
+        >
+            {children}
+            {arrow ? <span aria-hidden="true">{' →'}</span> : null}
+        </NinnaLink>
     ),
 );
+
+LinkBase.displayName = 'LinkBase';
+
+/** Lar's link: accent, muted or the surrounding colour, handing a plain click to the app's router with `onNavigate`. */
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => <LinkBase ref={ref} {...props} />);
 
 Link.displayName = 'Link';
 
@@ -63,7 +136,7 @@ function navigationClick({
     external,
     target,
     download,
-}: LinkOverlayProps): LinkProps['onClick'] {
+}: LinkOverlayBaseProps): LinkBaseProps['onClick'] {
     return (event) => {
         if (onNavigate) event.stopPropagation();
 
@@ -89,15 +162,26 @@ function navigationClick({
     };
 }
 
-const inline =
-    'focus-visible:outline-primary text-inherit underline decoration-current/40 underline-offset-2 transition-colors hover:decoration-current focus-visible:outline-2';
+const inline = `focus-ring ${linkRecipe.inherit}`;
 
 /** A link inside running text or a note: the surrounding size and colour, underlined. With `onClick` in place of
  *  `href` it is a button with the same look, such as "Change" after what was kept, and can be `disabled`. */
 export function InlineLink(
     props:
-        | { href: string; children?: ReactNode }
-        | { onClick: () => void; disabled?: boolean | undefined; children?: ReactNode },
+        | {
+              /** Where it goes, in a new tab. */
+              href: string;
+              /** The link's text. */
+              children?: ReactNode;
+          }
+        | {
+              /** Makes it a button with the link's look, which calls this. */
+              onClick: () => void;
+              /** Holds the button. */
+              disabled?: boolean | undefined;
+              /** The button's text. */
+              children?: ReactNode;
+          },
 ) {
     if ('onClick' in props)
         return (

@@ -6,10 +6,15 @@ import { Inline } from '../layout/Flow';
 import { Text } from '../typography/Typography';
 
 interface StatTileProps {
+    /** What it counts, such as "Failed". */
     label: string;
+    /** Toggles the filter it stands for. */
     onClick: () => void;
+    /** Whether its filter is on (`aria-pressed`). */
     selected: boolean;
+    /** The status light's tone beside the label. */
     tone: StatusTone;
+    /** The count. */
     value: ReactNode;
 }
 
@@ -20,8 +25,8 @@ export function StatTile({ label, onClick, selected, tone, value }: StatTileProp
             {...tabbable}
             type="button"
             aria-pressed={selected}
-            className={`focus-visible:outline-primary flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                selected ? 'border-primary bg-primary/5' : 'border-base-300 bg-base-100/60 hover:border-base-300'
+            className={`focus-ring flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors ${
+                selected ? 'border-primary bg-primary-surface' : 'surface-card hover:border-line-hover'
             }`}
             onClick={onClick}
         >

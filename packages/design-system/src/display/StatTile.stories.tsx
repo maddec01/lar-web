@@ -56,7 +56,7 @@ export const JobCounts: Story = {
     render: () => <JobFilters />,
     decorators: [
         (Story) => (
-            <div className="w-[48rem] max-w-full">
+            <div className="w-192 max-w-full">
                 <Story />
             </div>
         ),

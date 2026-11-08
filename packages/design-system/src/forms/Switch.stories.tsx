@@ -36,6 +36,7 @@ export const AllStates: Story = {
             <Switch {...args} label="Off" />
             <Switch {...args} label="On" defaultChecked />
             <Switch {...args} label="Loading" defaultChecked loading />
+            <Switch {...args} label="Saving (busy)" defaultChecked busy />
             <Switch {...args} label="Invalid" invalid />
             <Switch {...args} label="Disabled" disabled />
             <Switch {...args} label="Disabled, on" disabled defaultChecked />

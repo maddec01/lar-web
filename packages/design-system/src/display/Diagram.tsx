@@ -39,18 +39,20 @@ export function Diagram({ source, draw, label, failedLabel, sourceLabel }: Diagr
     return (
         <figure className="m-0 grid min-w-0 gap-2 rounded-lg border p-3" data-map-diagram>
             {failed === source ? (
-                <p role="status" className="text-base-700 m-0 text-xs">
+                <p role="status" className="text-fg-muted m-0 text-xs">
                     {failedLabel}
                 </p>
             ) : (
                 <div
                     ref={host}
+                    // One wide figure, scrolled sideways: not a list, no fade.
+                    data-scroll-fade="exempt"
                     className="overflow-auto [&_svg]:mx-auto [&_svg]:h-auto [&_svg]:max-w-full"
                     role="img"
                     aria-label={label}
                 />
             )}
-            <details className="text-base-700 text-xs">
+            <details className="text-fg-muted text-xs">
                 <summary className="cursor-pointer">{sourceLabel}</summary>
                 <pre className="overflow-auto pt-2 whitespace-pre-wrap">{source}</pre>
             </details>

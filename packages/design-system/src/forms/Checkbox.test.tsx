@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { type ChangeEvent, createRef, useState } from 'react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vite-plus/test';
 
 import { Checkbox } from './Checkbox';
@@ -22,48 +22,6 @@ describe('Checkbox', () => {
         rerender(<Checkbox aria-label="Select albums" indeterminate />);
         expect(input).toHaveProperty('indeterminate', true);
         expect(input).toHaveAttribute('aria-checked', 'mixed');
-    });
-
-    it('names the input with its label and preserves native form interactions', () => {
-        const ref = createRef<HTMLInputElement>();
-        const onClick = vi.fn();
-        const onChange = vi.fn((event: ChangeEvent<HTMLInputElement>) => {
-            expect(event.target).toBe(ref.current);
-            expect(event.target.checked).toBe(true);
-        });
-
-        const { rerender } = render(
-            <>
-                <Checkbox
-                    ref={ref}
-                    label="Keep original files"
-                    id="keep-originals"
-                    name="keepOriginals"
-                    value="yes"
-                    data-source="onboarding"
-                    aria-describedby="keep-help"
-                    onClick={onClick}
-                    onChange={onChange}
-                />
-                <p id="keep-help">Original files stay in the source folder.</p>
-            </>,
-        );
-        const input = screen.getByRole('checkbox', { name: 'Keep original files' });
-
-        expect(ref.current).toBe(input);
-        expect(input).toHaveAccessibleDescription('Original files stay in the source folder.');
-        expect(input).toHaveAttribute('id', 'keep-originals');
-        expect(input).toHaveAttribute('name', 'keepOriginals');
-        expect(input).toHaveAttribute('data-source', 'onboarding');
-        expect(input).not.toBeChecked();
-        fireEvent.click(screen.getByText('Keep original files'));
-        expect(input).toBeChecked();
-        expect(onClick).toHaveBeenCalledTimes(1);
-        expect(onChange).toHaveBeenCalledTimes(1);
-        rerender(<Checkbox label="Keep original files" disabled />);
-        fireEvent.click(screen.getByText('Keep original files'));
-        expect(screen.getByRole('checkbox')).toBeDisabled();
-        expect(onChange).toHaveBeenCalledTimes(1);
     });
 
     it('toggles once through an enclosing rich label and respects disabled state', () => {

@@ -35,6 +35,11 @@ tester.run('boundaries', rules.boundaries, {
         },
         { code: "import { useQuery } from '@tanstack/react-query';", filename: app('services/music/music.hooks.ts') },
         { code: "import { XIcon } from 'lucide-react';", filename: app('features/home/Home.test.tsx') },
+        {
+            code: "import { ButtonBase } from '@lar-works/design-system/primitives';\nimport { Card } from './Card';\nimport type { Track } from '@/shared/media';",
+            filename: app('ui/media/Track.tsx'),
+            options: [{ role: 'ui' }],
+        },
     ],
     invalid: [
         {
@@ -73,6 +78,17 @@ tester.run('boundaries', rules.boundaries, {
             errors: [{ message: 'Shared foundations cannot depend on application, features or services.' }],
         },
         {
+            code: "import { ButtonBase } from '@lar-works/design-system/primitives';",
+            filename: app('features/home/Home.tsx'),
+            errors: [{ message: /Only the app's UI layer/ }],
+        },
+        {
+            code: "import { usePlayer } from '@/features/music';\nimport { useTranslation } from 'react-i18next';",
+            filename: app('ui/media/Track.tsx'),
+            options: [{ role: 'ui' }],
+            errors: 2,
+        },
+        {
             code: "import { useTranslation } from 'react-i18next';",
             filename: designSystem('overlays/Modal.tsx'),
             options: [{ role: 'design-system' }],
@@ -91,6 +107,14 @@ tester.run('boundaries', rules.boundaries, {
 
 tester.run('no-visual-recipes', rules['no-visual-recipes'], {
     valid: [
+        {
+            code: 'import { Button } from \'@lar-works/design-system\'; export const A = () => <Button size="sm" />;',
+            filename: app('features/home/A.tsx'),
+        },
+        {
+            code: 'import { Alert } from \'@lar-works/design-system\'; export const A = () => <Alert size="sm" message="Try again." />;',
+            filename: app('features/home/A.tsx'),
+        },
         {
             code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text variant="lead">Hi</Text>;',
             filename: app('features/home/A.tsx'),
@@ -115,7 +139,7 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             errors: [{ messageId: 'element' }],
         },
         {
-            code: 'import { Button } from \'@lar-works/design-system\';\nexport const A = () => <Button size="sm" />;',
+            code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text size="sm" />;',
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'lookProp' }],
         },
@@ -124,6 +148,17 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'lookProp' }],
         },
+    ],
+});
+
+tester.run('no-raw-colours', rules['no-raw-colours'], {
+    valid: [
+        'export const a = "bg-surface text-fg-muted gap-2 px-[calc(--spacing(3)+1px)]";',
+        'export const a = "border-[oklch(0.62_0.1_var(--hue)/0.45)]"; export const b = "#section";',
+    ],
+    invalid: [
+        { code: 'export const a = "bg-[#0a0a0a] p-2";', errors: 1 },
+        { code: 'export const a = { color: `rgb(0 0 0 / ${alpha})` };', errors: 1 },
     ],
 });
 

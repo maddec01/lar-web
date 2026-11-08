@@ -26,7 +26,6 @@ const meta = {
     title: 'Forms/Select',
     component: Select,
     args: { 'aria-label': 'Library', placeholder: 'Choose a library', onValueChange: fn(), children: libraryItems },
-    argTypes: { variant: { control: 'select', options: ['filled', 'outline', 'flushed'] } },
     render: (args) => (
         <div className="max-w-xs">
             <Select {...args} />

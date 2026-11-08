@@ -7,8 +7,11 @@ import { IconButton } from '../actions/IconButton';
 const COPIED_FEEDBACK_MS = 1500;
 
 interface CopyButtonProps {
+    /** Says it copied, such as "Copied", as its name and tooltip for a moment after a copy. */
     copiedLabel: string;
+    /** Names what it copies, such as "Copy the address". */
     label: string;
+    /** The text it puts on the clipboard. */
     value: string;
     /** `icon` is a copy icon that turns into a tick; `text` is a compact button that reads `copyText`, then
      *  `copiedLabel`, as a dense tool's Copy beside a command. */
@@ -65,7 +68,7 @@ export function CopyButton({
 
     if (presentation === 'text')
         return (
-            <Button variant="secondary" compact aria-label={label} onClick={() => void copy()}>
+            <Button variant="secondary" size="sm" aria-label={label} onClick={() => void copy()}>
                 {copied ? copiedLabel : copyText}
             </Button>
         );

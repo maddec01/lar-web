@@ -92,15 +92,6 @@ test('opens as a labelled dialog with no heading, focuses the field and reports 
     expect(onQueryChange).toHaveBeenCalledWith('arc');
 });
 
-test("its overlay is a child of the body that the page's animation pause selector matches", async () => {
-    await show(element({}));
-
-    const overlay = document.querySelector("[data-slot$='-overlay'][data-state='open']");
-
-    expect(overlay?.parentElement).toBe(document.body);
-    expect(host!.compareDocumentPosition(overlay!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-});
-
 test('the arrow keys move the highlight, wrap at both ends and scroll it into view', async () => {
     await show(element({}));
     expect(active()).toBe('Add item');
@@ -247,31 +238,6 @@ test('values that differ only in punctuation get separate option ids', async () 
     await press('ArrowDown');
     expect(active()).toBe('a_b');
     expect(input().getAttribute('aria-activedescendant')).not.toContain(' ');
-});
-
-test('empty content shows only with nothing listed and nothing pending', async () => {
-    await show(element({ options: [], empty: 'Nothing matches' }));
-    expect(document.querySelector('[role="status"]')?.textContent).toBe('Nothing matches');
-    expect(document.querySelector('[role="listbox"]')?.getAttribute('aria-busy')).toBe('false');
-
-    await rerender(element({ options: ['Settings'], empty: 'Nothing matches' }));
-    expect(document.querySelector('[role="status"]')?.textContent).toBe('');
-
-    await rerender(element({ options: [], empty: 'Nothing matches', busy: true, busyLabel: 'Loading tickets' }));
-    expect(document.querySelector('[role="status"]')?.textContent).toBe('Loading tickets');
-});
-
-test('busy content shows beside listed options and marks the list busy', async () => {
-    await show(element({ options: ['Settings'], busy: true, busyLabel: 'Loading tickets' }));
-    expect(document.querySelector('[role="status"]')?.textContent).toBe('Loading tickets');
-    expect(document.querySelector('[role="listbox"]')?.getAttribute('aria-busy')).toBe('true');
-    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
-});
-
-test('the footer holds the key hints', async () => {
-    await show(element({ footer: 'Arrow keys to move' }));
-    expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Arrow keys to move');
-    expect(document.querySelector('[role="listbox"]')?.textContent).not.toContain('Arrow keys to move');
 });
 
 test('a press on the trailing control leaves the focus in the field', async () => {

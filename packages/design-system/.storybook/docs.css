@@ -1,0 +1,38 @@
+/* The docs surface follows the app palette; DocsContainer supplies the matching theme for controls/source chrome. */
+.sbdocs.sbdocs-wrapper {
+    background: var(--color-surface-page);
+    color: var(--color-fg);
+}
+.sbdocs.sbdocs-content {
+    color: var(--color-fg);
+}
+
+/* The base styles reset list markers; a Markdown numbered list (a direct child of the page, or nested in one) keeps
+   its numbers. Lists inside component specimens stay as their components draw them. */
+.sbdocs.sbdocs-content > ol,
+.sbdocs.sbdocs-content > :is(ol, ul) li > ol {
+    list-style: decimal;
+}
+
+/* Markdown tables (remark-gfm) in the design system's dress: left-aligned headings, hairline rows on the raised
+   surface, no zebra. */
+.sbdocs.sbdocs-content table {
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+.sbdocs.sbdocs-content table tr,
+.sbdocs.sbdocs-content table tr:nth-of-type(2n) {
+    background: var(--color-surface-raised);
+    border-top: 1px solid var(--color-line);
+}
+.sbdocs.sbdocs-content table th,
+.sbdocs.sbdocs-content table td {
+    border: 1px solid var(--color-line);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    color: var(--color-fg);
+}
+.sbdocs.sbdocs-content table th {
+    background: var(--color-surface-sunken);
+    font-weight: 600;
+}

@@ -20,7 +20,7 @@ function Table({ children }: { children: ReactNode }) {
         <div
             role="table"
             aria-label="Tracks"
-            className="border-base-300 bg-base-100 max-w-3xl overflow-hidden rounded-xl border"
+            className="border-line bg-surface-raised max-w-3xl overflow-hidden rounded-xl border"
             style={
                 {
                     '--lar-list-columns': [columnWidths.primary, columnWidths.secondary, columnWidths.numeric].join(
@@ -38,7 +38,7 @@ function Cell({ children, align }: { children?: ReactNode; align?: 'right' }) {
     return (
         <div
             role="cell"
-            className={`text-base-content/55 min-w-0 truncate text-sm ${align === 'right' ? 'text-right tabular-nums' : ''}`}
+            className={`text-fg-muted min-w-0 truncate text-sm ${align === 'right' ? 'text-right tabular-nums' : ''}`}
         >
             {children}
         </div>

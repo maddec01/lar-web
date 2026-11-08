@@ -1,0 +1,56 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Writing/Icons" />
+
+# Icons
+
+An icon names a concept the way a word does, so every app draws a concept with the same one icon, and an icon never
+names two concepts. Apps import icons from `@lar-works/design-system/icons`; a concept below is drawn from
+`conceptIcons` (for example `const { diagnostics: DiagnosticsIcon } = conceptIcons`), so it can't drift. The story
+**Foundations/Icon glossary** shows them all.
+
+| Concept                                       | `conceptIcons` key | Icon (lucide)        | Never for                     |
+| --------------------------------------------- | ------------------ | -------------------- | ----------------------------- |
+| Work in the background, Background tasks      | `activity`         | Pulse                | Diagnostics                   |
+| Diagnostics: the app's own tools, connections | `diagnostics`      | Stethoscope          | Activity                      |
+| Updates: a newer version of the app           | `updates`          | Circle with up arrow | Refresh                       |
+| Reload, try again                             | `refresh`          | Circular arrows      | Updates                       |
+| Settings, General settings                    | `settings`         | Gear                 | A settings section of its own |
+| Users: people with access                     | `users`            | Users                | People credited on content    |
+| Logs                                          | `logs`             | Logs                 |                               |
+| Archive                                       | `archive`          | Archive box          |                               |
+| Search, command palette                       | `search`           | Magnifier            |                               |
+
+A settings section's icon in the navigation is its concept's icon, in every app, and so is every toolbar button's and
+every empty state's icon.
+
+### An app's own concepts
+
+An app extends the glossary with the concepts only it has, in its UI layer, and draws every concept from its extended
+glossary:
+
+```ts
+// src/ui/icons/ConceptIcons.ts
+import { conceptIcons as sharedConceptIcons, ScanLineIcon } from '@lar-works/design-system/icons';
+
+export const conceptIcons = {
+    ...sharedConceptIcons,
+    /** Reading folders for new, changed or removed files. Scan line; never refresh. */
+    scans: ScanLineIcon,
+} as const;
+```
+
+It never redraws a shared concept or gives a shared concept's icon to one of its own. A concept a second app needs
+moves into the shared glossary here, with its row in this table.
+
+### Testing that icons come from the glossary
+
+`conceptIcons` is unique by construction (the design system's own test checks one icon per concept). Apps check that
+their toolbar buttons and empty states draw their concept's icon with `iconConcept` from
+`@lar-works/design-system/testing`, which names the concept of the first icon in an element, in the shared glossary or
+the app's extended one:
+
+```tsx
+expect(iconConcept(screen.getByRole('button', { name: 'Settings' }))).toBe('settings');
+expect(iconConcept(screen.getByRole('status', { name: /scanning/i }), conceptIcons)).toBe('scans');
+```

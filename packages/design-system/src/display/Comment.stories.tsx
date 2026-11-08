@@ -13,7 +13,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A ticket's comments, newest first: each author's avatar beside a card with their name and when. */
+/** A ticket’s comments, newest first: each author’s avatar beside a card with their name and when. */
 export const Comments: Story = {
     render: () => (
         <CommentList>

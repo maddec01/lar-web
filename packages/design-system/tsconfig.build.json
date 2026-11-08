@@ -2,5 +2,5 @@
     "extends": "./tsconfig.json",
     "compilerOptions": { "types": ["vite/client"] },
     "include": ["src"],
-    "exclude": ["src/**/*.test.tsx", "src/**/*.test.ts", "src/**/*.stories.tsx", "src/stories.test.tsx"]
+    "exclude": ["src/**/*.test.tsx", "src/**/*.test.ts", "src/**/*.stories.tsx"]
 }

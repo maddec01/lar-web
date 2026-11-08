@@ -1,30 +1,27 @@
 import { type ReactNode, useId } from 'react';
 
 import type { StatusTone } from '../feedback/StatusIndicator';
-import { Heading, Text } from '../typography/Typography';
+import { Heading, TextBase } from '../typography/Typography';
 import { toneTileClasses } from './ToneTile';
-
-const accentClasses: Record<StatusTone, string> = {
-    neutral: 'border-l-base-300',
-    success: 'border-l-success',
-    warning: 'border-l-warning',
-    danger: 'border-l-danger',
-    info: 'border-l-info',
-};
 
 interface NoticeCardProps {
     /** Buttons for what can be done, primary first. */
     actions?: ReactNode;
     /** A short status such as a severity, beside the title. */
     badge?: ReactNode;
+    /** Details under the description, such as a list of what is affected. */
     children?: ReactNode;
+    /** What the matter is and what it means, in a sentence or two, set at a reading measure (about 75 characters). */
     description: ReactNode;
     /** Quiet content under the actions, such as a disclosure of technical details. */
     footer?: ReactNode;
+    /** An icon for the matter, in a tile of its tone. */
     icon: ReactNode;
     /** The title's heading level; one below the section the card sits in. */
     level?: 'h2' | 'h3' | 'h4';
+    /** The matter in a few words. */
     title: string;
+    /** The matter's tone: its icon tile and edge. */
     tone: StatusTone;
 }
 
@@ -46,10 +43,7 @@ export function NoticeCard({
     const id = useId();
 
     return (
-        <article
-            aria-labelledby={id}
-            className={`border-base-300 bg-base-100 rounded-lg border border-l-4 p-4 sm:p-5 ${accentClasses[tone]}`}
-        >
+        <article aria-labelledby={id} className={`border-line bg-surface-raised rounded-lg border p-4 sm:p-5`}>
             <div className="flex min-w-0 gap-3 sm:gap-4">
                 <span
                     aria-hidden="true"
@@ -65,7 +59,10 @@ export function NoticeCard({
                             </Heading>
                             {badge}
                         </div>
-                        <Text tone="muted">{description}</Text>
+                        {/* A reading measure, so a long explanation never runs the width of a wide page. */}
+                        <TextBase tone="muted" className="max-w-[75ch] text-pretty">
+                            {description}
+                        </TextBase>
                     </div>
                     {children}
                     {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}

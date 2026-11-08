@@ -20,10 +20,15 @@ export function ColorSwatches({
     onPick,
     children,
 }: {
+    /** The colours to pick from, in order. */
     swatches: readonly ColorSwatch[];
+    /** The current value; the swatch with the same value, ignoring case, shows as picked. */
     value: string;
+    /** Holds every swatch, such as while the form saves. */
     disabled?: boolean;
+    /** Called with the value of the swatch the reader picks. */
     onPick: (value: string) => void;
+    /** Follows the swatches in the row, such as a field for any other colour. */
     children?: ReactNode;
 }) {
     return (
@@ -38,7 +43,7 @@ export function ColorSwatches({
                         aria-label={swatch.label}
                         aria-pressed={picked}
                         disabled={disabled}
-                        className={`size-5 rounded-full border ${picked ? 'ring-2 ring-(--primary) ring-offset-1 ring-offset-(--card)' : ''}`}
+                        className={`size-5 rounded-full border ${picked ? 'ring-primary ring-offset-surface-raised ring-2 ring-offset-1' : ''}`}
                         style={{ background: swatch.color }}
                         onClick={() => onPick(swatch.value)}
                     />

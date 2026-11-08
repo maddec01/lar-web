@@ -1,7 +1,7 @@
 import { type RefObject, useLayoutEffect, useRef } from 'react';
 
 // Children identify their domain key and collection index, even across virtual
-// rows. Only mounted items are measured, keeping large catalogs bounded.
+// rows. Only mounted items are measured, keeping large collections bounded.
 export function useCollectionMotion(root: RefObject<HTMLDivElement | null>) {
     const positions = useRef(new Map<string, { index: string | undefined; x: number; y: number }>());
 

@@ -21,5 +21,5 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A list's sort, its button naming the current one, its menu the others. */
+/** A list’s sort, its button naming the current one, its menu the others. */
 export const Default: Story = {};

@@ -27,11 +27,11 @@ const meta = {
                             detail="1,204 of 3,890 files"
                             progress={{ value: 1204, max: 3890 }}
                         />
-                        <Text>12 files could not be matched to an album and were added to Unmatched.</Text>
+                        <Text>12 files couldn’t be matched to an album and were added to Unmatched.</Text>
                     </div>
                 </Drawer.Body>
                 <Drawer.Footer>
-                    <Button variant="destructive-quiet">Cancel job</Button>
+                    <Button variant="secondary">Cancel job</Button>
                     <Button variant="secondary">Close</Button>
                 </Drawer.Footer>
             </Drawer.Content>
@@ -95,7 +95,7 @@ export const LongContent: Story = {
                     </div>
                 </Drawer.Body>
                 <Drawer.Footer>
-                    <Button variant="destructive-quiet">Stop</Button>
+                    <Button variant="secondary">Stop</Button>
                     <Button variant="secondary">Close</Button>
                 </Drawer.Footer>
             </Drawer.Content>

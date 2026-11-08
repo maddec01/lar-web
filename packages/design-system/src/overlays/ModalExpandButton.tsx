@@ -6,7 +6,9 @@ import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { Tooltip, TooltipPopup, TooltipTrigger } from './Tooltip';
 
 interface ModalExpandButtonProps {
+    /** The dialog fills the window now. */
     expanded: boolean;
+    /** Called as the reader grows or shrinks the dialog. */
     onToggle: () => void;
     /** The shortcut that toggles it too, as shown (⌘⇧E) and as `aria-keyshortcuts` reads it (Meta+Shift+E). */
     shortcut?: { label: string; keys: string };
@@ -41,7 +43,7 @@ export function ModalExpandButton({ expanded, onToggle, shortcut }: ModalExpandB
             </TooltipTrigger>
             <TooltipPopup side="bottom">
                 {label}
-                {shortcut ? <span className="text-base-500 ms-2">{shortcut.label}</span> : null}
+                {shortcut ? <span className="text-fg-muted ms-2">{shortcut.label}</span> : null}
             </TooltipPopup>
         </Tooltip>
     );

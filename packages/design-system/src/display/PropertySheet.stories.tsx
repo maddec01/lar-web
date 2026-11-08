@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
 
+import { Text } from '../typography/Typography';
 import { Badge } from './Badge';
 import { PropertySheet } from './PropertySheet';
 
@@ -59,7 +60,7 @@ export const Note: Story = {
         title: 'Summary',
         children: (
             <PropertySheet.Note>
-                Lar has not found a summary for this movie yet. It will try again during the next metadata refresh.
+                Lar hasn’t found a summary for this movie yet. It will try again during the next metadata refresh.
             </PropertySheet.Note>
         ),
     },
@@ -127,4 +128,48 @@ export const Composed: Story = {
 
 export const Loading: Story = {
     render: () => <PropertySheet title="File" loading loadingLabel="Loading file details" />,
+};
+
+export const RepeatedLabels: Story = {
+    render: () => (
+        <PropertySheet title="Audiobook files">
+            <PropertySheet.Rows
+                items={[
+                    { key: 'part-1', label: 'MP3', value: 'Part 1 · 92 MiB' },
+                    { key: 'part-2', label: 'MP3', value: 'Part 2 · 91 MiB' },
+                ]}
+            />
+        </PropertySheet>
+    ),
+};
+
+/** Uses the same section heading and bare numeric count as content sections. */
+export const Counted: Story = { args: { title: 'Assets', count: 3, countLabel: '3 assets' } };
+
+/** File names carry the identity; size is supporting information, and only unsupported files carry a warning. */
+export const FileRows: Story = {
+    args: {
+        title: 'Files',
+        children: (
+            <PropertySheet.Rows
+                emphasis="label"
+                items={[
+                    { key: 'part-1', label: 'Part 1 · MP3', value: '92.5 MiB' },
+                    { key: 'part-2', label: 'Part 2 · MP3', value: '86.4 MiB' },
+                    {
+                        key: 'extra',
+                        label: 'Part 3 · DAT',
+                        value: (
+                            <>
+                                4.2 KiB ·{' '}
+                                <Text as="span" tone="warning">
+                                    Unsupported
+                                </Text>
+                            </>
+                        ),
+                    },
+                ]}
+            />
+        ),
+    },
 };

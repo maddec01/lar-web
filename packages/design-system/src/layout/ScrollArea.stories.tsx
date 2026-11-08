@@ -31,10 +31,12 @@ const meta = {
         children: (
             <ol className="flex flex-col">
                 {tracks.map((track, index) => (
-                    <li key={track} className="border-base-300/70 flex gap-3 border-b py-2 last:border-b-0">
-                        <Text as="span" tone="muted" className="w-5 text-right tabular-nums">
-                            {index + 1}
-                        </Text>
+                    <li key={track} className="border-line/70 flex gap-3 border-b py-2 last:border-b-0">
+                        <span className="w-5 text-right">
+                            <Text as="span" tone="muted" numeric>
+                                {index + 1}
+                            </Text>
+                        </span>
                         <Text as="span">{track}</Text>
                     </li>
                 ))}
@@ -44,7 +46,7 @@ const meta = {
     argTypes: { children: { control: false } },
     decorators: [
         (Story) => (
-            <div className="border-base-300 max-w-sm rounded-lg border p-3">
+            <div className="border-line max-w-sm rounded-lg border p-3">
                 <Story />
             </div>
         ),

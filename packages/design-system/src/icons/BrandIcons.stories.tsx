@@ -11,10 +11,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The brand marks lucide does not draw, at the sizes the apps use them. */
+/** The brand marks lucide doesn’t draw, at the sizes the apps use them. */
 export const Marks: Story = {
     render: () => (
-        <div className="text-base-content flex items-center gap-4">
+        <div className="text-fg flex items-center gap-4">
             <GitHubIcon className="size-3" />
             <GitHubIcon className="size-5" />
             <AzureDevOpsIcon className="size-3" />

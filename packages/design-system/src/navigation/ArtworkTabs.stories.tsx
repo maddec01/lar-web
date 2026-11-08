@@ -8,7 +8,7 @@ function Poster({ hue, label }: { hue: number; label: string }) {
     return (
         <div
             aria-hidden="true"
-            className="flex aspect-[2/3] items-end p-1 text-[9px] leading-tight font-semibold text-white"
+            className="text-3xs flex aspect-[2/3] items-end p-1 leading-tight font-semibold text-white"
             style={{ background: `linear-gradient(160deg, hsl(${hue} 55% 45%), hsl(${hue + 40} 60% 20%))` }}
         >
             {label}

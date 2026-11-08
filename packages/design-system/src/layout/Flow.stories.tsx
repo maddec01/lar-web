@@ -7,7 +7,7 @@ import { type FlowSpace, Grid, Inline, Stack } from './Flow';
 
 function Block({ children }: { children: ReactNode }) {
     return (
-        <div className="border-primary/30 bg-primary/8 text-base-800 rounded-md border px-3 py-2 text-sm">
+        <div className="border-primary-ring bg-primary-surface text-fg-soft rounded-md border px-3 py-2 text-sm">
             {children}
         </div>
     );
@@ -38,7 +38,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A column on Lar's spacing scale: the space names say how related the items are, not how many pixels. */
+/** A column on Lar’s spacing scale: the space names say how related the items are, not how many pixels. */
 export const Column: Story = {};
 
 /** Every step of the scale, from none to page. */
@@ -69,17 +69,21 @@ export const Row: Story = {
                 <Button variant="secondary">Cancel</Button>
                 <Button>Save changes</Button>
             </Inline>
-            <Inline align="center" justify="between" className="border-base-300 rounded-md border p-3">
-                <Text as="span" variant="label">
-                    Remote Access
-                </Text>
-                <Button variant="secondary">Review</Button>
-            </Inline>
-            <Inline wrap space="tight" className="max-w-xs">
-                {['FLAC', 'ALAC', 'MP3', 'AAC', 'Opus', 'WAV', 'AIFF', 'DSD'].map((format) => (
-                    <Block key={format}>{format}</Block>
-                ))}
-            </Inline>
+            <div className="border-line rounded-md border p-3">
+                <Inline align="center" justify="between">
+                    <Text as="span" variant="label">
+                        Remote Access
+                    </Text>
+                    <Button variant="secondary">Review</Button>
+                </Inline>
+            </div>
+            <div className="max-w-xs">
+                <Inline wrap space="tight">
+                    {['FLAC', 'ALAC', 'MP3', 'AAC', 'Opus', 'WAV', 'AIFF', 'DSD'].map((format) => (
+                        <Block key={format}>{format}</Block>
+                    ))}
+                </Inline>
+            </div>
         </Stack>
     ),
 };

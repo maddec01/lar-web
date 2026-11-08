@@ -1,10 +1,11 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useCallback, useRef } from 'react';
 
-import { revealInRow } from '../collections/useScrollRow';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
-import { Stack } from '../layout/Flow';
+import { StackBase } from '../layout/Flow';
+import { useScrollFade } from '../overlays/useScrollFade';
 import { Text } from '../typography/Typography';
 import { moveTabSelection } from './TabKeys';
+import { useRevealSelection } from './useRevealSelection';
 
 export interface ArtworkTabsItem<T extends string> {
     value: T;
@@ -25,25 +26,35 @@ export function ArtworkTabs<T extends string>({
     loading = false,
     loadingLabel = label,
 }: {
+    /** The tabs, each with its artwork and label. */
     items: readonly ArtworkTabsItem<T>[];
+    /** Names the tab list for screen readers, such as "Seasons". */
     label: string;
+    /** The chosen tab's value; none while nothing is chosen. */
     value: T | undefined;
+    /** Called with a tab's value as it is chosen. */
     onChange: (value: T) => void;
+    /** The tabs are on their way: placeholders take their place. */
     loading?: boolean;
+    /** What screen readers hear while the tabs load. */
     loadingLabel?: string;
 }) {
     const tabs = useRef<HTMLDivElement>(null);
+    const { setViewport, className: fade } = useScrollFade({ axis: 'horizontal' });
+    const attachRow = useCallback(
+        (element: HTMLDivElement | null) => {
+            tabs.current = element;
+            setViewport(element);
+        },
+        [setViewport],
+    );
 
-    // The selected tab stays in view however it was chosen, such as by an episode crossing into the next season.
-    useEffect(() => {
-        if (tabs.current && value !== undefined)
-            revealInRow(tabs.current, tabs.current.querySelector(`[data-value="${value}"]`));
-    }, [value, loading]);
+    useRevealSelection(tabs, value, loading);
 
     if (loading)
         return (
             <SkeletonLoader label={loadingLabel}>
-                <div className={row}>
+                <div ref={attachRow} className={`${row} ${fade}`}>
                     {Array.from({ length: 4 }, (_, index) => (
                         <div key={index} className="flex w-56 shrink-0 items-center gap-3 p-1.5">
                             <span className="w-12 shrink-0">
@@ -58,10 +69,10 @@ export function ArtworkTabs<T extends string>({
 
     return (
         <div
-            ref={tabs}
+            ref={attachRow}
             role="tablist"
             aria-label={label}
-            className={row}
+            className={`${row} ${fade}`}
             onKeyDown={(event) => {
                 if (value !== undefined)
                     moveTabSelection(
@@ -83,13 +94,13 @@ export function ArtworkTabs<T extends string>({
                         aria-selected={selected}
                         tabIndex={selected ? 0 : -1}
                         data-value={item.value}
-                        className="group hover:bg-base-200 focus-visible:outline-primary aria-selected:bg-base-200 aria-selected:ring-base-300 flex w-56 shrink-0 items-center gap-3 rounded-lg p-1.5 pr-3 text-left transition-colors focus-visible:outline-2 aria-selected:ring-1"
+                        className="group hover:bg-fill-hover focus-ring aria-selected:bg-fill-selected aria-selected:ring-line flex w-56 shrink-0 items-center gap-3 rounded-lg p-1.5 pr-3 text-left transition-colors aria-selected:ring-1"
                         onClick={() => onChange(item.value)}
                     >
-                        <span className="ring-base-900/10 w-12 shrink-0 overflow-hidden rounded-md ring-1 transition-opacity group-hover:opacity-100 group-aria-[selected=false]:opacity-70">
+                        <span className="ring-fg/10 w-12 shrink-0 overflow-hidden rounded-md ring-1 transition-opacity group-hover:opacity-100 group-aria-[selected=false]:opacity-70">
                             {item.artwork}
                         </span>
-                        <Stack space="none" className="min-w-0">
+                        <StackBase space="none" className="min-w-0">
                             <Text as="span" variant="label" truncate>
                                 {item.label}
                             </Text>
@@ -98,7 +109,7 @@ export function ArtworkTabs<T extends string>({
                                     {item.caption}
                                 </Text>
                             ) : null}
-                        </Stack>
+                        </StackBase>
                     </button>
                 );
             })}

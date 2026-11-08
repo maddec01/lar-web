@@ -16,7 +16,7 @@ const meta = {
                 <Button variant="secondary" onClick={() => setSaid(`Copied at ${new Date().toLocaleTimeString()}`)}>
                     Announce
                 </Button>
-                <span className="text-base-700 text-xs">Screen readers hear: {said || 'nothing yet'}</span>
+                <span className="text-fg-muted text-xs">Screen readers hear: {said || 'nothing yet'}</span>
                 <LiveRegion>{said}</LiveRegion>
             </div>
         );

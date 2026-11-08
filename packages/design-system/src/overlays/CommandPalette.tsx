@@ -6,8 +6,9 @@ import { createContext, type ReactNode, useContext, useEffect, useId, useRef, us
 
 import { IconButton } from '../actions/IconButton';
 import { ResultList } from '../collections/ResultList';
-import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
-import { Text } from '../typography/Typography';
+import { Kbd } from '../display/Kbd';
+import { type DesignSystemLabels, useDesignSystemLabels } from '../foundations/DesignSystemProvider';
+import { TextBase } from '../typography/Typography';
 import { useModalAutoFocus } from './useModalAutoFocus';
 import { useScrollFade } from './useScrollFade';
 
@@ -24,9 +25,13 @@ export interface CommandPaletteToken {
 interface CommandPaletteProps {
     /** The dialog's accessible title and description; the field says the rest. */
     label: string;
+    /** What the palette is for, read as the dialog's description. */
     description: string;
+    /** The field's placeholder, such as "Search or jump to…". */
     placeholder: string;
+    /** The field's text, for a controlled palette. */
     query: string;
+    /** Called with the field's text as the reader types. */
     onQueryChange: (query: string) => void;
     /** Narrows the list to one level, shown as a chip before the field; Backspace in an empty field leaves it. */
     scope?: { label: string; leaveLabel: string; onLeave: () => void };
@@ -41,15 +46,21 @@ interface CommandPaletteProps {
     options: readonly string[];
     /** May return the option the highlight moves to, when choosing changes the list. */
     onSelect: (value: string) => string | void;
+    /** Called as the reader closes the palette. */
     onClose: () => void;
+    /** Names the list of options for screen readers. */
     listLabel: string;
     /** Marks the list busy while more may arrive; `busyLabel` shows under it meanwhile. */
     busy?: boolean;
+    /** What the list says while results are on their way. */
     busyLabel?: ReactNode;
     /** Shown when nothing is listed and nothing is pending. */
     empty?: ReactNode;
-    /** Quiet key hints under the list, on screens with a keyboard. */
-    footer?: ReactNode;
+    /** This palette's words for the key hints under the list (shown on screens with a keyboard), in place of the
+     *  design system's, which DesignSystemProvider translates for the whole app. The palette owns the hints
+     *  themselves: ↑↓ move, ↵ select, esc close, and ⌫ remove filter (or back) while a token or scope can go. */
+    hints?: Partial<DesignSystemLabels['commandPalette']>;
+    /** The options, in CommandPaletteGroups. */
     children: ReactNode;
 }
 
@@ -80,10 +91,11 @@ export function CommandPalette({
     busy = false,
     busyLabel,
     empty,
-    footer,
+    hints: givenHints,
     children,
 }: CommandPaletteProps) {
     const labels = useDesignSystemLabels();
+    const hints = { ...labels.commandPalette, ...givenHints };
     const focusProps = useModalAutoFocus();
     const { setViewport, setContent, className } = useScrollFade();
     const listId = useId();
@@ -101,8 +113,8 @@ export function CommandPalette({
         ? [{ id: 'scope', label: scope.label, remove: { label: scope.leaveLabel, onRemove: scope.onLeave } }]
         : (givenTokens ?? []);
     const leaveLast = scope ? scope.onLeave : onBackspaceEmpty;
-    // A palette that takes tokens, or a trailing control, is a filtering search: wide, with its field wrapping onto
-    // rows under the tokens, from the top.
+    // A palette that takes tokens, or a trailing control, is a filtering search, with its field wrapping onto rows
+    // under the tokens, from the top. Every palette is one width.
     const rows = givenTokens !== undefined || Boolean(trailing);
 
     useEffect(() => {
@@ -122,10 +134,10 @@ export function CommandPalette({
                 onEscapeKeyDown={(event) => {
                     if (event.isComposing) event.preventDefault();
                 }}
-                className={`flex max-h-[min(36rem,calc(100dvh-6rem))] w-[calc(100vw-2rem)] max-w-2xl flex-col overflow-hidden p-0 shadow-(--lar-shadow-dialog) max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none! max-sm:border-0 max-sm:pt-[env(safe-area-inset-top)] ${rows ? 'max-sm:pb-[env(safe-area-inset-bottom)] sm:w-[calc(100vw-2rem)] sm:max-w-2xl' : ''}`}
+                className={`flex max-h-[min(36rem,calc(100dvh-6rem))] w-[calc(100vw-2rem)] max-w-160 flex-col overflow-hidden p-0 shadow-(--shadow-dialog) max-sm:top-0 max-sm:left-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:rounded-none! max-sm:border-0 max-sm:pt-[env(safe-area-inset-top)] max-sm:pb-[env(safe-area-inset-bottom)] sm:w-[calc(100vw-2rem)] sm:max-w-160`}
             >
                 <div
-                    className={`border-base-300 [&>svg]:text-base-600 flex shrink-0 gap-2 border-b px-4 [&>svg]:size-4 [&>svg]:shrink-0 ${rows ? 'items-start py-2 [&>svg]:mt-2' : 'items-center py-3'}`}
+                    className={`border-line [&>svg]:text-fg-muted flex shrink-0 gap-2 border-b px-4 [&>svg]:size-4 [&>svg]:shrink-0 ${rows ? 'items-start py-2 [&>svg]:mt-2' : 'items-center py-3'}`}
                 >
                     <SearchIcon />
                     <div className={`flex min-w-0 flex-1 items-center gap-x-2 ${rows ? 'flex-wrap gap-y-1' : ''}`}>
@@ -133,12 +145,13 @@ export function CommandPalette({
                             // Many tokens scroll on their own, so the field stays in view however many there are. Under
                             // a coarse pointer each remove button is 44 px, reaching into the gap between rows.
                             <ul
+                                data-scroll-fade="exempt"
                                 className={`flex max-w-full min-w-0 shrink-0 items-center gap-1 ${rows ? 'max-h-19 flex-wrap overflow-y-auto overscroll-contain py-1 pointer-coarse:max-h-22 pointer-coarse:gap-y-3 pointer-coarse:py-1.5' : ''}`}
                             >
                                 {tokens.map((token) => (
                                     <li
                                         key={token.id}
-                                        className={`bg-primary/12 text-primary flex max-w-full min-w-0 shrink-0 items-center gap-1 rounded-md py-0.5 pr-1 pl-2 text-xs font-medium ${rows ? 'dark:text-base-content pointer-coarse:min-h-8 pointer-coarse:py-0 pointer-coarse:pr-0' : ''}`}
+                                        className={`bg-primary-surface text-primary-fg flex max-w-full min-w-0 shrink-0 items-center gap-1 rounded-md py-0.5 pr-1 pl-2 text-xs font-medium ${rows ? 'pointer-coarse:min-h-8 pointer-coarse:py-0 pointer-coarse:pr-0' : ''}`}
                                     >
                                         {token.leading ? (
                                             <span className="flex shrink-0 items-center [&>svg]:size-3.5">
@@ -152,7 +165,7 @@ export function CommandPalette({
                                                 // A scope's chip leaves with Backspace alone; several tokens' buttons are tab stops.
                                                 tabIndex={scope ? -1 : undefined}
                                                 aria-label={token.remove.label}
-                                                className={`hover:bg-primary/15 grid shrink-0 place-items-center rounded-sm p-0.5 [&>svg]:size-3 ${rows ? 'pointer-coarse:-my-1.5 pointer-coarse:size-11 pointer-coarse:p-0' : ''}`}
+                                                className={`hover:bg-primary-surface-hover grid shrink-0 place-items-center rounded-sm p-0.5 [&>svg]:size-3 ${rows ? 'pointer-coarse:-my-1.5 pointer-coarse:size-11 pointer-coarse:p-0' : ''}`}
                                                 onClick={() => {
                                                     token.remove?.onRemove();
                                                     input.current?.focus();
@@ -176,7 +189,7 @@ export function CommandPalette({
                             aria-busy={busy}
                             placeholder={placeholder}
                             value={query}
-                            className={`text-base-content placeholder:text-base-600 min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm ${rows ? 'h-8 min-w-32' : ''}`}
+                            className={`text-fg placeholder:text-fg-muted min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm ${rows ? 'h-8 min-w-32' : ''}`}
                             onChange={(event) => onQueryChange(event.target.value)}
                             onKeyDown={(event) => {
                                 if (event.nativeEvent.isComposing) return;
@@ -220,45 +233,68 @@ export function CommandPalette({
                         </OptionContext.Provider>
                         <div role="status">
                             {(busy && busyLabel) || (options.length === 0 && empty) ? (
-                                <Text as="div" tone="muted" className="px-3 py-8 text-center">
+                                <TextBase as="div" tone="muted" className="px-3 py-8 text-center">
                                     {busy && busyLabel ? busyLabel : empty}
-                                </Text>
+                                </TextBase>
                             ) : null}
                         </div>
                     </div>
                 </div>
-                {footer ? (
-                    <div className="border-base-300 text-2xs text-base-700 hidden shrink-0 items-center gap-4 border-t px-4 py-2 pointer-fine:flex">
-                        {footer}
-                    </div>
-                ) : null}
+                <div
+                    data-slot="command-palette-hints"
+                    className="border-line text-2xs text-fg-muted hidden shrink-0 items-center gap-4 border-t px-4 py-2 pointer-fine:flex"
+                >
+                    <KeyHint keys="↑↓" label={hints.move} />
+                    <KeyHint keys="↵" label={hints.select} />
+                    <KeyHint keys="esc" label={hints.close} />
+                    {tokens.length > 0 && leaveLast ? (
+                        <KeyHint keys="⌫" label={scope ? hints.leaveScope : hints.removeFilter} />
+                    ) : null}
+                </div>
             </NinnaModal.Content>
         </NinnaModal>
     );
 }
 
+/** A key and what it does, in the palette's hints. */
+function KeyHint({ keys, label }: { keys: string; label: string }) {
+    return (
+        <span className="inline-flex items-center gap-1">
+            <Kbd>{keys}</Kbd>
+            {label}
+        </span>
+    );
+}
+
 /** A labelled run of options in the palette's list. */
-export function CommandPaletteGroup({ label, children }: { label: string; children: ReactNode }) {
+export function CommandPaletteGroup({
+    label,
+    children,
+}: {
+    /** The group's heading. */
+    label: string;
+    /** The group's CommandPaletteOptions. */
+    children: ReactNode;
+}) {
     const labelId = useId();
 
     return (
         <div role="group" aria-labelledby={labelId} className="flex flex-col gap-1 not-first:pt-2">
-            <Text
-                as="span"
-                id={labelId}
-                variant="caption"
-                tone="muted"
-                className="px-2 pt-1 font-medium tracking-wide uppercase"
-            >
+            <TextBase as="span" id={labelId} variant="caption" tone="muted" className="px-2 pt-1 text-xs font-medium">
                 {label}
-            </Text>
+            </TextBase>
             {children}
         </div>
     );
 }
 
 /** One line of the palette's list: an icon, the name, an optional hint (searched with the name) and meta (on wider
- *  screens), and a tick while `checked`, as a filter that is on. Choosing it keeps the focus in the field. */
+ *  screens), and a tick while `checked`, as a filter that is on. Choosing it keeps the focus in the field.
+ *
+ *  Rows follow one rule in every app: destinations, commands and filters are this one-line row, with what tells them
+ *  apart (a library's kind, a page's count, a ticket's number and state) as `hint` and `meta`. A content search result
+ *  that needs artwork and a second line to identify it (an album over its artist) is a two-line `ResultRow` given
+ *  `useCommandPaletteOption`, and only those. */
 export function CommandPaletteOption({
     value,
     icon,
@@ -266,14 +302,22 @@ export function CommandPaletteOption({
     hint,
     meta,
     checked,
+    current = false,
 }: {
+    /** The option's unique value in the list. */
     value: string;
+    /** The option's icon, at its start: a lucide icon, bare or wrapped (such as in a hue tint), drawn 16px in the muted tone. */
     icon: ReactNode;
+    /** The option's name. */
     name: string;
+    /** A short note after the name, searched with it. */
     hint?: string;
+    /** Extra detail at the end, shown on wider screens. */
     meta?: string;
     /** Whether a filter's option is on; other options leave it out. */
     checked?: boolean;
+    /** The page shown now, as a destination: marked current, in the default text colour. */
+    current?: boolean;
 }) {
     const context = useContext(OptionContext);
 
@@ -285,25 +329,34 @@ export function CommandPaletteOption({
             role="option"
             aria-selected={context.activeValue === value}
             aria-checked={checked}
+            aria-current={current ? 'page' : undefined}
             tabIndex={-1}
             onPointerMove={() => {
                 if (context.activeValue !== value) context.setActiveValue(value);
             }}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => context.select(value)}
-            className="text-base-800 aria-selected:bg-primary/10 aria-selected:ring-primary/30 dark:text-base-content flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm aria-selected:ring-1 aria-selected:ring-inset pointer-coarse:h-11"
+            className="text-fg-soft aria-[current=page]:text-fg aria-selected:bg-primary-surface aria-selected:text-fg aria-selected:ring-primary-ring flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm aria-selected:ring-1 aria-selected:ring-inset aria-[current=page]:font-medium pointer-coarse:h-11"
         >
-            <span className="text-base-700 grid size-4 shrink-0 place-items-center [&>svg]:size-3.5">{icon}</span>
+            {/* One 16px icon box for every row: a bare svg and a wrapped one (a hue tint, a tone mark) get the same size
+                and muted tone, so a wrapped icon never outgrows a bare one. */}
+            <span
+                aria-hidden="true"
+                data-slot="palette-icon"
+                className="text-fg-muted [&_.kind-icon]:text-fg-muted flex size-4 shrink-0 items-center justify-center [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-current"
+            >
+                {icon}
+            </span>
             <span title={name} className="min-w-0 flex-1 truncate">
                 {name}
             </span>
             {hint ? (
-                <span className="text-base-700 max-w-40 shrink-0 truncate text-xs tabular-nums">{hint}</span>
+                <span className="text-fg-muted max-w-40 shrink-0 truncate text-xs tabular-nums">{hint}</span>
             ) : null}
             {meta ? (
-                <span className="text-base-700 max-w-56 shrink-0 truncate text-xs max-sm:hidden">{meta}</span>
+                <span className="text-fg-muted max-w-56 shrink-0 truncate text-xs max-sm:hidden">{meta}</span>
             ) : null}
-            {checked ? <CheckIcon aria-hidden="true" className="text-primary size-3.5 shrink-0" /> : null}
+            {checked ? <CheckIcon aria-hidden="true" className="text-primary-fg size-3.5 shrink-0" /> : null}
         </div>
     );
 }

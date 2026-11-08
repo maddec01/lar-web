@@ -1,15 +1,18 @@
 import { SearchIcon } from 'lucide-react';
 import {
-    type CSSProperties,
     forwardRef,
     type ReactNode,
     type Ref,
+    type RefObject,
     useEffect,
     useEffectEvent,
     useImperativeHandle,
+    useLayoutEffect,
     useRef,
+    useState,
 } from 'react';
 
+import { BadgeBase } from '../../display/Badge';
 import { Kbd } from '../../display/Kbd';
 import { tabbable } from '../../foundations/KeyboardFocus';
 import { applePlatform, isShortcut } from '../../foundations/KeyboardShortcut';
@@ -21,7 +24,7 @@ export interface CommandPaletteTriggerToken {
     label: string;
     /** An icon or colour mark before the label. */
     leading?: ReactNode;
-    /** A lar-brand app hue that colours the chip, as a kind's badge. */
+    /** A hue (an oklch hue angle) that colours the chip, as a kind's badge. */
     hue?: number;
 }
 
@@ -37,26 +40,56 @@ interface CommandPaletteTriggerProps {
     filterLabel?: (labels: readonly string[]) => string;
 }
 
-const chip =
-    'inline-flex h-5 shrink-0 items-center gap-1 rounded-sm bg-base-200 px-1 text-2xs font-medium text-base-800 dark:bg-base-300 dark:text-base-content [&_svg]:size-3';
-
+/** A token as the design system's badge, in its kind's hue when it has one. */
 function TokenChip({ token }: { token: CommandPaletteTriggerToken }) {
-    const hued = token.hue !== undefined;
-
     return (
-        <span
-            title={token.label}
-            className={`${chip} ${hued ? 'kind-badge!' : ''}`}
-            style={hued ? ({ '--lar-kind-hue': token.hue } as CSSProperties) : undefined}
-        >
+        <BadgeBase title={token.label} hue={token.hue} className="shrink-0 [&_svg]:size-3">
             {token.leading}
             <span className="max-w-32 min-w-0 truncate">{token.label}</span>
-        </span>
+        </BadgeBase>
     );
 }
 
+/** The trigger's one look, with tokens or without, in every app: a 28px field (16px magnifier, 14px muted word, the key
+ *  hint at its end) on the control surface, or, folded, the title bar's 28px icon button. No prop changes it. */
+const look = {
+    base: 'focus-ring relative flex h-7 shrink-0 cursor-pointer items-center transition-colors [&>svg]:size-4 [&>svg]:shrink-0',
+    field: 'border-line bg-surface-control text-fg-muted hover:border-line-hover hover:text-fg-soft gap-2 rounded-lg border px-2.5 text-sm',
+    folded: 'hover:bg-fill-hover hover:text-fg w-7 justify-center rounded-md text-(--color-header-icon)',
+} as const;
+
+/** An app title bar folds the field below this width (the TitleBar's `@2xl`). */
+const WIDE_BAR = 672;
+
+/** The width of the title bar holding `element`, kept as it resizes. */
+function useBarWidth(element: RefObject<HTMLElement | null>) {
+    const [width, setWidth] = useState(0);
+
+    useLayoutEffect(() => {
+        const bar = element.current?.closest('header') ?? element.current?.parentElement;
+
+        if (!bar) return;
+
+        const measure = () => setWidth(bar.getBoundingClientRect().width);
+
+        measure();
+
+        // Where nothing reports resizes (a test's DOM), the first measure stands.
+        if (typeof ResizeObserver === 'undefined') return;
+
+        const observer = new ResizeObserver(measure);
+
+        observer.observe(bar);
+
+        return () => observer.disconnect();
+    }, [element]);
+
+    return width;
+}
+
 /** The title bar's way into the command palette: a quiet field-like button with its shortcut, folding to its
- *  icon when the title bar is narrow. With tokens, it also says what narrows the palette. */
+ *  icon when the title bar is narrow. With tokens, it also says what narrows the palette. Both apps draw the same
+ *  field: its look has no props. */
 export const CommandPaletteTrigger = forwardRef<HTMLButtonElement, CommandPaletteTriggerProps>(
     ({ label, onOpen, shortcut, tokens, filterLabel }, ref) => {
         const button = useRef<HTMLButtonElement>(null);
@@ -93,26 +126,48 @@ export const CommandPaletteTrigger = forwardRef<HTMLButtonElement, CommandPalett
                 />
             );
 
-        return (
-            <button
-                {...tabbable}
-                ref={button}
-                type="button"
-                aria-label={label}
-                aria-haspopup="dialog"
-                aria-keyshortcuts={keys}
-                onClick={onOpen}
-                className="text-base-600 hover:bg-base-200 hover:text-base-content focus-visible:outline-primary @2xl:border-base-300 @2xl:bg-base-100 @2xl:hover:border-base-400 @2xl:hover:bg-base-100 dark:@2xl:bg-base-200 flex size-7 items-center justify-center gap-2 rounded-lg text-sm transition-colors focus-visible:outline-2 @2xl:w-56 @2xl:justify-start @2xl:border @2xl:px-2.5 [&>svg]:size-4 [&>svg]:shrink-0"
-            >
-                <SearchIcon />
-                <span className="hidden flex-1 text-left @2xl:inline">{label}</span>
-                <span className="hidden pointer-fine:@2xl:inline">
-                    <Kbd>{hint}</Kbd>
-                </span>
-            </button>
-        );
+        return <PlainTrigger button={button} label={label} onOpen={onOpen} keys={keys} hint={hint} />;
     },
 );
+
+/** The trigger without tokens: the field at its least width (TriggerFit's), folded on a title bar under 42rem. */
+function PlainTrigger({
+    button,
+    label,
+    onOpen,
+    keys,
+    hint,
+}: {
+    button: RefObject<HTMLButtonElement | null>;
+    label: string;
+    onOpen: () => void;
+    keys: string;
+    hint: string;
+}) {
+    const folded = useBarWidth(button) < WIDE_BAR;
+
+    return (
+        <button
+            {...tabbable}
+            ref={button}
+            type="button"
+            data-search-field
+            data-folded={folded || undefined}
+            aria-haspopup="dialog"
+            aria-keyshortcuts={keys}
+            onClick={onOpen}
+            className={`${look.base} ${folded ? look.folded : `${look.field} w-56`}`}
+        >
+            <SearchIcon aria-hidden="true" />
+            <span className={folded ? 'sr-only' : 'min-w-0 flex-1 truncate text-left'}>{label}</span>
+            {folded ? null : (
+                <span className="shrink-0 pointer-coarse:hidden">
+                    <Kbd>{hint}</Kbd>
+                </span>
+            )}
+        </button>
+    );
+}
 
 CommandPaletteTrigger.displayName = 'CommandPaletteTrigger';
 
@@ -143,7 +198,7 @@ function FittedTrigger({
     const labels = tokens.map((token) => token.label);
 
     return (
-        <div ref={wrapper} className="relative ml-auto flex max-w-[26rem] min-w-0 flex-1 justify-end">
+        <div ref={wrapper} className="relative ml-auto flex max-w-104 min-w-0 flex-1 justify-end">
             <div
                 ref={ghost}
                 aria-hidden="true"
@@ -161,16 +216,13 @@ function FittedTrigger({
                 data-folded={folded || undefined}
                 aria-haspopup="dialog"
                 aria-keyshortcuts={keys}
-                aria-label={tokens.length && filterLabel ? `${label}, ${filterLabel(labels)}` : label}
+                aria-description={tokens.length && filterLabel ? filterLabel(labels) : undefined}
                 onClick={onOpen}
                 style={folded ? undefined : { width }}
-                className={`text-base-700 focus-visible:outline-primary relative flex h-7 shrink-0 cursor-pointer items-center rounded-lg text-xs transition-colors focus-visible:outline-2 ${
-                    folded
-                        ? 'hover:bg-base-200 hover:text-base-content dark:hover:bg-base-300 w-7 justify-center'
-                        : 'border-base-300 bg-base-100 hover:border-base-400 dark:bg-base-200 gap-1 border pr-2 pl-1.5'
-                }`}
+                className={`${look.base} ${folded ? look.folded : look.field}`}
             >
-                <SearchIcon aria-hidden="true" className={`shrink-0 ${folded ? 'size-4' : 'mr-0.5 size-3.5'}`} />
+                <SearchIcon aria-hidden="true" />
+                {folded ? <span className="sr-only">{label} </span> : null}
                 {folded ? (
                     tokens.length > 0 && (
                         <span
@@ -182,20 +234,24 @@ function FittedTrigger({
                     )
                 ) : (
                     <>
-                        {tokens.slice(0, shown).map((token) => (
-                            <TokenChip key={token.id} token={token} />
-                        ))}
-                        {hidden.length > 0 && (
-                            <span
-                                data-search-count
-                                title={hidden.map((token) => token.label).join(', ')}
-                                className={`${chip} tabular-nums`}
-                            >
-                                {shown > 0 ? '+' : ''}
-                                {hidden.length}
+                        {tokens.length > 0 && (
+                            <span className="flex shrink-0 items-center gap-1">
+                                {tokens.slice(0, shown).map((token) => (
+                                    <TokenChip key={token.id} token={token} />
+                                ))}
+                                {hidden.length > 0 && (
+                                    <BadgeBase
+                                        data-search-count
+                                        title={hidden.map((token) => token.label).join(', ')}
+                                        className="shrink-0 tabular-nums"
+                                    >
+                                        {shown > 0 ? '+' : ''}
+                                        {hidden.length}
+                                    </BadgeBase>
+                                )}
                             </span>
                         )}
-                        <span className="ml-0.5 min-w-0 flex-1 truncate text-left">{label}</span>
+                        <span className="min-w-0 flex-1 truncate text-left">{label}</span>
                         {keyHint && (
                             <span className="shrink-0 pointer-coarse:hidden">
                                 <Kbd>{hint}</Kbd>

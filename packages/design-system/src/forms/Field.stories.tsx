@@ -40,7 +40,7 @@ export const Invalid: Story = {
     args: {
         label: 'Media folder',
         invalid: true,
-        errorText: '/srv/media/music does not exist on this server.',
+        errorText: '/srv/media/music doesn’t exist on this server.',
         children: <Input defaultValue="/srv/media/music" invalid />,
     },
 };

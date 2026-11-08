@@ -8,7 +8,9 @@ type TestConfig = NonNullable<UserConfig['test']>;
 export declare const fmt: FmtConfig;
 
 export interface LintOptions {
-    /** Each app's root, relative to the repository root (`web`, `apps/web`). */
+    /** Each app's root, relative to the repository root (`web`, `apps/web`). Its `src/ui` is the app's UI layer: it may
+     *  style with the design system's tokens and `/primitives`, never raw colours, and imports only ui files and shared
+     *  types from the app. */
     apps?: string[];
     /** The roots of design-system packages, which own every visual recipe. */
     designSystems?: string[];
@@ -21,3 +23,5 @@ export declare function lint(options?: LintOptions): LintConfig;
 
 /** Test settings every package's `test` block spreads. */
 export declare const test: TestConfig;
+
+export { checkUiCopy, type UiCopyIssue } from './copy.js';

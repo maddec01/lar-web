@@ -8,7 +8,7 @@ import { Section } from './Section';
 
 function Tile({ title, detail }: { title: string; detail: string }) {
     return (
-        <div className="border-base-300 bg-base-100/60 flex flex-col gap-1 rounded-lg border p-4">
+        <div className="border-line bg-surface-raised flex flex-col gap-1 rounded-lg border p-4">
             <Text as="span" variant="label">
                 {title}
             </Text>

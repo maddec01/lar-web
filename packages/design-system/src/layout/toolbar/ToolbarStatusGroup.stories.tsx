@@ -32,10 +32,10 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The title bar's status summary: background tasks, playback and the server, each opening its own popover. */
+/** The title bar’s status summary: background tasks, playback and the server, each opening its own popover. */
 export const Default: Story = {};
 
-/** Something needs attention: a scan failed and the server can't be reached from outside. */
+/** Something needs attention: a scan failed and the server can’t be reached from outside. */
 export const NeedsAttention: Story = {
     args: {
         'aria-label': 'Server online, remote access unreachable, 1 failed task',
@@ -45,10 +45,31 @@ export const NeedsAttention: Story = {
                     <ToolbarStatusItem icon={<ActivityIcon />} tone="danger" />
                 </Button>
                 <Button variant="summary" aria-label="Playback: nothing playing">
-                    <ToolbarStatusItem icon={<HeadphonesIcon />} tone="neutral" />
+                    <ToolbarStatusItem icon={<HeadphonesIcon />} />
                 </Button>
                 <Button variant="summary" aria-label="Server: remote access unreachable">
                     <ToolbarStatusItem icon={<ServerIcon />} tone="warning" />
+                </Button>
+            </>
+        ),
+    },
+};
+
+/** A quiet server: nothing running and nothing playing, so those icons are quiet (no light) at the same size as the
+ *  server's lit one. */
+export const Quiet: Story = {
+    args: {
+        'aria-label': 'Server online, no background tasks, nothing playing',
+        children: (
+            <>
+                <Button variant="summary" aria-label="Background tasks: none running">
+                    <ToolbarStatusItem icon={<ActivityIcon />} />
+                </Button>
+                <Button variant="summary" aria-label="Playback: nothing playing">
+                    <ToolbarStatusItem icon={<HeadphonesIcon />} />
+                </Button>
+                <Button variant="summary" aria-label="Server: healthy">
+                    <ToolbarStatusItem icon={<ServerIcon />} state="ready" />
                 </Button>
             </>
         ),

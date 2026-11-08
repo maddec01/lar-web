@@ -13,12 +13,11 @@ import {
     TagIcon,
     TvIcon,
 } from 'lucide-react';
-import { type ComponentProps, useState } from 'react';
+import { type ComponentProps, type CSSProperties, type ReactNode, useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { ResultRow } from '../collections/ResultList';
-import { Kbd } from '../display/Kbd';
 import { CommandPalette, CommandPaletteGroup, CommandPaletteOption, useCommandPaletteOption } from './CommandPalette';
 
 interface Destination {
@@ -63,7 +62,26 @@ const groups: { label: string; items: Destination[] }[] = [
     },
 ];
 
-function Option({ item, onSelect }: { item: Destination; onSelect: (value: string) => void }) {
+/** A destination is a one-line row; a recent item (content, identified by a second line) is a two-line ResultRow. */
+function Option({
+    item,
+    onSelect,
+    content,
+}: {
+    item: Destination;
+    onSelect: (value: string) => void;
+    content: boolean;
+}) {
+    const Icon = item.icon;
+
+    return content ? (
+        <ContentOption item={item} onSelect={onSelect} />
+    ) : (
+        <CommandPaletteOption value={item.value} icon={<Icon />} name={item.title} meta={item.subtitle} />
+    );
+}
+
+function ContentOption({ item, onSelect }: { item: Destination; onSelect: (value: string) => void }) {
     const option = useCommandPaletteOption(item.value);
     const Icon = item.icon;
 
@@ -132,7 +150,12 @@ function CommandPaletteDemo({ initialQuery = '', scoped = false, ...args }: Demo
                         : visible.map((group) => (
                               <CommandPaletteGroup key={group.label} label={group.label}>
                                   {group.items.map((item) => (
-                                      <Option key={item.value} item={item} onSelect={select} />
+                                      <Option
+                                          key={item.value}
+                                          item={item}
+                                          onSelect={select}
+                                          content={group.label === 'Recent'}
+                                      />
                                   ))}
                               </CommandPaletteGroup>
                           ))}
@@ -153,19 +176,6 @@ const meta = {
         query: '',
         options: [],
         empty: 'Nothing matches your search',
-        footer: (
-            <>
-                <span>
-                    <Kbd>↑↓</Kbd> to move
-                </span>
-                <span>
-                    <Kbd>↵</Kbd> to open
-                </span>
-                <span>
-                    <Kbd>esc</Kbd> to close
-                </span>
-            </>
-        ),
         onQueryChange: fn(),
         onSelect: fn(),
         onClose: fn(),
@@ -189,7 +199,8 @@ export const Empty: Story = { render: (args) => <CommandPaletteDemo {...args} in
 
 export const Busy: Story = { args: { busy: true, empty: 'Searching…' } };
 
-export const WithoutFooter: Story = { args: { footer: undefined } };
+/** The hints' words come from the design system (DesignSystemProvider translates them); one palette may override. */
+export const TranslatedHints: Story = { args: { hints: { move: 'navegar', select: 'abrir', close: 'fechar' } } };
 
 const filterGroups = [
     {
@@ -234,7 +245,7 @@ function FilterDemo({ busy = false }: { busy?: boolean }) {
                 onBackspaceEmpty={() => setTokens((now) => now.slice(0, -1))}
                 trailing={
                     tokens.length ? (
-                        <Button variant="secondary" compact onClick={() => setTokens([])}>
+                        <Button variant="secondary" size="sm" onClick={() => setTokens([])}>
                             Clear
                         </Button>
                     ) : null
@@ -245,7 +256,7 @@ function FilterDemo({ busy = false }: { busy?: boolean }) {
                 listLabel="Search results"
                 busy={busy}
                 busyLabel="Loading Projects…"
-                empty="Nothing matches."
+                empty="Nothing matches"
             >
                 {filterGroups.map((group) => (
                     <CommandPaletteGroup key={group.label} label={group.label}>
@@ -263,3 +274,88 @@ export const WithTokens: Story = { render: () => <FilterDemo /> };
 
 /** While more may arrive, the busy label shows under what is listed so far. */
 export const BusyWithOptions: Story = { render: () => <FilterDemo busy /> };
+
+/** An icon an app wraps to tint it in a hue (the kind-icon utility). */
+function HueIcon({ hue, children }: { hue: number; children: ReactNode }) {
+    return (
+        <span aria-hidden="true" className="kind-icon contents" style={{ '--lar-kind-hue': hue } as CSSProperties}>
+            {children}
+        </span>
+    );
+}
+
+/** Library rows wrap their icon to tint it (an app’s own composition); page and command rows pass a bare icon. Both
+ *  draw in the same 16px box, size and muted tone, so the list keeps one rhythm. */
+export const WrappedIcons: Story = {
+    render: () => (
+        <>
+            <Button variant="secondary">Go to</Button>
+            <CommandPalette
+                label="Go to"
+                description="Jump to a catalog or page."
+                placeholder="Search"
+                query=""
+                onQueryChange={fn()}
+                options={[
+                    'catalog:music',
+                    'catalog:movies',
+                    'catalog:tv',
+                    'page:activity',
+                    'page:settings',
+                    'action:add',
+                ]}
+                onSelect={fn()}
+                onClose={fn()}
+                listLabel="Destinations"
+                empty="Nothing matches"
+            >
+                <CommandPaletteGroup label="Catalogs">
+                    <CommandPaletteOption
+                        value="catalog:music"
+                        icon={
+                            <HueIcon hue={280}>
+                                <MusicIcon />
+                            </HueIcon>
+                        }
+                        name="Vinyl Rips"
+                        hint="Music"
+                        meta="1,284 albums"
+                    />
+                    <CommandPaletteOption
+                        value="catalog:movies"
+                        icon={
+                            <HueIcon hue={25}>
+                                <FilmIcon />
+                            </HueIcon>
+                        }
+                        name="Movies"
+                        hint="Movies"
+                        meta="612 movies"
+                        current
+                    />
+                    <CommandPaletteOption
+                        value="catalog:tv"
+                        icon={
+                            <HueIcon hue={150}>
+                                <TvIcon />
+                            </HueIcon>
+                        }
+                        name="TV shows"
+                        hint="TV"
+                        meta="48 shows"
+                    />
+                </CommandPaletteGroup>
+                <CommandPaletteGroup label="Pages">
+                    <CommandPaletteOption
+                        value="page:activity"
+                        icon={<BriefcaseIcon />}
+                        name="Activity"
+                        meta="2 running"
+                    />
+                    <CommandPaletteOption value="page:settings" icon={<SettingsIcon />} name="Settings" />
+                    <CommandPaletteOption value="action:add" icon={<PlusIcon />} name="Add catalog" />
+                </CommandPaletteGroup>
+            </CommandPalette>
+        </>
+    ),
+};

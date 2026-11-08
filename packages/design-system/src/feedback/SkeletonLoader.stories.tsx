@@ -70,7 +70,7 @@ export const Presentations: Story = {
                     ] as const
                 ).map((presentation) => (
                     <div key={presentation} className="contents">
-                        <span className="text-base-700 text-sm">{presentation}</span>
+                        <span className="text-fg-muted text-sm">{presentation}</span>
                         <div className="w-48">
                             <SkeletonLoader.Shape presentation={presentation} />
                         </div>

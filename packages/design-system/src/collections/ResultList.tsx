@@ -3,17 +3,30 @@ import { type ComponentPropsWithoutRef, createContext, type ReactNode, useContex
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { tabbable } from '../foundations/KeyboardFocus';
-import { Stack } from '../layout/Flow';
-import { LinkBox, LinkOverlay } from '../typography/Link';
-import { Text } from '../typography/Typography';
+import { StackBase } from '../layout/Flow';
+import { LinkBoxBase, LinkOverlay } from '../typography/Link';
+import { Text, TextBase } from '../typography/Typography';
 
-const ResultListContext = createContext({ compact: false, listbox: true });
+const ResultListContext = createContext({ compact: false, listbox: true, card: false });
 
-interface ResultListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'className' | 'style'> {
+interface ResultListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'className' | 'color' | 'role' | 'style'> {
+    /** Names the list for screen readers, such as "Search results". */
     label: string;
+    /** Results are on their way: placeholder rows take their place. */
     loading?: boolean;
+    /** What screen readers hear while results load; the list's label by default. */
     loadingLabel?: string;
-    density?: 'compact' | 'comfortable';
+    /** `compact` rows for a palette or a menu; `default` for a page. */
+    density?: 'default' | 'compact';
+    /** `listbox` (the default) for options to choose, with a ResultRow selected; `list` for plain links. */
+    role?: 'listbox' | 'list';
+    /** `choice` groups ResultChoice radio rows, with one action in the containing dialog’s footer.
+     *  `plain` (the default) floats rows on the surface, for a palette or a menu; `card` is a library's list on a
+     *  page: one card (the card surface and depth every app card has), a hairline between rows, and a chevron at the
+     *  end of every row that opens a page. Every library list (videos, playlists, people, books, music) is a `card`. */
+    presentation?: 'plain' | 'card' | 'choice';
+    /** Disables every radio in a choice list. */
+    disabled?: boolean;
 }
 
 export function ResultList({
@@ -21,19 +34,42 @@ export function ResultList({
     label,
     loading = false,
     loadingLabel = label,
-    density = 'comfortable',
+    density = 'default',
     role = 'listbox',
+    presentation = 'plain',
+    disabled = false,
     ...props
 }: ResultListProps) {
+    if (presentation === 'choice')
+        return (
+            <div {...props}>
+                <fieldset
+                    disabled={disabled}
+                    aria-label={label}
+                    data-presentation="choice"
+                    className="border-line bg-fill-muted/50 divide-line min-w-0 divide-y overflow-hidden rounded-lg border"
+                >
+                    {children}
+                </fieldset>
+            </div>
+        );
+
+    const card = presentation === 'card';
+
     return (
-        <ResultListContext.Provider value={{ compact: density === 'compact', listbox: role === 'listbox' }}>
+        <ResultListContext.Provider value={{ compact: density === 'compact', listbox: role === 'listbox', card }}>
             <SkeletonLoader loading={loading} label={loadingLabel}>
                 <div
                     {...props}
                     role={role}
                     aria-label={label}
                     aria-busy={loading || props['aria-busy']}
-                    className="flex flex-col gap-1"
+                    data-presentation={presentation}
+                    className={
+                        card
+                            ? 'surface-card divide-line flex flex-col divide-y overflow-hidden rounded-xl border'
+                            : 'flex flex-col gap-1'
+                    }
                 >
                     {loading ? Array.from({ length: 8 }, (_, index) => <ResultRow key={index} loading />) : children}
                 </div>
@@ -46,43 +82,53 @@ export interface ResultRowProps extends Pick<
     ComponentPropsWithoutRef<'button'>,
     'disabled' | 'id' | 'onPointerMove' | 'tabIndex'
 > {
+    /** The result's art or icon, at the row's start. */
     artwork: ReactNode;
+    /** What the result is, such as "Album", read before its title. */
     kind: string;
+    /** Called as the reader chooses the result. */
     onSelect: () => void;
+    /** The result's page, making the row a link. */
     href?: string;
+    /** The option the keyboard is on, in a listbox. */
     selected?: boolean;
     /** `icon` sets a small glyph in a narrow column; `default` shows artwork. */
     presentation?: 'default' | 'icon' | 'poster' | 'video';
+    /** The page shown now, marked as current. */
     current?: boolean;
+    /** A line under the title, such as an artist. */
     subtitle?: string;
+    /** Extra detail at the row's end, such as a year. */
     detail?: string;
+    /** The result's name. */
     title: string;
 }
 
 export function ResultRow(props: ResultRowProps | { loading: true }) {
-    const { compact, listbox } = useContext(ResultListContext);
+    const { compact, listbox, card } = useContext(ResultListContext);
     const loading = 'loading' in props;
     const presentation = loading ? 'default' : props.presentation;
-    const classes = `grid w-full items-center rounded-md px-2 text-left ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)_auto] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)_auto] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)_auto]' : presentation === 'icon' ? 'grid-cols-[1rem_minmax(0,1fr)] gap-3 py-2' : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : 'grid-cols-[2.75rem_minmax(0,1fr)] gap-3 py-2'}`;
+    // On a card, every row that opens a page ends in a chevron, and rows sit edge to edge between hairlines.
+    const chevron = presentation === 'poster' || presentation === 'video' || (card && !loading && Boolean(props.href));
+    const classes = `grid w-full items-center text-left ${card ? 'rounded-none px-4' : 'rounded-md px-2'} ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)_auto] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)_auto] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)_auto]' : presentation === 'icon' ? `${chevron ? 'grid-cols-[1rem_minmax(0,1fr)_auto]' : 'grid-cols-[1rem_minmax(0,1fr)]'} gap-3 py-2` : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : `${chevron ? 'grid-cols-[2.75rem_minmax(0,1fr)_auto]' : 'grid-cols-[2.75rem_minmax(0,1fr)]'} gap-3 ${card ? 'py-2.5' : 'py-2'}`}`;
     const content = (
         <>
             {loading ? (
                 <SkeletonLoader.Shape presentation="artwork" />
             ) : presentation === 'icon' ? (
-                <span aria-hidden="true" className="text-base-600 flex size-4 [&_svg]:size-4">
+                <span aria-hidden="true" className="text-fg-muted flex size-4 [&_svg]:size-4">
                     {props.artwork}
                 </span>
             ) : (
                 props.artwork
             )}
-            <Stack space="none" className="min-w-0">
+            <StackBase space="none" className="min-w-0">
                 <Text as="span" variant="label" truncate loading={loading}>
                     {!loading &&
                         (props.href && !listbox ? (
                             <LinkOverlay
                                 href={props.href}
                                 onNavigate={props.onSelect}
-                                aria-label={resultLabel(props)}
                                 aria-current={props.current ? 'page' : undefined}
                             >
                                 {props.title}
@@ -95,13 +141,16 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
                     {!loading && (props.subtitle ?? props.kind)}
                 </Text>
                 {!loading && props.detail ? (
-                    <Text as="span" variant="caption" tone="muted" className="line-clamp-2 wrap-break-word">
+                    <TextBase as="span" variant="caption" tone="muted" className="line-clamp-2 wrap-break-word">
                         {props.detail}
-                    </Text>
+                    </TextBase>
                 ) : null}
-            </Stack>
-            {presentation === 'poster' || presentation === 'video' ? (
-                <span aria-hidden="true" className="text-base-500 flex [&>svg]:size-4">
+            </StackBase>
+            {!loading && props.subtitle && props.kind !== props.subtitle ? (
+                <span className="sr-only"> {props.kind}</span>
+            ) : null}
+            {chevron ? (
+                <span aria-hidden="true" className="text-fg-muted flex [&>svg]:size-4">
                     <ChevronRightIcon />
                 </span>
             ) : null}
@@ -126,21 +175,20 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
 
     const row =
         href && !listbox ? (
-            <LinkBox
-                className={`${classes} hover:bg-base-100 focus-within:bg-base-100 has-[[aria-current=page]]:bg-base-100 has-[[aria-current=page]]:ring-base-300 has-[[aria-current=page]]:ring-1`}
+            <LinkBoxBase
+                className={`${classes} ${card ? 'hover:bg-fill-hover focus-within:bg-fill-hover' : 'hover:bg-surface-raised focus-within:bg-surface-raised'} has-[[aria-current=page]]:bg-surface-raised has-[[aria-current=page]]:ring-line has-[[aria-current=page]]:ring-1`}
             >
                 {content}
-            </LinkBox>
+            </LinkBoxBase>
         ) : (
             <button
                 {...tabbable}
                 {...buttonProps}
                 type="button"
                 role={listbox ? 'option' : undefined}
-                aria-label={resultLabel(props)}
                 aria-selected={listbox ? selected : undefined}
                 aria-current={current ? 'page' : undefined}
-                className={`${classes} hover:bg-base-100 aria-selected:bg-primary/10 aria-selected:ring-primary/30 focus-visible:outline-primary focus-visible:outline-2 disabled:pointer-events-none disabled:opacity-60 aria-selected:ring-1 aria-selected:ring-inset`}
+                className={`${classes} hover:bg-surface-raised aria-selected:bg-primary-surface aria-selected:ring-primary-ring focus-ring disabled:pointer-events-none disabled:opacity-60 aria-selected:ring-1 aria-selected:ring-inset`}
                 onClick={onSelect}
             >
                 {content}
@@ -148,17 +196,4 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
         );
 
     return listbox ? row : <div role="listitem">{row}</div>;
-}
-
-/** The row's accessible name: what it shows, then its kind, so two rows with one title still differ. */
-function resultLabel({ title, subtitle, kind }: ResultRowProps): string {
-    return [title, subtitle, kind].filter(Boolean).join(', ');
-}
-
-export function ResultEmpty({ children }: { children: ReactNode }) {
-    return (
-        <Text as="span" tone="muted" className="px-3 py-4 text-center">
-            {children}
-        </Text>
-    );
 }

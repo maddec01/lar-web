@@ -1,6 +1,7 @@
 /* oxlint-disable react/only-export-components -- The slot functions and the body's controls belong to the toaster. */
 
 import { toast, Toaster } from '@ninna-ui/feedback';
+import { CircleAlertIcon, CircleCheckIcon, InfoIcon, type LucideIcon, TriangleAlertIcon } from 'lucide-react';
 import {
     createContext,
     type ReactNode,
@@ -13,9 +14,11 @@ import {
 } from 'react';
 import { flushSync } from 'react-dom';
 
+import { Button } from '../actions/Button';
+import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { DismissButton } from './DismissButton';
 
-/** How long a success stays once the pointer and the focus have left it. */
+/** How long a success or an info stays once the pointer and the focus have left it. */
 const SUCCESS_MS = 5_000;
 
 /** Each notification's fade, as wide as a Modal body's: notifications scrolled past fade out at the stack's edges. */
@@ -26,7 +29,12 @@ const FADE_PX = 24;
  * above the newest, above every dialog: when they don't fit, the stack scrolls, follows the newest while you are at the
  * bottom, and fades those scrolled past at its edges, as a Modal's body does. Mount one, once, outside the page's root.
  */
-export function Notifications({ presentation = 'corner' }: { presentation?: 'corner' | 'stack' }) {
+export function Notifications({
+    presentation = 'corner',
+}: {
+    /** `corner` shows the newest at a time in the bottom right corner; `stack` keeps every notification, newest last. */
+    presentation?: 'corner' | 'stack';
+}) {
     if (presentation === 'stack')
         return (
             <Toaster
@@ -110,19 +118,46 @@ function followNewest(viewport: HTMLDivElement | null) {
     };
 }
 
+/** A notification's tone: its icon, tint and edge, and whether it waits for the reader. */
+export type NotificationTone = 'success' | 'info' | 'warning' | 'danger';
+
+/** A follow-up the notification offers, such as "Try again"; choosing it closes the notification. */
+export interface NotificationAction {
+    label: string;
+    onAction: () => void;
+}
+
 export interface Notification {
     /** One notification per slot: a new one replaces the last. */
     slot: string;
-    /** A failure is red and stays until it's closed; a success is green and clears itself five seconds after the
-     *  pointer and the keyboard focus leave it. */
-    tone?: 'success' | 'danger';
-    /** Names the close button, such as "Dismiss: Moved #61". */
-    dismissLabel: string;
-    /** What it says: text, links and buttons. */
-    body: ReactNode;
+    /** `success` (the default) and `info` clear themselves five seconds after the pointer and the keyboard focus leave
+     *  them; `warning` and `danger` stay until they're closed or their slot is cleared, as the problem is resolved. */
+    tone?: NotificationTone;
+    /** What happened, specifically, such as "Couldn't save Music" rather than "Request failed". */
+    title?: ReactNode;
+    /** A sentence more: why, or what to do. */
+    description?: ReactNode;
+    /** Content of the caller's after the description: text, links and buttons, such as an action that holds the
+     *  notification open while it runs (useNotificationControls). */
+    body?: ReactNode;
+    /** A follow-up button, such as "Try again", which closes the notification as it runs. */
+    action?: NotificationAction;
+    /** Names the close button, such as "Dismiss: Moved #61"; the design system's "Close" by default. */
+    dismissLabel?: string;
     /** Called after it closes while the keyboard focus was inside it, to put the focus somewhere useful. */
     onFocusLost?: () => void;
 }
+
+/** Each tone's icon, which tells a success from a failure without its colour. */
+const toneIcons: Record<NotificationTone, LucideIcon> = {
+    success: CircleCheckIcon,
+    info: InfoIcon,
+    warning: TriangleAlertIcon,
+    danger: CircleAlertIcon,
+};
+
+/** Tones that clear themselves; the others wait for the reader. */
+const clearsItself = (tone: NotificationTone) => tone === 'success' || tone === 'info';
 
 interface NotificationControls {
     /** Keeps a success from clearing itself while `held`, such as while an action it offers is under way. */
@@ -164,7 +199,7 @@ export function showNotification(notification: Notification): void {
     clearNotification(notification.slot);
 
     const id: string = toast.create({
-        color: notification.tone === 'danger' ? 'danger' : 'success',
+        color: notification.tone ?? 'success',
         // The body's own clock closes successes and its own button closes every notification, so the manager never does.
         duration: 0,
         closable: false,
@@ -186,7 +221,7 @@ export function clearNotification(slot: string): void {
     if (id) close(slot, id);
 }
 
-/** Gives a success five seconds after hover and keyboard focus leave it. */
+/** Gives a success or an info five seconds after hover and keyboard focus leave it. */
 function useSuccessClose(ref: RefObject<Element | null>, enabled: boolean, onClose: () => void): void {
     const latest = useRef(onClose);
 
@@ -243,28 +278,69 @@ function useSuccessClose(ref: RefObject<Element | null>, enabled: boolean, onClo
     }, [enabled, ref]);
 }
 
-/** One notification's content. `onClose` runs when its close button is clicked or, for a success, when its time is up. */
+/** One notification's content: its tone's icon, the title, description and body, an action, and the close button.
+ *  `onClose` runs when its close button or action is clicked or, for a success or an info, when its time is up. */
 function NotificationBody({
     slot,
     dismissLabel,
     tone = 'success',
+    title,
+    description,
     body,
+    action,
     onClose,
 }: Notification & { onClose: () => void }) {
-    const ref = useRef<HTMLSpanElement>(null);
+    const labels = useDesignSystemLabels();
+    const ref = useRef<HTMLDivElement>(null);
     const [held, setHeld] = useState(false);
     const [bodyFailed, setBodyFailed] = useState(false);
-    const failed = tone === 'danger' || bodyFailed;
+    const shown: NotificationTone = bodyFailed ? 'danger' : tone;
+    const Icon = toneIcons[shown];
 
     useEffect(() => {
-        ref.current?.closest('[data-slot="toast"]')?.setAttribute('data-toast-color', failed ? 'danger' : 'success');
-    }, [failed]);
-    useSuccessClose(ref, !failed && !held, onClose);
+        ref.current?.closest('[data-slot="toast"]')?.setAttribute('data-toast-color', shown);
+    }, [shown]);
+    useEffect(() => {
+        // A press on a notification is never a press outside an open dialog: a dialog that waits for the click to
+        // decide would find the notification already gone, and close.
+        const entry = ref.current?.closest('[data-slot="toast"]');
+        const inside = (event: Event) => event.stopPropagation();
+
+        entry?.addEventListener('pointerdown', inside);
+
+        return () => entry?.removeEventListener('pointerdown', inside);
+    }, []);
+    useSuccessClose(ref, clearsItself(shown) && !held, onClose);
 
     return (
-        <span ref={ref} data-toast={slot}>
-            <DismissButton label={dismissLabel} onClick={onClose} />
-            <Controls.Provider value={{ hold: setHeld, fail: setBodyFailed }}>{body}</Controls.Provider>
-        </span>
+        <div ref={ref} data-toast={slot} data-slot="notification" className="flex items-start gap-3">
+            <span data-slot="notification-icon" className="flex h-5 shrink-0 items-center [&>svg]:size-4">
+                <Icon aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+                {title ? <div className="text-fg text-sm leading-5 font-semibold">{title}</div> : null}
+                {description ? <div className="text-fg-soft text-sm leading-5">{description}</div> : null}
+                {body ? (
+                    <div className="text-fg text-sm leading-5">
+                        <Controls.Provider value={{ hold: setHeld, fail: setBodyFailed }}>{body}</Controls.Provider>
+                    </div>
+                ) : null}
+                {action ? (
+                    <div className="mt-2">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                                onClose();
+                                action.onAction();
+                            }}
+                        >
+                            {action.label}
+                        </Button>
+                    </div>
+                ) : null}
+            </div>
+            <DismissButton label={dismissLabel ?? labels.close} onClick={onClose} />
+        </div>
     );
 }

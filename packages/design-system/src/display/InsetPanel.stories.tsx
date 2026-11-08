@@ -67,12 +67,12 @@ export const Settings: Story = {
     },
 };
 
-/** A settings panel with its group's own action in the footer. */
+/** A settings panel with its group’s own action in the footer. */
 export const SettingsWithFooter: Story = {
     args: {
         presentation: 'settings',
         footer: (
-            <Button compact variant="secondary">
+            <Button size="sm" variant="secondary">
                 Add Project
             </Button>
         ),

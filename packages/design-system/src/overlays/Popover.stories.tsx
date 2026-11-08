@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { InfoIcon } from 'lucide-react';
 import { fn } from 'storybook/test';
 
-import { Button } from '../actions/Button';
+import { ButtonBase as Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
 import { Field } from '../forms/Field';
 import { Input } from '../forms/Input';
@@ -45,7 +45,7 @@ export const Default: Story = {};
 
 export const Closed: Story = { args: { defaultOpen: false } };
 
-/** A small form that matches its trigger's width. */
+/** A small form that matches its trigger’s width. */
 export const TriggerWidthForm: Story = {
     render: (args) => (
         <div className="w-80">

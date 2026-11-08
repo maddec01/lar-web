@@ -1,14 +1,19 @@
 import type { ReactNode } from 'react';
 
-import { Stack } from '../layout/Flow';
+import { StackBase } from '../layout/Flow';
 import { Heading, Text } from '../typography/Typography';
 import { Badge } from './Badge';
 
 interface IdentityProps {
+    /** The cover, poster or picture, framed small beside the title. */
     artwork: ReactNode;
+    /** One line of facts under the title, such as "1977 · 12 tracks". */
     detail?: string;
+    /** A short badge after the facts, such as a format. */
     tag?: string;
+    /** What it is, such as an album's title. */
     title?: ReactNode;
+    /** The artwork's frame: `square` (the default) for a cover or a logo, `poster` (2:3) for a portrait image. */
     presentation?: 'square' | 'poster';
     /** Heads its page: a larger poster, an overline naming what it belongs to, and the title as the page's h1. */
     overline?: string;
@@ -21,11 +26,11 @@ export function Identity({ artwork, detail, tag, title, overline, presentation =
     return (
         <div className={`flex min-w-0 items-center ${heading ? 'gap-6' : 'gap-4'}`}>
             <div
-                className={`${presentation === 'poster' ? `${heading ? 'w-24' : 'w-16'} aspect-[2/3]` : 'size-16'} ring-base-900/10 shrink-0 overflow-hidden rounded-lg shadow-sm ring-1`}
+                className={`${presentation === 'poster' ? `${heading ? 'w-24' : 'w-16'} aspect-[2/3]` : 'size-16'} ring-fg/10 shrink-0 overflow-hidden rounded-lg shadow-(--shadow-raised) ring-1`}
             >
                 {artwork}
             </div>
-            <Stack space="tight" className="min-w-0 flex-1">
+            <StackBase space="tight" className="min-w-0 flex-1">
                 {heading ? (
                     <Text variant="overline" tone="muted" truncate>
                         {overline}
@@ -50,7 +55,7 @@ export function Identity({ artwork, detail, tag, title, overline, presentation =
                         <Badge tone="neutral">{tag}</Badge>
                     </div>
                 ) : null}
-            </Stack>
+            </StackBase>
         </div>
     );
 }

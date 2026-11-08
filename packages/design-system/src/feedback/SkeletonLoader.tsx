@@ -50,8 +50,11 @@ const widthClasses: Record<SkeletonWidth, string> = {
 };
 
 interface SkeletonLoaderProps {
+    /** The skeleton (shapes in the layout of what loads), or what loaded once `loading` is false. */
     children: ReactNode;
+    /** Names what is loading for screen readers. */
     label: string;
+    /** Shows the skeleton (the default); false shows `children` as they are. */
     loading?: boolean;
 }
 
@@ -60,13 +63,17 @@ function SkeletonLoaderRoot({ children, label, loading = true }: SkeletonLoaderP
 
     return (
         <div role="status" aria-busy="true" aria-label={label}>
-            <div aria-hidden="true">{children}</div>
+            <div aria-hidden="true" inert>
+                {children}
+            </div>
         </div>
     );
 }
 
 interface SkeletonShapeProps {
+    /** The shape: a `line` of text (the default), a heading, a control, a card, a circle and the like. */
     presentation?: SkeletonPresentation;
+    /** The shape's width, from `full` down to `short`; a circle keeps its own. */
     width?: SkeletonWidth;
 }
 

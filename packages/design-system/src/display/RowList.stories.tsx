@@ -91,7 +91,7 @@ export const Panel: Story = {
                     tone="warning"
                     icon={<TriangleAlertIcon />}
                     title="Metadata"
-                    subtitle="12 files could not be matched"
+                    subtitle="12 files couldn’t be matched"
                     badges={<Badge tone="accent">lar can fix</Badge>}
                     href="/libraries/movies/unmatched"
                     onNavigate={() => undefined}

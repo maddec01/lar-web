@@ -39,9 +39,11 @@ import {
     PASTE_COMMAND,
 } from 'lexical';
 import type { EditorState, LexicalEditor, LexicalNode } from 'lexical';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { RichTextFormat } from '../display/RichText';
+import { scrollFadeClassName, useScrollFade } from '../overlays/useScrollFade';
+import { linkRecipe } from '../typography/LinkRecipe';
 import { MarkdownToolbar } from './MarkdownToolbar';
 
 const theme = {
@@ -53,18 +55,18 @@ const theme = {
     list: {
         ul: 'list-disc ps-6 my-1.5',
         ol: 'list-decimal ps-6 my-1.5',
-        listitem: 'my-0.5 marker:text-base-500',
+        listitem: 'my-0.5 marker:text-fg-muted',
         nested: { listitem: 'list-none' },
     },
     paragraph: 'my-1.5 first:mt-0',
-    quote: 'border-s-2 border-base-300 ps-3 text-base-700 my-1.5',
-    code: 'block rounded-md bg-base-200 p-3 font-mono text-xs my-1.5 whitespace-pre-wrap',
-    link: 'text-(--lar-info-text) underline underline-offset-2',
+    quote: 'border-s-2 border-line ps-3 text-fg-muted my-1.5',
+    code: 'block rounded-md bg-fill-muted p-3 font-mono text-xs my-1.5 whitespace-pre-wrap',
+    link: linkRecipe.accent,
     text: {
         bold: 'font-semibold',
         italic: 'italic',
         strikethrough: 'line-through',
-        code: 'rounded bg-base-200 px-1 font-mono text-[0.85em]',
+        code: 'rounded-xs bg-fill-muted px-1 font-mono text-[0.85em]',
     },
 };
 
@@ -165,6 +167,51 @@ function EditablePlugin({ editable }: { editable: boolean }) {
     return null;
 }
 
+/** The room the scroll fade takes at an edge the text runs past (scrollFadeClassName's 1.5rem). */
+const FADE_CLEARANCE = 24;
+
+/** Keeps the caret's line clear of the text area's scroll fade: after each edit or caret move, scrolls the area so the
+ *  caret sits at least the fade's height from an edge the text continues past. Lexical scrolls the caret just into
+ *  view (it ignores an inner scroll area's scroll-padding), which would leave the line being typed under the fade. */
+function CaretClearancePlugin({ area }: { area: HTMLElement | null }) {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        if (!area) return;
+
+        return editor.registerUpdateListener(() => {
+            const selection = area.ownerDocument.getSelection();
+
+            if (!selection?.rangeCount || !area.contains(selection.focusNode)) return;
+
+            const range = selection.getRangeAt(0).cloneRange();
+
+            // Without layout (a DOM without rects) there is nothing to measure.
+            if (typeof range.getClientRects !== 'function') return;
+
+            range.collapse(false);
+
+            const caret = range.getClientRects()[0] ?? range.getBoundingClientRect();
+            const { focusNode } = selection;
+            const line =
+                caret.height > 0
+                    ? caret
+                    : (focusNode instanceof Element ? focusNode : focusNode?.parentElement)?.getBoundingClientRect();
+
+            if (!line) return;
+
+            const view = area.getBoundingClientRect();
+            const below = line.bottom - (view.bottom - FADE_CLEARANCE);
+            const above = view.top + FADE_CLEARANCE - line.top;
+
+            if (below > 0 && area.scrollTop + area.clientHeight < area.scrollHeight - 1) area.scrollTop += below;
+            else if (above > 0 && area.scrollTop > 0) area.scrollTop -= above;
+        });
+    }, [editor, area]);
+
+    return null;
+}
+
 /** Reports the Markdown the editor makes of its starting text, which a check for changes compares against. */
 function BaselinePlugin({ onBaseline }: { onBaseline: (markdown: string) => void }) {
     const [editor] = useLexicalComposerContext();
@@ -190,13 +237,18 @@ interface MarkdownEditorProps {
     value: string;
     /** How `value` is written; the editor reports Markdown either way. */
     format?: RichTextFormat;
+    /** Called with the text as Markdown after each edit. */
     onChange: (markdown: string) => void;
+    /** The editor's accessible name, such as "Description". */
     label: string;
+    /** A hint shown while it is empty. */
     placeholder: string;
     /** Grows the editor into its parent's height, or, when 'wide', only while its container is 40rem wide or more and
      *  otherwise with its text, uncapped, as its parent scrolls. Without it, it grows with its text up to a cap. */
     fill?: boolean | 'wide';
+    /** Read only, with its toolbar held. */
     disabled?: boolean;
+    /** Takes the focus when it mounts, such as in a dialog opened to write. */
     autoFocus?: boolean;
     /** Called with the Markdown the editor makes of `value`, before any edit. */
     onBaseline?: (markdown: string) => void;
@@ -220,16 +272,27 @@ export function MarkdownEditor({
     const narrow =
         fill === 'wide'
             ? {
-                  box: '@max-[40rem]:flex-none @max-[40rem]:overflow-visible',
-                  area: '@max-[40rem]:flex-none @max-[40rem]:overflow-visible',
-                  text: '@max-[40rem]:min-h-44',
+                  box: '@max-pane:flex-none @max-pane:overflow-visible',
+                  area: '@max-pane:flex-none @max-pane:overflow-visible',
+                  text: '@max-pane:min-h-44',
                   toolbar:
-                      '@max-[40rem]:sticky @max-[40rem]:top-0 @max-[40rem]:z-10 @max-[40rem]:rounded-t-lg @max-[40rem]:bg-base-100',
+                      '@max-pane:sticky @max-pane:top-0 @max-pane:z-10 @max-pane:rounded-t-lg @max-pane:bg-surface-raised',
               }
             : { box: '', area: '', text: '', toolbar: '' };
     const onEdit = useCallback(
         (state: EditorState) => state.read(() => onChange($convertToMarkdownString(TRANSFORMERS))),
         [onChange],
+    );
+    // The text area is the editor's scroll owner: it fades where its text runs past an edge, like every scroll area,
+    // under a toolbar that stays put, and the caret's line is kept clear of the fade.
+    const [area, setArea] = useState<HTMLDivElement | null>(null);
+    const { setViewport } = useScrollFade();
+    const areaRef = useCallback(
+        (element: HTMLDivElement | null) => {
+            setArea(element);
+            setViewport(element);
+        },
+        [setViewport],
     );
 
     return (
@@ -246,21 +309,26 @@ export function MarkdownEditor({
         >
             <div
                 data-description-editor
-                className={`border-base-300 bg-base-100 focus-within:border-primary/60 focus-within:ring-primary/15 flex flex-col overflow-hidden rounded-lg border transition-[border-color,box-shadow] focus-within:ring-3 ${fill ? `min-h-0 flex-1 ${narrow.box}` : ''}`}
+                className={`border-line bg-surface-raised focus-field flex flex-col overflow-hidden rounded-lg border transition-[border-color,box-shadow] ${fill ? `min-h-0 flex-1 ${narrow.box}` : ''}`}
             >
                 <MarkdownToolbar className={narrow.toolbar} />
                 <div
-                    className={`relative overflow-y-auto ${fill ? `min-h-0 flex-1 ${narrow.area}` : 'max-h-[min(24rem,45dvh)]'}`}
+                    ref={areaRef}
+                    data-description-area
+                    tabIndex={disabled ? 0 : undefined}
+                    aria-label={disabled ? label : undefined}
+                    className={`relative overflow-y-auto ${scrollFadeClassName} ${fill ? `min-h-0 flex-1 ${narrow.area}` : 'max-h-[min(24rem,45dvh)]'}`}
                 >
                     <RichTextPlugin
                         contentEditable={
                             <ContentEditable
                                 aria-label={label}
-                                className={`px-4 py-3 text-[15px] leading-relaxed outline-none ${fill ? `min-h-full ${narrow.text}` : 'min-h-44'}`}
+                                tabIndex={disabled ? -1 : 0}
+                                className={`text-md px-4 py-3 leading-relaxed outline-none ${fill ? `min-h-full ${narrow.text}` : 'min-h-44'}`}
                             />
                         }
                         placeholder={
-                            <div className="text-base-700 pointer-events-none absolute top-3 left-4 text-[15px] leading-relaxed">
+                            <div className="text-fg-muted text-md pointer-events-none absolute top-3 left-4 leading-relaxed">
                                 {placeholder}
                             </div>
                         }
@@ -276,6 +344,7 @@ export function MarkdownEditor({
             <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
             <MarkdownPastePlugin />
             <EditablePlugin editable={!disabled} />
+            <CaretClearancePlugin area={area} />
             {onBaseline && <BaselinePlugin onBaseline={onBaseline} />}
             <OnChangePlugin ignoreSelectionChange onChange={onEdit} />
         </LexicalComposer>

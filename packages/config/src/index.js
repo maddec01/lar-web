@@ -1,3 +1,5 @@
+export { checkUiCopy } from './copy.js';
+
 // The settings every Lar web repository spreads into its root vite.config.ts, so all of them format, lint and test
 // the same way. Plain JavaScript: Vite+ loads config dependencies from node_modules, where Node strips no types.
 
@@ -58,7 +60,10 @@ const sourceFiles = (root) => [under(root, 'src/**/*.ts'), under(root, 'src/**/*
  *
  * @param {object} options
  * @param {string[]} [options.apps] Each app's root, relative to the repository root (`.`, `web`, `apps/web`).
- *   Its `src` follows Lar's layers (app, features, shared, services) and holds no visual recipes.
+ *   Its `src` follows Lar's layers (app, features, shared, services) and holds no visual recipes, except its UI layer
+ *   (`src/ui`): the app's own compositions of the design system, which may style with the design system's tokens and
+ *   `@lar-works/design-system/primitives`, never with raw colours, and import nothing of the app but other ui files and
+ *   shared types.
  * @param {string[]} [options.designSystems] The roots of design-system packages, which own every visual recipe.
  * @param {string[]} [options.ignorePatterns] Extra paths to skip, such as generated API clients.
  */
@@ -77,6 +82,14 @@ export function lint({ apps = [], designSystems = [], ignorePatterns = [] } = {}
                 rules: {
                     'lar/boundaries': ['error', { role: 'app' }],
                     'lar/no-visual-recipes': 'error',
+                },
+            })),
+            ...apps.map((app) => ({
+                files: [under(app, 'src/ui/**/*.ts'), under(app, 'src/ui/**/*.tsx')],
+                rules: {
+                    'lar/boundaries': ['error', { role: 'ui' }],
+                    'lar/no-visual-recipes': 'off',
+                    'lar/no-raw-colours': 'error',
                 },
             })),
             ...apps.map((app) => ({

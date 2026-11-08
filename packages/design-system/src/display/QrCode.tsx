@@ -3,7 +3,15 @@ import { useEffect, useState } from 'react';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 
 /** Encodes locally; the value is never sent to a QR service. */
-export function QrCode({ label, value }: { label: string; value: string }) {
+export function QrCode({
+    label,
+    value,
+}: {
+    /** The code's accessible name, such as "QR code to open Lar on your phone". */
+    label: string;
+    /** What the code holds, such as an address. */
+    value: string;
+}) {
     const [encoded, setEncoded] = useState<{ source: string | null; value: string }>();
 
     useEffect(() => {

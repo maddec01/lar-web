@@ -67,3 +67,6 @@ export const LongCaption: Story = {
             'The whole family on the terrace of Pena Palace after the long walk up from the village, just before the fog rolled in over the Moorish Castle',
     },
 };
+
+/** Catalog artwork uses the loaded image’s dimensions when no original resolution is supplied. */
+export const NaturalDimensions: Story = { args: { resolution: undefined, caption: 'Album cover' } };

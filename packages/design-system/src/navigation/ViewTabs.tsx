@@ -1,19 +1,27 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useCallback, useRef } from 'react';
 
-import { Text } from '../typography/Typography';
+import { Count } from '../display/Count';
+import { useScrollFade } from '../overlays/useScrollFade';
 import { moveTabSelection } from './TabKeys';
+import { useRevealSelection } from './useRevealSelection';
 
 export interface ViewTabsItem<T extends string> {
     value: T;
     label: string;
     /** Already formatted for the viewer's locale. */
     count?: string;
+    /** Hide the count while this tab’s collection loads. */
+    loading?: boolean;
 }
 
 interface ViewTabsProps<T extends string> {
+    /** The tabs, each with its label and count. */
     items: readonly ViewTabsItem<T>[];
+    /** Names the tab list for screen readers. */
     label: string;
+    /** Called with a tab's value as it is chosen. */
     onChange: (value: T) => void;
+    /** The chosen tab's value. */
     value: T;
     /** A control that acts on the same list, such as its search, beside the tabs on wide screens. */
     end?: ReactNode;
@@ -21,11 +29,24 @@ interface ViewTabsProps<T extends string> {
 
 /** A row of tabs that switches which list the page shows, each with its count. */
 export function ViewTabs<T extends string>({ items, label, onChange, value, end }: ViewTabsProps<T>) {
+    const row = useRef<HTMLDivElement>(null);
+    const { setViewport, className: fade } = useScrollFade({ axis: 'horizontal' });
+    const attachRow = useCallback(
+        (element: HTMLDivElement | null) => {
+            row.current = element;
+            setViewport(element);
+        },
+        [setViewport],
+    );
+
+    useRevealSelection(row, value);
+
     const tabs = (
         <div
+            ref={attachRow}
             role="tablist"
             aria-label={label}
-            className="border-base-300 flex min-w-0 gap-1 overflow-x-auto border-b"
+            className={`border-line flex min-w-0 gap-1 overflow-x-auto border-b ${fade}`}
             onKeyDown={(event) =>
                 moveTabSelection(
                     event,
@@ -46,28 +67,14 @@ export function ViewTabs<T extends string>({ items, label, onChange, value, end 
                         aria-selected={selected}
                         tabIndex={selected ? 0 : -1}
                         data-value={item.value}
-                        className={`focus-visible:outline-primary -mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] ${
-                            selected
-                                ? 'border-base-content text-base-content'
-                                : 'text-base-700 hover:text-base-content border-transparent'
+                        className={`focus-ring-inset -mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+                            selected ? 'border-fg text-fg' : 'text-fg-muted hover:text-fg border-transparent'
                         }`}
                         onClick={() => onChange(item.value)}
                     >
                         {item.label}
                         {item.count !== undefined ? ' ' : null}
-                        {item.count !== undefined ? (
-                            <Text
-                                as="span"
-                                variant="caption"
-                                className={`rounded-full px-1.5 tabular-nums ${
-                                    selected
-                                        ? 'bg-base-content/10 text-base-content'
-                                        : 'bg-base-200 text-base-700 dark:bg-base-300'
-                                }`}
-                            >
-                                {item.count}
-                            </Text>
-                        ) : null}
+                        <Count count={item.count} loading={item.loading} />
                     </button>
                 );
             })}

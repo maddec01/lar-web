@@ -4,6 +4,8 @@ import { fn } from 'storybook/test';
 
 import { DesignSystemProvider } from '../foundations/DesignSystemProvider';
 import type { ThemePreference } from '../foundations/Theme';
+import { DropdownMenu } from '../overlays/DropdownMenu';
+import { Button } from './Button';
 import { ThemeSwitch } from './ThemeSwitch';
 
 const meta = {
@@ -48,4 +50,41 @@ export const Translated: Story = {
             <ThemeSwitch {...args} />
         </DesignSystemProvider>
     ),
+};
+
+/** Visible names for touch navigation, where hover titles aren’t available. */
+export const Labelled: Story = { args: { labelsVisible: true } };
+
+function MenuThemeSwitch({ onChange }: { onChange: (value: ThemePreference) => void }) {
+    const [value, setValue] = useState<ThemePreference>('dark');
+
+    return (
+        <DropdownMenu defaultOpen>
+            <DropdownMenu.Trigger asChild>
+                <Button variant="secondary">Account</Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="start" width="md">
+                <DropdownMenu.Label presentation="identity">pedro@lar.local</DropdownMenu.Label>
+                <DropdownMenu.Separator />
+                <ThemeSwitch
+                    placement="menu"
+                    label="Appearance"
+                    value={value}
+                    onChange={(next) => {
+                        setValue(next);
+                        onChange(next);
+                    }}
+                />
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item>Sign out</DropdownMenu.Item>
+            </DropdownMenu.Content>
+        </DropdownMenu>
+    );
+}
+
+/** The same control in an account menu (`placement="menu"`): the menu's labelled row, the same pill and segments; the
+ *  arrow keys move between them and choosing keeps the menu open. */
+export const InMenu: Story = {
+    render: (args) => <MenuThemeSwitch onChange={args.onChange} />,
+    parameters: { layout: 'padded' },
 };

@@ -41,7 +41,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A catalog's header: its name and count on the left, scan and view controls on the right. */
+/** A catalog’s header: its name and count on the left, scan and view controls on the right. */
 export const Default: Story = {};
 
 export const ActionsOnly: Story = {

@@ -3,13 +3,16 @@ import { useState } from 'react';
 
 import { Button } from '../actions/Button';
 import { StatusIndicator } from '../feedback/StatusIndicator';
+import { ScrollFadeRegion } from '../overlays/ScrollFadeRegion';
 import { Checkbox } from './Checkbox';
 import { Input } from './Input';
 
 export interface LabelChoice {
+    /** The label's name, which `picked` and `onToggle` use. */
     name: string;
     /** A CSS colour; a tracker with no label colours gives none. */
     color?: string | undefined;
+    /** The tracker's description of the label, under its name. */
     description?: string | undefined;
 }
 
@@ -23,23 +26,32 @@ export interface LabelCreation {
     note: string;
     /** The button that adds `name`, such as `Create "name"`. */
     createLabel: (name: string) => string;
+    /** Called with the typed name to add it as a new label. */
     onCreate: (name: string) => void;
 }
 
 interface LabelPickerProps {
+    /** Tells this picker apart from others on the page, for tests and for scrolling to it. */
     'data-label-picker'?: string;
+    /** The labels to pick from. */
     choices: readonly LabelChoice[];
+    /** The names of the labels ticked now. */
     picked: readonly string[];
+    /** Called with a label's name when the reader ticks or clears it. */
     onToggle: (name: string) => void;
     /** The filter field's accessible name and its placeholder. */
     filterLabel: string;
+    /** The filter field's hint, such as "Filter labels". */
     placeholder: string;
     /** Shown when the filter matches nothing. */
     noMatchLabel: string;
     /** Choices shown ticked or not but not changeable here, each marked with `lockedNote`. */
     locked?: readonly string[];
+    /** Says why the `locked` labels can't change here. */
     lockedNote?: string;
+    /** Holds the list while a change it made saves, keeping the focus. */
     busy?: boolean;
+    /** Lets a typed name that no choice has become a new label. */
     create?: LabelCreation;
     /** Whether two names are the same label; trackers compare them ignoring case. */
     same?: (a: string, b: string) => boolean;
@@ -92,7 +104,7 @@ export function LabelPicker({
                     if (fresh && !refusal && !busy) add();
                 }}
             />
-            <div className="grid max-h-56 gap-0.5 overflow-y-auto">
+            <ScrollFadeRegion className="grid max-h-56 gap-0.5">
                 {hits.map(({ name, color, description }) => {
                     const fixed = locked.some((label) => same(label, name));
 
@@ -100,7 +112,7 @@ export function LabelPicker({
                         <label
                             key={name}
                             data-label-choice
-                            className="hover:bg-base-200 flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1 text-xs"
+                            className="hover:bg-fill-hover flex cursor-pointer items-start gap-2 rounded-md px-1.5 py-1 text-xs"
                         >
                             <Checkbox
                                 checked={picked.some((label) => same(label, name))}
@@ -115,20 +127,20 @@ export function LabelPicker({
                             <span className="min-w-0 flex-1">
                                 <span className="block wrap-anywhere">
                                     {name}
-                                    {fixed && lockedNote && <span className="text-base-700"> · {lockedNote}</span>}
+                                    {fixed && lockedNote && <span className="text-fg-muted"> · {lockedNote}</span>}
                                 </span>
-                                {description && <span className="text-base-700 block text-[11px]">{description}</span>}
+                                {description && <span className="text-fg-muted text-2xs block">{description}</span>}
                             </span>
                         </label>
                     );
                 })}
-                {!hits.length && !fresh && <p className="text-base-700 m-0 p-1.5 text-[11px]">{noMatchLabel}</p>}
-            </div>
+                {!hits.length && !fresh && <p className="text-fg-muted text-2xs m-0 p-1.5">{noMatchLabel}</p>}
+            </ScrollFadeRegion>
             {fresh && !refusal && (
                 <span className="justify-self-start">
                     <Button
                         variant="secondary"
-                        compact
+                        size="sm"
                         leftIcon={<PlusIcon />}
                         disabled={!!refusal || busy}
                         onClick={add}
@@ -138,11 +150,11 @@ export function LabelPicker({
                 </span>
             )}
             {refusal && (
-                <p role="alert" className="text-base-700 m-0 text-[11px]">
+                <p role="alert" className="text-fg-muted text-2xs m-0">
                     {refusal}
                 </p>
             )}
-            {create && !create.refused && <p className="text-base-700 m-0 text-[11px]">{create.note}</p>}
+            {create && !create.refused && <p className="text-fg-muted text-2xs m-0">{create.note}</p>}
         </div>
     );
 }

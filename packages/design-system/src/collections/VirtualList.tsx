@@ -22,25 +22,44 @@ export interface ListColumn<TItem> {
 }
 
 export interface VirtualListProps<TItem> {
+    /** The table's columns, each with its header, width and cell. */
     columns: readonly ListColumn<TItem>[];
+    /** How many rows the list holds, loaded or not. */
     count: number;
+    /** The item at an index; none while it loads. */
     itemAt: (index: number) => TItem | undefined;
+    /** An item's name for screen readers, such as its title. */
     itemLabel: (item: TItem) => string;
+    /** Names the table for screen readers, such as "Tracks". */
     label: string;
+    /** Called with the first and last index on screen, to load what they need. */
     onRangeChange: (startIndex: number, endIndex: number) => void;
+    /** Called with an item as the reader opens its row. */
     onSelect?: (item: TItem) => void;
+    /** The page a row opens, making the row a link. */
     itemHref?: (item: TItem) => string | undefined;
+    /** Called with a row's href as it is followed, for client-side routing. */
     onNavigate?: (href: string) => void;
+    /** Draws the placeholder for a row still loading, in place of the skeleton row. */
     placeholderAt?: (index: number) => ReactNode;
+    /** A stable key for the row at an index. */
     itemKey: (index: number) => string;
+    /** The first rows are on their way: skeleton rows fill the table. */
     loading?: boolean;
+    /** Splits the rows into sections, such as an album's discs: where one starts and its header. */
     section?: {
         isStart: (item: TItem, index: number, previous: TItem | undefined) => boolean;
         render: (item: TItem) => ReactNode;
     };
+    /** The column the table is sorted by, marked in its header. */
     sort?: string;
+    /** The sort's direction, marked in the sorted column's header. */
     direction?: 'asc' | 'desc';
+    /** `compact` rows are 40px instead of 64px, for long lists read line by line, such as tracks. */
+    density?: 'default' | 'compact';
 }
+
+const rowHeights = { default: 64, compact: 40 } as const;
 
 export function VirtualList<TItem>({
     columns,
@@ -58,6 +77,7 @@ export function VirtualList<TItem>({
     section,
     sort,
     direction = 'asc',
+    density = 'default',
 }: VirtualListProps<TItem>) {
     const { scrollMargin, setCollectionElement, width } = useCollectionViewport();
     const root = useRef<HTMLDivElement>(null);
@@ -77,10 +97,10 @@ export function VirtualList<TItem>({
     const visibleColumnIds = visibleColumns.map((column) => column.id);
     const virtualizer = useWindowVirtualizer({
         count,
-        // Layout belongs to stable catalog slots. Domain keys still identify
+        // Layout belongs to stable collection slots. Domain keys still identify
         // mounted rows below; changing page data must not remeasure every slot.
         // Section headers are measured with their mounted row wrappers.
-        estimateSize: () => 64,
+        estimateSize: () => rowHeights[density],
         overscan: 8,
         scrollMargin,
     });
@@ -99,7 +119,8 @@ export function VirtualList<TItem>({
             aria-busy={loading}
             aria-rowcount={count + 1}
             aria-colcount={visibleColumns.length}
-            className="border-base-300 bg-base-100 @container min-w-0 rounded-b-xl border-x border-b"
+            data-density={density}
+            className="group/list border-line bg-surface-raised @container min-w-0 rounded-b-xl border-x border-b"
             style={
                 {
                     '--lar-list-columns': visibleColumns.map((column) => columnWidths[column.size]).join(' '),
@@ -108,12 +129,12 @@ export function VirtualList<TItem>({
         >
             <div
                 role="rowgroup"
-                className="bg-base-50 sticky top-(--lar-header-height,0px) z-20 -mx-px -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
+                className="bg-surface-page sticky top-(--lar-header-height,0px) z-20 -mx-px -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
             >
                 <div
                     role="row"
                     aria-rowindex={1}
-                    className="border-base-300 bg-base-100 box-content grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 rounded-t-xl border px-3"
+                    className="border-line bg-surface-raised box-content grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 rounded-t-xl border px-3"
                 >
                     {visibleColumns.map((column) => (
                         <div
@@ -122,13 +143,14 @@ export function VirtualList<TItem>({
                             aria-sort={
                                 column.id === sort ? (direction === 'asc' ? 'ascending' : 'descending') : undefined
                             }
-                            className={`flex min-w-0 items-center gap-1 text-xs font-medium ${column.align === 'right' ? 'justify-end' : ''} ${column.id === sort ? 'text-base-content' : 'text-base-content/50'}`}
+                            className={`flex min-w-0 items-center gap-1 text-xs font-medium ${column.align === 'right' ? 'justify-end' : ''} ${column.id === sort ? 'text-fg' : 'text-fg-muted'}`}
                         >
                             <span className={column.hideLabel ? 'sr-only' : 'truncate'}>{column.label}</span>
                             {column.id === sort ? (
-                                <span className={`size-3 shrink-0 ${direction === 'asc' ? 'rotate-180' : ''}`}>
-                                    <ChevronDownIcon />
-                                </span>
+                                <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className={`size-3.5 shrink-0 transition-transform ${direction === 'asc' ? 'rotate-180' : ''}`}
+                                />
                             ) : null}
                         </div>
                     ))}
@@ -159,7 +181,7 @@ export function VirtualList<TItem>({
                             style={{ top: item.start - scrollMargin }}
                         >
                             {sectionStart ? section?.render(value) : null}
-                            <div className="h-16">
+                            <div style={{ height: rowHeights[density] }}>
                                 <DataRow rowIndex={item.index + 2} interactive={Boolean(value && (href || onSelect))}>
                                     {placeholder ? (
                                         <div
@@ -180,7 +202,7 @@ export function VirtualList<TItem>({
                                                     key={column.id}
                                                     role="cell"
                                                     title={typeof content === 'string' ? content : undefined}
-                                                    className={`min-w-0 truncate text-sm ${column.align === 'right' ? 'text-right tabular-nums' : ''} ${column.id === sort || columnIndex === 0 ? 'text-base-content' : 'text-base-content/55'}`}
+                                                    className={`min-w-0 truncate text-sm ${column.align === 'right' ? 'text-right tabular-nums' : ''} ${column.id === sort || columnIndex === 0 ? 'text-fg' : 'text-fg-muted'}`}
                                                 >
                                                     {!value ? (
                                                         (column.placeholder?.(visibleColumnIds) ?? (
@@ -201,10 +223,12 @@ export function VirtualList<TItem>({
                                                                     data-slot="action-overlay"
                                                                     aria-label={itemLabel(value)}
                                                                     onClick={() => onSelect(value)}
-                                                                    className="focus-visible:outline-primary absolute inset-0 z-1 block w-full cursor-pointer rounded-md focus-visible:outline-2 focus-visible:-outline-offset-2"
+                                                                    className="focus-ring-inset absolute inset-0 z-1 block w-full cursor-pointer rounded-md"
                                                                 />
                                                             ) : null}
-                                                            <div className="py-2">{content}</div>
+                                                            <div className="py-2 group-data-[density=compact]/list:py-0">
+                                                                {content}
+                                                            </div>
                                                         </>
                                                     ) : (
                                                         content

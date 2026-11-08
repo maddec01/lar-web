@@ -14,46 +14,30 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    check:
-        name: Format, lint and types
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
+    # One job, one install and one build: the packages and the template build once, and the check, the tests and
+    # Storybook all use that build.
+    verify:
+        name: Build, check and test
+        # Playwright 1.56 installs Chromium's system libraries only up to Ubuntu 24.04.
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
         steps:
             - uses: actions/checkout@v7
               with:
                   persist-credentials: false
             - uses: ./.github/actions/setup
-            - name: Build packages
-              run: pnpm --filter './packages/*' build
+            - name: Build packages and template
+              run: pnpm build
             - name: Check
               run: pnpm exec vp check
-
-    test:
-        name: Tests
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        steps:
-            - uses: actions/checkout@v7
-              with:
-                  persist-credentials: false
-            - uses: ./.github/actions/setup
-            - name: Build packages
-              run: pnpm --filter './packages/*' build
+            # The design system's few browser tests (scroll fade, dialog frame, overlay focus) need a real layout engine.
+            - name: Install Chromium and system libraries
+              run: pnpm --filter @lar-works/design-system exec playwright install --with-deps chromium
             - name: Test
               run: pnpm test
-
-    build:
-        name: Build packages, template and Storybook
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        steps:
-            - uses: actions/checkout@v7
-              with:
-                  persist-credentials: false
-            - uses: ./.github/actions/setup
-            - name: Build
-              run: pnpm build
+            # On main, storybook.yml builds and deploys it.
             - name: Build Storybook
+              if: github.event_name == 'pull_request'
               run: pnpm --filter @lar-works/design-system build-storybook
 
     changeset:

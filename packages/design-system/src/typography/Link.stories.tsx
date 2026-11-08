@@ -16,10 +16,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** An in-app link: `onNavigate` takes ordinary clicks, modified clicks keep the browser's behaviour. */
+/** An in-app link: `onNavigate` takes ordinary clicks, modified clicks keep the browser’s behaviour. */
 export const Body: Story = {};
 
 export const Caption: Story = { args: { variant: 'caption', children: 'View import log' } };
+export const NavigationInstruction: Story = {
+    args: { href: '/activity', arrow: true, children: 'Go to the dashboard' },
+};
 
 export const External: Story = {
     args: { href: 'https://lucide.dev/icons', external: true, showExternalIcon: true, children: 'Browse lucide icons' },
@@ -48,7 +51,7 @@ export const Inline: Story = {
     ),
 };
 
-/** InlineLink with `onClick`: an action inside running text, with InlineLink's look. */
+/** InlineLink with `onClick`: an action inside running text, with InlineLink’s look. */
 export const InlineAction: Story = {
     render: () => (
         <Text variant="caption" tone="muted">
@@ -72,21 +75,23 @@ export const InlineActionDisabled: Story = {
 /** LinkBox and LinkOverlay: the whole card opens the album, while the artist link stays clickable above it. */
 export const CardOverlay: Story = {
     render: (args) => (
-        <LinkBox className="border-base-300 bg-base-100 hover:bg-base-200/60 relative flex max-w-sm flex-col gap-1 rounded-lg border p-4">
-            <div className="flex items-center gap-2">
-                <Heading as="h3" variant="title">
-                    <LinkOverlay href="/music/albums/blackstar" onNavigate={args.onNavigate}>
-                        Blackstar
-                    </LinkOverlay>
-                </Heading>
-                <Badge tone="accent">FLAC</Badge>
+        <LinkBox>
+            <div className="border-line bg-surface-raised hover:bg-fill-hover relative flex max-w-sm flex-col gap-3 rounded-lg border p-4">
+                <div className="flex items-center gap-2">
+                    <Heading as="h3" variant="title">
+                        <LinkOverlay href="/music/albums/blackstar" onNavigate={args.onNavigate}>
+                            Blackstar
+                        </LinkOverlay>
+                    </Heading>
+                    <Badge tone="accent">FLAC</Badge>
+                </div>
+                <Text variant="caption" tone="muted">
+                    <Link variant="caption" href="/music/artists/david-bowie" onNavigate={args.onNavigate}>
+                        David Bowie
+                    </Link>{' '}
+                    · 2016 · 7 tracks
+                </Text>
             </div>
-            <Text variant="caption" tone="muted">
-                <Link variant="caption" href="/music/artists/david-bowie" onNavigate={args.onNavigate}>
-                    David Bowie
-                </Link>{' '}
-                · 2016 · 7 tracks
-            </Text>
         </LinkBox>
     ),
 };

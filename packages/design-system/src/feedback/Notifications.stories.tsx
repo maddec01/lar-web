@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '../actions/Button';
 import { dismissAllNotifications, showErrorNotification, showSuccessNotification } from './ErrorNotification';
 import { Notifications, showNotification, useNotificationControls } from './Notifications';
 
 /**
- * The toaster is mounted once by the app (and by Storybook's preview), so these stories only call the helpers that
+ * The toaster is mounted once by the app (and by Storybook’s preview), so these stories only call the helpers that
  * raise notifications into it.
  */
 const meta = {
@@ -18,11 +18,11 @@ const meta = {
                 Show success
             </Button>
             <Button
-                variant="destructive"
+                variant="secondary"
                 onClick={() =>
                     showErrorNotification({
                         title: 'Scan failed',
-                        description: 'Lar could not read /mnt/media/movies. Check that the drive is mounted.',
+                        description: 'Lar couldn’t read /mnt/media/movies. Check that the drive is mounted.',
                     })
                 }
             >
@@ -32,7 +32,7 @@ const meta = {
                 variant="quiet"
                 onClick={() =>
                     showErrorNotification({
-                        title: 'Could not save the catalog',
+                        title: 'Couldn’t save the catalog',
                         description:
                             'The server rejected the change because another administrator edited “Family photos” at the same time. Reload the catalog to see their changes, then apply yours again.',
                     })
@@ -67,12 +67,12 @@ function QueueAction({ fails }: { fails: boolean }) {
                       ? 'Queueing…'
                       : state === 'queued'
                         ? 'Moved #61 to Queued.'
-                        : 'Could not queue #61: the board server is unreachable.'}
+                        : 'Couldn’t queue #61: the board server is unreachable.'}
             </span>{' '}
             {state === 'added' && (
                 <Button
                     variant="secondary"
-                    compact
+                    size="sm"
                     onClick={() => {
                         setState('queueing');
                         hold(true);
@@ -111,13 +111,13 @@ export const Stack: Story = {
                 Show success
             </Button>
             <Button
-                variant="destructive"
+                variant="secondary"
                 onClick={() =>
                     showNotification({
                         slot: 'error',
                         tone: 'danger',
                         dismissLabel: 'Dismiss: error for #61',
-                        body: "Couldn't move #61 to List. GitHub answered 502.",
+                        body: 'Couldn’t move #61 to List. GitHub answered 502.',
                     })
                 }
             >
@@ -154,3 +154,39 @@ export const Stack: Story = {
         </div>
     ),
 };
+
+/** Raises one notification of every tone as it mounts: a success and an info clear themselves, a warning and a failure
+ *  wait; each has its icon, a specific title, and the failure offers to try again. */
+function EveryTone() {
+    useEffect(() => {
+        showNotification({ slot: 'tone-success', tone: 'success', title: '“Kind of Blue” added to Favourites' });
+        showNotification({
+            slot: 'tone-info',
+            tone: 'info',
+            title: 'Scan started',
+            description: 'Music is being read again; playback keeps working.',
+        });
+        showNotification({
+            slot: 'tone-warning',
+            tone: 'warning',
+            title: 'TheMovieDB is slow to answer',
+            description: 'New movies wait for their metadata.',
+        });
+        showErrorNotification({
+            title: 'Couldn’t save Music',
+            description: 'Lar couldn’t reach the server. Your changes are still in the form.',
+            action: { label: 'Try again', onAction: () => {} },
+        });
+
+        return dismissAllNotifications;
+    }, []);
+
+    return (
+        <>
+            <p className="text-fg-muted text-sm">Every tone, in the bottom right corner.</p>
+            <Notifications presentation="stack" />
+        </>
+    );
+}
+
+export const Tones: Story = { parameters: { notifications: false }, render: () => <EveryTone /> };

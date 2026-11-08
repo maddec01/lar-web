@@ -1,7 +1,15 @@
 import { Code } from '@ninna-ui/primitives';
 
 /** File paths as truncated code, one per line. */
-export function PathList({ label, paths }: { label: string; paths: readonly { key: string; path: string }[] }) {
+export function PathList({
+    label,
+    paths,
+}: {
+    /** Names the list for screen readers, such as "Folders scanned". */
+    label: string;
+    /** The paths, in order: each one's key and the path. */
+    paths: readonly { key: string; path: string }[];
+}) {
     return (
         <ul aria-label={label} className="space-y-1">
             {paths.map(({ key, path }) => (

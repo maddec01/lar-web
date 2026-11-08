@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { FilmIcon, FolderIcon, MusicIcon, SettingsIcon } from 'lucide-react';
+import { FilmIcon, FolderIcon, MusicIcon, SearchXIcon, SettingsIcon } from 'lucide-react';
 import { useState } from 'react';
 import { fn } from 'storybook/test';
 
-import { ResultEmpty, ResultList, ResultRow } from './ResultList';
+import { EmptyState } from '../feedback/EmptyState';
+import { ResultList, ResultRow } from './ResultList';
 
 function Art({ hue, aspect = 'square' }: { hue: number; aspect?: 'square' | 'poster' | 'video' }) {
     return (
@@ -45,7 +46,7 @@ function SearchResults() {
 const meta = {
     title: 'Collections/ResultList',
     component: ResultList,
-    args: { label: 'Albums', density: 'comfortable', loading: false },
+    args: { label: 'Albums', density: 'default', loading: false },
     decorators: [
         (Story) => (
             <div className="max-w-md">
@@ -68,11 +69,15 @@ export const Loading: Story = {
     render: (args) => <ResultList {...args} />,
 };
 
+/** With no results, the empty state stands in place of the list, which would otherwise be a listbox with no options. */
 export const Empty: Story = {
-    render: (args) => (
-        <ResultList {...args}>
-            <ResultEmpty>No albums match “bossa”</ResultEmpty>
-        </ResultList>
+    render: () => (
+        <EmptyState
+            size="inline"
+            icon={<SearchXIcon />}
+            title="No albums match “bossa”"
+            description="Try another spelling."
+        />
     ),
 };
 
@@ -175,6 +180,56 @@ export const LongContent: Story = {
                 detail="Includes the original album, the 2012 remaster, and eleven previously unreleased demos recorded at Trident Studios in late 1971."
                 onSelect={fn()}
             />
+        </ResultList>
+    ),
+};
+
+/** A library's list on a page (`presentation="card"`): one card, a hairline between rows, a chevron on every row that
+ *  opens a page, in every library (videos, playlists, people, books, music). */
+export const OnCard: Story = {
+    args: { role: 'list', label: 'Playlists', presentation: 'card' },
+    decorators: [
+        (Story) => (
+            <div className="max-w-2xl">
+                <Story />
+            </div>
+        ),
+    ],
+    render: (args) => (
+        <ResultList {...args}>
+            {albums.map((album) => (
+                <ResultRow
+                    key={album.id}
+                    artwork={<Art hue={album.hue} />}
+                    kind="Playlist"
+                    title={album.title}
+                    subtitle={album.subtitle}
+                    href={`/playlists/${album.id}`}
+                    onSelect={fn()}
+                />
+            ))}
+        </ResultList>
+    ),
+};
+
+/** Posters on a card, as a videos library lists them. */
+export const PostersOnCard: Story = {
+    args: { role: 'list', label: 'Movies', presentation: 'card' },
+    decorators: OnCard.decorators,
+    render: (args) => (
+        <ResultList {...args}>
+            {['Dune: Part Two', 'Past Lives', 'Aftersun'].map((title, index) => (
+                <ResultRow
+                    key={title}
+                    presentation="poster"
+                    artwork={<Art hue={30 + index * 90} aspect="poster" />}
+                    kind="Movie"
+                    title={title}
+                    subtitle={`${2022 + index} · Movies`}
+                    href={`/movies/${index}`}
+                    onSelect={fn()}
+                />
+            ))}
         </ResultList>
     ),
 };

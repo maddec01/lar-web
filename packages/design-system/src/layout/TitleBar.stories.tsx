@@ -12,26 +12,29 @@ import { ToolbarStatusGroup } from './toolbar/ToolbarStatusGroup';
 import { ToolbarStatusItem } from './toolbar/ToolbarStatusItem';
 
 const brand = (
-    <a href="#dashboard" aria-label="Go to home">
+    <a href="#dashboard">
         <BrandMark label="Lar" />
     </a>
 );
 
+const secondaryActions = (
+    <ToolbarStatusGroup role="group" aria-label="Server online, 2 background tasks, 1 playing">
+        <Button variant="summary" aria-label="Background tasks: 2 running">
+            <ToolbarStatusItem icon={<ActivityIcon />} tone="info" />
+        </Button>
+        <Button variant="summary" aria-label="Playback: 1 stream">
+            <ToolbarStatusItem icon={<HeadphonesIcon />} tone="success" />
+        </Button>
+        <Button variant="summary" aria-label="Server: healthy">
+            <ToolbarStatusItem icon={<ServerIcon />} tone="success" />
+        </Button>
+    </ToolbarStatusGroup>
+);
+
 const actions = (
     <>
-        <ToolbarStatusGroup role="group" aria-label="Server online, 2 background tasks, 1 playing">
-            <Button variant="summary" aria-label="Background tasks: 2 running">
-                <ToolbarStatusItem icon={<ActivityIcon />} tone="info" />
-            </Button>
-            <Button variant="summary" aria-label="Playback: 1 stream">
-                <ToolbarStatusItem icon={<HeadphonesIcon />} tone="success" />
-            </Button>
-            <Button variant="summary" aria-label="Server: healthy">
-                <ToolbarStatusItem icon={<ServerIcon />} tone="success" />
-            </Button>
-        </ToolbarStatusGroup>
         <IconButton aria-label="Settings" title="Settings" icon={<SettingsIcon />} variant="title-bar" />
-        <Button aria-label="Open account menu" variant="avatar">
+        <Button aria-label="PG: Open account menu" variant="avatar">
             <Avatar name="Pedro Gomes" />
         </Button>
     </>
@@ -58,6 +61,8 @@ const meta = {
         ),
         search: <CommandPaletteTrigger label="Go to…" shortcut="k" onOpen={fn()} />,
         actions,
+        secondaryActions,
+        secondaryActionsLabel: 'Server status',
     },
     argTypes: {
         brand: { control: false },
@@ -67,7 +72,7 @@ const meta = {
     },
     decorators: [
         (Story) => (
-            <div className="glass-bar border-base-300 border-b">
+            <div className="glass-bar border-line border-b">
                 <Story />
             </div>
         ),
@@ -78,7 +83,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Lar Server's title bar: brand, the page you are on, the palette, the server's status, Settings and you. */
+/** Lar Server’s title bar: brand, the page you are on, the palette, the server’s status, Settings and you. */
 export const Default: Story = {};
 
 /** In a catalog: the catalog opens its siblings, the album is where you are. Narrow screens keep the last step. */
@@ -109,4 +114,45 @@ export const Minimal: Story = {
         search: undefined,
         actions: undefined,
     },
+};
+
+/** A location with no alternate destinations is text, with no menu affordance. */
+export const NoChoices: Story = {
+    args: {
+        title: (
+            <TitleBarTrail items={[{ key: 'missing', label: 'Page not found', hasChoices: false, onSelect: fn() }]} />
+        ),
+    },
+};
+
+export const EmptyTrail: Story = { args: { title: <TitleBarTrail items={[]} /> } };
+export const NarrowLongCatalog: Story = {
+    args: {
+        title: (
+            <TitleBarTrail
+                items={[
+                    {
+                        key: 'catalog',
+                        label: 'International documentary films and restored archive editions',
+                        onSelect: fn(),
+                    },
+                ]}
+            />
+        ),
+        secondaryActions: (
+            <ToolbarStatusGroup aria-label="Server status">
+                <Button variant="summary" aria-label="Server healthy">
+                    <ToolbarStatusItem icon={<ServerIcon />} tone="success" />
+                </Button>
+            </ToolbarStatusGroup>
+        ),
+        secondaryActionsLabel: 'Server status',
+    },
+    decorators: [
+        (Story) => (
+            <div className="w-80">
+                <Story />
+            </div>
+        ),
+    ],
 };

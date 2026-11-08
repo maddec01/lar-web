@@ -9,26 +9,37 @@ export function revealInRow(row: HTMLElement, item: Element | null | undefined) 
 
     const bounds = row.getBoundingClientRect();
     const { left, right } = item.getBoundingClientRect();
-    const fit = right - bounds.right;
     const style = getComputedStyle(row);
-    const padding = parseFloat(style.scrollPaddingLeft) || 0;
+    const padding = Math.min(
+        parseFloat(style.scrollPaddingLeft) || 0,
+        Math.max(0, (bounds.width - (right - left)) / 2),
+    );
+    const fit = right - bounds.right + padding;
     const starts =
         style.scrollSnapType && style.scrollSnapType !== 'none'
             ? Array.from(row.children, (child) => child.getBoundingClientRect().left - bounds.left - padding).filter(
                   (start) => start >= fit,
               )
             : [];
-    const offset = left < bounds.left ? left - bounds.left : fit > 0 ? (starts.length ? Math.min(...starts) : fit) : 0;
+    const offset =
+        left < bounds.left + padding
+            ? left - bounds.left - padding
+            : fit > 0
+              ? starts.length
+                  ? Math.min(...starts)
+                  : fit
+              : 0;
 
     if (offset) row.scrollTo({ left: row.scrollLeft + offset, behavior: 'smooth' });
 }
 
 /**
- * Pairs a `ScrollRow` with `ScrollRowArrows` placed elsewhere, such as in its section header. `content` is a stable
+ * Pairs a `ScrollRow` with `ScrollRowArrows` placed elsewhere, such as in its section header. The row fades its own
+ * edges (useScrollFade); this only says which arrows can move it. `content` is a stable
  * key for what the row shows, such as its item count, so the arrows re-measure when it changes.
  */
-export function useScrollRow(content?: unknown) {
-    const [row, setRow] = useState<HTMLUListElement | null>(null);
+export function useScrollRow<T extends HTMLElement = HTMLUListElement>(content?: unknown) {
+    const [row, setRow] = useState<T | null>(null);
     const [ends, setEnds] = useState({ back: false, forward: false });
 
     useEffect(() => {

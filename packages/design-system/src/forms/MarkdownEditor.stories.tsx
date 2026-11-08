@@ -7,7 +7,7 @@ const meta = {
     title: 'Forms/MarkdownEditor',
     component: MarkdownEditor,
     args: {
-        value: "## Goal\n\nMove the board's **title bar** into the design system.\n\n- Counters\n- Loading screen",
+        value: '## Goal\n\nMove the board’s **title bar** into the design system.\n\n- Counters\n- Loading screen',
         onChange: fn(),
         label: 'Description',
         placeholder: 'Add a description…',
@@ -34,7 +34,18 @@ export const FromHtml: Story = {
 
 export const Disabled: Story = { args: { disabled: true } };
 
-/** Filling a parent's height, as in a dialog's body. */
+/** Text longer than the editor: its text area fades where the text runs past an edge, under a toolbar that stays put,
+ *  and the caret’s line is kept clear of the fade while typing. */
+export const LongContent: Story = {
+    args: {
+        value: Array.from(
+            { length: 40 },
+            (_, index) => `Step ${index + 1}: move one more piece of the board into the design system.`,
+        ).join('\n\n'),
+    },
+};
+
+/** Filling a parent’s height, as in a dialog’s body. */
 export const Fill: Story = {
     args: { fill: true },
     render: (args) => (

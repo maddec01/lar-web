@@ -17,12 +17,14 @@ type Story = StoryObj<typeof meta>;
 /** The code chip. */
 export const Chip: Story = {};
 
-/** With `wrap`: a path that may break anywhere, and a command that never breaks, in the page's plain inline code. */
+/** With `wrap`: a path that may break anywhere, and a command that never breaks, in the page’s plain inline code. */
 export const InASentence: Story = {
     render: () => (
-        <Text variant="caption" tone="muted" className="w-56">
-            Blocked by <Code wrap="anywhere">/home/.agents/skills/grill-with-docs</Code>. Fix:{' '}
-            <Code wrap="never">gh auth refresh -s read:project</Code>
-        </Text>
+        <div className="w-56">
+            <Text variant="caption" tone="muted">
+                Blocked by <Code wrap="anywhere">/home/.agents/skills/grill-with-docs</Code>. Fix:{' '}
+                <Code wrap="never">gh auth refresh -s read:project</Code>
+            </Text>
+        </div>
     ),
 };

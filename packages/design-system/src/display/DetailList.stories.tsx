@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Compact: Story = { args: { compact: true } };
+export const Compact: Story = { args: { variant: 'inline' } };
 
 export const Repository: Story = {
     args: {
@@ -49,6 +49,27 @@ export const Repository: Story = {
             { label: 'Remote', value: 'git@github.com:lar-works/lar-web.git' },
             { label: 'Branch', value: 'main' },
             { label: 'Commit', value: '4f9a2c7e1b8d3a6f0c5e9b2d7a4f1c8e3b6d0a9f' },
+        ],
+    },
+};
+
+export const WrappedAddresses: Story = {
+    args: {
+        variant: 'inline',
+        wrapValues: true,
+        title: 'Connection addresses',
+        items: [
+            {
+                label: 'lar.example.very-long-hostname.net',
+                value: 'https://lar.example.very-long-hostname.net:36900',
+                actions: (
+                    <CopyButton
+                        label="Copy address"
+                        copiedLabel="Copied"
+                        value="https://lar.example.very-long-hostname.net:36900"
+                    />
+                ),
+            },
         ],
     },
 };

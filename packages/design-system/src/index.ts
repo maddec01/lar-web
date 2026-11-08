@@ -1,7 +1,7 @@
-// The design system's public API. Icons have their own entry (`@lar-works/design-system/icons`), and styles are
-// imported once by each app (`@import '@lar-works/design-system/styles.css'`, or showcase.css or board.css).
+// The design system's public API: tokens and theme helpers, and its generic components and patterns. Styleable
+// building blocks for an app's own UI layer have an entry of their own (`@lar-works/design-system/primitives`), as do
+// the icons (`/icons`); styles are imported once by each app (`@import '@lar-works/design-system/styles.css'`).
 export * from './actions';
-export * from './board';
 export * from './collections';
 export * from './display';
 export * from './feedback';
@@ -10,5 +10,4 @@ export * from './foundations';
 export * from './layout';
 export * from './navigation';
 export * from './overlays';
-export * from './showcase';
 export * from './typography';

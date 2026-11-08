@@ -13,7 +13,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A tracker label in its own colour. */
+/** A tracker label: neutral surface and text, with the tracker's colour on its dot. */
 export const Colored: Story = {};
 
 /** With no colour, the neutral badge. */
@@ -31,7 +31,7 @@ export const LongName: Story = {
 /** A note after the name, such as a label the ticket will create. */
 export const Note: Story = { args: { label: 'needs-design', color: undefined, note: 'new' } };
 
-/** A label that can't be edited here, after a lock that says why. */
+/** A label that can’t be edited here, after a lock that says why. */
 export const Locked: Story = {
     args: { label: 'lar:building', color: undefined, locked: true, lockedLabel: 'Factory-managed' },
 };
@@ -39,5 +39,5 @@ export const Locked: Story = {
 /** Its own × button, which removes the label. */
 export const Removable: Story = { args: { label: 'bug', color: undefined, onRemove: fn(), removeLabel: 'Remove bug' } };
 
-/** A × only, inside a control that removes it, such as an active filter's chip. */
+/** A × only, inside a control that removes it, such as an active filter’s chip. */
 export const InAControl: Story = { args: { label: 'bug', color: '#D73A4A', removable: true } };

@@ -1,15 +1,16 @@
-import { Alert, Loading } from '@ninna-ui/feedback';
+import { Loading } from '@ninna-ui/feedback';
 import { ChevronDownIcon, FolderIcon, FolderUpIcon, HouseIcon } from 'lucide-react';
 import type { ComponentPropsWithoutRef } from 'react';
 
-import { Button } from '../actions/Button';
+import { ButtonBase as Button } from '../actions/Button';
 import { IconButton } from '../actions/IconButton';
+import { Alert } from '../feedback/Alert';
 import { formControlClasses } from '../forms/FormControlStyles';
 import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
-import { Inline, Stack } from '../layout/Flow';
+import { InlineBase, StackBase } from '../layout/Flow';
 import { ScrollArea } from '../layout/ScrollArea';
 import { Popover } from '../overlays/Popover';
-import { Text } from '../typography/Typography';
+import { Text, TextBase } from '../typography/Typography';
 
 export interface FolderSelectorOption {
     name: string;
@@ -20,20 +21,35 @@ export interface FolderSelectorProps extends Pick<
     ComponentPropsWithoutRef<'button'>,
     'id' | 'title' | 'aria-describedby' | 'aria-invalid' | 'aria-required'
 > {
+    /** The folder the open browser lists. */
     browsePath: string;
+    /** Can't be opened, such as while a form saves. */
     disabled?: boolean;
+    /** Why the folder couldn't be listed, with a retry. */
     error?: string;
+    /** The folder has more subfolders than listed, offering to load them. */
     hasMore?: boolean;
+    /** The folder's list is on its way. */
     loading?: boolean;
+    /** More subfolders are on their way. */
     loadingMore?: boolean;
+    /** Called with a folder's path as the reader opens it or goes up. */
     onBrowsePathChange: (path: string) => void;
+    /** Called with the folder the reader chooses. */
     onChange: (path: string) => void;
+    /** Called as the reader asks for more subfolders. */
     onLoadMore: () => void;
+    /** Called as the browser opens or closes. */
     onOpenChange: (open: boolean) => void;
+    /** Called as the reader retries a listing that failed. */
     onRetry: () => void;
+    /** The browser is open, for a controlled selector. */
     open: boolean;
+    /** The listed folder's subfolders. */
     options: readonly FolderSelectorOption[];
+    /** The folder above the listed one, for going up; none at the top. */
     parentPath?: string | null;
+    /** The chosen folder's path, shown on the trigger. */
     value: string;
 }
 
@@ -70,8 +86,8 @@ export function FolderSelector({
                     aria-describedby={describedBy}
                     aria-invalid={invalid}
                     aria-required={required}
-                    aria-label={value ? labels.folders.selectedPath(value) : labels.folders.path}
-                    className={`${formControlClasses} hover:bg-base-200 justify-between font-normal [&>span>svg]:size-4`}
+                    aria-label={value ? labels.folders.selectedPath(value) : labels.folders.chooseFolder}
+                    className={`${formControlClasses} hover:bg-fill-hover justify-between font-normal [&>span>svg]:size-4`}
                     disabled={disabled}
                     fullWidth
                     leftIcon={<FolderIcon />}
@@ -83,13 +99,13 @@ export function FolderSelector({
                 </Button>
             </Popover.Trigger>
             <Popover.Content side="bottom" align="start" sideOffset={8} width="trigger" layout="fill">
-                <Stack className="min-h-0" space="group">
-                    <Stack space="tight">
-                        <Inline align="center" justify="between" space="related">
-                            <Text className="min-w-0 flex-1 truncate" variant="label">
+                <StackBase className="min-h-0" space="group">
+                    <StackBase space="tight">
+                        <InlineBase align="center" justify="between" space="related">
+                            <TextBase className="min-w-0 flex-1 truncate" variant="label">
                                 {labels.folders.title}
-                            </Text>
-                            <Inline space="tight">
+                            </TextBase>
+                            <InlineBase space="tight">
                                 <IconButton
                                     type="button"
                                     aria-label={labels.folders.root}
@@ -106,22 +122,21 @@ export function FolderSelector({
                                     icon={<FolderUpIcon />}
                                     onClick={() => parentPath && onBrowsePathChange(parentPath)}
                                 />
-                            </Inline>
-                        </Inline>
+                            </InlineBase>
+                        </InlineBase>
                         <Text variant="caption" tone="muted">
                             {browsePath}
                         </Text>
-                    </Stack>
+                    </StackBase>
 
                     <ScrollArea>
                         {loading ? <Loading label={labels.folders.loading} /> : null}
 
                         {error ? (
                             <Alert
-                                color="danger"
+                                tone="danger"
                                 title={labels.folders.loadFailed}
                                 description={error}
-                                showIcon
                                 action={
                                     <Button onClick={onRetry} variant="primary">
                                         {labels.retry}
@@ -131,7 +146,7 @@ export function FolderSelector({
                         ) : null}
 
                         {!loading && !error ? (
-                            <Stack space="tight">
+                            <StackBase space="tight">
                                 {options.map((option) => (
                                     <Button
                                         key={option.path}
@@ -152,7 +167,7 @@ export function FolderSelector({
                                         {labels.folders.loadMore}
                                     </Button>
                                 ) : null}
-                            </Stack>
+                            </StackBase>
                         ) : null}
                     </ScrollArea>
 
@@ -165,7 +180,7 @@ export function FolderSelector({
                     >
                         {labels.folders.chooseThis}
                     </Button>
-                </Stack>
+                </StackBase>
             </Popover.Content>
         </Popover>
     );

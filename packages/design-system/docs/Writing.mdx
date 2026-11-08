@@ -1,0 +1,159 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Writing/Content" />
+
+# Writing and content
+
+These decisions apply to every app and website built on the design system. Apps translate the words; the design
+system owns shared affordances. Use plain, specific language that explains the next step and the result.
+
+## Case and punctuation
+
+Use sentence case: **Remote access**, **Invite user**, **Clear generated music**. Preserve proper nouns, product names
+and abbreviations such as CPU, URL and T3 Code. Headings, field labels, buttons, statuses and navigation labels have
+no trailing full stop, even when the heading reads like a sentence: **Waiting for a device outside your home**.
+Questions keep their question mark: **Delete Music?** Descriptions, consequences and running prose use full sentences
+with punctuation. Do not mechanically trim translated text at render time.
+
+App headings never take a full stop, including error and empty-state titles: **This page isn’t here**, not
+**This page isn’t here.** The one exemption is the website’s display headlines (a hero or a section’s large marketing
+headline), which may end in a full stop as a deliberate typographic voice. The exemption covers only those display
+headlines on the website, never an app heading or a website 404 heading.
+
+Use the curly apostrophe **’** in every UI string, including contractions and possessives, across apps and website.
+
+## Empty states and empty searches
+
+When nothing exists, use **No \{things\} yet**, followed by a specific next step. When a search or filter has no results,
+use **Nothing matches**, with a **Clear search** action. Keep the cause distinct from access denied, missing sources,
+processing and provider outages; those conditions use their own explanation and next step. 404 headings use
+**This page isn’t here**, without a full stop on the website as well as in apps.
+
+All apps call the shared checker in their English locale test:
+
+```ts
+import { checkUiCopy } from '@lar-works/config/copy';
+
+expect(checkUiCopy(en)).toEqual([]);
+```
+
+The checker returns path/rule/message/value issues from nested records and arrays. Pass `{ locale }` for translated
+copy (typography only outside English). Exact `ignorePaths` are reserved for reviewed third-party quotations or names.
+
+## Contractions
+
+Use contractions in all product copy, in every app and on the website, error messages and confirmations included: **couldn’t**,
+**can’t**, **isn’t**, **doesn’t**, **don’t**, **won’t**, **didn’t**, **you’re**, **it’s**. Write **Lar couldn’t read
+this file**, **Movies couldn’t be loaded**, **Trakt didn’t recognise this movie**, never **Lar could not complete…**
+or **could not be loaded**. The only uncontracted forms are emphasis a reader must not miss in a destructive
+confirmation (**This cannot be undone** may stay as is) and quoted third-party text.
+
+## Time phrases
+
+One phrase per moment, with the time formatter’s output in it:
+
+- a scan’s last run is **Scanned \{time\}** (**Scanned Nov 7, 8:19 PM**), never **Last scan \{time\}** or **Last scanned
+  \{time\}**; the one exception is a catalog that is turned off, which no scan follows, so its run really is the last:
+  **Turned off · Last scanned \{time\}**;
+- an update of data the reader is looking at is **Updated \{time\}**; a start is **Started \{time\}** only with a real
+  start timestamp; a duration is **\{duration\} elapsed** or **Took \{duration\}** (**Took 6 min**).
+
+A row’s status line and its details never say the same moment twice in two forms.
+
+## Button labels in sentences
+
+A sentence that tells the reader to use a control names it in bold or quotes only when its label reads correctly in
+the sentence. Never drop a button label verbatim into a sentence where it breaks the grammar: write **Invite people
+and connect the Lar apps**, not **Invite user and connect the Lar apps…**; **Scan the catalog to find new files**, not
+**Scan now to find new files**. When the exact label matters, quote it as a label: **Choose “Invite user”, then…**.
+
+## Navigation instructions
+
+A standalone text link that tells the reader to go somewhere ends with one right arrow: **Go to the dashboard →**.
+Use `<Link arrow href="/activity">Go to the dashboard</Link>`; the component appends an arrow hidden from assistive
+technology, so the translation contains the words alone. This also applies to standalone **View logs →** or
+**Read the guide →** instructions. Links within prose, navigation labels, breadcrumbs and linked names have no arrow.
+Downloads use the download affordance. External links that show an external-link icon do not also get an arrow.
+An action such as **Try again** is a button, without a navigation arrow.
+
+## Measures and units
+
+Chart titles name the measure: **CPU**, **Memory**, **Network**. Put units in axis labels, tick labels, legends or values:
+**42%**, **512 MB**, **12 MB/s**. Do not repeat a unit in the chart title (**CPU (%)**). Keep the unit visible somewhere
+accessible when an axis is hidden. Prefer the product’s existing formatter for spaces, precision and localisation.
+
+## English spelling
+
+Use UK English: **colour**, **cancelled**, **centre**, **labelled**, **initialise**. **Catalog** is the deliberate Lar
+product term for an indexed media collection. Use **catalog** and **catalogs** consistently, including marketing
+copy; this keeps the product vocabulary aligned with its API and established navigation. It is the spelling
+exception, not a switch to US English. Do not respell code identifiers, filenames, third-party names or quotations.
+
+## Shared vocabulary
+
+| Meaning                                   | Write                 | Avoid                                    |
+| ----------------------------------------- | --------------------- | ---------------------------------------- |
+| The button that creates an invitation     | Invite user           | Invite people, Add person (as its label) |
+| Open the command palette or find content  | Search                | Go to…, Find anything                    |
+| A disabled feature’s status               | Turned off            | Disabled, Inactive                       |
+| Action to enable or disable a feature     | Turn on / Turn off    | Enable / Disable                         |
+| A toggle’s state beside it, in a list     | On / Off              | Turned off next to On, Enabled           |
+| Reading folders for files and metadata    | Scan, Scan now        | Check, Check for changes (for the same)  |
+| When a scan last ran                      | Scanned Nov 7         | Last scan Nov 7, Last scanned, Checked   |
+| A catalog’s scan that did not finish      | Failed its last scan  | Failed its last check                    |
+| Comparing files with a source (integrity) | Check-up              | Scan, Check (for the same)               |
+| Match the device’s appearance             | Follow system         | Match system, System default             |
+| Recover from a failed operation           | Try again             | Retry, Reload (unless it reloads a page) |
+| An indexed media collection               | Catalog               | Catalogue, library (for the same object) |
+| A task running or queued                  | Active                | Running (when queued work is included)   |
+| No check has run yet                      | Not checked           | Unknown                                  |
+| Processing metadata for films or TV       | Video metadata        | Movie metadata (when TV is included)     |
+| Return to the main activity page          | Go to the dashboard → | Go to dashboard, Back home               |
+
+Use nouns for locations and verbs for actions. **Search** is a control label; a search field’s hint may be more
+specific, such as **Search albums**. **Invite user** creates a private link to share; do not imply Lar sends an email
+unless it actually does. **Turned off** is product status, distinct from an HTML control being disabled; in a list of
+toggles, each one’s state is **On** or **Off**, never **On** beside **Turned off**.
+
+**Scan** means reading a catalog’s folders for new, changed or removed files and their metadata: **Scans**,
+**Scan now**, **Scan details**, **Not scanned yet**, **Scanned Nov 7**. **Check-up** is only the integrity feature that
+compares a catalog’s files with a source of truth (Lidarr, checksums). Never call a scan a check, and never call a
+check-up a scan.
+
+## Audience
+
+Write for the person reading, with the access they have. Never tell readers to ask someone for access they already
+have: an administrator’s screen never says **Ask the server administrator** or **Only an administrator can do
+this**. Give the real reason and the next step instead (**Your session expired. Sign in again**), or say nothing when
+nothing stops them. A permission message appears only where a reader without that access can actually see it.
+
+## Settings and destructive actions
+
+Keep the same section heading and heading action while loading. Use `SettingsSection` with `skeletonRows={N}` for
+standard pending rows, or compose `SettingsRowSkeleton` with the loaded control shapes. When row labels and controls
+are already known, `SettingsRow loading` reserves their exact footprint and makes them inert. Do not add temporary
+headings or actions that disappear once the data arrives. A label-column action uses `SettingsRow variant="action"`
+with its ghost button as `label`; trailing ghost actions align automatically.
+
+Destructive triggers follow the quiet-destructive rule: named in the danger text colour at rest, in a quiet weight,
+gaining the danger surface on hover or keyboard focus, never neutral grey text. Use `Button variant="destructive-quiet"`,
+`IconButton tone="danger"` or `DropdownMenu.Item destructive` to open a confirmation. Only the confirming button in `ConfirmDialog` uses solid danger fill. The dialog names the action,
+explains its consequence and, where useful, says what remains safe. Use **Delete catalog**, never **OK** or **Yes**.
+
+## Icons
+
+One icon per concept, in every app: see [Icons](?path=/docs/writing-icons--docs). An icon names a concept like a word
+does, so the same concept never takes two icons and one icon never names two concepts.
+
+## Cheap locale checks
+
+App locale tests can assert exact values for a small list of shared keys (invite, search, off, system appearance and
+recovery), and check that known heading/label keys do not end in `.` (404 and other error headings included). A
+contraction check fails on **could not**, **cannot** (outside the destructive-confirmation allow-list), **is not**,
+**does not** and **did not** in English copy, and a time-phrase check fails on **Last scan** and **Last scanned** outside the turned-off key. Allow `?` and proper abbreviations explicitly;
+do not scan descriptions or user-provided names. Assert chart-title keys have no parenthesised unit, and known
+navigation-instruction translations contain no arrow when `Link arrow` supplies it. Keep an explicit, documented
+allow-list for proper names and technical literals. Use an English-only spelling check on product copy, with
+**catalog** as the deliberate exception (it catches **color** in **Choose the color theme**); never apply English
+spelling rules to other locales. A scan-vocabulary check asserts scan copy says scan (not check) and check-up copy
+says check-up.

@@ -10,12 +10,14 @@ const meta = {
     parameters: { layout: 'fullscreen' },
     args: {
         children: (
-            <Stack space="related" className="border-base-300 rounded-lg border border-dashed p-4">
-                <Heading as="h2" variant="section">
-                    Music
-                </Heading>
-                <Text tone="muted">2,418 albums from 612 artists, indexed from your files&apos; own tags.</Text>
-            </Stack>
+            <div className="border-line rounded-lg border border-dashed p-4">
+                <Stack space="related">
+                    <Heading as="h2" variant="section">
+                        Music
+                    </Heading>
+                    <Text tone="muted">2,418 albums from 612 artists, indexed from your files&apos; own tags.</Text>
+                </Stack>
+            </div>
         ),
     },
     argTypes: { children: { control: false } },
@@ -25,8 +27,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The page column's 16px gutter, full width: the dashed box shows where content starts. */
+/** The page column’s 16px gutter, full width: the dashed box shows where content starts. */
 export const Default: Story = {};
 
-/** As the page's main landmark, with extra classes for vertical rhythm. */
-export const AsMain: Story = { args: { as: 'main', className: 'py-6' } };
+/** As the page’s main landmark. */
+export const AsMain: Story = { args: { as: 'main' } };

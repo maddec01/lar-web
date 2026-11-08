@@ -55,8 +55,8 @@ export const LongText: Story = {
             <TooltipTrigger asChild>
                 <IconButton aria-label="Offline" icon={<CloudOffIcon />} />
             </TooltipTrigger>
-            <TooltipPopup className="max-w-64">
-                Lar cannot reach the server at nas.local:32400. Recently played albums are still available from the
+            <TooltipPopup>
+                Lar can’t reach the server at nas.local:32400. Recently played albums are still available from the
                 cache.
             </TooltipPopup>
         </Tooltip>

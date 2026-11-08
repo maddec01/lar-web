@@ -58,7 +58,7 @@ export const WithoutCounts: Story = {
 
 /** A search beside the tabs on wide screens, below them on narrow ones. */
 export const WithSearch: Story = {
-    args: { end: <Input aria-label="Search music" placeholder="Search music" type="search" size="sm" /> },
+    args: { end: <Input aria-label="Search music" placeholder="Search music" type="search" /> },
 };
 
 /** Many tabs scroll sideways. */
@@ -85,6 +85,23 @@ export const Overflowing: Story = {
     decorators: [
         (Story) => (
             <div className="max-w-md">
+                <Story />
+            </div>
+        ),
+    ],
+};
+
+/** Cached or provisional figures stay hidden while their collections load. */
+export const LoadingCounts: Story = {
+    args: { items: [{ value: 'albums', label: 'Albums', count: '0', loading: true }] },
+};
+
+/** A chosen tab beyond the narrow viewport is revealed automatically. */
+export const NarrowSelected: Story = {
+    args: { value: 'playlists' },
+    decorators: [
+        (Story) => (
+            <div className="w-64">
                 <Story />
             </div>
         ),

@@ -17,8 +17,8 @@ export const Default: Story = {};
 /** Beside the search field, as in the app header. */
 export const InSearchField: Story = {
     render: (args) => (
-        <div className="border-base-300 bg-base-100 flex w-64 items-center justify-between rounded-md border px-3 py-2">
-            <span className="text-base-600 text-sm">Search movies, music…</span>
+        <div className="border-line bg-surface-raised flex w-64 items-center justify-between rounded-md border px-3 py-2">
+            <span className="text-fg-muted text-sm">Search movies, music…</span>
             <Kbd {...args} />
         </div>
     ),

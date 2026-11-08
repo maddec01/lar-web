@@ -29,7 +29,7 @@ function FolderSelectorDemo(args: ComponentProps<typeof FolderSelector>) {
     const [value, setValue] = useState(args.value);
 
     return (
-        <div className="h-[28rem] max-w-md">
+        <div className="h-112 max-w-md">
             <FolderSelector
                 {...args}
                 open={open}
@@ -85,7 +85,7 @@ export const ClosedWithValue: Story = { args: { open: false, value: '/mnt/media/
 export const Loading: Story = { args: { loading: true } };
 
 export const LoadFailed: Story = {
-    args: { error: 'Permission denied: /mnt/media. The server user cannot list this folder.' },
+    args: { error: 'Permission denied: /mnt/media. The server user can’t list this folder.' },
 };
 
 export const Empty: Story = { args: { browsePath: '/mnt/media/movies' } };

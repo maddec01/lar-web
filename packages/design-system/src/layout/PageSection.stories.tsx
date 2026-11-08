@@ -1,26 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { HandIcon, HouseIcon, MonitorSmartphoneIcon } from 'lucide-react';
 
-import { FeatureGrid, FeatureTile } from '../showcase/Cards';
-import { Backdrop } from '../showcase/Stage';
-import { Text } from '../typography/Typography';
+import { Heading, Text } from '../typography/Typography';
+import { Grid, Stack } from './Flow';
 import { Eyebrow, PageSection, SectionHeading } from './PageSection';
+
+const principles = [
+    ['It runs on your machines', 'Your files live on hardware you own. What’s yours stays home.'],
+    ['It fits in where you are', 'It works with the tools and devices you already use.'],
+    ['You stay in control', 'You approve what changes, and your own changes are never overwritten.'],
+] as const;
 
 function Principles() {
     return (
-        <FeatureGrid>
-            <FeatureTile icon={<HouseIcon />} title="It runs on your machines">
-                Your repositories, work records and media libraries live on hardware you own. What&apos;s yours stays
-                home.
-            </FeatureTile>
-            <FeatureTile icon={<MonitorSmartphoneIcon />} title="It fits in where you are">
-                Each product works with the tools and devices you already use, from your tracker and CI to your iPhone,
-                iPad and Mac.
-            </FeatureTile>
-            <FeatureTile icon={<HandIcon />} title="You stay in control">
-                You approve what ships, decide who gets access, and your own changes are never overwritten.
-            </FeatureTile>
-        </FeatureGrid>
+        <Grid>
+            {principles.map(([title, body]) => (
+                <Stack key={title} space="related">
+                    <Heading as="h3" variant="subsection">
+                        {title}
+                    </Heading>
+                    <Text tone="muted">{body}</Text>
+                </Stack>
+            ))}
+        </Grid>
+    );
+}
+
+/** A soft glow behind a section, as a page draws one. */
+function Glow() {
+    return (
+        <div
+            aria-hidden="true"
+            className="from-primary-surface absolute inset-0 -z-10 bg-radial-[at_50%_0%] to-transparent to-70%"
+        />
     );
 }
 
@@ -29,7 +40,7 @@ const meta = {
     component: PageSection,
     parameters: { layout: 'fullscreen' },
     args: {
-        heading: <SectionHeading eyebrow="Why Lar" title="Three promises in everything we make." />,
+        heading: <SectionHeading eyebrow="Why it" title="Three promises in everything it does." />,
         children: <Principles />,
     },
     argTypes: {
@@ -49,12 +60,12 @@ export const Default: Story = {};
 /** A raised band sets a section apart from the ones around it. */
 export const Raised: Story = {
     args: {
-        tone: 'raised',
+        variant: 'raised',
         heading: (
             <SectionHeading
                 eyebrow="Development preview"
-                title="What works, what's next."
-                lead="Lar Server isn't publicly released yet. It's being built in the open on real hardware, Music and Video first."
+                title="What works, what’s next."
+                lead="It isn’t publicly released yet. It’s being built in the open, one feature at a time."
             />
         ),
     },
@@ -69,37 +80,37 @@ export const NarrowStartAligned: Story = {
                 align="start"
                 eyebrow="Fits right in"
                 title="Nothing to install in your repositories."
-                lead="Factory works from what your project already has, and keeps its own things to itself."
+                lead="It works from what your project already has, and keeps its own things to itself."
             />
         ),
         children: (
             <Text variant="prose" tone="muted">
-                Builds follow your package scripts, manifests, CI and tests. Repositories need no factory config, and
-                settings and work records stay on your Mac.
+                It follows your package scripts, manifests, CI and tests. Projects need no configuration of its own, and
+                its settings stay on your computer.
             </Text>
         ),
     },
 };
 
-/** A section without a heading names itself for assistive technology, here over the hero glow. */
+/** A section without a heading names itself for assistive technology, here over a glow. */
 export const LabelledWithBackground: Story = {
     args: {
         label: 'Principles',
         heading: undefined,
-        background: <Backdrop hue={264} />,
+        background: <Glow />,
     },
 };
 
-/** The page's opening statement as a display-size h1. */
+/** The page’s opening statement as a display-size h1. */
 export const DisplayHeading: Story = {
     args: {
         space: 'hero',
         heading: (
             <SectionHeading
                 level="h1"
-                size="display"
+                variant="display"
                 title="Software that stays home."
-                lead="Lar makes software that runs on machines you own. Each product does one job well, and leaves the final word to you."
+                lead="It runs on machines you own, does one job well, and leaves the final word to you."
             />
         ),
         children: null,
@@ -108,5 +119,5 @@ export const DisplayHeading: Story = {
 
 export const EyebrowOnly: Story = {
     parameters: { layout: 'padded' },
-    render: () => <Eyebrow>Made for collectors</Eyebrow>,
+    render: () => <Eyebrow>Made for teams</Eyebrow>,
 };

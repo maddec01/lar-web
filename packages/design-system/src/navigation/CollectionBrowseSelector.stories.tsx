@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { DropdownMenu } from '../overlays/DropdownMenu';
+import { Heading } from '../typography/Typography';
 import {
     CollectionBrowseControls,
     CollectionBrowseSelector,
@@ -63,6 +64,26 @@ export const Default: Story = {};
 /** With an icon the label hides on narrow screens; `active` marks a filter that narrows the list. */
 export const ActiveWithIcon: Story = { args: { label: 'Live albums', icon: <FilterIcon />, active: true } };
 
+/** The ghost for a choice on the page itself, such as a search's scope under the title: no fill, its text on the
+ *  gutter; open, the words brighten, the chevron turns and the chosen scope carries a tick. */
+export const Inline: Story = {
+    args: { label: 'Search scope: All catalogs', presentation: 'inline' },
+    render: (args) => (
+        <div className="flex flex-col items-start gap-3">
+            <Heading variant="page">Results for “harbour”</Heading>
+            <CollectionBrowseSelector {...args}>
+                <DropdownMenu.RadioGroup value="all">
+                    <DropdownMenu.RadioItem value="all">All catalogs</DropdownMenu.RadioItem>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Label>Catalog</DropdownMenu.Label>
+                    <DropdownMenu.RadioItem value="music">Music</DropdownMenu.RadioItem>
+                    <DropdownMenu.RadioItem value="movies">Movies</DropdownMenu.RadioItem>
+                </DropdownMenu.RadioGroup>
+            </CollectionBrowseSelector>
+        </div>
+    ),
+};
+
 export const Triggers: Story = {
     render: () => (
         <div className="flex flex-wrap items-center gap-2">
@@ -97,5 +118,16 @@ export const ControlsWithLongCount: Story = {
                 </CollectionBrowseSelector>
             </CollectionBrowseControls>
         </div>
+    ),
+};
+
+/** The provisional count is hidden until the collection is ready. */
+export const ControlsLoading: Story = {
+    render: () => (
+        <CollectionBrowseControls loading count={0} countLabel="0 albums">
+            <CollectionBrowseSelector label="All albums">
+                <DropdownMenu.Item>All albums</DropdownMenu.Item>
+            </CollectionBrowseSelector>
+        </CollectionBrowseControls>
     ),
 };

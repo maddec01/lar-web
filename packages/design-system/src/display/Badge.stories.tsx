@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { CheckIcon, CircleAlertIcon, Clock3Icon, MusicIcon } from 'lucide-react';
+import { CheckIcon, CircleAlertIcon, Clock3Icon } from 'lucide-react';
 
 import { Badge } from './Badge';
 
@@ -51,20 +51,7 @@ export const Danger: Story = {
     },
 };
 
-/** A lar-brand app hue in place of a tone, as catalog kinds use. */
-export const Hue: Story = {
-    args: {
-        hue: 280,
-        children: (
-            <>
-                <MusicIcon />
-                Music
-            </>
-        ),
-    },
-};
-
-/** Every tone and a few hues side by side, for comparing them in light and dark. */
+/** Every tone side by side, for comparing them in light and dark (a hue badge is BadgeBase's). */
 export const Tones: Story = {
     render: (args) => (
         <div className="flex flex-col gap-3">
@@ -75,24 +62,11 @@ export const Tones: Story = {
                     </Badge>
                 ))}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-                {[
-                    { hue: 280, label: 'Music' },
-                    { hue: 25, label: 'Movies' },
-                    { hue: 150, label: 'TV' },
-                    { hue: 210, label: 'Photos' },
-                    { hue: 60, label: 'Books' },
-                ].map(({ hue, label }) => (
-                    <Badge key={label} {...args} hue={hue}>
-                        {label}
-                    </Badge>
-                ))}
-            </div>
         </div>
     ),
 };
 
-/** A tracker's labels in their own colours, tinted so each name stays readable in light and dark. */
+/** A tracker’s labels in their own colours, tinted so each name stays readable in light and dark. */
 export const LabelColors: Story = {
     render: (args) => (
         <div className="flex flex-wrap items-center gap-2">
@@ -118,6 +92,28 @@ export const Muted: Story = {
         <div className="flex gap-1">
             <Badge tone="accent">Codex personal</Badge>
             <Badge muted>Cursor · Disabled</Badge>
+        </div>
+    ),
+};
+
+/** sm (20px) for rows, cards and fields; md (24px) for a heading’s or hero’s status, as the website’s readiness pills. */
+export const Sizes: Story = {
+    render: (args) => (
+        <div className="flex flex-wrap items-center gap-2">
+            <Badge {...args} size="sm" tone="success">
+                <CheckIcon />
+                Small
+            </Badge>
+            <Badge {...args} size="md" tone="success">
+                <CheckIcon />
+                Medium
+            </Badge>
+            <Badge {...args} size="sm">
+                12
+            </Badge>
+            <Badge {...args} size="md" tone="accent">
+                In development
+            </Badge>
         </div>
     ),
 };
