@@ -1,12 +1,10 @@
-// The public API boundary: apps never style a component, so no component an entry point exports takes a `className`
-// or a `style` (the design system's own compositions use the internal `…Base` exports, which no entry point exports).
+// The public API boundary: apps never style a component, so no component the main entry exports takes a `className`
+// or a `style` (the styleable `…Base` building blocks live in `/primitives`, for apps' own UI layers).
 // The type check (`vp check`) enforces it: a component that takes either shows up as a missing key of `styled` below.
 import type { JSXElementConstructor } from 'react';
 import { expect, it } from 'vite-plus/test';
 
-import type * as Board from '../board';
 import type * as Main from '../index';
-import type * as Showcase from '../showcase';
 
 type Styled<Api> = {
     [Name in keyof Api]-?: Api[Name] extends JSXElementConstructor<infer Props>
@@ -16,7 +14,7 @@ type Styled<Api> = {
         : never;
 }[keyof Api];
 
-const styled: Record<Styled<typeof Main & typeof Board & typeof Showcase>, never> = {};
+const styled: Record<Styled<typeof Main>, never> = {};
 
 it('no public component takes a class or a style', () => {
     expect(styled).toEqual({});

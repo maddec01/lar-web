@@ -1,9 +1,9 @@
 // Helpers for apps' component tests (jsdom). Import them from `@lar-works/design-system/testing` in a test setup file.
-import { createElement } from 'react';
+import { type ComponentType, createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 import { dismissAllNotifications } from './feedback/ErrorNotification';
-import { conceptIcons, type IconConcept } from './icons/ConceptIcons';
+import { conceptIcons } from './icons/ConceptIcons';
 
 /** The problem-body rule for an app's own sources (see ProblemBodyRule.ts). */
 export { problemBodyViolations } from './feedback/ProblemBodyRule';
@@ -43,28 +43,37 @@ export function installDomStubs() {
     Object.defineProperty(window, 'scrollTo', { configurable: true, value: () => undefined });
 }
 
-let concepts: Map<string, IconConcept> | undefined;
+const conceptsByGlossary = new WeakMap<object, Map<string, string>>();
 
-/** Each concept's icon by its lucide class name, such as `lucide-play` for `playback`. */
-function conceptsByClass(): Map<string, IconConcept> {
-    concepts ??= new Map(
-        (Object.entries(conceptIcons) as [IconConcept, (typeof conceptIcons)[IconConcept]][]).map(([concept, Icon]) => [
-            /class="lucide (lucide-[\w-]+)/.exec(renderToStaticMarkup(createElement(Icon)))![1]!,
-            concept,
-        ]),
-    );
+/** Each concept's icon in `glossary` by its lucide class name, such as `lucide-settings` for `settings`. */
+function conceptsByClass(glossary: Record<string, ComponentType>): Map<string, string> {
+    let concepts = conceptsByGlossary.get(glossary);
+
+    if (!concepts) {
+        concepts = new Map(
+            Object.entries(glossary).map(([concept, Icon]) => [
+                /class="lucide (lucide-[\w-]+)/.exec(renderToStaticMarkup(createElement(Icon)))![1]!,
+                concept,
+            ]),
+        );
+        conceptsByGlossary.set(glossary, concepts);
+    }
 
     return concepts;
 }
 
 /**
- * The icon glossary's concept whose icon `element` draws (the element itself or its first icon), or undefined when
- * it draws none of them. Apps' tests assert every toolbar button and empty state takes its icon from `conceptIcons`:
- * `expect(iconConcept(screen.getByRole('button', { name: 'Now playing' }))).toBe('playback')`.
+ * The concept whose icon `element` draws (the element itself or its first icon), or undefined when it draws none of
+ * them. `glossary` is the icon glossary to read, the design system's `conceptIcons` unless an app passes its own
+ * (which extends it). Apps' tests assert every toolbar button and empty state takes its icon from the glossary:
+ * `expect(iconConcept(screen.getByRole('button', { name: 'Settings' }), conceptIcons)).toBe('settings')`.
  */
-export function iconConcept(element: Element | null | undefined): IconConcept | undefined {
+export function iconConcept<Glossary extends Record<string, ComponentType> = typeof conceptIcons>(
+    element: Element | null | undefined,
+    glossary: Glossary = conceptIcons as unknown as Glossary,
+): (keyof Glossary & string) | undefined {
     const icon = element?.matches('svg.lucide') ? element : element?.querySelector('svg.lucide');
     const name = icon && [...icon.classList].find((name) => name.startsWith('lucide-'));
 
-    return name ? conceptsByClass().get(name) : undefined;
+    return name ? (conceptsByClass(glossary).get(name) as (keyof Glossary & string) | undefined) : undefined;
 }

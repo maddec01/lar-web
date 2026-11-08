@@ -13,7 +13,7 @@ export type StatusDotTone = StatusTone | 'accent';
 export type StatusIndicatorProps = StatusColour<StatusDotTone> & {
     /** sm is 6px, for a line of small text or the corner of an icon; md is 8px, for a row's state. */
     size?: 'sm' | 'md';
-    /** A colour that comes with data, such as a tracker label's own or a board role's, in place of the tone's; none
+    /** A colour that comes with data, such as a tracker label's own or an app role's, in place of the tone's; none
      *  keeps the tone. A neutral light in a data colour, such as a label's swatch, doesn't glow. */
     labelColor?: string | undefined;
     /** A short word after the dot in the tone's text colour, such as a check's "Installed"; the neutral tone mutes it,
@@ -79,7 +79,7 @@ export function StatusIndicatorBase({
             className={[
                 'inline-block shrink-0 rounded-full bg-(--status-dot)',
                 sizeClasses[size],
-                // The website's readiness light: the dot in a soft halo of its own colour, and a faint glow (foundations'
+                // A marketing page's readiness light: the dot in a soft halo of its own colour, and a faint glow (foundations'
                 // status-halo). An idle (neutral) light doesn't glow.
                 overlay ? (glows ? 'status-halo-overlay' : 'status-cutout') : glows ? 'status-halo' : null,
                 pulse ? 'lar-led-pulse' : null,

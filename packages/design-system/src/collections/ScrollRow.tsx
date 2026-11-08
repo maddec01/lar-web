@@ -2,7 +2,6 @@ import { ChevronRightIcon } from 'lucide-react';
 import { type ReactNode, type Ref, useCallback } from 'react';
 
 import { IconButton } from '../actions/IconButton';
-import { ImageCard } from '../display/ImageCard';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { Inline } from '../layout/Flow';
 import { useScrollFade } from '../overlays/useScrollFade';
@@ -16,6 +15,7 @@ export function ScrollRow({
     label,
     loading = false,
     loadingLabel = label,
+    placeholder,
     children,
 }: {
     /** The row's list element, which scrolls; useScrollRow's ref. */
@@ -26,6 +26,9 @@ export function ScrollRow({
     loading?: boolean;
     /** What screen readers hear while the cards load. */
     loadingLabel?: string;
+    /** One card's placeholder while they load, such as the card's own skeleton, so the cards arrive in place; four
+     *  fill the row. A plain 16:9 skeleton without one. */
+    placeholder?: ReactNode;
     /** The cards, each a ScrollRowItem. */
     children?: ReactNode;
 }) {
@@ -45,9 +48,8 @@ export function ScrollRow({
             <SkeletonLoader label={loadingLabel}>
                 <div ref={setViewport} className={`${row} ${fade}`}>
                     {Array.from({ length: 4 }, (_, index) => (
-                        // The cards' own placeholder, its caption's three rows included, so they arrive in place.
                         <div key={index} className="w-64 shrink-0">
-                            <ImageCard loading aspect="video" />
+                            {placeholder ?? <SkeletonLoader.Shape presentation="video" />}
                         </div>
                     ))}
                 </div>

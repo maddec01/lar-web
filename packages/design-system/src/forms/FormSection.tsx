@@ -81,7 +81,7 @@ interface FormSectionProps {
 /** A dense tool's settings group: its title (with an optional help popover) and description over the content as
  *  given, such as one or more settings panels and their notes. */
 interface DenseFormSectionProps extends DataAttributes {
-    /** A dense tool's settings group, such as Lar Factory's settings. */
+    /** A dense tool's settings group, such as a desktop tool's settings. */
     presentation: 'dense';
     /** The group's title, in the dense tools' 13px semibold. */
     title?: ReactNode;

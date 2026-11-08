@@ -51,7 +51,7 @@ export const Danger: Story = {
     },
 };
 
-/** Every tone side by side, for comparing them in light and dark (a kind’s hue is KindBadge’s). */
+/** Every tone side by side, for comparing them in light and dark (a hue badge is BadgeBase's). */
 export const Tones: Story = {
     render: (args) => (
         <div className="flex flex-col gap-3">

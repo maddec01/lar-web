@@ -209,7 +209,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                 } ${heightClassName[presentation === 'workspace' ? 'workspace' : 'dialog'][height]}`}
             >
                 {/* Remounted when the sidebar comes or goes: Chromium otherwise leaves its row unlaid when the dialog
-                    switches between grid and flex while open (an Add catalog dialog changing its kind). */}
+                    switches between grid and flex while open (an Add library dialog changing its kind). */}
                 <header
                     key={sidebar ? 'paned' : 'plain'}
                     data-slot="modal-header"

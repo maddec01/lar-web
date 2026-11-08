@@ -13,7 +13,7 @@ interface GlassBarProps extends DataAttributes {
 }
 
 interface GlassBarBaseProps extends GlassBarProps {
-    /** The design system's own layout on the bar, such as the board's title bar padding past the traffic lights. */
+    /** The design system's own layout on the bar, such as a desktop title bar's padding past the traffic lights. */
     className?: string;
 }
 
@@ -33,8 +33,8 @@ export function GlassBarBase({ children, scrolled, className = '', ref, ...data 
 
 /**
  * The one header surface of every Lar app, t3.codes' navigation glass: it sticks to the top of what scrolls, and the
- * content passes under it, blurred, with a hairline once it has scrolled. The website's, lar-server's and Lar
- * Factory's title bars all sit on it.
+ * content passes under it, blurred, with a hairline once it has scrolled. A marketing site's header and an app's
+ * title bar both sit on it.
  */
 export function GlassBar(props: GlassBarProps) {
     return <GlassBarBase {...props} />;

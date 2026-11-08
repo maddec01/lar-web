@@ -4,14 +4,14 @@ import type { CSSProperties } from 'react';
 import type { StatusTone } from '../feedback/StatusIndicator';
 import { tint } from './LabelTint';
 
-/** A badge's look is its tone or label colour, never a class or style of the caller's; a kind's hue is KindBadge's. */
+/** A badge's look is its tone or label colour, never a class or style of the caller's. */
 export interface BadgeProps extends Omit<
     NinnaBadgeProps,
     'color' | 'size' | 'variant' | 'radius' | 'className' | 'style'
 > {
     /** The status colour it's tinted in: neutral for a plain tag, accent for a highlight that isn't a status. */
     tone?: StatusTone | 'accent';
-    /** sm (20px) for a row, a card or a field; md (24px) for a heading's or a hero's status, as the website's. */
+    /** sm (20px) for a row, a card or a field; md (24px) for a heading's or a hero's status. */
     size?: 'sm' | 'md';
     /** A tracker label's own colour, such as GitHub's, as a soft tint readable in both modes; anything but a colour
      *  keeps the tone. */
@@ -22,12 +22,13 @@ export interface BadgeProps extends Omit<
 
 type BadgeBaseProps = BadgeProps &
     Pick<NinnaBadgeProps, 'className' | 'style'> & {
-        /** A lar-brand app hue that colours the badge in place of its tone: KindBadge's. */
+        /** A hue (an oklch hue angle, such as 25) that colours the badge in place of its tone, as a soft tint with text
+         *  and a hairline in the hue, such as a kind's own colour. */
         hue?: number | undefined;
     };
 
-/** The website's tag, Lar's one badge: a pill on a soft tint of its tone, in the tone's text colour, edged by a
- *  hairline of the tone. Kinds, labels, counts, states and formats all take it. */
+/** The one badge: a pill on a soft tint of its tone, in the tone's text colour, edged by a hairline of the tone.
+ *  Kinds, labels, counts, states and formats all take it. */
 const toneClasses: Record<NonNullable<BadgeBaseProps['tone']>, string> = {
     neutral: 'bg-fill-muted text-fg-soft ring-line',
     accent: 'bg-primary-surface text-primary-fg ring-primary-ring',
@@ -42,7 +43,8 @@ const sizeClasses: Record<NonNullable<BadgeBaseProps['size']>, string> = {
     md: 'h-6 gap-1.5 px-2.5 [&>svg]:size-3.5',
 };
 
-/** The badge for the design system's own compositions, which may fit it to their layout with a class. */
+/** The badge for compositions (the design system's own and an app's UI layer), which may fit it to their layout
+ *  with a class or colour it by a hue. */
 export function BadgeBase({
     tone = 'neutral',
     size = 'sm',
@@ -73,7 +75,7 @@ export function BadgeBase({
     );
 }
 
-/** The website's tag, Lar's one badge, for a state, a count, a label or a format. */
+/** The one badge, for a state, a count, a label or a format. */
 export function Badge(props: BadgeProps) {
     return <BadgeBase {...props} />;
 }

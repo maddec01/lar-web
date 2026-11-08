@@ -121,7 +121,7 @@ export function Text(props: TextProps) {
 export interface HeadingProps extends TypographyProps {
     /** The heading's level in the page's outline (`h2` by default), independent of its look. */
     as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-    /** The heading's look by role: `page`, `section`, `subsection`, `title`, `label`, or the website's `hero`,
+    /** The heading's look by role: `page`, `section`, `subsection`, `title`, `label`, or a marketing page's `hero`,
      *  `display`, `headline` and `feature`. */
     variant?: keyof typeof headingStyles;
 }

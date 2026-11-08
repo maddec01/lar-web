@@ -1,4 +1,4 @@
-/* oxlint-disable react/only-export-components -- The splash's view is shared with the board's LoadingScreen. */
+/* oxlint-disable react/only-export-components -- The splash's view is shared with an app's own loading screen. */
 
 import { useEffect, useState } from 'react';
 
@@ -63,7 +63,7 @@ interface SplashViewProps {
  *  splash leaves the title bar's height on top and moves the window when dragged). */
 export type SplashChrome = 'browser' | 'desktop';
 
-/** The splash's markup, shared by AppSplash and the board's LoadingScreen (which drives the line itself). */
+/** The splash's markup, shared by AppSplash and an app's own loading screen (SplashView, which drives the line itself). */
 export function SplashView({
     mark,
     product,
@@ -174,7 +174,7 @@ function useRolledLine(text: string): { line: SplashLine; leaving?: SplashLine; 
 }
 
 export interface AppSplashProps {
-    /** The lockup's accessible name, such as "Lar Server". */
+    /** The lockup's accessible name, such as the app's name. */
     label: string;
     /** The product's name after the lockup's "ar", in grey, such as "Server" or "Factory". */
     product: string;

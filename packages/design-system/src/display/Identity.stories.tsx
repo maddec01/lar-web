@@ -1,17 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FolderGitIcon } from 'lucide-react';
 
-import { Artwork } from '../media/Artwork';
 import { Identity } from './Identity';
+
+/** A picture filling the artwork's frame. */
+const picture = (seed: string, height = 200) => (
+    <img alt="" src={`https://picsum.photos/seed/${seed}/200/${height}`} className="size-full object-cover" />
+);
 
 const meta = {
     title: 'Display/Identity',
     component: Identity,
     args: {
-        artwork: <Artwork alt="" src="https://picsum.photos/seed/lar-ok/200/200" />,
-        title: 'OK Computer',
-        detail: 'Radiohead · 1997 · 12 tracks',
-        tag: 'FLAC',
+        artwork: picture('lar-ok'),
+        title: 'Quarterly report',
+        detail: 'Finance · 2026 · 12 pages',
+        tag: 'PDF',
     },
     decorators: [
         (Story) => (
@@ -26,15 +30,15 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Album: Story = {};
+export const Default: Story = {};
 
 export const Poster: Story = {
     args: {
         presentation: 'poster',
-        artwork: <Artwork alt="" aspect="poster" src="https://picsum.photos/seed/lar-sev/200/300" />,
-        title: 'Severance',
-        detail: 'Season 2 · 10 episodes',
-        tag: 'Apple TV+',
+        artwork: picture('lar-sev', 300),
+        title: 'Field guide',
+        detail: 'Second edition · 10 chapters',
+        tag: 'Draft',
     },
 };
 
@@ -42,26 +46,23 @@ export const Poster: Story = {
 export const PageHeading: Story = {
     args: {
         presentation: 'poster',
-        overline: 'Fix metadata',
-        artwork: <Artwork alt="" aspect="poster" src="https://picsum.photos/seed/lar-arrival/200/300" />,
-        title: 'Arrival',
-        detail: '2016 · Denis Villeneuve',
+        overline: 'Edit details',
+        artwork: picture('lar-arrival', 300),
+        title: 'Field guide',
+        detail: '2026 · Ana Silva',
         tag: undefined,
     },
 };
 
 export const IconArtwork: Story = {
     args: {
-        artwork: <Artwork alt="" fallback={<FolderGitIcon />} />,
+        artwork: (
+            <span className="bg-fill-muted text-fg-muted flex size-full items-center justify-center [&>svg]:size-6">
+                <FolderGitIcon />
+            </span>
+        ),
         title: 'lar-web',
         detail: 'github.com/lar-works/lar-web · main',
-        tag: 'Factory',
-    },
-};
-
-export const LongText: Story = {
-    args: {
-        title: 'The Rise and Fall of Ziggy Stardust and the Spiders from Mars (2012 Remaster, 40th Anniversary)',
-        detail: 'David Bowie · 1972 · 11 tracks · FLAC 24/96 · Imported from /mnt/media/music/lossless',
+        tag: 'Repository',
     },
 };

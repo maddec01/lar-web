@@ -10,14 +10,7 @@ export default defineConfig({
     // The package ships as ES modules with declarations, one file per source module, so apps' bundlers tree-shake it
     // module by module. React, ninna-ui, lucide and the rest stay dependencies the app's bundler resolves.
     pack: {
-        entry: [
-            'src/index.ts',
-            'src/board/index.ts',
-            'src/showcase/index.ts',
-            'src/icons.ts',
-            'src/icons/dynamic.ts',
-            'src/testing.ts',
-        ],
+        entry: ['src/index.ts', 'src/primitives.ts', 'src/icons.ts', 'src/icons/dynamic.ts', 'src/testing.ts'],
         tsconfig: 'tsconfig.build.json',
         format: ['esm'],
         dts: true,

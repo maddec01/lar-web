@@ -24,7 +24,7 @@ export interface CommandPaletteTriggerToken {
     label: string;
     /** An icon or colour mark before the label. */
     leading?: ReactNode;
-    /** A lar-brand app hue that colours the chip, as a kind's badge. */
+    /** A hue (an oklch hue angle) that colours the chip, as a kind's badge. */
     hue?: number;
 }
 
@@ -58,7 +58,7 @@ const look = {
     folded: 'hover:bg-fill-hover hover:text-fg w-7 justify-center rounded-md text-(--color-header-icon)',
 } as const;
 
-/** lar-server's title bar folds the field below this width (the TitleBar's `@2xl`). */
+/** An app title bar folds the field below this width (the TitleBar's `@2xl`). */
 const WIDE_BAR = 672;
 
 /** The width of the title bar holding `element`, kept as it resizes. */

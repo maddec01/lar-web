@@ -9,56 +9,48 @@ names two concepts. Apps import icons from `@lar-works/design-system/icons`; a c
 `conceptIcons` (for example `const { diagnostics: DiagnosticsIcon } = conceptIcons`), so it can't drift. The story
 **Foundations/Icon glossary** shows them all.
 
-| Concept                                       | `conceptIcons` key | Icon (lucide)        | Never for                          |
-| --------------------------------------------- | ------------------ | -------------------- | ---------------------------------- |
-| Work in the background, Background tasks      | `activity`         | Pulse                | Diagnostics, metadata, check-up    |
-| Diagnostics: the app's own tools, connections | `diagnostics`      | Stethoscope          | Activity                           |
-| Metadata: titles, artwork, details read       | `metadata`         | Tag                  | Activity, skills                   |
-| Check-up: integrity against a source of truth | `checkUp`          | Shield with a tick   | Scans                              |
-| Scans: reading folders, a scan running/queued | `scans`            | Scan line            | Updates, refresh                   |
-| Updates: a newer version of the app           | `updates`          | Circle with up arrow | Scans, refresh                     |
-| Reload, try again                             | `refresh`          | Circular arrows      | Scans, updates                     |
-| Settings, General settings                    | `settings`         | Gear                 | A settings section of its own      |
-| Catalogs                                      | `catalogs`         | Library              |                                    |
-| Metadata providers                            | `providers`        | Sliders              |                                    |
-| Users: people with access                     | `users`            | Users                | Playback, Now playing              |
-| Remote access                                 | `remoteAccess`     | Globe                |                                    |
-| Playback, transcoding, Now playing            | `playback`         | Play                 | Users                              |
-| Logs                                          | `logs`             | Logs                 |                                    |
-| Projects (repositories)                       | `projects`         | Folder with branch   |                                    |
-| Integrations (issue trackers)                 | `integrations`     | Plug                 |                                    |
-| Agent skills                                  | `skills`           | Sparkles             | Anything else (AI-looking accents) |
-| Archive                                       | `archive`          | Archive box          |                                    |
-| Search, command palette                       | `search`           | Magnifier            |                                    |
-| Stopped work (a stopped build)                | `stopped`          | Circle with a square | A stage's glyph (Review's eye)     |
-| No kind (an item without a type label)        | `noKind`           | Dashed square        | Shaping's dashed circle            |
+| Concept                                       | `conceptIcons` key | Icon (lucide)        | Never for                     |
+| --------------------------------------------- | ------------------ | -------------------- | ----------------------------- |
+| Work in the background, Background tasks      | `activity`         | Pulse                | Diagnostics                   |
+| Diagnostics: the app's own tools, connections | `diagnostics`      | Stethoscope          | Activity                      |
+| Updates: a newer version of the app           | `updates`          | Circle with up arrow | Refresh                       |
+| Reload, try again                             | `refresh`          | Circular arrows      | Updates                       |
+| Settings, General settings                    | `settings`         | Gear                 | A settings section of its own |
+| Users: people with access                     | `users`            | Users                | People credited on content    |
+| Logs                                          | `logs`             | Logs                 |                               |
+| Archive                                       | `archive`          | Archive box          |                               |
+| Search, command palette                       | `search`           | Magnifier            |                               |
 
-A settings section's icon in the navigation is its concept's icon, the same in Lar Server and Lar Factory, and so is
-every toolbar button's and every empty state's icon: a catalog's "scanning" empty state draws `scans`, the Now playing
-toolbar button draws `playback`. A concept missing here gets its icon added to `conceptIcons` and this table before an
-app uses it.
+A settings section's icon in the navigation is its concept's icon, in every app, and so is every toolbar button's and
+every empty state's icon.
 
-The board's status glyphs (`StatusGlyph`) are a vocabulary of their own, one per status, and never borrow a concept's
-icon for another meaning: work that stopped takes the Stopped glyph (`state="off"` on a status whose own state isn't
-off), not its stage's glyph; a filter for items with no kind takes `noKind`, not Shaping's dashed circle.
+### An app's own concepts
+
+An app extends the glossary with the concepts only it has, in its UI layer, and draws every concept from its extended
+glossary:
+
+```ts
+// src/ui/icons/ConceptIcons.ts
+import { conceptIcons as sharedConceptIcons, ScanLineIcon } from '@lar-works/design-system/icons';
+
+export const conceptIcons = {
+    ...sharedConceptIcons,
+    /** Reading folders for new, changed or removed files. Scan line; never refresh. */
+    scans: ScanLineIcon,
+} as const;
+```
+
+It never redraws a shared concept or gives a shared concept's icon to one of its own. A concept a second app needs
+moves into the shared glossary here, with its row in this table.
 
 ### Testing that icons come from the glossary
 
 `conceptIcons` is unique by construction (the design system's own test checks one icon per concept). Apps check that
 their toolbar buttons and empty states draw their concept's icon with `iconConcept` from
-`@lar-works/design-system/testing`, which names the concept of the first icon in an element:
+`@lar-works/design-system/testing`, which names the concept of the first icon in an element, in the shared glossary or
+the app's extended one:
 
 ```tsx
-expect(iconConcept(screen.getByRole('button', { name: 'Now playing' }))).toBe('playback');
-expect(iconConcept(screen.getByRole('status', { name: /scanning/i }))).toBe('scans');
+expect(iconConcept(screen.getByRole('button', { name: 'Settings' }))).toBe('settings');
+expect(iconConcept(screen.getByRole('status', { name: /scanning/i }), conceptIcons)).toBe('scans');
 ```
-
-Add one assertion per toolbar button and empty state you own, beside its component's test.
-
-## Project icons
-
-`ProjectIcon` shows the project's toned initial until its own icon (a favicon or a lucide icon chosen in T3) has
-loaded, then lays the icon over it in its colour. It reads the same in both themes and in any container, including a
-command palette row; a missing or broken icon leaves the initial.
-
-`conceptIcons.people` (`UserRound`) names people credited on media: actors, directors and other contributors. `conceptIcons.users` (`Users`) is reserved for account access, invitations and permissions.

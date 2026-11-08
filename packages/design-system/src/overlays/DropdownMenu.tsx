@@ -268,7 +268,7 @@ function DropdownMenuControlRow({
     );
 }
 
-/** The menu's first row when what it acts on is in a state worth knowing before choosing, such as a catalog that is
+/** The menu's first row when what it acts on is in a state worth knowing before choosing, such as a library that is
  *  scanning: a status light in the entries' icon slot, the state in words and an optional detail, then a separator.
  *  It is not an entry (never a disabled item standing in for a status) and it describes the menu to a screen reader. */
 function DropdownMenuStatus({

@@ -81,13 +81,13 @@ interface SelectItemProps extends Omit<NinnaSelectItemProps, 'className' | 'styl
     textValue?: string;
     /** An icon before the label. */
     icon?: ReactNode;
-    /** A lar-brand app hue that colours the `icon` at full strength, such as a kind's. */
+    /** A hue (an oklch hue angle) that colours the `icon` at full strength, such as a kind's. */
     iconHue?: number | undefined;
     /** A line of detail under the label. */
     description?: string;
 }
 
-/** An option of the Select; its `icon` takes `iconHue`, a lar-brand app hue at full strength, when given. */
+/** An option of the Select; its `icon` takes `iconHue`, a hue at full strength, when given. */
 export const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(({ icon, iconHue, children, ...props }, ref) => (
     <NinnaSelectItem ref={ref} {...props}>
         {icon ? (

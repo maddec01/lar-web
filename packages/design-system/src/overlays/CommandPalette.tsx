@@ -292,7 +292,7 @@ export function CommandPaletteGroup({
  *  screens), and a tick while `checked`, as a filter that is on. Choosing it keeps the focus in the field.
  *
  *  Rows follow one rule in every app: destinations, commands and filters are this one-line row, with what tells them
- *  apart (a catalog's kind, a page's count, a ticket's number and state) as `hint` and `meta`. A content search result
+ *  apart (a library's kind, a page's count, a ticket's number and state) as `hint` and `meta`. A content search result
  *  that needs artwork and a second line to identify it (an album over its artist) is a two-line `ResultRow` given
  *  `useCommandPaletteOption`, and only those. */
 export function CommandPaletteOption({
@@ -306,7 +306,7 @@ export function CommandPaletteOption({
 }: {
     /** The option's unique value in the list. */
     value: string;
-    /** The option's icon, at its start: a lucide icon, bare or wrapped (a `KindIcon`), drawn 16px in the muted tone. */
+    /** The option's icon, at its start: a lucide icon, bare or wrapped (such as in a hue tint), drawn 16px in the muted tone. */
     icon: ReactNode;
     /** The option's name. */
     name: string;
@@ -338,8 +338,8 @@ export function CommandPaletteOption({
             onClick={() => context.select(value)}
             className="text-fg-soft aria-[current=page]:text-fg aria-selected:bg-primary-surface aria-selected:text-fg aria-selected:ring-primary-ring flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm aria-selected:ring-1 aria-selected:ring-inset aria-[current=page]:font-medium pointer-coarse:h-11"
         >
-            {/* One 16px icon box for every row: a bare svg and a wrapped one (a KindIcon, a tone mark) get the same size
-                and muted tone, so a catalog's icon never outgrows a page's. */}
+            {/* One 16px icon box for every row: a bare svg and a wrapped one (a hue tint, a tone mark) get the same size
+                and muted tone, so a wrapped icon never outgrows a bare one. */}
             <span
                 aria-hidden="true"
                 data-slot="palette-icon"

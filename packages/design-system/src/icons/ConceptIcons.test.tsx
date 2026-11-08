@@ -1,10 +1,9 @@
-// The icon glossary as a contract: one icon per concept and one concept per icon, the board's status glyphs never
-// borrow a concept's icon for another meaning, and apps' tests can read a rendered icon's concept (iconConcept).
+// The icon glossary as a contract: one icon per concept and one concept per icon, and apps' tests can read a rendered
+// icon's concept (iconConcept), in the shared glossary or an app's own.
 import { render } from '@testing-library/react';
-import { CircleDashedIcon, EyeIcon } from 'lucide-react';
+import { ScanLineIcon } from 'lucide-react';
 import { expect, it } from 'vite-plus/test';
 
-import { StatusGlyph } from '../board/StatusGlyph';
 import { iconConcept } from '../testing';
 import { conceptIcons } from './ConceptIcons';
 
@@ -14,46 +13,20 @@ it('gives each concept its own icon', () => {
     expect(new Set(icons).size).toBe(icons.length);
 });
 
-it('keeps No kind off the Shaping glyph and Stopped off the review eye', () => {
-    expect(conceptIcons.noKind).not.toBe(CircleDashedIcon);
-    expect(conceptIcons.stopped).not.toBe(EyeIcon);
-});
-
-it('draws stopped work with the Stopped glyph, whatever its stage', () => {
+it('names the concept a rendered icon draws, in the shared glossary or an extended one', () => {
     const { container } = render(
         <>
-            <StatusGlyph status="Review" state="off" />
-            <StatusGlyph status="In progress" state="off" running />
-            <StatusGlyph status="Review" />
+            <button type="button">
+                <conceptIcons.settings aria-hidden="true" />
+                Settings
+            </button>
+            <ScanLineIcon aria-hidden="true" />
         </>,
     );
-    const [review, building, reviewing] = container.querySelectorAll('[data-slot="status-glyph"]');
+    const scan = container.querySelector('svg.lucide-scan-line');
 
-    expect(iconConcept(review)).toBe('stopped');
-    expect(iconConcept(building)).toBe('stopped');
-    expect(iconConcept(reviewing)).toBeUndefined();
-});
-
-it('keeps every status glyph in a fixed box, whatever its mark', () => {
-    const { container } = render(
-        <>
-            <StatusGlyph status="Needs you" />
-            <StatusGlyph status="Done" />
-        </>,
-    );
-
-    for (const slot of container.querySelectorAll('[data-slot="status-glyph"]'))
-        expect(slot.className).toContain('size-3.5');
-});
-
-it('names the concept a rendered icon draws', () => {
-    const { container } = render(
-        <button type="button">
-            <conceptIcons.playback aria-hidden="true" />
-            Now playing
-        </button>,
-    );
-
-    expect(iconConcept(container.querySelector('button'))).toBe('playback');
+    expect(iconConcept(container.querySelector('button'))).toBe('settings');
+    expect(iconConcept(scan)).toBeUndefined();
+    expect(iconConcept(scan, { ...conceptIcons, scans: ScanLineIcon })).toBe('scans');
     expect(iconConcept(null)).toBeUndefined();
 });

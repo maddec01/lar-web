@@ -48,7 +48,7 @@ interface AttentionListProps {
     children: ReactNode;
 }
 
-/** Problems that need the reader, in one place, the same in every app (lar-server's "Needs attention", Lar Factory's
+/** Problems that need the reader, in one place, the same in every app (a "Needs attention" panel, a list of
  *  connection warnings): a card with a header band tinted in the tone of the worst of them (icon tile, title, count, an
  *  optional action), then one row per problem, each with its own action. Use it wherever problems collect, one or
  *  many, in place of Alerts one above another. */

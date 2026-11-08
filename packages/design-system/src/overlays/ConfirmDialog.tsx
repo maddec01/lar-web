@@ -19,10 +19,10 @@ export interface ConfirmDialogProps {
     title: string;
     /** What happens if the reader confirms, in a sentence or two, such as "Lar forgets its albums and play history." */
     consequence: string;
-    /** A calm note of what stays safe, such as "The files in /mnt/media/music stay on disk.", shown as an `info` Alert
+    /** A calm note of what stays safe, such as "The files in /srv/shared stay on disk.", shown as an `info` Alert
      *  (every notice's one recipe). Not a warning: the consequence and the confirm button already carry the danger. */
     reassurance?: ReactNode;
-    /** The confirm button's words, always the action itself, such as "Delete catalog"; never "OK" or "Yes". */
+    /** The confirm button's words, always the action itself, such as "Delete project"; never "OK" or "Yes". */
     confirmLabel: string;
     /** The cancel button's words; the design system's "Cancel" by default. */
     cancelLabel?: string;

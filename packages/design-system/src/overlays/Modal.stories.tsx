@@ -15,10 +15,10 @@ import { Textarea } from '../forms/Textarea';
 import { Stack } from '../layout/Flow';
 import { SidebarNavigationItem } from '../layout/sidebar/SidebarNavigationItem';
 import { SidebarPane } from '../layout/sidebar/SidebarPane';
-import { ImagePicker, ImagePickerGrid, ImagePickerOption } from '../media/ImagePicker';
 import { Text } from '../typography/Typography';
 import { Modal, useModalClose } from './Modal';
 import { ModalExpandButton } from './ModalExpandButton';
+import { ScrollFadeRegion } from './ScrollFadeRegion';
 
 /** Opens with the story, and reopens from the button after it is closed. */
 function ModalDemo({
@@ -456,25 +456,14 @@ export const OverflowingPaned: Story = {
 /** A workspace whose body fills the dialog and whose picker scrolls inside it: the picker’s region fades too. */
 export const OverflowingWorkspacePicker: Story = {
     render: (args) => (
-        <ModalDemo {...args} trigger="Choose a poster">
-            <Modal.Content presentation="workspace" title="Poster: Dune: Part Two" focusFirstField={false}>
+        <ModalDemo {...args} trigger="Choose a cover">
+            <Modal.Content presentation="workspace" title="Cover: Field guide" focusFirstField={false}>
                 <Modal.Body layout="fill">
-                    <ImagePicker label="Posters" header={<Text tone="muted">Choose the poster Lar shows.</Text>}>
-                        <ImagePickerGrid label="TheMovieDB">
-                            {Array.from({ length: 24 }, (_, index) => (
-                                <ImagePickerOption
-                                    key={index}
-                                    kind="movie"
-                                    aspect="poster"
-                                    label={`Poster ${index + 1}`}
-                                    detail="2000 × 3000"
-                                    errorLabel="Poster couldn’t be loaded"
-                                    selected={index === 0}
-                                    onSelect={fn()}
-                                />
-                            ))}
-                        </ImagePickerGrid>
-                    </ImagePicker>
+                    <ScrollFadeRegion className="grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-3 p-1">
+                        {Array.from({ length: 24 }, (_, index) => (
+                            <div key={index} aria-hidden="true" className="bg-fill-muted aspect-[2/3] rounded-lg" />
+                        ))}
+                    </ScrollFadeRegion>
                 </Modal.Body>
                 <Footer />
             </Modal.Content>

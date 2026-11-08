@@ -78,8 +78,8 @@ export interface ButtonProps extends Omit<
     type?: 'button' | 'submit' | 'reset';
     /** Out of reach, and drawn so. While an action runs, use `busy` instead. */
     disabled?: boolean;
-    /** `md` (the default) is the 36px (32px with a pointer) control; `sm` the dense 28px one with 12px text, as Lar
-     *  Factory's board draws every button. */
+    /** `md` (the default) is the 36px (32px with a pointer) control; `sm` the dense 28px one with 12px text, as a
+     *  dense desktop tool draws every button. */
     size?: keyof typeof sizes;
     /** Lets a long label wrap, anywhere in a long word if it must, growing the button, which never grows past its
      *  container, where it would otherwise clip. */

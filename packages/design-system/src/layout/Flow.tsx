@@ -82,7 +82,7 @@ export function GridBase({ variant = 'content', ...props }: GridBaseProps) {
             <NinnaGrid
                 {...props}
                 gap="4"
-                // The width of a catalog's poster cards (VirtualGrid), so a person's titles match the catalog's.
+                // The width of a VirtualGrid's poster cards, so a grid of posters beside one matches it.
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(9.5rem, 100%), 1fr))' }}
             />
         );

@@ -23,7 +23,7 @@ interface SiteShellProps {
     children: ReactNode;
 }
 
-/** The website frame: a glass header that stays on top while the document scrolls under it, then the footer. */
+/** A marketing site's frame: a glass header that stays on top while the document scrolls under it, then the footer. */
 export function SiteShell({ skipLabel, header, footer, children }: SiteShellProps) {
     const scrolled = useScrolled();
 

@@ -10,7 +10,7 @@ const SEARCH_WORD = 48;
 const COUNT = 24;
 const KEY_HINT = 26;
 const GAP = 4;
-/** lar-server's trigger width, which the field keeps until its tokens ask for more. */
+/** The trigger's width in an app title bar, which the field keeps until its tokens ask for more. */
 const MIN_WIDTH = 224;
 /** Up to this title bar width, the smallest phones', the field folds. Its row there still has room for the word, as the
  *  bar gives its actions their own row, so the room alone would never fold it. */

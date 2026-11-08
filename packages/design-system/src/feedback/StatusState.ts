@@ -19,7 +19,7 @@ export const statusStateTones = {
 } as const satisfies Record<StatusState, StatusTone>;
 
 /** Each state's colour, as a CSS colour value: the status light's dot, and the one colour any other mark that shows a
- *  status (a board glyph, a slice, a stage's current segment) may be drawn in. Never for text: text takes the tone's
+ *  status (a status glyph, a progress segment, a stage's current segment) may be drawn in. Never for text: text takes the tone's
  *  `-fg` token. */
 export const statusStateColors = {
     ready: 'var(--color-success)',

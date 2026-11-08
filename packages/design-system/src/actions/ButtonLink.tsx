@@ -15,7 +15,7 @@ const recipes = {
 } as const;
 
 /** A `sm` link is the app Button's `sm` 28px control with 12px text, in the Button's own recipes, for an action
- *  that opens a page from a dense tool (such as Lar Factory's board). */
+ *  that opens a page from a dense tool. */
 const compactBase =
     'relative isolate inline-flex h-7 items-center justify-center gap-2 rounded-md border px-2.75 text-xs font-medium whitespace-nowrap no-underline transition-[background-color,box-shadow,scale,color] duration-(--motion-duration-fast) active:scale-[0.97] focus-ring-inset [&_[data-slot=icon]>svg]:size-4';
 const compactRecipes = {
@@ -53,7 +53,7 @@ export interface ButtonLinkProps extends Omit<
     busy?: boolean;
 }
 
-/** A link that looks like a button: the website's calls to action, or at `sm`, the app Button's dense look. */
+/** A link that looks like a button: a marketing page's calls to action, or at `sm`, the app Button's dense look. */
 export function ButtonLink({
     variant = 'primary',
     size = 'lg',

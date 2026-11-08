@@ -18,7 +18,7 @@ export const semanticColors = {
     'surface-overlay': { light: '#ffffff', dark: '#161616' },
     /** The fill of a control on a surface: a text field, select, checkbox, radio or outlined button. */
     'surface-control': { light: '#ffffff', dark: '#161616' },
-    /** A translucent `surface-raised` for a panel over a backdrop or artwork (the website's cards and bands). Text on
+    /** A translucent `surface-raised` for a panel over a backdrop or artwork (a marketing page's cards and bands). Text on
      *  it is checked against `surface-raised`, the colour it tends to. */
     'surface-glass': { light: '#ffffffb3', dark: '#11111180' },
     /** A row or control under the pointer. A state, not a thing: it equals `fill-muted` in light (zinc-100, the
@@ -54,7 +54,7 @@ export const semanticColors = {
     /** A divider or a container's edge: decoration, which needs no contrast of its own. */
     line: { light: '#e4e4e7', dark: '#222222' },
     /** A card's edge (`surface-card`): half a step deeper than `line` in light and a step lighter in dark, so a card
-     *  holds its shape on the page as the website's do, while dividers inside it stay at `line`. */
+     *  holds its shape on the page as a marketing page's do, while dividers inside it stay at `line`. */
     'line-card': { light: '#dedee3', dark: '#282828' },
     /** `line` under the pointer: a card that opens, a hovered panel. A state of `line`; its value is the next step of
      *  the ramp, which happens to be `line-control`'s, but the roles move separately (a hover could deepen without

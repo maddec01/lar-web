@@ -5,7 +5,7 @@ import { StatusIndicator, type StatusTone } from './StatusIndicator';
 import { type ProgressState, progressStateStatus, type StatusState, statusTone } from './StatusState';
 
 export interface ProgressStatusRowProps {
-    /** What the work is on or about, first: in a list or popover, what or where (a catalog's name, "Server"); inside
+    /** What the work is on or about, first: in a list or popover, what or where (a library's name, "Server"); inside
      *  that thing's own card or dialog, which already names it, the work itself ("Comparing with Lidarr"). It wraps
      *  rather than truncates in the stacked layout. */
     label: string;

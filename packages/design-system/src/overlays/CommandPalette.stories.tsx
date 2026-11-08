@@ -13,12 +13,11 @@ import {
     TagIcon,
     TvIcon,
 } from 'lucide-react';
-import { type ComponentProps, useState } from 'react';
+import { type ComponentProps, type CSSProperties, type ReactNode, useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { Button } from '../actions/Button';
 import { ResultRow } from '../collections/ResultList';
-import { KindIcon } from '../display/KindIcon';
 import { CommandPalette, CommandPaletteGroup, CommandPaletteOption, useCommandPaletteOption } from './CommandPalette';
 
 interface Destination {
@@ -276,7 +275,16 @@ export const WithTokens: Story = { render: () => <FilterDemo /> };
 /** While more may arrive, the busy label shows under what is listed so far. */
 export const BusyWithOptions: Story = { render: () => <FilterDemo busy /> };
 
-/** Catalog rows wrap their icon in a KindIcon (an app’s real composition); page and command rows pass a bare icon. Both
+/** An icon an app wraps to tint it in a hue (the kind-icon utility). */
+function HueIcon({ hue, children }: { hue: number; children: ReactNode }) {
+    return (
+        <span aria-hidden="true" className="kind-icon contents" style={{ '--lar-kind-hue': hue } as CSSProperties}>
+            {children}
+        </span>
+    );
+}
+
+/** Library rows wrap their icon to tint it (an app’s own composition); page and command rows pass a bare icon. Both
  *  draw in the same 16px box, size and muted tone, so the list keeps one rhythm. */
 export const WrappedIcons: Story = {
     render: () => (
@@ -305,9 +313,9 @@ export const WrappedIcons: Story = {
                     <CommandPaletteOption
                         value="catalog:music"
                         icon={
-                            <KindIcon hue={280}>
+                            <HueIcon hue={280}>
                                 <MusicIcon />
-                            </KindIcon>
+                            </HueIcon>
                         }
                         name="Vinyl Rips"
                         hint="Music"
@@ -316,9 +324,9 @@ export const WrappedIcons: Story = {
                     <CommandPaletteOption
                         value="catalog:movies"
                         icon={
-                            <KindIcon hue={25}>
+                            <HueIcon hue={25}>
                                 <FilmIcon />
-                            </KindIcon>
+                            </HueIcon>
                         }
                         name="Movies"
                         hint="Movies"
@@ -328,9 +336,9 @@ export const WrappedIcons: Story = {
                     <CommandPaletteOption
                         value="catalog:tv"
                         icon={
-                            <KindIcon hue={150}>
+                            <HueIcon hue={150}>
                                 <TvIcon />
-                            </KindIcon>
+                            </HueIcon>
                         }
                         name="TV shows"
                         hint="TV"

@@ -15,7 +15,7 @@ export interface OptionSelectOption<Value extends string = string> {
     disabled?: boolean;
     /** An icon before the label. */
     icon?: ReactNode;
-    /** A lar-brand app hue that colours the icon, such as a kind's. */
+    /** A hue (an oklch hue angle) that colours the icon, such as a kind's. */
     hue?: number;
 }
 

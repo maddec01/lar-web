@@ -18,7 +18,7 @@ export const scrollFadeBodyClassName =
 export const scrollFadeHorizontalClassName =
     'scroll-px-6 [mask-image:linear-gradient(to_right,transparent,black_min(1.5rem,var(--scroll-fade-left,0px)),black_calc(100%_-_min(1.5rem,var(--scroll-fade-right,0px))),transparent)] focus-visible:[mask-image:none]';
 
-/** A row of cards (ScrollRow, the board's desk): a wider 3rem fade that reaches past the row's own padding into the
+/** A row of cards (ScrollRow, a desk of cards): a wider 3rem fade that reaches past the row's own padding into the
  *  cut card, and no scroll padding of its own, as a snapping row sets where its cards settle. */
 export const scrollFadeRowClassName =
     '[mask-image:linear-gradient(to_right,transparent,black_min(var(--scroll-fade-row),var(--scroll-fade-left,0px)),black_calc(100%_-_min(var(--scroll-fade-row),var(--scroll-fade-right,0px))),transparent)] focus-visible:[mask-image:none]';

@@ -13,7 +13,7 @@ interface IdentityProps {
     tag?: string;
     /** What it is, such as an album's title. */
     title?: ReactNode;
-    /** The artwork's frame: `square` (the default) for a cover, `poster` (2:3) for a film or a book. */
+    /** The artwork's frame: `square` (the default) for a cover or a logo, `poster` (2:3) for a portrait image. */
     presentation?: 'square' | 'poster';
     /** Heads its page: a larger poster, an overline naming what it belongs to, and the title as the page's h1. */
     overline?: string;

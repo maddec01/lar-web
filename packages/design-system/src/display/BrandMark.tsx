@@ -19,7 +19,7 @@ export function BrandMark({
     product,
     size = 'md',
 }: {
-    /** The lockup's accessible name, such as "Lar Server". */
+    /** The lockup's accessible name, such as the app's name. */
     label: string;
     /** The product's name after the wordmark, in grey, such as "Factory". */
     product?: string;
@@ -51,7 +51,7 @@ export function BrandMark({
 interface BrandLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'className' | 'style' | 'color'> {
     /** Home's address. */
     href: string;
-    /** The link's accessible name, such as "Lar Server home". */
+    /** The link's accessible name, such as the app's name and "home". */
     label: string;
     /** Called with the `href` on a plain left click, in place of the browser's navigation, for the app's router. */
     onNavigate: (href: string) => void;

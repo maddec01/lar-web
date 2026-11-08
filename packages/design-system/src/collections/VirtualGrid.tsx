@@ -21,7 +21,7 @@ interface VirtualGridProps {
     loading?: boolean;
 }
 
-// Every ImageCard's caption: its title, its maker and its meta row.
+// A media card's caption, by default: its title, its maker and its meta row.
 const captionRows = 3;
 
 export function VirtualGrid({
@@ -46,7 +46,7 @@ export function VirtualGrid({
     const layoutWidth = width || maxItemWidth * 2 + gap;
     const columns = Math.max(2, Math.round((layoutWidth + gap) / (maxItemWidth + gap)));
     const itemWidth = Math.min(maxItemWidth, Math.max(0, (layoutWidth - gap * (columns - 1)) / columns));
-    // The art, the space under it, then ImageCard's three caption rows (20px each, 2px apart) and the row gap.
+    // The art, the space under it, then a media card's three caption rows (20px each, 2px apart) and the row gap.
     const estimatedHeight = itemWidth * (aspect === 'poster' ? 1.5 : 1) + 8 + captionRows * 22 - 2 + rowGap;
     // Rows grow, all together, to the tallest card measured at this layout, such as one with art of its own ratio;
     // they never shrink below the estimate, so the size only ever grows and settles.

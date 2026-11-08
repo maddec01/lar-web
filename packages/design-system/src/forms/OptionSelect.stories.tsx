@@ -151,8 +151,8 @@ function NarrowKindSelect() {
 /** A narrow inline trigger ("Bug") over longer options: the list grows to its longest label, never clipping it. */
 export const NarrowTriggerLongOptions: Story = { render: () => <NarrowKindSelect /> };
 
-/** An editable kind shares the static KindBadge shape and hue. */
-export const KindBadgeSelect: Story = {
+/** An editable kind shares a hue badge's shape and hue. */
+export const HueBadgeSelect: Story = {
     render: () => (
         <OptionSelect
             label="Kind"

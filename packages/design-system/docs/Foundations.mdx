@@ -94,52 +94,28 @@ Components speak the semantic layer only, and `foundations/vocabulary.test.ts` f
 - **No `dark:` colour override.** Every semantic token already has its dark value; a component that needs a different
   colour in dark needs a token (or a value of an existing one) instead, which is then contrast-checked.
 - **No `color-mix()` in a component.** A mix a component needs is a token (a hover fill, a tint); a translucent
-  version of a role is Tailwind's opacity modifier (`bg-surface-page/85`, `border-warning/45`). Product sheets may mix
-  in CSS, where their roles are derived.
-- **Board roles colour glyphs, dots and bars, never text** (no `text-board-…`): text on the board is in a text token.
+  version of a role is Tailwind's opacity modifier (`bg-surface-page/85`, `border-warning/45`). An app's UI-layer sheets
+  may mix in CSS, where their roles are derived.
+- **An app's roles colour glyphs, dots and bars, never text**: text is always in a text token.
 
 A genuine exception goes in that test's allow-list, with its reason; there are none today.
 
 ### Layering
 
 `foundations`, `typography`, `actions`, `forms`, `display`, `feedback`, `navigation`, `overlays`, `collections` and
-`layout` are **generic**: they carry no product nouns and read only foundation tokens (`tokens.test.ts` fails on any
-other custom property). **`media`** (Lar Server's compositions), **`showcase`** (the website) and **`board`** (Lar
-Factory) are **product layers**: they compose the generic layers and may add roles of their own, derived from the
-semantic tokens (the board's roles below, in `board/tokens.css`; the showcase's device metal, glow and grid in
-`showcase/tokens.css`). A product's sheets load only with its stylesheet (`board.css`, `showcase.css`), and Storybook
-does the same per story, so a generic component that leans on a product token shows the gap here.
+`layout` are all **generic**: they carry no product nouns and read only foundation tokens (`tokens.test.ts` fails on
+any other custom property). Each app's **UI layer** (its `src/ui`) holds that app's own compositions: it composes the
+generic layers and may add roles and sheets of its own, derived from the semantic tokens (a board's status roles, a
+marketing page's device metal and glow, a media app's provider brand colours), which load from the app's CSS entry
+after `styles.css`. Storybook loads `styles.css` alone, so a generic component that leans on an app's token shows the
+gap here. A composition moves into the generic layers once a second product needs it.
 
-Each product layer has its own entry point, so an app imports only the layer it is:
-
-| Import                              | Holds                                                 | Used by     |
-| ----------------------------------- | ----------------------------------------------------- | ----------- |
-| `@lar-works/design-system`          | the generic layers and `media`                        | every app   |
-| `@lar-works/design-system/board`    | the board's compositions, `statusColor`, `boardColor` | Lar Factory |
-| `@lar-works/design-system/showcase` | the marketing sections and device frames              | the website |
-| `@lar-works/design-system/icons`    | every icon                                            | every app   |
-
-### The board's roles
-
-`board/tokens.css` names what a colour means on the board. Each is a Tailwind colour (`bg-board-active`,
-`stroke-board-done`, `border-board-idle`) for a status glyph, an activity dot, a stage track or a parts bar, never for
-text; an app that passes a colour to a board component takes it from `boardColor` (`boardColor.done`), `statusColor`
-or `stageColor`, never writes a `var(--…)` itself. A board status is a state of the one tone map (below): each status
-role **is** its state's colour, so a board status reads the same as the server's (`board/StatusColors.test.ts` fails
-otherwise).
-
-| Role           | Means                                                                         | State / drawn from     |
-| -------------- | ----------------------------------------------------------------------------- | ---------------------- |
-| `board-you`    | Needs you: your turn (an answer, a check to verify), a waiting agent, blocked | `waiting` (`warning`)  |
-| `board-active` | Work in motion: a running thread, an item being shaped, built or reviewed     | `active` (`info`)      |
-| `board-done`   | Finished: built and ready to merge, or done                                   | `ready` (`success`)    |
-| `board-idle`   | Not started or stopped: listed, queued ("Queued", never "Waiting"), stopped   | `off` (`line-strong`)  |
-| `board-review` | The Review **stage's identity** on a stage bar (`stageColor.Review`) only     | violet, never a status |
-| `board-past`   | A stage the work has already passed, on a stage track                         | `fg` at 28%            |
-
-`boardStatusState` maps each board status to its state (`StatusGlyph state` overrides it, such as `off` for stopped
-work); `sliceProgressState` and `attentionToneState` do the same for slices (blocked is `waiting`, not started is
-`off`) and attention rows.
+| Import                                | Holds                                                             | Used by           |
+| ------------------------------------- | ----------------------------------------------------------------- | ----------------- |
+| `@lar-works/design-system`            | the generic components, patterns and theme helpers                | every app         |
+| `@lar-works/design-system/primitives` | the styleable `…Base` building blocks and the hooks they share    | an app's `src/ui` |
+| `@lar-works/design-system/icons`      | every icon and the shared icon glossary (`conceptIcons`)          | every app         |
+| `@lar-works/design-system/styles.css` | Tailwind, the tokens, base styles and every component's utilities | every app         |
 
 ## Colour
 
@@ -215,8 +191,8 @@ export const SwatchGroup = ({ title, children, names }) => (
     The page; a card, panel or grouped list resting on it (the `surface-card` utility, with `line-card` and
     `--shadow-card`); a raised panel or field that is not a card; a well inside a card (a footer, a table's header); a
     menu, popover or dialog above it; the fill of a control (a text field, a select, a checkbox, an outlined button); a
-    translucent panel over a backdrop or artwork (the website's cards and bands). `surface-card` and `surface-raised`
-    share a value today; cards take their own role so they can move apart from fields and controls.
+    translucent panel over a backdrop or artwork (a marketing page's cards and bands). `surface-card` and
+    `surface-raised` share a value today; cards take their own role so they can move apart from fields and controls.
 </SwatchGroup>
 
 <SwatchGroup title="Fills" names={['fill-hover', 'fill-selected', 'fill-muted', 'fill-muted-hover', 'track']}>
@@ -439,7 +415,7 @@ value is a control (`StatusRow trailing`) is as tall as a row whose value is a w
   counter lists) fades where content runs past an edge; an app never adds its own scroller inside one.
 - **Help opens beside what it explains.** `HelpTip` opens above its "?" (`side` for another side), so it never covers
   the description under the setting's name.
-- **One splash.** `AppSplash` (and the board's `LoadingScreen`) shows one status line, which always ends in an
+- **One splash.** `AppSplash` (and an app's own loading screen built on `SplashView`) shows one status line, which always ends in an
   ellipsis, over the calm indeterminate track while the app waits, in every app.
 - **Every notice is an Alert, one recipe per tone.** The tone's quiet surface (`-surface`), its hairline (`-ring`) and
   its icon; the words are the primary text colour, title semibold, message regular, at either size. ConfirmDialog's
@@ -456,7 +432,7 @@ nothing else: an arbitrary size such as `text-[13px]` fails `scales.test.ts`.
         ['text-3xs', '10px', 'A counter or tag inside a tiny glyph'],
         ['text-2xs', '11px', 'Overlines, meta, keyboard hints'],
         ['text-xs', '12px', 'Captions, compact controls'],
-        ['text-ui', '13px', 'A dense title: a settings row, a board card'],
+        ['text-ui', '13px', 'A dense title: a settings row, a card in a dense list'],
         ['text-sm', '14px', 'Body and controls (the default)'],
         ['text-md', '15px', 'A description, running prose, a subsection title'],
         ['text-base', '16px', 'A section title'],
@@ -466,7 +442,7 @@ nothing else: an arbitrary size such as `text-[13px]` fails `scales.test.ts`.
         ['text-2xl … 3xl', '24 · 30px', 'Metrics, a feature title from sm, a hero'],
         ['text-4xl … 7xl', '36 · 48 · 60 · 72px', 'Marketing titles as the viewport grows'],
         ['text-headline', '40px', 'A marketing section title from sm'],
-        ['text-display', '80px', 'The website’s one big statement at xl'],
+        ['text-display', '80px', 'A marketing page’s one big statement at xl'],
     ].map(([name, size, use]) => (
         <Specimen key={name} name={name} detail={size}>
             <Text variant="caption" tone="muted">
@@ -512,12 +488,12 @@ Apps never pick a size: they pick a semantic `variant` on `Text` and `Heading`. 
         [
             'lead',
             'The paragraph under a hero or section title. 18px',
-            'Lar streams your libraries from hardware you own, and turns your issues into reviewed pull requests.',
+            'Software that runs on hardware you own, does one job well, and leaves the final word to you.',
         ],
         [
             'prose',
             'Running copy on marketing pages. 15px',
-            'Lar Factory is a local board: agents shape each issue, build it and review the pull request, and you merge.',
+            'It works from what your project already has, keeps its settings on your computer, and asks before it changes anything.',
         ],
         [
             'description',
@@ -547,7 +523,7 @@ section or card title, a lead, prose) and `tracking-caps` (0.08em: small upperca
 ## Radii
 
 T3 Code's corners: 6, 8, 10, 14 and 18px, with 4px for the smallest things (a code chip, a swatch, a text button's
-focus box) and 24px for the website's cards and bands. Buttons and inputs use `md`, popovers `lg`, dialogs `2xl`.
+focus box) and 24px for a marketing page's cards and bands. Buttons and inputs use `md`, popovers `lg`, dialogs `2xl`.
 These are the only radii, with `full` and `none`: `scales.test.ts` fails on a bare `rounded`, Tailwind's own steps
 (`4xl`), an arbitrary `rounded-[…]` or a radius in rem in a stylesheet. The marketing devices' frames, drawn to scale,
 are the one exception.
@@ -593,13 +569,13 @@ Breadcrumbs, whose underline shows on hover).
 
 Every length is on Tailwind's 4px spacing scale (`--spacing: 0.25rem`): `p-3` is 12px, `max-w-160` 640px, `px-2.75`
 11px. Lar is dense, as T3 Code is: controls are 36px on touch and 32px with a pointer (`Button`'s default), 28px in
-dense tools (`compact`, the board's every button), and rows 28 to 32px. A page's content is at most `max-w-page`
+dense tools (`compact`, every button of a dense desktop tool), and rows 28 to 32px. A page's content is at most `max-w-page`
 (1200px) wide. Arbitrary lengths (`w-[340px]`, `gap-[3px]`) fail `scales.test.ts`; the few pixel-exact glyphs it
 allows (a 1.5px ring, a 7px monogram) are listed there with their reasons.
 
-App shells use the compact 16px gutter; board workspaces use the roomy 24px gutter. Shell layout owns this spacing;
-individual pages do not add outer gutters. The two are spacing tokens, `px-gutter-app` (`--spacing-gutter-app`, 16px:
-`ContentContainer`, `TitleBar`) and `px-gutter-board` (`--spacing-gutter-board`, 24px: `BoardContent`).
+App shells use the compact 16px gutter, a spacing token, `px-gutter-app` (`--spacing-gutter-app`, 16px:
+`ContentContainer`, `TitleBar`); an app whose workspace wants more room adds a gutter token of its own in its UI layer.
+Shell layout owns this spacing; individual pages do not add outer gutters.
 
 ## Breakpoints
 
@@ -617,7 +593,7 @@ plus two of Lar's own:
     </Specimen>
     <Specimen name="@split" detail="45rem">
         <Text as="div" variant="caption" tone="muted">
-            Wide enough for a main column beside a 16rem aside, as in the board's item dialog.
+            Wide enough for a main column beside a 16rem aside, as in an item's detail dialog.
         </Text>
     </Specimen>
 </Surface>
@@ -628,8 +604,8 @@ Shadows by role, deeper in the dark theme. They are plain variables, used as `sh
 `glass-menu` and `glass-dialog` already carry theirs. A component never mixes a shadow of its own: `scales.test.ts`
 fails on a `shadow-[…]`, `drop-shadow-[…]` or `inset-shadow-[…]` that names a colour. Besides the four surfaces,
 a solid fill's lit top edge is `inset-shadow-(--shadow-highlight)` (pressed: `--shadow-pressed`), and a logo over
-artwork lifts off it with `drop-shadow-(--shadow-logo)`. The showcase adds its own (`--shadow-showcase-*`, in
-`showcase/tokens.css`).
+artwork lifts off it with `drop-shadow-(--shadow-logo)`. An app's UI layer may add its own in its sheets, such as a
+marketing page's device shadows.
 
 **Card, not raised.** A card, panel or grouped list resting on the page takes `surface-card` (its surface,
 `line-card` edge, `--shadow-card` and, in dark, a faint top sheen): in light a hairline drop and a soft, short lift
@@ -677,8 +653,8 @@ Durations by role and two easings. A plain `transition-*` utility already runs a
         ['--motion-duration-fast', '150ms', 'A control’s feedback: hover, press, colour'],
         ['--motion-duration-base', '200ms', 'A small move or fade: an arrow nudging, an image appearing'],
         ['--motion-duration-slow', '300ms', 'Progress filling, a panel easing in'],
-        ['--motion-duration-deliberate', '700ms', 'A showcase scene settling'],
-        ['--motion-loop-pulse', '1.6s', 'A board glyph’s pulse, a skeleton’s shine'],
+        ['--motion-duration-deliberate', '700ms', 'A staged scene settling'],
+        ['--motion-loop-pulse', '1.6s', 'A status glyph’s pulse, a skeleton’s shine'],
         ['--motion-loop-breath', '2.4s', 'A status light’s slow breath (StatusIndicator’s pulse)'],
         ['--motion-loop-sweep', '1.8s', 'An indeterminate track'],
         ['--motion-loop-spin', '2.4s', 'A running build’s glyph'],
@@ -695,7 +671,7 @@ Durations by role and two easings. A plain `transition-*` utility already runs a
 
 **Reduced motion.** Under `prefers-reduced-motion: reduce` the durations collapse to an instant (transitions still
 finish and fire their end events), the repeating loops stop (a pulse holds still, the indeterminate track turns into a
-static striped bar, the skeleton's shine stops) and the showcase's reveals and loops stay still. The one exception is a spinner that
+static striped bar, the skeleton's shine stops) and a marketing page's reveals and loops stay still. The one exception is a spinner that
 says an action is in flight (`SpinnerIcon motion="always"`, a busy `Button`), which keeps turning. Loops also pause
 while out of view or behind an open dialog (`ambientMotion`).
 
@@ -793,7 +769,7 @@ The quiet-destructive rule (Introduction): a trigger that opens a destructive co
 colour at rest, in a quiet weight, and gains the danger surface on hover or keyboard focus: `Button
 variant="destructive-quiet"`, `IconButton tone="danger"` and `DropdownMenu.Item destructive`. It is never neutral grey
 text. Only the confirming action in `ConfirmDialog` uses a solid danger fill (`Button variant="destructive"`). This
-applies equally to catalog Delete, log deletion and Factory Abandon. A state word is never in the danger text colour
+applies equally to deleting a library, deleting logs and abandoning work. A state word is never in the danger text colour
 (the status-word rule); a problem's explanation stays in neutral text. The one sentence in the danger text colour is a
 field's error under its invalid control (`Field errorText`), which pairs with the control's danger edge.
 

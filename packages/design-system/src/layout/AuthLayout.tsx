@@ -5,7 +5,7 @@ import { Heading, Text } from '../typography/Typography';
 import { InlineBase, StackBase } from './Flow';
 
 interface AuthLayoutProps {
-    /** The Lar mark's accessible name, such as "Lar Server". */
+    /** The Lar mark's accessible name, such as the app's name. */
     brandLabel: string;
     /** The card's form. */
     children: ReactNode;

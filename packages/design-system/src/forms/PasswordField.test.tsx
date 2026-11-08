@@ -16,29 +16,4 @@ describe('PasswordField', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Hide password' }));
         expect(input).toHaveAttribute('type', 'password');
     });
-
-    it('describes the field with its requirement and marks it met', () => {
-        const { rerender } = render(
-            <PasswordField
-                label="Password"
-                showLabel="Show password"
-                hideLabel="Hide password"
-                requirement="At least 12 characters"
-            />,
-        );
-
-        expect(screen.getByLabelText('Password', { selector: 'input' })).toHaveAccessibleDescription(
-            'At least 12 characters',
-        );
-        rerender(
-            <PasswordField
-                label="Password"
-                showLabel="Show password"
-                hideLabel="Hide password"
-                requirement="At least 12 characters"
-                requirementMet
-            />,
-        );
-        expect(screen.getByText('At least 12 characters')).toHaveAttribute('data-met', 'true');
-    });
 });

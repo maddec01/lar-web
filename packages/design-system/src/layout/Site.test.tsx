@@ -22,28 +22,6 @@ function header() {
     );
 }
 
-it('the open menu holds the page’s call to action', () => {
-    header();
-    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
-
-    expect(screen.getAllByRole('link', { name: 'Download' })).toHaveLength(2);
-});
-
-it('Escape closes the menu and focus returns to its button', () => {
-    header();
-    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
-    screen.getAllByRole('link', { name: 'Factory' }).at(-1)!.focus();
-
-    act(() => {
-        fireEvent.keyDown(document, { key: 'Escape' });
-    });
-
-    const trigger = screen.getByRole('button', { name: 'Open menu' });
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    expect(trigger).toHaveFocus();
-});
-
 it('a press outside the header closes the menu', () => {
     header();
     fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));

@@ -1,14 +1,10 @@
-/* Everything an app needs from the design system in one import: Tailwind, ninna-ui's preset, Lar's tokens and
-   base styles, and the components' utilities, which Tailwind finds by scanning this package's sources. The
-   marketing showcase and Lar Factory's board are left out; a site that uses the showcase imports showcase.css, and
-   the board imports board.css, instead. */
+/* Everything an app needs from the design system in one import: Tailwind, ninna-ui's preset, the tokens and base
+   styles, and the components' utilities, which Tailwind finds by scanning this package's sources. An app adds its own
+   UI layer's sheets after it and scans that layer itself (`@source './ui'`). */
 @import './foundations/theme.css';
-@import './media/tokens.css';
 @import './feedback/app-splash.css';
 
 @source './';
-@source not './showcase';
-@source not './board';
 
 /* ninna-ui's own @source paths assume npm's flat node_modules and find nothing under pnpm, so its components'
    classes are scanned from here: next to this package once installed (pnpm's store or npm's tree), and in this

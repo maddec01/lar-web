@@ -1,6 +1,6 @@
-/* The app's boot screen (feedback/AppSplash.tsx; Lar Factory's board LoadingScreen draws the same one): the Lar lockup,
-   whose L draws itself around the block, over a status line and a calm progress track. It covers the window and fades
-   out once. apps/desktop's starting page draws the same lockup, so the board page carries on from it. */
+/* The app's boot screen (feedback/AppSplash.tsx; an app's own loading screen draws the same one with SplashView): the
+   Lar lockup, whose L draws itself around the block, over a status line and a calm progress track. It covers the
+   window and fades out once. */
 
 .loading-screen {
     position: fixed;

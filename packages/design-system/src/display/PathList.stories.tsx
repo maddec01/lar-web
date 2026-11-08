@@ -33,7 +33,7 @@ export const LongPaths: Story = {
     args: {
         label: 'Changed files',
         paths: [
-            { key: '1', path: 'packages/design-system/src/display/ResourceCard.tsx' },
+            { key: '1', path: 'packages/design-system/src/display/Badge.tsx' },
             {
                 key: '2',
                 path: '/mnt/media/music/lossless/Pink Floyd/Wish You Were Here (2011 Immersion Box Set)/Disc 2/05 Shine On You Crazy Diamond.flac',

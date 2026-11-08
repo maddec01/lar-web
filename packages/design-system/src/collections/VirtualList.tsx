@@ -97,7 +97,7 @@ export function VirtualList<TItem>({
     const visibleColumnIds = visibleColumns.map((column) => column.id);
     const virtualizer = useWindowVirtualizer({
         count,
-        // Layout belongs to stable catalog slots. Domain keys still identify
+        // Layout belongs to stable collection slots. Domain keys still identify
         // mounted rows below; changing page data must not remeasure every slot.
         // Section headers are measured with their mounted row wrappers.
         estimateSize: () => rowHeights[density],

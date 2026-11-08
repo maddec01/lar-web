@@ -1,8 +1,9 @@
 // Lar's own Oxlint rules. Oxlint loads this file as a JS plugin (`jsPlugins`), so it is plain JavaScript with no
 // imports: it runs from whichever repository's node_modules holds it.
 //
-// lar/boundaries         keeps an app's layers (app, features, shared, services) and the design system apart.
-// lar/no-visual-recipes  keeps every visual decision inside the design system: apps compose its components.
+// lar/boundaries         keeps an app's layers (app, features, shared, services, ui) and the design system apart.
+// lar/no-visual-recipes  keeps visual decisions out of an app's feature code: it composes components.
+// lar/no-raw-colours     keeps raw colours out of an app's UI layer (src/ui): it draws with the design system's tokens.
 
 import path from 'node:path';
 
@@ -27,13 +28,16 @@ const applicationState = /^(react-i18next|i18next|react-router|react-router-dom|
 
 const designSystemPackage = '@lar-works/design-system';
 
+/** The design system's building blocks, which only an app's UI layer (src/ui) composes. */
+const designSystemPrimitives = `${designSystemPackage}/primitives`;
+
 const boundaries = {
     meta: {
         type: 'problem',
         schema: [
             {
                 type: 'object',
-                properties: { role: { enum: ['app', 'design-system'] } },
+                properties: { role: { enum: ['app', 'ui', 'design-system'] } },
                 additionalProperties: false,
             },
         ],
@@ -66,6 +70,34 @@ const boundaries = {
                 report(node, 'Inside the design system, import the owning module directly to avoid barrel cycles.');
         }
 
+        function checkUi(node, specifier) {
+            const target = importedPath(filename, specifier);
+
+            if (!target) {
+                if (designSystemOnly.test(specifier))
+                    report(
+                        node,
+                        `Use the ${designSystemPackage} public API; only the design system uses ${specifier}.`,
+                    );
+
+                if (applicationState.test(specifier))
+                    report(
+                        node,
+                        'UI-layer components receive labels, values and callbacks; they do not own application state, routing or localization.',
+                    );
+
+                return;
+            }
+
+            const typeOnly = node.importKind === 'type' || node.exportKind === 'type';
+
+            if (!target.startsWith('ui/') && !(typeOnly && target.startsWith('shared/')))
+                report(
+                    node,
+                    'The UI layer composes the design system and other ui files only; app state, routing, services and features reach it as props.',
+                );
+        }
+
         function checkApp(node, specifier) {
             const sourceFeature = source.match(/^features\/([^/]+)\//)?.[1];
             const target = importedPath(filename, specifier);
@@ -77,6 +109,12 @@ const boundaries = {
                         `Use the ${designSystemPackage} public API; only the design system uses ${specifier}.`,
                     );
 
+                if (specifier === designSystemPrimitives || specifier.startsWith(`${designSystemPrimitives}/`))
+                    report(
+                        node,
+                        `Only the app's UI layer (src/ui) composes ${designSystemPrimitives}; use or add a component there.`,
+                    );
+
                 if (specifier.startsWith(designSystemPackage) && source.startsWith('services/'))
                     report(node, 'Services own data access and server state, never UI.');
 
@@ -86,7 +124,7 @@ const boundaries = {
             if (source.startsWith('shared/') && /^(app|features|services)\//.test(target))
                 report(node, 'Shared foundations cannot depend on application, features or services.');
 
-            if (source.startsWith('services/') && /^(app|features)\//.test(target))
+            if (source.startsWith('services/') && /^(app|features|ui)\//.test(target))
                 report(node, 'Services own data access and server state, never UI.');
 
             if (sourceFeature && target.startsWith('app/'))
@@ -110,6 +148,7 @@ const boundaries = {
             if (typeof specifier !== 'string') return;
 
             if (role === 'design-system') checkDesignSystem(node, specifier);
+            else if (role === 'ui') checkUi(node, specifier);
             else checkApp(node, specifier);
         }
 
@@ -183,6 +222,37 @@ const noVisualRecipes = {
                 if (node.name?.type === 'JSXIdentifier' && rawElements.test(node.name.name))
                     context.report({ node, messageId: 'element', data: { name: node.name.name } });
             },
+        };
+    },
+};
+
+/** A colour written out: a hex value, or an rgb()/hsl() call. Tokens' own sheets hold these; components never do. */
+const rawColour = /(?:^|[\s[(,:_])#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})(?![\w-])|\b(?:rgba?|hsla?)\(/i;
+
+/** No raw colour in an app's UI layer: in a class string (`bg-[#0a0a0a]`, `text-[rgb(0_0_0)]`) or a style, it would
+ *  bypass the design system's tokens, their contrast checks and their dark palette. Spacing and layout utilities, and
+ *  colours derived from tokens (`oklch(... var(--hue))`), are fine. */
+const noRawColours = {
+    meta: {
+        type: 'problem',
+        schema: [],
+        messages: {
+            raw: 'Raw colours belong in the design system: use a semantic colour utility or a token (var(--color-…)) instead.',
+        },
+    },
+    create(context) {
+        if (isTest(context.filename)) return {};
+
+        const check = (node, text) => {
+            if (typeof text === 'string' && rawColour.test(text)) context.report({ node, messageId: 'raw' });
+        };
+
+        return {
+            Literal(node) {
+                if (node.parent?.type !== 'ImportDeclaration' && node.parent?.type !== 'ExportNamedDeclaration')
+                    check(node, node.value);
+            },
+            TemplateElement: (node) => check(node, node.value?.cooked),
         };
     },
 };
@@ -275,5 +345,10 @@ const paddingLines = {
 
 export default {
     meta: { name: 'lar' },
-    rules: { boundaries, 'no-visual-recipes': noVisualRecipes, 'padding-lines': paddingLines },
+    rules: {
+        boundaries,
+        'no-visual-recipes': noVisualRecipes,
+        'no-raw-colours': noRawColours,
+        'padding-lines': paddingLines,
+    },
 };

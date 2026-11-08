@@ -81,6 +81,15 @@ export const TooltipTrigger = forwardRef<HTMLButtonElement, TooltipTriggerPublic
 
 TooltipTrigger.displayName = 'TooltipTrigger';
 
+/** The bare trigger, for a composition that keeps its own native control mounted as it is enabled and disabled
+ *  (TooltipTrigger wraps a disabled control instead): `asChild` makes its only child the trigger. */
+export const TooltipTriggerBase = forwardRef<
+    HTMLButtonElement,
+    Omit<ComponentPropsWithoutRef<'button'>, 'color'> & { asChild?: boolean }
+>((props, ref) => <TooltipEngine.Trigger {...props} ref={ref} />);
+
+TooltipTriggerBase.displayName = 'TooltipTriggerBase';
+
 type TooltipPopupProps = Omit<TooltipContentProps, 'className' | 'color' | 'hasArrow' | 'style'> & {
     /** The tooltip's text. */
     children?: ReactNode;

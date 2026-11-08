@@ -37,13 +37,13 @@ const sizes = {
         description: 'lead',
     },
     /** An app's first run, owning its page on the app's own scale: a page title's size, regular buttons, room for the
-     *  steps under them (`hero` is a website's scale). */
+     *  steps under them (`hero` is a marketing page's scale). */
     start: {
         layout: 'max-w-xl px-6 py-12 sm:py-16 gap-3',
         tile: 'size-10 rounded-lg [&>svg]:size-5',
         description: 'description',
     },
-    /** Owns a page region, such as an empty catalog or one that failed to load. */
+    /** Owns a page region, such as an empty library or one that failed to load. */
     page: {
         layout: 'max-w-lg px-6 py-16 gap-3',
         tile: 'size-10 rounded-lg [&>svg]:size-5',
