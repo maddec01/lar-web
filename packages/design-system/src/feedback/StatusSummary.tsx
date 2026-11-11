@@ -20,7 +20,7 @@ export function StatusSummary({ parts }: StatusSummaryProps) {
         <span data-slot="status-summary" className="inline-flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
             {parts.map((part, index) => (
                 <span key={`${index}:${part.label}`} className="inline-flex">
-                    <StatusIndicatorBase tone={resolveStatusTone(part)} size="sm" label={part.label} />
+                    <StatusIndicatorBase tone={resolveStatusTone(part)} label={part.label} />
                     {/* Screen readers hear the parts as one list: "5 active, 3 failed". */}
                     {index < parts.length - 1 ? <span className="sr-only">, </span> : null}
                 </span>

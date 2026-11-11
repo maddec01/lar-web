@@ -232,7 +232,7 @@ export const DialogFields: Story = {
     ),
 };
 
-/** A dense tool’s rows: controls flow beside the label and wrap under it, with help, content below and an error. */
+/** Rows with help, content below and an error. `layout="flow"` is deprecated: it draws the one settings row. */
 export const FlowRows: Story = {
     render: () => (
         <div className="max-w-2xl">
@@ -271,7 +271,7 @@ export const FlowRows: Story = {
     ),
 };
 
-/** `dense`: a dense tool’s group, its title with help and its description over the panels and notes it holds. */
+/** `dense`: a title with help and its description over the content as given (SettingsGroup `panel={false}`). */
 export const Dense: Story = {
     render: () => (
         <div className="grid max-w-2xl gap-7">

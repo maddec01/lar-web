@@ -4,7 +4,7 @@ import { AlertBase as Alert } from './Alert';
 
 /**
  * A form's result, such as a dialog's validation message or what its submit did. It stays mounted as a live region,
- * so screen readers hear each new message; empty, it has no border, padding or icon. With no tone it is a warning, as
+ * so screen readers hear each new message; empty, it draws nothing and takes no room. With no tone it is a warning, as
  * a validation message is. Line breaks in `text` show.
  */
 export function FormResult({
@@ -25,18 +25,12 @@ export function FormResult({
     /** A list under the text, such as the paths a call touched, indented and wrapping normally. */
     list?: readonly ReactNode[] | undefined;
 }) {
+    // The live region stays mounted and empty, so screen readers hear each new message; the alert itself only
+    // draws once there is one, so an empty result takes no room and paints nothing.
     return (
-        <Alert
-            id={id}
-            tone={tone}
-            data-tone={tone}
-            role="status"
-            aria-atomic="true"
-            showIcon={Boolean(text)}
-            className={text ? 'wrap-anywhere whitespace-pre-line' : 'border-0 p-0'}
-        >
-            {text && (
-                <>
+        <div id={id} data-tone={tone} role="status" aria-atomic="true" className="empty:hidden">
+            {text ? (
+                <Alert tone={tone} showIcon className="wrap-anywhere whitespace-pre-line">
                     {text}
                     {children}
                     {list && list.length > 0 && (
@@ -46,8 +40,8 @@ export function FormResult({
                             ))}
                         </ul>
                     )}
-                </>
-            )}
-        </Alert>
+                </Alert>
+            ) : null}
+        </div>
     );
 }

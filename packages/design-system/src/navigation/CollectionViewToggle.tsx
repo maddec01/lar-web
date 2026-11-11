@@ -21,7 +21,7 @@ export interface ViewToggleOption<V extends string> {
 /**
  * A group of icon buttons that picks one way of drawing a view, the picked one raised. `size="sm"` draws 24px buttons with
  * 14px icons, for a row's line. As `text`, each button is its label in small type, such as a dialog's panes in its
- * header.
+ * header, at a control's 13/500.
  */
 export function ViewToggle<V extends string>({
     label,
@@ -73,7 +73,7 @@ export function ViewToggle<V extends string>({
                         aria-pressed={value === option.value}
                         disabled={option.disabled}
                         onClick={() => onChange(option.value)}
-                        className={`focus-ring h-7 shrink-0 rounded-md px-2.5 text-xs font-medium whitespace-nowrap ${value === option.value ? 'bg-surface-raised text-fg shadow-(--shadow-raised)' : 'hover:text-fg text-fg-muted'}`}
+                        className={`focus-ring h-7 shrink-0 rounded-md px-2.5 text-(length:--text-ui) font-medium whitespace-nowrap ${value === option.value ? 'segment-chosen' : 'hover:text-fg text-fg-muted'}`}
                     >
                         {option.label}
                     </button>
@@ -153,5 +153,5 @@ export function CollectionViewToggle({
 }
 
 function buttonClasses(active: boolean, size: 'sm' | 'md'): string {
-    return `${size === 'sm' ? 'size-6 **:data-[slot=icon]:size-3.5' : 'size-8'} p-0 ${active ? 'bg-surface-raised text-fg shadow-(--shadow-raised)' : 'text-fg-muted'}`;
+    return `${size === 'sm' ? 'size-6 **:data-[slot=icon]:size-3.5' : 'size-8'} p-0 ${active ? 'segment-chosen' : 'text-fg-muted'}`;
 }

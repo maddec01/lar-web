@@ -23,7 +23,7 @@ export function SidebarNavigationItem({
         ...tabbable,
         'aria-current': active ? ('page' as const) : undefined,
         'aria-description': notification,
-        className: `flex h-8 shrink-0 items-center gap-2 rounded-md px-2 text-sm transition-colors focus-ring-inset [&>svg]:size-4 ${active ? 'bg-fill-selected font-medium text-fg [&>svg]:text-fg' : 'text-fg-soft hover:bg-fill-hover hover:text-fg [&>svg]:text-fg-muted'}`,
+        className: `flex h-8 shrink-0 items-center gap-2 rounded-md px-2 text-sm transition-colors focus-ring-inset [&>svg]:size-4 ${active ? 'current font-medium [&>svg]:text-current' : 'text-fg-soft hover:bg-fill-hover hover:text-fg [&>svg]:text-fg-muted'}`,
     };
 
     const indicator = notification ? <StatusIndicatorBase tone="warning" size="sm" className="ml-auto" /> : null;

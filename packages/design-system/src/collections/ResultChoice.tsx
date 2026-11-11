@@ -26,7 +26,7 @@ export function ResultChoice({
     const detailId = useId();
 
     return (
-        <div className="hover:bg-surface-raised has-checked:bg-primary-surface min-w-0 transition-colors has-disabled:opacity-60">
+        <div className="hover:bg-fill-hover has-checked:bg-primary-surface min-w-0 transition-colors has-disabled:opacity-60">
             <div className="focus-ring-within flex min-w-0 items-center gap-3">
                 <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 has-disabled:cursor-default">
                     <input

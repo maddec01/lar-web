@@ -137,12 +137,13 @@ export const Inline: Story = {
     ],
 };
 
-/** An app's first run owning its page, on the app's scale: a page title, regular buttons and the steps under them, as
- *  lar-server's dashboard before its first catalog. */
+/** An app's first run owning its page, the hero on the app's scale: the mark on the product's halo, a 22/600 title, a
+ *  14/400 sentence, `md` buttons and the steps under them, as lar-server's dashboard before its first catalog. */
 export const Start: Story = {
     args: {
         size: 'start',
-        artwork: <BrandMark label="Lar" />,
+        product: 'server',
+        artwork: <BrandMark label="Lar" size="lg" />,
         icon: undefined,
         title: 'Let’s set up your server',
         description: 'Lar plays what’s in the folders you give it. Three steps and it’s ready.',
@@ -169,16 +170,17 @@ export const Hero: Story = {
     },
 };
 
-/** Artwork in its own colours in place of the icon tile, and an action of the caller’s own, as Lar Factory’s empty
- *  board. */
-export const WithArtwork: Story = {
+/** The same hero on Factory's amber halo, with an action of the caller’s own, as Lar Factory’s empty board. */
+export const FactoryFirstRun: Story = {
     args: {
-        artwork: <BrandMark label="Lar" />,
+        size: 'start',
+        product: 'factory',
+        artwork: <BrandMark label="Lar" size="lg" />,
         icon: undefined,
         title: 'Add your first Project',
         description: 'Connect a Project to see its work and start agents from this board.',
         primaryAction: undefined,
-        actions: <Button variant="secondary">Add a Project</Button>,
+        actions: <Button>Add a Project</Button>,
     },
 };
 

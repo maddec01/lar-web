@@ -9,10 +9,27 @@ type Mode = 'light' | 'dark';
 /** WCAG AA for text this small. */
 export const CONTRAST_FLOOR = 4.5;
 
-/** The palette's foreground, and the surface a chip's text contrasts least with: the fill a picked row takes. */
+/** A translucent token (#rrggbbaa) as it shows on its theme's page, which is opaque. */
+const onPage = (hex: string, mode: Mode): string => {
+    if (hex.length !== 9) return hex;
+
+    const alpha = parseInt(hex.slice(7, 9), 16) / 255;
+    const page = semanticColors['surface-page'][mode];
+
+    return `#${[1, 3, 5]
+        .map((at) =>
+            Math.round(parseInt(hex.slice(at, at + 2), 16) * alpha + parseInt(page.slice(at, at + 2), 16) * (1 - alpha))
+                .toString(16)
+                .padStart(2, '0'),
+        )
+        .join('')}`;
+};
+
+/** The palette's foreground, and the surface a chip's text contrasts least with: the fill a picked row takes, as it
+ *  shows on the page. */
 export const PALETTE: Record<Mode, { foreground: string; surface: string }> = {
-    light: { foreground: semanticColors.fg.light, surface: semanticColors['fill-selected'].light },
-    dark: { foreground: semanticColors.fg.dark, surface: semanticColors['fill-selected'].dark },
+    light: { foreground: semanticColors.fg.light, surface: onPage(semanticColors['fill-selected'].light, 'light') },
+    dark: { foreground: semanticColors.fg.dark, surface: onPage(semanticColors['fill-selected'].dark, 'dark') },
 };
 
 const FILL = 0.16;

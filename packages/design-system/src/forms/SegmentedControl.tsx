@@ -64,10 +64,8 @@ export function SegmentedControl<V extends string>({
                         tabIndex={option.value === stop ? 0 : -1}
                         disabled={disabled || option.disabled}
                         onClick={() => onValueChange(option.value)}
-                        className={`focus-ring min-w-0 truncate rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors disabled:opacity-64 ${
-                            checked
-                                ? 'bg-surface-raised text-fg shadow-(--shadow-raised)'
-                                : 'text-fg-muted hover:text-fg disabled:hover:text-fg-muted'
+                        className={`focus-ring min-w-0 truncate rounded-md px-3 text-(length:--text-ui) font-medium whitespace-nowrap transition-colors disabled:opacity-64 ${
+                            checked ? 'segment-chosen' : 'text-fg-muted hover:text-fg disabled:hover:text-fg-muted'
                         }`}
                     >
                         {option.label}

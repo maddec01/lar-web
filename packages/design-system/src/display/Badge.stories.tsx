@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CheckIcon, CircleAlertIcon, Clock3Icon } from 'lucide-react';
 
+import { categoricalHues } from '../foundations/tokens';
 import { Badge } from './Badge';
 
 const meta = {
@@ -113,6 +114,22 @@ export const Sizes: Story = {
             </Badge>
             <Badge {...args} size="md" tone="accent">
                 In development
+            </Badge>
+        </div>
+    ),
+};
+
+/** The one kind badge: a kind's hue on the categorical palette, at full strength, beside a work's title. */
+export const Kinds: Story = {
+    render: () => (
+        <div className="flex flex-wrap items-center gap-2">
+            {Object.entries(categoricalHues).map(([name, hue]) => (
+                <Badge key={name} hue={hue}>
+                    {name}
+                </Badge>
+            ))}
+            <Badge hue={categoricalHues.rose} muted>
+                switched off
             </Badge>
         </div>
     ),

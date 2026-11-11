@@ -4,6 +4,8 @@
 // needs is promoted into the main entry. Feature code never imports this entry (lint enforces it).
 export { ButtonBase } from './actions/Button';
 export { BadgeBase } from './display/Badge';
+export { CardBase } from './display/Card';
+export { PanelBase } from './display/Panel';
 export { type VisibleBounds, useVisibleBounds } from './display/VisibleBounds';
 export { type SplashLine, type SplashMark, SplashView } from './feedback/AppSplash';
 export { SpinnerIcon } from './feedback/Loading';

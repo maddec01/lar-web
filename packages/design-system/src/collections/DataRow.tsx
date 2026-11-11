@@ -21,7 +21,7 @@ function DataRowRoot({
         <LinkBoxBase
             role="row"
             aria-rowindex={rowIndex}
-            className={`group group/media-item border-line/60 grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 border-b px-3 transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-surface-raised focus-within:bg-surface-raised' : ''}`}
+            className={`group group/media-item border-line/60 grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 border-b px-3 transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-fill-hover focus-within:bg-fill-hover' : ''}`}
         >
             {children}
         </LinkBoxBase>
@@ -51,7 +51,9 @@ function DataRowPrimary(props: DataRowPrimaryProps) {
     return (
         <span className="flex min-w-0 items-center gap-3">
             {artwork ? (
-                <span className="size-10 shrink-0 group-data-[density=compact]/list:size-7">{artwork}</span>
+                <span className="size-10 shrink-0 group-data-[rows=compact]/list:size-7 group-data-[rows=stacked]/list:size-9">
+                    {artwork}
+                </span>
             ) : null}
             <span className="min-w-0 flex-1">
                 <TextBase

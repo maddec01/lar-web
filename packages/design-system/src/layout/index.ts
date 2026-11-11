@@ -8,14 +8,15 @@ export { Section } from './Section';
 export { SectionTitle } from './SectionTitle';
 export { SidebarNavigationItem } from './sidebar/SidebarNavigationItem';
 export { SidebarNavigationGroup, SidebarPane } from './sidebar/SidebarPane';
-export { TitleBar, TitleBarTrail, type TitleBarTrailItem } from './TitleBar';
+export { TitleBar, type TitleBarHome, TitleBarLabel, TitleBarTrail, type TitleBarTrailItem } from './TitleBar';
 export { CommandPaletteTrigger, type CommandPaletteTriggerToken } from './toolbar/CommandPaletteTrigger';
 export { TitleBarSettingsButton } from './toolbar/TitleBarSettingsButton';
 export { ToolbarStatusGroup } from './toolbar/ToolbarStatusGroup';
 export { ToolbarStatusItem } from './toolbar/ToolbarStatusItem';
+export { ToolbarCounter } from './toolbar/ToolbarCounter';
 export { WorkspaceActionsHeader } from './WorkspaceActionsHeader';
 export { ContentContainer } from './ContentContainer';
 export { Eyebrow, PageSection, SectionHeading } from './PageSection';
 export { SiteFooter, SiteHeader, type SiteLink, SiteShell } from './Site';
 
-export { SettingsNav } from './sidebar/SettingsNav';
+export { SettingsNav, SettingsSearch } from './sidebar/SettingsNav';

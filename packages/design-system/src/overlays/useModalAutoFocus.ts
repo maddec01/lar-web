@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { markFocusReturn } from './FocusReturn';
+
 /** Focuses a dialog's first editable field when it opens, or once one appears, unless `focusFirstField` is
  *  false, such as while the caller focuses something else; turning it off stops a pending wait. */
 export function useModalAutoFocus(focusFirstField = true, focusContent = true) {
@@ -75,6 +77,7 @@ export function useModalAutoFocus(focusFirstField = true, focusContent = true) {
 
     const onCloseAutoFocus = (event: Event) => {
         cleanup.current?.();
+        markFocusReturn();
 
         if (returnFocus.current?.isConnected) {
             event.preventDefault();

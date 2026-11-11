@@ -50,11 +50,12 @@ function TokenChip({ token }: { token: CommandPaletteTriggerToken }) {
     );
 }
 
-/** The trigger's one look, with tokens or without, in every app: a 28px field (16px magnifier, 14px muted word, the key
- *  hint at its end) on the control surface, or, folded, the title bar's 28px icon button. No prop changes it. */
+/** The trigger's one look, with tokens or without, in every app: a 28px text field (the field's fill and edge, a 6px
+ *  radius, a 16px magnifier, the muted word at a control's 13/500, the key hint at its end), or, folded, the title
+ *  bar's 28px icon button. No prop changes it. */
 const look = {
     base: 'focus-ring relative flex h-7 shrink-0 cursor-pointer items-center transition-colors [&>svg]:size-4 [&>svg]:shrink-0',
-    field: 'border-line bg-surface-control text-fg-muted hover:border-line-hover hover:text-fg-soft gap-2 rounded-lg border px-2.5 text-sm',
+    field: 'border-line-field bg-surface-field text-fg-muted hover:border-line-field-hover hover:text-fg-soft gap-2 rounded-md border px-2.5 text-(length:--text-ui) font-medium',
     folded: 'hover:bg-fill-hover hover:text-fg w-7 justify-center rounded-md text-(--color-header-icon)',
 } as const;
 

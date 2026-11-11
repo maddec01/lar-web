@@ -18,14 +18,13 @@ export interface BadgeProps extends Omit<
     labelColor?: string | undefined;
     /** Dims the text to the muted colour, for an entry that is listed but switched off. */
     muted?: boolean;
+    /** A kind's hue on the categorical palette (an oklch angle, `categoricalHues`), in place of the tone: the one
+     *  kind badge in every app (an item's bug or feature, a media kind), at full strength: an 11% tint, a 20% hairline
+     *  and text in the hue. Never a status hue. */
+    hue?: number | undefined;
 }
 
-type BadgeBaseProps = BadgeProps &
-    Pick<NinnaBadgeProps, 'className' | 'style'> & {
-        /** A hue (an oklch hue angle, such as 25) that colours the badge in place of its tone, as a soft tint with text
-         *  and a hairline in the hue, such as a kind's own colour. */
-        hue?: number | undefined;
-    };
+type BadgeBaseProps = BadgeProps & Pick<NinnaBadgeProps, 'className' | 'style'>;
 
 /** The one badge: a pill on a soft tint of its tone, in the tone's text colour, edged by a hairline of the tone.
  *  Kinds, labels, counts, states and formats all take it. */
@@ -75,7 +74,7 @@ export function BadgeBase({
     );
 }
 
-/** The one badge, for a state, a count, a label or a format. */
+/** The one badge, for a verdict, a kind (`hue`), a label or a format. */
 export function Badge(props: BadgeProps) {
     return <BadgeBase {...props} />;
 }

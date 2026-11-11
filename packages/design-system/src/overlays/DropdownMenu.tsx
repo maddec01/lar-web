@@ -35,6 +35,7 @@ import type { StatusColour } from '../feedback/StatusState';
 /** A menu part's look is the design system's: its parts take no class or style. */
 type Unstyled<Props> = Omit<Props, 'className' | 'color' | 'style'>;
 
+import { quietFocusReturn } from './FocusReturn';
 import { useInertBackground } from './InertBackground';
 import { scrollFadeClassName, useScrollFade } from './useScrollFade';
 import { windowGutterProps } from './WindowGutter';
@@ -83,6 +84,7 @@ const DropdownMenuContent = forwardRef<HTMLDivElement, DropdownMenuContentPolicy
                 sideOffset={sideOffset}
                 aria-describedby={statusId}
                 {...props}
+                {...quietFocusReturn(props)}
                 className={`${contentWidthClasses[width]} ${height === 'capped' ? 'max-h-[min(32rem,var(--radix-dropdown-menu-content-available-height))]' : 'max-h-(--radix-dropdown-menu-content-available-height)'} flex max-w-[calc(100vw-2rem)] flex-col overflow-clip p-0`}
             >
                 <MenuStatusContext value={setStatusId}>
@@ -262,7 +264,7 @@ function DropdownMenuControlRow({
 }) {
     return (
         <div data-slot="menu-control-row" className="flex min-h-9 items-center justify-between gap-3 px-2 py-0.5">
-            <span className="text-fg min-w-0 truncate text-sm">{label}</span>
+            <span className="text-fg min-w-0 truncate text-(length:--text-ui) font-medium">{label}</span>
             {children}
         </div>
     );
@@ -296,8 +298,8 @@ function DropdownMenuStatus({
                 <span className="flex h-5 w-4 shrink-0 items-center justify-center">
                     <StatusIndicator {...colour} />
                 </span>
-                <span className="min-w-0 flex-1 text-sm leading-5">
-                    <span className="text-fg block wrap-break-word">{label}</span>
+                <span className="min-w-0 flex-1 text-(length:--text-ui) leading-5">
+                    <span className="text-fg block font-medium wrap-break-word">{label}</span>
                     {detail ? <span className="text-fg-muted block text-xs wrap-break-word">{detail}</span> : null}
                 </span>
             </div>
@@ -319,7 +321,7 @@ function DropdownMenuItemText({
     return (
         <span className="min-w-0 flex-1 truncate">
             {children}
-            {detail && <span className="block truncate text-xs">{detail}</span>}
+            {detail && <span className="block truncate text-xs font-normal">{detail}</span>}
         </span>
     );
 }

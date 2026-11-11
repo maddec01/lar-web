@@ -126,3 +126,39 @@ export const Message: Story = {
         message: 'Changes here apply to every catalog that holds this album.',
     },
 };
+
+/** The compact alert: one line under the row or control it is about, such as an action that failed on a board row. */
+export const Inline: Story = {
+    args: {
+        presentation: 'inline',
+        tone: 'danger',
+        title: undefined,
+        message: 'Couldn’t start the build: T3 Code isn’t running.',
+        action: (
+            <Button variant="quiet" size="sm">
+                Try again
+            </Button>
+        ),
+    },
+    decorators: [
+        (Story) => (
+            <div className="surface-panel max-w-xl rounded-xl border">
+                <div className="flex h-10 items-center px-3 text-sm">Fix the importer’s date parsing</div>
+                <div className="px-3 pb-2">
+                    <Story />
+                </div>
+            </div>
+        ),
+    ],
+};
+
+export const InlineTones: Story = {
+    render: () => (
+        <div className="flex max-w-xl flex-col gap-2">
+            <Alert presentation="inline" tone="danger" message="Couldn’t set Queued." dismissible onDismiss={fn()} />
+            <Alert presentation="inline" tone="warning" message="GitHub is slow to answer; the labels may be stale." />
+            <Alert presentation="inline" tone="success" message="Saved." />
+            <Alert presentation="inline" tone="info" message="Auto-build waits for the build limit." />
+        </div>
+    ),
+};

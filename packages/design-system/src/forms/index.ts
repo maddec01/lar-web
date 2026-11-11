@@ -29,5 +29,9 @@ export { Textarea } from './Textarea';
 
 export { SettingsSection } from './SettingsSection';
 export { SettingsRowSkeleton } from './SettingsRow';
+export { SettingsGroup, type SettingsGroupProps, type SettingsSkeletonRow } from './SettingsGroup';
+export { SettingsPage } from './SettingsPage';
+export { type SettingsDraftOptions, SettingsFooter, useSettingsDraft } from './SettingsDraft';
+export { SettingsControl, SettingsDetails, SettingsNote, SettingsReason, SettingsValueList } from './SettingsParts';
 export { DateField, type DateFieldDraft, type DateFieldProps } from './DateField';
 export { formatDateField, formatDateLong, parseDateField } from './DateValue';

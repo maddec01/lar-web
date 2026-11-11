@@ -3,6 +3,7 @@ import { DownloadIcon, GitPullRequestIcon, MessageSquareTextIcon } from 'lucide-
 import { fn } from 'storybook/test';
 
 import { GitHubIcon } from '../icons/BrandIcons';
+import { Button } from './Button';
 import { ButtonLink } from './ButtonLink';
 
 const meta = {
@@ -10,8 +11,9 @@ const meta = {
     component: ButtonLink,
     args: { href: '#install', children: 'Install Lar', variant: 'primary', size: 'lg', onNavigate: fn() },
     argTypes: {
-        variant: { control: 'inline-radio', options: ['primary', 'secondary', 'inverse', 'quiet'] },
-        size: { control: 'inline-radio', options: ['md', 'lg'] },
+        variant: { control: 'inline-radio', options: ['primary', 'secondary', 'inverse', 'quiet', 'tinted'] },
+        size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+        look: { control: 'inline-radio', options: ['marketing', 'app'] },
     },
 } satisfies Meta<typeof ButtonLink>;
 
@@ -74,6 +76,34 @@ export const Compact: Story = {
                 icon={<MessageSquareTextIcon />}
                 aria-label="Open thread"
             />
+        </div>
+    ),
+};
+
+/** The app look at both app sizes beside the Button it matches: `sm` 28px on a row or a card, `md` 32px in a dialog's
+ *  footer, each in the recipes a link takes, `tinted` among them. */
+export const AppLook: Story = {
+    render: () => (
+        <div className="flex flex-col gap-4">
+            {(['sm', 'md'] as const).map((size) => (
+                <div key={size} className="flex flex-wrap items-center gap-3">
+                    {(['primary', 'tinted', 'secondary', 'quiet'] as const).map((variant) => (
+                        <ButtonLink
+                            key={variant}
+                            href={`#${variant}`}
+                            look="app"
+                            size={size}
+                            variant={variant}
+                            icon={<GitPullRequestIcon />}
+                        >
+                            {variant}
+                        </ButtonLink>
+                    ))}
+                    <Button size={size} variant="tinted" leftIcon={<GitPullRequestIcon />}>
+                        Button
+                    </Button>
+                </div>
+            ))}
         </div>
     ),
 };

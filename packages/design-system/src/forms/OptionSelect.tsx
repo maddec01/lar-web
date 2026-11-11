@@ -67,7 +67,7 @@ const withoutClosedTypeahead = (event: KeyboardEvent) => {
 };
 
 const inlineClasses =
-    'text-fg hover:bg-fill-hover data-[state=open]:bg-fill-selected focus-ring h-7 w-max gap-1.5 rounded-md px-1.5 text-sm disabled:opacity-50';
+    'text-fg hover:bg-fill-hover data-[state=open]:bg-fill-selected focus-ring h-7 w-max gap-1.5 rounded-md px-1.5 text-(length:--text-ui) font-medium disabled:opacity-50';
 
 /** A Select over plain options, each with an optional icon; while they load, a control-shaped skeleton. */
 export function OptionSelect<Value extends string>(props: OptionSelectProps<Value>) {

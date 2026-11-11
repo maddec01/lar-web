@@ -24,29 +24,29 @@ const SUCCESS_MS = 5_000;
 /** Each notification's fade, as wide as a Modal body's: notifications scrolled past fade out at the stack's edges. */
 const FADE_PX = 24;
 
+/** How many notifications show at once; older ones wait behind them and return as the newer ones close. */
+const VISIBLE = 3;
+
 /**
- * The page's notifications. `corner` shows a few at a time in the bottom right corner. `stack` keeps every one, oldest
- * above the newest, above every dialog: when they don't fit, the stack scrolls, follows the newest while you are at the
- * bottom, and fades those scrolled past at its edges, as a Modal's body does. Mount one, once, outside the page's root.
+ * The page's notifications, one presentation in every app: at most three in the bottom right corner, 384px wide, on the
+ * menu glass, above every dialog, oldest above the newest. A success or an info closes itself five seconds after the
+ * pointer and the focus leave it; a warning or a failure stays until it is closed. When they don't fit the window, the
+ * stack scrolls, follows the newest while you are at the bottom, and fades those scrolled past at its edges, as a
+ * Modal's body does. Mount one, once, outside the page's root.
  */
-export function Notifications({
-    presentation = 'corner',
-}: {
-    /** `corner` shows the newest at a time in the bottom right corner; `stack` keeps every notification, newest last. */
+export function Notifications(_props: {
+    /** @deprecated Every app now shares one presentation; `corner` and `stack` both draw it. */
     presentation?: 'corner' | 'stack';
 }) {
-    if (presentation === 'stack')
-        return (
-            <Toaster
-                ref={followNewest}
-                position="bottom-right"
-                max={Infinity}
-                className="notification-stack"
-                offset="calc(var(--spacing) * 1)"
-            />
-        );
-
-    return <Toaster position="bottom-right" />;
+    return (
+        <Toaster
+            ref={followNewest}
+            position="bottom-right"
+            max={VISIBLE}
+            className="notification-stack"
+            offset="calc(var(--spacing) * 1)"
+        />
+    );
 }
 
 /**

@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from 'lucide-react';
-import { type ComponentPropsWithoutRef, createContext, type ReactNode, useContext } from 'react';
+import { Children, type ComponentPropsWithoutRef, createContext, type ReactNode, useContext } from 'react';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { tabbable } from '../foundations/KeyboardFocus';
@@ -8,6 +8,33 @@ import { LinkBoxBase, LinkOverlay } from '../typography/Link';
 import { Text, TextBase } from '../typography/Typography';
 
 const ResultListContext = createContext({ compact: false, listbox: true, card: false });
+
+/** Set by ResultGroups around its one group, whose plain list then flows into the columns itself. */
+const LoneGroupContext = createContext(false);
+
+/** The grouped layout's column: 320px at least, as many as fit. */
+const groupColumns = 'grid-cols-[repeat(auto-fit,minmax(min(20rem,100%),1fr))]';
+const loneColumns = 'grid grid-cols-[repeat(auto-fill,minmax(min(20rem,100%),1fr))] gap-x-6 gap-y-1';
+
+interface ResultGroupsProps {
+    /** One Section per group, each holding a ResultList. */
+    children: ReactNode;
+}
+
+/**
+ * Result lists in groups (Music, Movies, People…), each a titled Section holding a ResultList: side by side in as
+ * many 320px columns as fit, so two groups share the page instead of leaving a third of it empty. A lone group's rows
+ * flow into those columns themselves (a plain list's), rather than one long list down the page's first column.
+ */
+export function ResultGroups({ children }: ResultGroupsProps) {
+    const lone = Children.toArray(children).length === 1;
+
+    return (
+        <div data-slot="result-groups" className={`grid ${groupColumns} items-start gap-x-6 gap-y-8`}>
+            <LoneGroupContext.Provider value={lone}>{children}</LoneGroupContext.Provider>
+        </div>
+    );
+}
 
 interface ResultListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'className' | 'color' | 'role' | 'style'> {
     /** Names the list for screen readers, such as "Search results". */
@@ -40,6 +67,8 @@ export function ResultList({
     disabled = false,
     ...props
 }: ResultListProps) {
+    const lone = useContext(LoneGroupContext);
+
     if (presentation === 'choice')
         return (
             <div {...props}>
@@ -47,7 +76,7 @@ export function ResultList({
                     disabled={disabled}
                     aria-label={label}
                     data-presentation="choice"
-                    className="border-line bg-fill-muted/50 divide-line min-w-0 divide-y overflow-hidden rounded-lg border"
+                    className="surface-panel divide-line min-w-0 divide-y overflow-hidden rounded-xl border"
                 >
                     {children}
                 </fieldset>
@@ -55,6 +84,7 @@ export function ResultList({
         );
 
     const card = presentation === 'card';
+    const flows = lone && presentation === 'plain' && !loading;
 
     return (
         <ResultListContext.Provider value={{ compact: density === 'compact', listbox: role === 'listbox', card }}>
@@ -67,8 +97,10 @@ export function ResultList({
                     data-presentation={presentation}
                     className={
                         card
-                            ? 'surface-card divide-line flex flex-col divide-y overflow-hidden rounded-xl border'
-                            : 'flex flex-col gap-1'
+                            ? 'surface-panel divide-line flex flex-col divide-y overflow-hidden rounded-xl border'
+                            : flows
+                              ? loneColumns
+                              : 'flex flex-col gap-1'
                     }
                 >
                     {loading ? Array.from({ length: 8 }, (_, index) => <ResultRow key={index} loading />) : children}
@@ -176,7 +208,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
     const row =
         href && !listbox ? (
             <LinkBoxBase
-                className={`${classes} ${card ? 'hover:bg-fill-hover focus-within:bg-fill-hover' : 'hover:bg-surface-raised focus-within:bg-surface-raised'} has-[[aria-current=page]]:bg-surface-raised has-[[aria-current=page]]:ring-line has-[[aria-current=page]]:ring-1`}
+                className={`${classes} hover:bg-fill-hover focus-within:bg-fill-hover has-[[aria-current=page]]:current`}
             >
                 {content}
             </LinkBoxBase>
@@ -188,7 +220,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
                 role={listbox ? 'option' : undefined}
                 aria-selected={listbox ? selected : undefined}
                 aria-current={current ? 'page' : undefined}
-                className={`${classes} hover:bg-surface-raised aria-selected:bg-primary-surface aria-selected:ring-primary-ring focus-ring disabled:pointer-events-none disabled:opacity-60 aria-selected:ring-1 aria-selected:ring-inset`}
+                className={`${classes} hover:bg-fill-hover aria-selected:current aria-[current=page]:current focus-ring disabled:pointer-events-none disabled:opacity-60`}
                 onClick={onSelect}
             >
                 {content}

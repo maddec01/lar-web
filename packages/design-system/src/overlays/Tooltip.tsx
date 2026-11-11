@@ -1,6 +1,15 @@
 import { Tooltip as NinnaTooltip, type TooltipContentProps, type TooltipTriggerProps } from '@ninna-ui/overlays';
 import { Slot, TooltipEngine } from '@ninna-ui/react-internal';
-import { type ComponentProps, type ComponentPropsWithoutRef, forwardRef, isValidElement, type ReactNode } from 'react';
+import {
+    type ComponentProps,
+    type ComponentPropsWithoutRef,
+    type FocusEvent,
+    forwardRef,
+    isValidElement,
+    type ReactNode,
+} from 'react';
+
+import { isFocusReturn } from './FocusReturn';
 
 interface TooltipProviderProps {
     /** The tooltips that share the delay. */
@@ -45,16 +54,27 @@ type TooltipTriggerPublicProps = Omit<ComponentPropsWithoutRef<'button'>, 'class
     children?: ReactNode;
 };
 
-/** What opens the tooltip: a disabled control still does, through a focusable wrapper. */
+/** Focus a closing menu, popover or dialog hands back to the trigger doesn't open its tooltip (the engine skips a
+ *  focus whose default is prevented); hover and focus the reader moves still do. */
+function skipReturnedFocus(onFocus?: (event: FocusEvent<HTMLButtonElement>) => void) {
+    return (event: FocusEvent<HTMLButtonElement>) => {
+        onFocus?.(event);
+
+        if (isFocusReturn()) event.preventDefault();
+    };
+}
+
+/** What opens the tooltip on hover or keyboard focus, never on the focus an overlay hands back as it closes: a
+ *  disabled control still does, through a focusable wrapper. */
 export const TooltipTrigger = forwardRef<HTMLButtonElement, TooltipTriggerPublicProps>(
-    ({ asChild, children, ...props }, ref) => {
+    ({ asChild, children, onFocus, ...props }, ref) => {
         const childProps = asChild && isValidElement<TooltipTriggerProps>(children) ? children.props : undefined;
 
         if (props.disabled || childProps?.disabled) {
             const Trigger = asChild ? Slot : 'button';
 
             return (
-                <NinnaTooltip.Trigger asChild>
+                <NinnaTooltip.Trigger asChild onFocus={skipReturnedFocus()}>
                     <span
                         tabIndex={0}
                         role="button"
@@ -63,7 +83,7 @@ export const TooltipTrigger = forwardRef<HTMLButtonElement, TooltipTriggerPublic
                         aria-labelledby={props['aria-labelledby'] ?? childProps?.['aria-labelledby']}
                         className="inline-flex [&>*]:pointer-events-none"
                     >
-                        <Trigger type="button" {...props} ref={ref}>
+                        <Trigger type="button" {...props} onFocus={onFocus} ref={ref}>
                             {children}
                         </Trigger>
                     </span>
@@ -72,7 +92,7 @@ export const TooltipTrigger = forwardRef<HTMLButtonElement, TooltipTriggerPublic
         }
 
         return (
-            <NinnaTooltip.Trigger {...props} ref={ref} asChild={asChild}>
+            <NinnaTooltip.Trigger {...props} onFocus={skipReturnedFocus(onFocus)} ref={ref} asChild={asChild}>
                 {children}
             </NinnaTooltip.Trigger>
         );
@@ -108,9 +128,13 @@ interface TooltipPopupBaseProps extends TooltipPopupProps {
     className?: string;
 }
 
+/** A tooltip keeps 8px from the window's edges (half a popup's page gutter, as it is smaller and closer to its
+ *  trigger): one by a window's edge, such as Settings at a title bar's end, shifts along it rather than touching it. */
+const tooltipGutterProps: object = { collisionPadding: 8 };
+
 /** The popup for the design system's own compositions, which may fit it to their layout with a class. */
 export const TooltipPopupBase = forwardRef<HTMLDivElement, TooltipPopupBaseProps>((props, ref) => (
-    <NinnaTooltip.Content {...props} ref={ref} />
+    <NinnaTooltip.Content {...tooltipGutterProps} {...props} ref={ref} />
 ));
 
 TooltipPopupBase.displayName = 'TooltipPopupBase';

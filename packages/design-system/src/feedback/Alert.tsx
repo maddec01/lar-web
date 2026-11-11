@@ -1,7 +1,10 @@
 import { Alert as NinnaAlert, type AlertProps as NinnaAlertProps } from '@ninna-ui/feedback';
-import { Children, type ReactNode, useContext } from 'react';
+import { CircleAlertIcon, CircleCheckIcon, InfoIcon, type LucideIcon, TriangleAlertIcon } from 'lucide-react';
+import { Children, type ReactNode, type Ref, useContext } from 'react';
 
+import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { CompactAlertContext } from './CompactAlertContext';
+import { DismissButton } from './DismissButton';
 import type { StatusTone } from './StatusIndicator';
 
 /** An alert's look is its tone and size, never a class of the caller's. */
@@ -33,19 +36,35 @@ export interface AlertProps extends Omit<NinnaAlertProps, 'color' | 'size' | 'va
     sticky?: boolean;
     /** What kind of status it is: `info` (the default), `success`, `warning` or `danger`. */
     tone?: Exclude<StatusTone, 'neutral'>;
+    /** `box` (the default) is the notice's box. `inline` is the compact alert: one line under the row or control it is
+     *  about (an action's failure under a board row, a field's save error), its tone's icon, the message at 12px and
+     *  its action or close button at the line's end, on a faint wash of the tone. Never bare red text. */
+    presentation?: 'box' | 'inline';
+    /** The alert's element, to move the focus to it (an `inline` alert). */
+    ref?: Ref<HTMLDivElement>;
 }
 
 type AlertBaseProps = AlertProps & Pick<NinnaAlertProps, 'className' | 'style'>;
 
-/** The one recipe, per tone, for every notice in every app: the tone's quiet surface, its hairline and its icon, and the
- *  words in the primary text colour (title semibold, message regular). Never a grey box with a coloured edge, a plain
- *  bordered box or a box without the tone's icon: one notice reads the same in a page, a dialog or a pane, at either
- *  size. A pinned (`sticky`) alert keeps the same surface, which is opaque, and adds the raised shadow. */
+/** The one recipe, per tone, for every notice in every app, the attention recipe at a lower strength: the tone's wash
+ *  fading out by 70% across (in dark, the tone at 6%, so it tints the black or the glass under it rather than laying a
+ *  slab on it), its 35% edge, a 12px corner and its icon, and the words in the primary text colour (title semibold,
+ *  message regular). Never a grey box with a coloured edge, a plain bordered box or a box without the tone's icon: one
+ *  notice reads the same in a page, a dialog or a pane, at either size. A pinned (`sticky`) alert lays its wash over
+ *  the page's colour, so it stays opaque, and adds the raised shadow. */
 const tones = {
-    info: 'bg-info-surface border-info-ring [&_[data-slot=icon]]:text-info-fg',
-    success: 'bg-success-surface border-success-ring [&_[data-slot=icon]]:text-success-fg',
-    warning: 'bg-warning-surface border-warning-ring [&_[data-slot=icon]]:text-warning-fg',
-    danger: 'bg-danger-surface border-danger-ring [&_[data-slot=icon]]:text-danger-fg',
+    info: '[--lar-alert-wash:var(--color-info-wash)] border-info-wash-edge [&_[data-slot=icon]]:text-info-fg',
+    success:
+        '[--lar-alert-wash:var(--color-success-wash)] border-success-wash-edge [&_[data-slot=icon]]:text-success-fg',
+    warning:
+        '[--lar-alert-wash:var(--color-warning-wash)] border-warning-wash-edge [&_[data-slot=icon]]:text-warning-fg',
+    danger: '[--lar-alert-wash:var(--color-danger-wash)] border-danger-wash-edge [&_[data-slot=icon]]:text-danger-fg',
+} as const;
+
+/** The wash, fading across, alone or over the page's colour for a pinned alert that content scrolls under. */
+const wash = {
+    flow: 'bg-transparent bg-[linear-gradient(to_right,var(--lar-alert-wash),transparent_70%)]',
+    sticky: 'bg-surface-page bg-[linear-gradient(to_right,var(--lar-alert-wash),transparent_70%)]',
 } as const;
 
 // A long path or address in the words breaks rather than running past the box.
@@ -59,8 +78,68 @@ const iconBox = {
     md: '[&_[data-slot=icon]]:mt-0 [&_[data-slot=icon]]:flex [&_[data-slot=icon]]:h-5 [&_[data-slot=icon]]:items-center [&_[data-slot=icon]>svg]:size-4 ',
 } as const;
 
+const inlineTones = {
+    info: { wash: 'bg-info-wash', icon: 'text-info-fg', Icon: InfoIcon },
+    success: { wash: 'bg-success-wash', icon: 'text-success-fg', Icon: CircleCheckIcon },
+    warning: { wash: 'bg-warning-wash', icon: 'text-warning-fg', Icon: TriangleAlertIcon },
+    danger: { wash: 'bg-danger-wash', icon: 'text-danger-fg', Icon: CircleAlertIcon },
+} satisfies Record<string, { wash: string; icon: string; Icon: LucideIcon }>;
+
+/** The compact alert: icon, message and action on one line (wrapping only when it must), 28px tall at least. */
+function InlineAlert({
+    tone = 'info',
+    title,
+    description,
+    message: sentence,
+    children,
+    action,
+    icon,
+    dismissible = false,
+    onDismiss,
+    ref,
+    className = '',
+}: AlertBaseProps) {
+    const labels = useDesignSystemLabels();
+    const look = inlineTones[tone];
+    const message = sentence ?? description ?? children;
+    const hasMessage = !(message === undefined || message === null || message === false);
+    const Icon = look.Icon;
+
+    return (
+        <div
+            ref={ref}
+            role={tone === 'danger' || tone === 'warning' ? 'alert' : 'status'}
+            data-slot="alert"
+            data-presentation="inline"
+            data-tone={tone}
+            className={`text-fg flex min-h-7 min-w-0 items-center gap-2 rounded-md px-2 py-1 text-xs leading-4 ${look.wash} ${className}`}
+        >
+            <span aria-hidden="true" className={`flex shrink-0 [&>svg]:size-3.5 ${look.icon}`}>
+                {icon ?? <Icon />}
+            </span>
+            <span className="min-w-0 flex-1 wrap-break-word">
+                {hasMessage && title ? <span className="font-semibold">{title} </span> : null}
+                {hasMessage ? message : title}
+            </span>
+            {Children.toArray(action).length ? (
+                // An `sm` button keeps to the line's 28px: it reaches into the padding rather than grow the line.
+                <span className="-my-1 -me-1 flex shrink-0 items-center gap-1">{action}</span>
+            ) : null}
+            {dismissible ? (
+                <DismissButton placement="inline" label={labels.close} onClick={() => onDismiss?.()} />
+            ) : null}
+        </div>
+    );
+}
+
 /** The alert for the design system's own compositions, which may fit it to their layout with a class. */
-export function AlertBase({
+export function AlertBase(props: AlertBaseProps) {
+    if (props.presentation === 'inline') return <InlineAlert {...props} />;
+
+    return <BoxAlert {...props} />;
+}
+
+function BoxAlert({
     size: sizeProp,
     sticky = false,
     tone = 'info',
@@ -70,6 +149,7 @@ export function AlertBase({
     message: sentence,
     children,
     action,
+    presentation: _presentation,
     ...props
 }: AlertBaseProps) {
     // A title alone is the notice's message, in the message's regular weight: never a bold sentence.
@@ -96,17 +176,17 @@ export function AlertBase({
                     ? '[&_[data-slot=description]]:text-xs [&_[data-slot=title]]:text-xs '
                     : 'px-3 py-2.5 leading-5 [&_[data-slot=description]]:leading-5 ') +
                 iconBox[size] +
-                `rounded-lg border ${tones[tone]} ${text}` +
+                `rounded-xl border ${tones[tone]} ${wash[sticky ? 'sticky' : 'flow']} ${text}` +
                 className
             }
         />
     );
 }
 
-/** An immediate status about a condition or operation: the tone's quiet surface, hairline and icon, the words in the
- *  primary text colour (title semibold, message regular) at every tone. Every notice is an Alert, ConfirmDialog's
- *  reassurance note included (an `info` one). Use NoticeCard for content that needs examination and InfoBox for
- *  guidance that opens another surface. */
+/** An immediate status about a condition or operation: the tone's wash, edge and icon, the words in the primary text
+ *  colour (title semibold, message regular) at every tone. `presentation="inline"` is the compact one-line alert under
+ *  a row or a control. Every notice is an Alert, ConfirmDialog's reassurance note included (an `info` one). Use
+ *  NoticeCard for content that needs examination and InfoBox for guidance that opens another surface. */
 export function Alert(props: AlertProps) {
     return <AlertBase {...props} />;
 }

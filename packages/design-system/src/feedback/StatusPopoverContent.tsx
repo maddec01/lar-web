@@ -13,8 +13,9 @@ interface StatusPopoverContentProps {
     /** A muted line under the title, such as when it was last checked. */
     detail?: ReactNode;
     /** The overall state in a word, after its status light, such as "Healthy"; or, for a mixed state such as "5 active
-     *  · 3 failed", its parts, each with its own state (see StatusSummary). */
-    status: string | readonly StatusSummaryPart[];
+     *  · 3 failed", its parts, each with its own state (see StatusSummary). Left out for a counter's list, whose
+     *  count says it. */
+    status?: string | readonly StatusSummaryPart[];
     /** What the status is of, in sentence case, such as "Server health". */
     title: string;
     /** A quiet number after the title, such as how many tasks are running. */
@@ -25,19 +26,24 @@ interface StatusPopoverContentProps {
     state?: StatusState;
     /** A one-word `status`'s tone, for a case no `state` names. */
     tone?: StatusTone;
-    /** The popover's width: `sm` (18rem, the default), `md` (20rem) or `lg` (24rem), for rows with a value that
-     *  shouldn't squeeze their label. */
-    width?: 'sm' | 'md' | 'lg';
+    /** The popover's width, one of the family's popover widths: `status` (320px, the default) for a status and its
+     *  rows, `wide` (384px) for a list of items, such as a toolbar counter's. `sm` (288px), `md` (= `status`) and `lg`
+     *  (= `wide`) are the older names. */
+    width?: 'status' | 'wide' | 'sm' | 'md' | 'lg';
+    /** A muted note under the rows, on a divider, such as what a limit means. */
+    footer?: ReactNode;
 }
 
 const widthClasses: Record<NonNullable<StatusPopoverContentProps['width']>, string> = {
+    status: 'w-80',
+    wide: 'w-96',
     sm: 'w-72',
     md: 'w-80',
     lg: 'w-96',
 };
 
 /** A status popover's content: a PopoverHeader with the overall state, then its rows, which scroll under the header
- *  past 32rem. Render it inside a Popover. */
+ *  past 40rem, and an optional footer note. Render it inside a Popover (or as a ToolbarCounter's children). */
 export function StatusPopoverContent({
     action,
     children,
@@ -47,7 +53,8 @@ export function StatusPopoverContent({
     title,
     state,
     tone,
-    width = 'sm',
+    width = 'status',
+    footer,
 }: StatusPopoverContentProps) {
     const content = useRef<HTMLDivElement>(null);
     const { setViewport } = useScrollFade();
@@ -72,17 +79,31 @@ export function StatusPopoverContent({
                 title={title}
                 count={count}
                 detail={detail}
-                status={typeof status === 'string' ? { tone: tone ?? statusTone(state), label: status } : status}
+                status={
+                    status === undefined
+                        ? undefined
+                        : typeof status === 'string'
+                          ? { tone: tone ?? statusTone(state), label: status }
+                          : status
+                }
                 action={action}
             />
             {/* Focusable, so rows past the cap scroll from the keyboard too; fades where rows run past an edge. */}
             <div
                 ref={setViewport}
                 tabIndex={0}
-                className={`${scrollFadeClassName} focus-ring-inset flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain rounded-b-[inherit] p-2`}
+                className={`${scrollFadeClassName} focus-ring-inset flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain p-2 ${footer ? '' : 'rounded-b-[inherit]'}`}
             >
                 {children}
             </div>
+            {footer ? (
+                <div
+                    data-slot="status-popover-footer"
+                    className="border-line text-fg-muted shrink-0 border-t px-4 py-2 text-xs"
+                >
+                    {footer}
+                </div>
+            ) : null}
         </PopoverContentBase>
     );
 }
@@ -110,11 +131,11 @@ export function StatusPopoverSection({
             data-slot="status-popover-section"
             className="border-line flex flex-col not-first:mt-1 not-first:border-t not-first:pt-1.5"
         >
-            {/* The heading reads as one: its words and, in a small neutral pill, how many rows follow. */}
+            {/* The heading reads as one: its words and, as a plain muted figure, how many rows follow. */}
             <h3 id={titleId} className="text-fg-soft flex items-center gap-1.5 px-2 pt-2.5 pb-1 text-xs font-semibold">
                 {title}
                 {count === undefined ? null : (
-                    <span className="bg-fill-muted text-fg-muted text-2xs grid h-4 min-w-4 place-items-center rounded-full px-1.5 leading-none font-medium tabular-nums">
+                    <span data-slot="count" className="text-fg-muted font-normal tabular-nums">
                         {count}
                     </span>
                 )}

@@ -14,6 +14,8 @@ import * as progressStories from './feedback/ProgressStatusRow.stories';
 import { Field } from './forms/Field';
 import { Input } from './forms/Input';
 import { MarkdownEditor } from './forms/MarkdownEditor';
+import { SettingsRow } from './forms/SettingsRow';
+import { Switch } from './forms/Switch';
 import { DesignSystemProvider } from './foundations/DesignSystemProvider';
 import { ViewTabs } from './navigation/ViewTabs';
 import { DropdownMenu } from './overlays/DropdownMenu';
@@ -272,4 +274,41 @@ it('keeps a card summary’s numbers whole while its words give way', async () =
         expect(words!.scrollWidth).toBeGreaterThan(words!.clientWidth);
         expect(numbers!.scrollWidth).toBeLessThanOrEqual(Math.ceil(numbers!.getBoundingClientRect().width));
     }
+});
+
+it('keeps a switch or a lone ghost action beside a narrow row’s title, and drops a group of actions under it', async () => {
+    await page.viewport(390, 844);
+
+    const title = 'Apple TV in the living room of the holiday flat wants to sign in';
+
+    provided(
+        <div style={{ width: 358 }}>
+            <SettingsRow data-case="switch" label={title}>
+                <Switch aria-label="Allow" />
+            </SettingsRow>
+            <SettingsRow data-case="ghost" label={title}>
+                <Button variant="quiet">Remove</Button>
+            </SettingsRow>
+            <SettingsRow data-case="group" label={title}>
+                <div>
+                    <Button variant="secondary">Enter code</Button>
+                    <Button variant="quiet">Decline</Button>
+                </div>
+            </SettingsRow>
+            <SettingsRow data-case="fragment" label={title}>
+                <Button variant="secondary">Enter code</Button>
+                <Button variant="quiet">Decline</Button>
+            </SettingsRow>
+        </div>,
+    );
+
+    const columns = (name: string) =>
+        getComputedStyle(
+            document.querySelector(`[data-case="${name}"] .settings-row-title`)!.parentElement!.parentElement!,
+        ).gridTemplateColumns.split(' ').length;
+
+    expect(columns('switch')).toBe(2);
+    expect(columns('ghost')).toBe(2);
+    expect(columns('group')).toBe(1);
+    expect(columns('fragment')).toBe(1);
 });

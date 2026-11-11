@@ -5,6 +5,7 @@ import { useSegmentedKeyboard } from '../forms/useSegmentedKeyboard';
 import { useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { isThemePreference, type ThemePreference } from '../foundations/Theme';
 import { DropdownMenu } from '../overlays/DropdownMenu';
+import { Tooltip, TooltipPopup, TooltipTrigger } from '../overlays/Tooltip';
 import { segment, segmentTrack } from './SegmentRecipes';
 
 const choices = [
@@ -13,10 +14,11 @@ const choices = [
     { value: 'dark', Icon: MoonIcon },
 ] as const;
 
-/** Three small segments for the colour scheme: follow the system, light or dark. The one theme control of every
- *  app: in a settings row or a site header as it is, and in a menu (an account menu) with `placement="menu"`, where
- *  it is the menu's labelled row and its segments are the menu's own radio items (arrow keys move between them, and
- *  choosing keeps the menu open), drawn the same. */
+/** Three small segments for the colour scheme: Follow system, Light or Dark (the design system's theme labels, the
+ *  family's one vocabulary). The one theme control of every app, the segment-chosen pill on the segment track: in a
+ *  settings row (AppearanceSetting) or a site header as it is, and in a menu (an account menu) with
+ *  `placement="menu"`, where it is the menu's labelled row and its segments are the menu's own radio items (arrow keys
+ *  move between them, and choosing keeps the menu open), drawn the same. Each icon names itself in a glass tooltip. */
 export function ThemeSwitch({
     value,
     onChange,
@@ -82,16 +84,19 @@ export function ThemeSwitch({
                     }}
                 >
                     {choices.map(({ value: choice, Icon }) => (
-                        <DropdownMenu.RadioItem
-                            key={choice}
-                            presentation="segmented"
-                            value={choice}
-                            data-value={choice}
-                            aria-label={labels[choice]}
-                            title={labels[choice]}
-                        >
-                            <Icon />
-                        </DropdownMenu.RadioItem>
+                        <Tooltip key={choice}>
+                            <TooltipTrigger asChild>
+                                <DropdownMenu.RadioItem
+                                    presentation="segmented"
+                                    value={choice}
+                                    data-value={choice}
+                                    aria-label={labels[choice]}
+                                >
+                                    <Icon />
+                                </DropdownMenu.RadioItem>
+                            </TooltipTrigger>
+                            <TooltipPopup side="bottom">{labels[choice]}</TooltipPopup>
+                        </Tooltip>
                     ))}
                 </DropdownMenu.RadioGroup>
             </DropdownMenu.ControlRow>
@@ -99,23 +104,34 @@ export function ThemeSwitch({
 
     return (
         <div ref={group} onKeyDown={onKeyDown} role="radiogroup" aria-label={name} className={segmentTrack}>
-            {choices.map(({ value: choice, Icon }) => (
-                <button
-                    key={choice}
-                    tabIndex={choice === stop ? 0 : -1}
-                    data-value={choice}
-                    type="button"
-                    role="radio"
-                    aria-checked={value === choice}
-                    aria-label={labels[choice]}
-                    title={labels[choice]}
-                    onClick={() => onChange(choice)}
-                    className={`${segment.button} ${labelsVisible ? 'px-2.5' : 'w-7'}`}
-                >
-                    <Icon />
-                    {labelsVisible ? <span>{labels[choice]}</span> : null}
-                </button>
-            ))}
+            {choices.map(({ value: choice, Icon }) => {
+                const button = (
+                    <button
+                        key={choice}
+                        tabIndex={choice === stop ? 0 : -1}
+                        data-value={choice}
+                        type="button"
+                        role="radio"
+                        aria-checked={value === choice}
+                        aria-label={labels[choice]}
+                        onClick={() => onChange(choice)}
+                        className={`${segment.button} ${labelsVisible ? 'px-2.5' : 'w-7'}`}
+                    >
+                        <Icon />
+                        {labelsVisible ? <span>{labels[choice]}</span> : null}
+                    </button>
+                );
+
+                // An icon alone says its word in a glass tooltip; a labelled segment already shows it.
+                return labelsVisible ? (
+                    button
+                ) : (
+                    <Tooltip key={choice}>
+                        <TooltipTrigger asChild>{button}</TooltipTrigger>
+                        <TooltipPopup side="bottom">{labels[choice]}</TooltipPopup>
+                    </Tooltip>
+                );
+            })}
         </div>
     );
 }

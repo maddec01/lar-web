@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { EmptyState } from '../feedback/EmptyState';
-import { ResultList, ResultRow } from './ResultList';
+import { Section } from '../layout/Section';
+import { ResultGroups, ResultList, ResultRow } from './ResultList';
 
 function Art({ hue, aspect = 'square' }: { hue: number; aspect?: 'square' | 'poster' | 'video' }) {
     return (
@@ -231,5 +232,53 @@ export const PostersOnCard: Story = {
                 />
             ))}
         </ResultList>
+    ),
+};
+
+const groupedRows = (kind: string, count: number, hue: number) =>
+    Array.from({ length: count }, (_, index) => (
+        <ResultRow
+            key={index}
+            artwork={<Art hue={hue + index * 12} />}
+            kind={kind}
+            title={`${kind} ${index + 1}`}
+            subtitle="Harbour Lights · 2021"
+            href={`#${kind}-${index}`}
+            onSelect={fn()}
+        />
+    ));
+
+/** A search page's groups (ResultGroups): each a titled Section holding a ResultList, side by side in as many 320px
+ *  columns as fit. */
+export const Grouped: Story = {
+    decorators: [(Story) => <Story />],
+    render: () => (
+        <ResultGroups>
+            {[
+                ['Albums', 4, 210],
+                ['Movies', 3, 20],
+                ['People', 2, 140],
+            ].map(([kind, count, hue]) => (
+                <Section key={kind} level="h2" title={String(kind)} count={Number(count)}>
+                    <ResultList role="list" label={String(kind)}>
+                        {groupedRows(String(kind), Number(count), Number(hue))}
+                    </ResultList>
+                </Section>
+            ))}
+        </ResultGroups>
+    ),
+};
+
+/** A lone group's rows flow into the columns themselves, rather than one long list down the first. */
+export const LoneGroup: Story = {
+    decorators: [(Story) => <Story />],
+    render: () => (
+        <ResultGroups>
+            <Section level="h2" title="Albums" count={9}>
+                <ResultList role="list" label="Albums">
+                    {groupedRows('Album', 9, 210)}
+                </ResultList>
+            </Section>
+        </ResultGroups>
     ),
 };

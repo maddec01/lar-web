@@ -129,11 +129,17 @@ nothing stops them. A permission message appears only where a reader without tha
 
 ## Settings and destructive actions
 
-Keep the same section heading and heading action while loading. Use `SettingsSection` with `skeletonRows={N}` for
-standard pending rows, or compose `SettingsRowSkeleton` with the loaded control shapes. When row labels and controls
-are already known, `SettingsRow loading` reserves their exact footprint and makes them inert. Do not add temporary
-headings or actions that disappear once the data arrives. A label-column action uses `SettingsRow variant="action"`
-with its ghost button as `label`; trailing ghost actions align automatically.
+Settings are one anatomy everywhere: `SettingsDialog` (or `SettingsPage` for a page such as an account) holds
+`SettingsGroup`s, each a title (16/600) over one panel of `SettingsRow`s (title 14/500, description 12 muted, control
+at the end). One save model: a switch, a select or a segment applies at once; a typed value is a draft
+(`useSettingsDraft({ dirty, save, reset })`), saved with the others from the footer's **Save changes**, and asked about
+before closing, changing section or Escape loses it. Never a Save button per row.
+
+Keep the same section heading and heading action while loading. Use `SettingsGroup loading` with `skeleton` (a count,
+or the loaded rows' titles so the shapes are as wide as the real text); when row labels and controls are already
+known, `SettingsRow loading` reserves their exact footprint and makes them inert. Do not add temporary headings or
+actions that disappear once the data arrives. A label-column action uses `SettingsRow variant="action"` with its ghost
+button as `label`; trailing ghost actions align automatically.
 
 Destructive triggers follow the quiet-destructive rule: named in the danger text colour at rest, in a quiet weight,
 gaining the danger surface on hover or keyboard focus, never neutral grey text. Use `Button variant="destructive-quiet"`,

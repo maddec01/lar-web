@@ -25,3 +25,6 @@ export const Letter: Story = {};
 export const Year: Story = { args: { children: '2019' } };
 
 export const LongLabel: Story = { args: { children: 'Recently added from /mnt/media/music/incoming' } };
+
+/** With its count, as a Panel's header and a SectionTitle carry one. */
+export const WithCount: Story = { args: { children: 'Disc 2 of 2', count: 12, countLabel: '12 tracks' } };

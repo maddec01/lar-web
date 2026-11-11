@@ -113,7 +113,7 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkBaseProps>(
             ref={ref}
             size={variant === 'caption' ? 'xs' : 'sm'}
             underline="none"
-            className={`${linkRecipe[tone]} ${className}`}
+            className={`${linkRecipe[tone]} ${iconed(props) ? '' : 'inline'} ${className}`}
             onClick={navigationClick({ ...props, onClick, onNavigate })}
         >
             {children}
@@ -124,7 +124,15 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkBaseProps>(
 
 LinkBase.displayName = 'LinkBase';
 
-/** Lar's link: accent, muted or the surrounding colour, handing a plain click to the app's router with `onNavigate`. */
+/** Whether ninna-ui draws its external-link icon after the text (an external link, unless `showExternalIcon` is
+ *  false). Only then is the link an inline-flex row; a link of text alone is inline, so it wraps with the words around
+ *  it and a truncating cell ends a run of links ("Ada Okoro, Nilo Brandão") in an ellipsis instead of clipping it. */
+function iconed({ external, target, showExternalIcon }: LinkBaseProps): boolean {
+    return (external === true || target === '_blank') && showExternalIcon !== false;
+}
+
+/** Lar's link: accent, muted or the surrounding colour, handing a plain click to the app's router with `onNavigate`.
+ *  Text, it runs inline with the words around it. */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => <LinkBase ref={ref} {...props} />);
 
 Link.displayName = 'Link';

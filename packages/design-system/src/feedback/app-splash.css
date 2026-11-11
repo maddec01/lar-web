@@ -1,6 +1,8 @@
 /* The app's boot screen (feedback/AppSplash.tsx; an app's own loading screen draws the same one with SplashView): the
    Lar lockup, whose L draws itself around the block, over a status line and a calm progress track. It covers the
-   window and fades out once. */
+   window and fades out once. Every duration, delay and easing is a motion token (theme.css), so the splash keeps the
+   family's rhythm and reduced motion stills it. The draw runs in beats: the block settles (slow), the L traces round
+   it (deliberate), "ar" slides out as the L fills, and the product word fades in last. */
 
 .loading-screen {
     position: fixed;
@@ -22,7 +24,7 @@
 .loading-screen.is-leaving {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 600ms ease-in-out;
+    transition: opacity calc(var(--motion-duration-slow) * 2) var(--ease-standard); /* 600ms: apps unmount it then */
 }
 
 /* --- The lockup: the title bar Brand's, scaled up. The mark is 0.705em, the cap height, and sits on the baseline, so
@@ -102,36 +104,40 @@
         transform: scale(0.3);
         transform-box: fill-box;
         transform-origin: center;
-        animation: loading-settle 480ms cubic-bezier(0.34, 1.45, 0.64, 1) 100ms forwards; /* a small overshoot */
+        animation: loading-settle var(--motion-duration-slow) var(--ease-emphasized) forwards;
     }
     .loading-screen:not(.is-drawn) .loading-mark-trace {
         display: inline;
         stroke-dasharray: 1 2; /* a gap longer than the path, so only the drawn length shows */
         stroke-dashoffset: 1;
         opacity: 0;
-        animation: loading-trace 700ms cubic-bezier(0.42, 0, 0.58, 1) 420ms forwards;
+        animation: loading-trace var(--motion-duration-deliberate) var(--ease-standard) var(--motion-duration-slow)
+            forwards;
     }
     /* The filled L replaces the trace once it ends; the stroke covers the same outline but for its
        3-unit outer corner, which it draws square, too small for the swap to show. */
     .loading-screen:not(.is-drawn) .loading-mark-fill {
         opacity: 0;
-        animation: loading-show 0ms linear 1120ms forwards;
+        animation: loading-show 0ms linear calc(var(--motion-duration-slow) + var(--motion-duration-deliberate))
+            forwards;
     }
     .loading-screen:not(.is-drawn) .loading-lar-slide {
         translate: -1.25em 0;
-        animation: loading-slide 520ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms forwards;
+        animation: loading-slide var(--motion-duration-deliberate) var(--ease-emphasized)
+            calc(var(--motion-duration-slow) + var(--motion-duration-deliberate) - var(--motion-duration-base)) forwards;
     }
     .loading-screen:not(.is-drawn) .loading-factory {
         opacity: 0;
-        animation: loading-show 450ms ease-out 1300ms forwards;
+        animation: loading-show var(--motion-duration-slow) var(--ease-standard)
+            calc(var(--motion-duration-slow) * 2 + var(--motion-duration-deliberate)) forwards;
     }
 
     /* A step change: the old line rolls up and out with a slight blur while the new one rolls in from below. */
     .loading-roll-in {
-        animation: loading-roll-in 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        animation: loading-roll-in var(--motion-duration-slow) var(--ease-emphasized) both;
     }
     .loading-roll-out {
-        animation: loading-roll-out 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        animation: loading-roll-out var(--motion-duration-slow) var(--ease-emphasized) both;
     }
 }
 
@@ -196,7 +202,7 @@
     left: 0;
     border-radius: inherit;
     background: var(--color-fg-muted);
-    transition: width 300ms ease-out;
+    transition: width var(--motion-duration-slow) var(--ease-standard);
 }
 .loading-progress:not([aria-valuenow]) .loading-progress-bar {
     left: 30%;
@@ -206,7 +212,7 @@
 @media (prefers-reduced-motion: no-preference) {
     .loading-progress:not([aria-valuenow]) .loading-progress-bar {
         left: 0;
-        animation: loading-drift 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+        animation: loading-drift var(--motion-loop-sweep) var(--ease-standard) infinite alternate;
     }
 }
 

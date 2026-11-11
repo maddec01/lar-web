@@ -52,6 +52,7 @@ export function ImageViewer({ alt, caption, onClose, open, resolution, src }: Im
         <NinnaModal open={open} onOpenChange={(next) => !next && onClose()}>
             <NinnaModal.Content
                 {...focusProps}
+                data-full-bleed=""
                 title={caption ?? alt}
                 size="full"
                 className="dark lar-dark-palette bg-surface-page text-fg top-0 left-0 flex h-dvh max-h-none w-screen translate-x-0 translate-y-0 items-center justify-center overflow-hidden rounded-none border-0 p-4 shadow-none sm:top-0 sm:left-0 sm:h-dvh sm:w-screen sm:translate-x-0 sm:translate-y-0 sm:p-8"

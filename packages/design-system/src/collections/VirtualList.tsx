@@ -1,6 +1,6 @@
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDownIcon } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useRef } from 'react';
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { tabbable } from '../foundations/KeyboardFocus';
@@ -55,11 +55,14 @@ export interface VirtualListProps<TItem> {
     sort?: string;
     /** The sort's direction, marked in the sorted column's header. */
     direction?: 'asc' | 'desc';
-    /** `compact` rows are 40px instead of 64px, for long lists read line by line, such as tracks. */
+    /** `compact` rows are 40px instead of 64px, for long lists read line by line, such as tracks. On a narrow list
+     *  (under the secondary columns' 640px), where a row's first cell stacks the facts of the columns that drop under
+     *  its title, a compact row holds those two lines at 52px. */
     density?: 'default' | 'compact';
 }
 
-const rowHeights = { default: 64, compact: 40 } as const;
+/** A row's height by its look: `default` 64px, `compact` 40px for one line, `stacked` 52px for a compact row's two. */
+const rowHeights = { default: 64, compact: 40, stacked: 52 } as const;
 
 export function VirtualList<TItem>({
     columns,
@@ -91,16 +94,20 @@ export function VirtualList<TItem>({
 
     useCollectionMotion(root);
 
+    const stuck = useStuck();
+
     const visibleColumns = columns.filter(
         (column) => column.id === sort || width >= columnBreakpoints[column.priority ?? 'primary'],
     );
     const visibleColumnIds = visibleColumns.map((column) => column.id);
+    const rows: keyof typeof rowHeights =
+        density === 'compact' ? (width < columnBreakpoints.secondary ? 'stacked' : 'compact') : 'default';
     const virtualizer = useWindowVirtualizer({
         count,
         // Layout belongs to stable collection slots. Domain keys still identify
         // mounted rows below; changing page data must not remeasure every slot.
         // Section headers are measured with their mounted row wrappers.
-        estimateSize: () => rowHeights[density],
+        estimateSize: () => rowHeights[rows],
         overscan: 8,
         scrollMargin,
     });
@@ -120,21 +127,28 @@ export function VirtualList<TItem>({
             aria-rowcount={count + 1}
             aria-colcount={visibleColumns.length}
             data-density={density}
-            className="group/list border-line bg-surface-raised @container min-w-0 rounded-b-xl border-x border-b"
+            data-rows={rows}
+            className="group/list border-line-panel @container min-w-0 rounded-b-xl border-x border-b"
             style={
                 {
                     '--lar-list-columns': visibleColumns.map((column) => columnWidths[column.size]).join(' '),
                 } as CSSProperties
             }
         >
+            <div ref={stuck.sentinel} aria-hidden="true" />
+            {/* The header sticks under the title bar. Only while it is stuck does it, and the strip above it, take the
+                page's colour, so rows scrolling behind it don't show; at rest both are clear, so whatever lies behind
+                the list (a detail hero's artwork wash) runs on into it. */}
             <div
                 role="rowgroup"
-                className="bg-surface-page sticky top-(--lar-header-height,0px) z-20 -mx-px -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
+                ref={stuck.header}
+                data-stuck={stuck.value || undefined}
+                className="data-stuck:bg-surface-page sticky top-(--lar-header-height,0px) z-20 -mx-px -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
             >
                 <div
                     role="row"
                     aria-rowindex={1}
-                    className="border-line bg-surface-raised box-content grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 rounded-t-xl border px-3"
+                    className="border-line-panel in-data-stuck:bg-surface-page box-content grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 rounded-t-xl border px-3"
                 >
                     {visibleColumns.map((column) => (
                         <div
@@ -181,7 +195,7 @@ export function VirtualList<TItem>({
                             style={{ top: item.start - scrollMargin }}
                         >
                             {sectionStart ? section?.render(value) : null}
-                            <div style={{ height: rowHeights[density] }}>
+                            <div style={{ height: rowHeights[rows] }}>
                                 <DataRow rowIndex={item.index + 2} interactive={Boolean(value && (href || onSelect))}>
                                     {placeholder ? (
                                         <div
@@ -245,4 +259,34 @@ export function VirtualList<TItem>({
             </div>
         </div>
     );
+}
+
+/** Whether a sticky header is stuck: a sentinel at the list's top has scrolled under the header's own `top` (the title
+ *  bar's height) and its strip. */
+function useStuck() {
+    const sentinel = useRef<HTMLDivElement>(null);
+    const header = useRef<HTMLDivElement>(null);
+    const [value, setValue] = useState(false);
+
+    useEffect(() => {
+        const mark = sentinel.current;
+        const sticky = header.current;
+
+        if (!mark || !sticky || typeof IntersectionObserver === 'undefined') return;
+
+        // The header reaches its `top` a page gutter before the sentinel does: it starts that far above the list, its
+        // strip padded back down.
+        const style = getComputedStyle(sticky);
+        const top = (Number.parseFloat(style.top) || 0) + (Number.parseFloat(style.paddingTop) || 0);
+        const observer = new IntersectionObserver(
+            ([entry]) => setValue(!!entry && !entry.isIntersecting && entry.boundingClientRect.top < top + 1),
+            { rootMargin: `-${top + 1}px 0px 0px 0px` },
+        );
+
+        observer.observe(mark);
+
+        return () => observer.disconnect();
+    }, []);
+
+    return { sentinel, header, value };
 }

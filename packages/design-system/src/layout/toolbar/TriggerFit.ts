@@ -1,7 +1,7 @@
-// What the command palette trigger shows, with tokens, in the room it has. Tokens go from the last, into a count,
-// while the word Search and the count still fit; the key hint shows only with every token and room to spare; below the
-// word's room, or on the narrowest title bar, the field folds to its magnifier with a count. Widths are in pixels, in
-// the field's `text-xs`.
+// What the command palette trigger shows, with tokens, in the room it has. The field keeps its least width or folds:
+// below it, or on the narrowest title bar, it folds to its magnifier with a count, so it is the first thing a narrowing
+// title bar folds and never a stub without its key hint. Above it, tokens go from the last into a count; the key hint
+// shows only with every token and room to spare. Widths are in pixels, in the field's `text-xs`.
 import { type RefObject, useLayoutEffect, useState } from 'react';
 
 /** The field's borders, left padding, 16px magnifier, gap and right padding. */
@@ -10,7 +10,8 @@ const SEARCH_WORD = 48;
 const COUNT = 24;
 const KEY_HINT = 26;
 const GAP = 4;
-/** The trigger's width in an app title bar, which the field keeps until its tokens ask for more. */
+/** The trigger's width in an app title bar, which the field keeps until its tokens ask for more; with less room, it
+ *  folds. */
 const MIN_WIDTH = 224;
 /** Up to this title bar width, the smallest phones', the field folds. Its row there still has room for the word, as the
  *  bar gives its actions their own row, so the room alone would never fold it. */
@@ -42,7 +43,7 @@ export function fitTrigger({ field: room, bar }: FieldRoom, tokenWidths: readonl
     return {
         shown,
         keyHint: shown === tokenWidths.length && used(shown) + KEY_HINT + GAP <= room,
-        folded: bar <= NARROWEST_BAR || used(shown) > room,
+        folded: bar <= NARROWEST_BAR || room < MIN_WIDTH || used(shown) > room,
         width: Math.min(room, Math.max(MIN_WIDTH, used(tokenWidths.length) + KEY_HINT + GAP)),
     };
 }

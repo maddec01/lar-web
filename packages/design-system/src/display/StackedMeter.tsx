@@ -1,6 +1,6 @@
 import { Text } from '../typography/Typography';
 
-/** A data series' colour, in order: 1 navy, 2 teal, 3 orange, a set told apart for every colour vision (the
+/** A data series' colour, in order: 1 navy, 2 teal, 3 magenta, a set told apart for every colour vision (the
  *  `series-1` to `series-3` tokens). Use them in order and never cycle them; a status hue never names a series, and
  *  the words beside a series' swatch name it, so its colour is never the only key. */
 export type MeterSeries = 1 | 2 | 3;
@@ -73,7 +73,7 @@ export function StackedMeter({ label, marker, segments, size = 'md' }: StackedMe
                         <span
                             key={segment.id}
                             title={segment.label}
-                            className={`border-surface-card h-full border-r-2 last:border-r-0 ${seriesClasses[segment.series]}`}
+                            className={`border-surface-raised h-full border-r-2 last:border-r-0 ${seriesClasses[segment.series]}`}
                             style={{ width: `${Math.min(segment.value, 1) * 100}%` }}
                         />
                     ))}

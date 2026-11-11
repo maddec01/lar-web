@@ -117,6 +117,21 @@ export function Text(props: TextProps) {
     return <TextBase {...props} />;
 }
 
+/** A loading heading's fixed width, so its skeleton reads as a title wherever it sits (alone in a flex row it would
+ *  otherwise shrink to a sliver): 10rem for a card's or a section's title, 14rem for a page's, 20rem for a marketing
+ *  one. */
+const loadingWidths: Record<keyof typeof headingStyles, string> = {
+    page: 'w-56',
+    section: 'w-40',
+    subsection: 'w-40',
+    title: 'w-40',
+    label: 'w-40',
+    hero: 'w-80',
+    display: 'w-80',
+    headline: 'w-80',
+    feature: 'w-56',
+};
+
 /** A heading's look is its variant and tone, never a class of the caller's. */
 export interface HeadingProps extends TypographyProps {
     /** The heading's level in the page's outline (`h2` by default), independent of its look. */
@@ -142,7 +157,7 @@ export function HeadingBase({
     return (
         <Tag
             {...props}
-            className={`${headingStyles[variant]} ${tones[tone]} ${truncate ? 'truncate' : ''} ${loading ? 'relative' : ''} ${className}`}
+            className={`${headingStyles[variant]} ${tones[tone]} ${truncate ? 'truncate' : ''} ${loading ? `relative max-w-full ${loadingWidths[variant]}` : ''} ${className}`}
         >
             {loading ? <LoadingText heading={variant === 'hero'} /> : children}
         </Tag>

@@ -6,7 +6,8 @@ import { LinkBoxBase, LinkOverlay } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { toneTileClasses } from './ToneTile';
 
-/** Rows of one list inside a single bordered panel, separated by rules; or ruled rows in two columns on wide screens. */
+/** Rows of one list inside a single bordered panel (surface-panel: no fill on black, a quiet edge), separated by rules;
+ *  or ruled rows in two columns on wide screens. */
 export function RowList({
     children,
     label,
@@ -16,7 +17,7 @@ export function RowList({
     children: ReactNode;
     /** Names the list for screen readers. */
     label: string;
-    /** `panel` (the default) rules the rows inside a raised panel; `columns` lays them in two ruled columns from md. */
+    /** `panel` (the default) rules the rows inside a panel; `columns` lays them in two ruled columns from md. */
     layout?: 'panel' | 'columns';
 }) {
     return (
@@ -25,7 +26,7 @@ export function RowList({
             className={
                 layout === 'columns'
                     ? '[&>li]:border-line grid gap-x-8 md:grid-cols-2 [&>li]:border-b'
-                    : 'divide-line surface-card divide-y overflow-hidden rounded-lg border'
+                    : 'divide-line surface-panel divide-y overflow-hidden rounded-xl border'
             }
         >
             {children}
@@ -106,7 +107,7 @@ export function RowListItem({
     return (
         <li>
             <LinkBoxBase
-                className={`${row} ${href ? 'hover:bg-surface-raised focus-within:bg-surface-raised transition-colors' : ''}`}
+                className={`${row} ${href ? 'hover:bg-fill-hover focus-within:bg-fill-hover transition-colors' : ''}`}
             >
                 {content}
                 {actions ? <span className="flex shrink-0 items-center gap-1">{actions}</span> : null}

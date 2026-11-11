@@ -169,7 +169,7 @@ function PropertySheetCollapsible({
         <section aria-labelledby={id} className="min-w-0">
             <InsetPanel presentation="settings">
                 <details className="group/sheet">
-                    <summary className="hover:bg-surface-raised focus-ring-inset flex cursor-pointer list-none items-center gap-4 px-4 py-4 sm:px-5 [&::-webkit-details-marker]:hidden">
+                    <summary className="hover:bg-fill-hover focus-ring-inset flex cursor-pointer list-none items-center gap-4 px-4 py-4 sm:px-5 [&::-webkit-details-marker]:hidden">
                         <span className="min-w-0 flex-1 wrap-anywhere">
                             <TextBase as="span" id={id} variant="label" className="block">
                                 {title}

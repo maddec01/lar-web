@@ -58,3 +58,11 @@ export const Retrying: Story = { args: { ...LoadFailed.args, retrying: true } };
 export const ErrorWithoutRetry: Story = {
     args: { loading: false, error: 'You no longer have access to this catalog.' },
 };
+
+/** A load that has run for three seconds says so under its skeleton, rather than leave a silent placeholder. */
+export const StillTrying: Story = {
+    args: { presentation: 'line' },
+    parameters: {
+        docs: { description: { story: 'After three seconds of loading, "Still trying…" shows under the skeleton.' } },
+    },
+};
