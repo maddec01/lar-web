@@ -3,12 +3,12 @@ import { forwardRef, type ReactNode } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
 
-/** Every state's look, owned here rather than left to ninna-ui: an enabled switch's track reads at 3:1 against the
- *  page whether off (line-strong) or on (primary), under a white thumb; a disabled one fades to 40%, so it never
- *  passes for an enabled one that is off; keyboard focus takes the one focus ring; a save in flight (`busy`, or
- *  `loading` with its spinner) keeps the look and shows the progress cursor. */
+/** Every state's look, owned here rather than left to ninna-ui: an enabled switch's track is a quiet grey when off
+ *  (fill-switch-off, white 16% / black 20%) and the primary when on, under a white thumb that makes it a control; a
+ *  disabled one fades to 40%, so it never passes for an enabled one that is off; keyboard focus takes the one focus
+ *  ring; a save in flight (`busy`, or `loading` with its spinner) keeps the look and shows the progress cursor. */
 const states =
-    'bg-line-strong data-[state=checked]:bg-primary [&>[data-slot=thumb]]:bg-white [&>[data-slot=thumb]]:shadow-(--shadow-raised) focus-ring focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-40 data-loading:disabled:opacity-100 aria-disabled:cursor-progress data-loading:cursor-progress';
+    'bg-fill-switch-off data-[state=checked]:bg-primary [&>[data-slot=thumb]]:bg-white [&>[data-slot=thumb]]:shadow-(--shadow-raised) focus-ring focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-40 data-loading:disabled:opacity-100 aria-disabled:cursor-progress data-loading:cursor-progress';
 
 export type SwitchProps = Omit<
     NinnaSwitchProps,

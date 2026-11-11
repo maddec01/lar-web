@@ -3,7 +3,7 @@ import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from 'react';
 
 import { SpinnerIcon } from '../feedback/Loading';
 import { tabbable } from '../foundations/KeyboardFocus';
-import { ghostRecipe, outlineRecipe, primaryRecipe } from './ButtonRecipes';
+import { ghostRecipe, outlineRecipe, primaryRecipe, tintedRecipe } from './ButtonRecipes';
 
 /** The marketing pages' calls to action: the Button recipes at a roomier 44px, as links. */
 const recipes = {
@@ -12,17 +12,21 @@ const recipes = {
     secondary: 'border-line-control bg-surface-control text-fg shadow-(--shadow-raised) hover:bg-fill-hover',
     inverse: 'border-transparent bg-fg text-fg-inverse shadow-(--shadow-raised) hover:bg-fg/86',
     quiet: 'border-transparent text-fg hover:text-primary-fg',
+    tinted: tintedRecipe,
 } as const;
 
-/** A `sm` link is the app Button's `sm` 28px control with 12px text, in the Button's own recipes, for an action
- *  that opens a page from a dense tool. */
+/** The `app` look is the app Button as a link, in the Button's own recipes and sizes with its 13px label: `sm` 28px
+ *  for an action that opens a page from a row, a card or a toolbar, `md` 32px in a form or a dialog's footer. */
 const compactBase =
-    'relative isolate inline-flex h-7 items-center justify-center gap-2 rounded-md border px-2.75 text-xs font-medium whitespace-nowrap no-underline transition-[background-color,box-shadow,scale,color] duration-(--motion-duration-fast) active:scale-[0.97] focus-ring-inset [&_[data-slot=icon]>svg]:size-4';
+    'group/button relative isolate inline-flex items-center justify-center gap-2 rounded-md border px-2.75 text-ui font-medium whitespace-nowrap no-underline transition-[background-color,box-shadow,scale,color] duration-(--motion-duration-fast) active:scale-[0.97] focus-ring-inset [&_[data-slot=icon]>svg]:size-4';
+const compactSizes = { sm: 'h-7', md: 'h-8' } as const;
+const compactSquare = { sm: 'w-7 px-0', md: 'w-8 px-0' } as const;
 const compactRecipes = {
     primary: primaryRecipe,
     secondary: outlineRecipe,
     inverse: recipes.inverse,
     quiet: ghostRecipe,
+    tinted: tintedRecipe,
 } as const;
 
 export interface ButtonLinkProps extends Omit<
@@ -34,11 +38,17 @@ export interface ButtonLinkProps extends Omit<
     /** The link's label. */
     children?: ReactNode;
     /** Its weight among the calls to action around it: `primary` (the default), `secondary`, `inverse` on a dark band,
-     *  or `quiet` text. */
+     *  `quiet` (text in the marketing look, the ghost in the app look), or `tinted`, the Button's "you can start
+     *  this". */
     variant?: keyof typeof recipes;
-    /** Its scale: `lg` (44px, the default) for a hero, `md` (36px) for a band or a card, both the marketing look; `sm`
-     *  is the app Button's dense 28px look, its `icon` leading it, for a dense tool. */
+    /** Its scale. In the marketing look (the default), `lg` (44px, the default) for a hero and `md` (36px) for a band
+     *  or a card. `sm` is always the app look's 28px. In the app look, `md` (its default; `lg` draws as `md`) is the
+     *  app Button's 32px. */
     size?: 'sm' | 'md' | 'lg';
+    /** `marketing` (the default): the website's roomier calls to action. `app`: the app Button as a link, at its own
+     *  sizes (`sm` 28px, `md` 32px, both with the 13px label) and recipes, so a link sits beside a Button and matches
+     *  it; spread the same `variant` and `size` on either. `size="sm"` takes this look whatever `look` says. */
+    look?: 'marketing' | 'app';
     /** An icon before the label. */
     icon?: ReactNode;
     /** Shows an arrow that nudges forward on hover. */
@@ -47,16 +57,17 @@ export interface ButtonLinkProps extends Omit<
     external?: boolean;
     /** Called with the `href` on a plain left click, in place of the browser's navigation, for the app's router. */
     onNavigate?: (href: string) => void;
-    /** With `size="sm"`, a square link showing its icon alone, named by its `aria-label`. */
+    /** In the app look, a square link showing its icon alone, named by its `aria-label`. */
     iconOnly?: boolean;
     /** Holds activation while work is in flight, keeping the link in the tab order. */
     busy?: boolean;
 }
 
-/** A link that looks like a button: a marketing page's calls to action, or at `sm`, the app Button's dense look. */
+/** A link that looks like a button: a marketing page's calls to action, or in the app look, the app Button. */
 export function ButtonLink({
     variant = 'primary',
-    size = 'lg',
+    look = 'marketing',
+    size = look === 'app' ? 'md' : 'lg',
     icon,
     arrow,
     external,
@@ -113,7 +124,9 @@ export function ButtonLink({
         onKeyDown?.(event);
     };
 
-    if (size === 'sm')
+    if (size === 'sm' || look === 'app') {
+        const appSize = size === 'sm' ? 'sm' : 'md';
+
         return (
             <a
                 {...tabbable}
@@ -125,12 +138,21 @@ export function ButtonLink({
                 onClick={navigate}
                 data-slot="button"
                 {...(iconOnly ? { 'data-icon-only': '' } : {})}
-                className={`${compactBase} ${compactRecipes[variant]} ${iconOnly ? 'w-7 px-0' : ''}`}
+                className={`${compactBase} ${compactSizes[appSize]} ${compactRecipes[variant]} ${iconOnly ? compactSquare[appSize] : ''}`}
             >
                 {leading && <span data-slot="icon">{leading}</span>}
                 {children}
+                {arrow ? (
+                    <span
+                        data-slot="icon"
+                        className="-mr-0.5 inline-flex transition-transform duration-(--motion-duration-base) group-hover/button:translate-x-0.5"
+                    >
+                        <ArrowRightIcon />
+                    </span>
+                ) : null}
             </a>
         );
+    }
 
     return (
         <a

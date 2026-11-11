@@ -32,3 +32,15 @@ export const Household: Story = {
         </div>
     ),
 };
+
+/** Initials in the person's own hue (`hueKey`, their email), the same in every app, at every size. */
+export const Hued: Story = {
+    render: () => (
+        <div className="flex items-center gap-3">
+            <Avatar name="Marta Ventura" hueKey="marta.ventura@example.com" size="lg" />
+            <Avatar name="Tomás Reis" hueKey="tomas@lar.home" />
+            <Avatar name="Inês Duarte" hueKey="ines.duarte@example.org" size="bar" />
+            <Avatar name="kai@example.com" hueKey="kai@example.com" size="sm" />
+        </div>
+    ),
+};

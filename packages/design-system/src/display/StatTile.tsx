@@ -25,13 +25,13 @@ export function StatTile({ label, onClick, selected, tone, value }: StatTileProp
             {...tabbable}
             type="button"
             aria-pressed={selected}
-            className={`focus-ring flex flex-col items-start gap-2 rounded-lg border p-4 text-left transition-colors ${
-                selected ? 'border-primary bg-primary-surface' : 'surface-card hover:border-line-hover'
+            className={`focus-ring flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-colors ${
+                selected ? 'current-edge' : 'surface-card hover:bg-fill-hover hover:border-line-hover'
             }`}
             onClick={onClick}
         >
             <Inline align="center" space="related">
-                <StatusIndicator size="sm" tone={tone} />
+                <StatusIndicator tone={tone} />
                 <Text as="span" variant="label">
                     {label}
                 </Text>

@@ -13,7 +13,7 @@ type SkeletonPresentation =
     | 'heading'
     | 'line'
     | 'metric';
-type SkeletonWidth = 'action' | 'full' | 'medium' | 'short' | 'wide';
+type SkeletonWidth = 'action' | 'full' | 'medium' | 'short' | 'title' | 'wide';
 
 const presentationClasses: Record<SkeletonPresentation, string> = {
     artwork: 'aspect-square',
@@ -41,8 +41,11 @@ const presentationRadius = {
     metric: 'rounded-md',
 } as const;
 
+/** Fractions of the container, or a fixed width: `action` a button's 5rem, `title` a title's 10rem (a heading's
+ *  default: a fraction of a flex row's content would shrink it to a sliver). */
 const widthClasses: Record<SkeletonWidth, string> = {
     action: 'w-20',
+    title: 'w-40 max-w-full',
     full: 'w-full',
     medium: 'w-1/2',
     short: 'w-1/3',
@@ -73,11 +76,18 @@ function SkeletonLoaderRoot({ children, label, loading = true }: SkeletonLoaderP
 interface SkeletonShapeProps {
     /** The shape: a `line` of text (the default), a heading, a control, a card, a circle and the like. */
     presentation?: SkeletonPresentation;
-    /** The shape's width, from `full` down to `short`; a circle keeps its own. */
+    /** The shape's width, from `full` down to `short`, or the fixed `title` (a heading's default) or `action`; a circle
+     *  keeps its own. */
     width?: SkeletonWidth;
 }
 
-function SkeletonShape({ presentation = 'line', width = 'full' }: SkeletonShapeProps) {
+/** The one skeleton mark: the muted fill with its shine (`.lar-skeleton` in theme.css), in a shape and width. Every
+ *  loading placeholder (AsyncState's, a loading Text or Heading, a settings row's) draws this, never a fill of its
+ *  own. */
+function SkeletonShape({
+    presentation = 'line',
+    width = presentation === 'heading' ? 'title' : 'full',
+}: SkeletonShapeProps) {
     const classes = [presentationClasses[presentation], presentation === 'circle' ? null : widthClasses[width]]
         .filter(Boolean)
         .join(' ');

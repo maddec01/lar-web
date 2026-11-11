@@ -7,13 +7,14 @@ import { ambientMotion } from '../foundations/AmbientMotion';
 const motions = {
     spin: 'motion-safe:animate-spin',
     always: 'animate-spin',
-    status: 'status-spin',
+    status: 'lar-status-spin',
     still: '',
 } as const;
 
 type SpinnerIconProps = LucideProps & {
     /** The spin: `spin` turns unless the user prefers reduced motion, `always` turns regardless, as a pending action's
-     *  does, `status` is a status glyph's own spin (its page defines `status-spin`), and `still` doesn't turn. */
+     *  does, `status` is a status glyph's slower turn (theme.css's `lar-status-spin`, as StatusIndicator's `motion`),
+     *  and `still` doesn't turn. */
     motion?: keyof typeof motions;
 };
 

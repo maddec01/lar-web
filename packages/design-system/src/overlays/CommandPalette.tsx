@@ -7,6 +7,7 @@ import { createContext, type ReactNode, useContext, useEffect, useId, useRef, us
 import { IconButton } from '../actions/IconButton';
 import { ResultList } from '../collections/ResultList';
 import { Kbd } from '../display/Kbd';
+import { EmptyState } from '../feedback/EmptyState';
 import { type DesignSystemLabels, useDesignSystemLabels } from '../foundations/DesignSystemProvider';
 import { TextBase } from '../typography/Typography';
 import { useModalAutoFocus } from './useModalAutoFocus';
@@ -232,17 +233,22 @@ export function CommandPalette({
                             </ResultList>
                         </OptionContext.Provider>
                         <div role="status">
-                            {(busy && busyLabel) || (options.length === 0 && empty) ? (
+                            {busy && busyLabel ? (
                                 <TextBase as="div" tone="muted" className="px-3 py-8 text-center">
-                                    {busy && busyLabel ? busyLabel : empty}
+                                    {busyLabel}
                                 </TextBase>
+                            ) : options.length === 0 && empty ? (
+                                // Nothing matches: the inline empty state, its magnifier over the words.
+                                <EmptyState size="compact" icon={<SearchIcon />} title={empty} />
                             ) : null}
                         </div>
                     </div>
                 </div>
+                {/* The hints are the palette's footer, a dialog footer's glass zone: its faint light over the reading
+                    tint, on the footer's divider. */}
                 <div
                     data-slot="command-palette-hints"
-                    className="border-line text-2xs text-fg-muted hidden shrink-0 items-center gap-4 border-t px-4 py-2 pointer-fine:flex"
+                    className="text-2xs text-fg-muted hidden shrink-0 items-center gap-4 border-t border-(--lar-glass-footer-divider) bg-(--lar-glass-footer) px-4 py-2 pointer-fine:flex"
                 >
                     <KeyHint keys="↑↓" label={hints.move} />
                     <KeyHint keys="↵" label={hints.select} />
@@ -336,14 +342,14 @@ export function CommandPaletteOption({
             }}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => context.select(value)}
-            className="text-fg-soft aria-[current=page]:text-fg aria-selected:bg-primary-surface aria-selected:text-fg aria-selected:ring-primary-ring flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm aria-selected:ring-1 aria-selected:ring-inset aria-[current=page]:font-medium pointer-coarse:h-11"
+            className="group/option text-fg-soft aria-[current=page]:text-fg aria-selected:current flex h-8 cursor-pointer items-center gap-2 rounded-md px-2 text-sm aria-[current=page]:font-medium pointer-coarse:h-11"
         >
             {/* One 16px icon box for every row: a bare svg and a wrapped one (a hue tint, a tone mark) get the same size
                 and muted tone, so a wrapped icon never outgrows a bare one. */}
             <span
                 aria-hidden="true"
                 data-slot="palette-icon"
-                className="text-fg-muted [&_.kind-icon]:text-fg-muted flex size-4 shrink-0 items-center justify-center [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-current"
+                className="text-fg-muted [&_.kind-icon]:text-fg-muted flex size-4 shrink-0 items-center justify-center group-aria-selected/option:text-current [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-current"
             >
                 {icon}
             </span>

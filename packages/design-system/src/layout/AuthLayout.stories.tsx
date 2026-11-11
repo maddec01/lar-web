@@ -23,9 +23,6 @@ function SignInForm() {
                     Sign in
                 </Button>
             </Stack>
-            <Button type="button" variant="quiet" fullWidth>
-                Forgot password?
-            </Button>
         </Stack>
     );
 }
@@ -35,10 +32,16 @@ const meta = {
     component: AuthLayout,
     parameters: { layout: 'fullscreen' },
     args: {
-        brandLabel: 'Lar',
+        brandLabel: 'Lar Server',
+        product: 'Server',
         title: 'Sign in',
         description: 'Sign in with your administrator email to continue.',
         children: <SignInForm />,
+        footer: (
+            <Button type="button" variant="quiet" size="sm">
+                Forgot password?
+            </Button>
+        ),
     },
     argTypes: { children: { control: false } },
 } satisfies Meta<typeof AuthLayout>;
@@ -47,7 +50,33 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+/** Lar Server's sign-in: the lockup with its word, the navy halo behind it, the form 16px apart in 32px controls. */
 export const SignIn: Story = {};
+
+/** Lar Account's, under the account pages' title bar (`placement="shell"`). */
+export const Account: Story = {
+    args: {
+        brandLabel: 'Lar Account',
+        product: 'Account',
+        halo: 'account',
+        placement: 'shell',
+        title: 'Sign in to Lar',
+        description: 'Sign in to your Lar account, or create one by signing in for the first time.',
+    },
+    decorators: [
+        (Story) => (
+            <div className="flex min-h-dvh flex-col">
+                <div className="h-13 shrink-0" />
+                <Story />
+            </div>
+        ),
+    ],
+};
+
+/** A product with its own hue: Factory's amber halo. */
+export const AmberHalo: Story = {
+    args: { brandLabel: 'Lar Factory', product: 'Factory', halo: 'factory', title: 'Connect GitHub' },
+};
 
 /** First run: no administrator exists yet. */
 export const Setup: Story = {
@@ -101,7 +130,7 @@ export const Recover: Story = {
 /** While the app checks whether the server has been set up. */
 export const CheckingServer: Story = {
     args: {
-        title: 'Lar',
+        title: 'Checking the server',
         description: undefined,
         children: (
             <AsyncState

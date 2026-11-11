@@ -3,21 +3,24 @@ import { forwardRef, type ReactNode } from 'react';
 
 import { SpinnerIcon } from '../feedback/Loading';
 import { tabbable } from '../foundations/KeyboardFocus';
-import { ghostRecipe, outlineRecipe, primaryRecipe } from './ButtonRecipes';
+import { ghostRecipe, outlineRecipe, primaryRecipe, tintedRecipe } from './ButtonRecipes';
 
-/** T3 Code's button (coss ui): an 8px-radius control, 36px on touch and 32px with a pointer, that dips to
- *  97% while pressed. Every recipe sets its own colours, so ninna-ui only supplies behaviour. */
+/** T3 Code's button (coss ui): a 6px-radius control with a 13px/500 label that dips to 97% while pressed (as every
+ *  pressable control does). Every recipe sets its own colours, so ninna-ui only supplies behaviour. */
 const base =
     'gap-2 rounded-md border px-2.75 font-medium transition-[background-color,box-shadow,scale,color] duration-(--motion-duration-fast) active:scale-[0.97] focus-ring-inset disabled:opacity-64 [&_[data-slot=icon]>svg]:size-4';
-/** The default `md` 36px (32px with a pointer) control, and the `sm` 28px one with 12px text that dense tools use. */
-const sizes = { md: 'h-9 text-sm sm:h-8', sm: 'h-7 text-xs sm:h-7' } as const;
+/** Density by surface, never by app: `sm` 28px in the title bar, toolbars, row and card actions and section-header
+ *  actions; `md` 32px in forms, settings rows, every dialog footer, empty states and auth. Both take the 13px label; a
+ *  coarse pointer reaches either at 44px (theme.css). The label's size is written as a length, so ninna-ui's class
+ *  merge never reads it as a colour and drops it for the recipe's text colour. */
+const sizes = { md: 'h-8 text-(length:--text-ui)', sm: 'h-7 text-(length:--text-ui)' } as const;
 /** A label that would clip on a narrow surface wraps instead, growing the button past its height, which stays its
  *  size's height at least. */
 const wrapping = {
     nowrap: 'whitespace-nowrap',
     wrap: 'h-auto max-w-full min-w-0 py-1 whitespace-normal wrap-anywhere sm:h-auto',
 } as const;
-const wrappingHeights = { md: 'min-h-9 sm:min-h-8', sm: 'min-h-7' } as const;
+const wrappingHeights = { md: 'min-h-8', sm: 'min-h-7' } as const;
 
 const outline = outlineRecipe;
 const ghost = ghostRecipe;
@@ -29,7 +32,7 @@ const recipes = {
     row: `${ghost} h-auto min-h-8 min-w-0 max-w-full justify-start whitespace-normal px-0 py-1 text-left text-xs font-normal text-fg-muted hover:bg-transparent hover:text-fg sm:h-auto active:scale-100`,
     subtle: 'border-transparent bg-fill-muted text-fg hover:bg-fill-muted-hover',
     /** The primary colour tinted on the card, with no border or shadow, deeper on hover and while its popup is open. */
-    tinted: 'border-transparent bg-primary-surface text-primary-fg shadow-none not-disabled:not-aria-disabled:hover:bg-primary-surface-hover data-[state=open]:bg-primary-surface-hover [&_[data-slot=icon]]:text-current',
+    tinted: tintedRecipe,
     destructive:
         'border-danger-fill bg-danger-fill text-danger-on-fill shadow-(--shadow-raised) shadow-danger-ring inset-shadow-(--shadow-highlight) hover:bg-danger-fill-hover active:shadow-none',
     /** The quiet-destructive rule (docs/Introduction.mdx): a ghost in the danger text colour at rest, so it never reads
@@ -44,7 +47,7 @@ const recipes = {
 } as const;
 
 /** An icon-only button is as wide as it is tall, with no padding. */
-const square = { md: 'size-9 px-0 sm:size-8', sm: 'w-7 px-0' } as const;
+const square = { md: 'size-8 px-0', sm: 'w-7 px-0' } as const;
 const pending = 'aria-disabled:cursor-progress aria-disabled:opacity-70';
 const heldDisabled = 'aria-disabled:opacity-64';
 
@@ -78,8 +81,9 @@ export interface ButtonProps extends Omit<
     type?: 'button' | 'submit' | 'reset';
     /** Out of reach, and drawn so. While an action runs, use `busy` instead. */
     disabled?: boolean;
-    /** `md` (the default) is the 36px (32px with a pointer) control; `sm` the dense 28px one with 12px text, as a
-     *  dense desktop tool draws every button. */
+    /** Its density, chosen by the surface it sits on (never by the app): `md` (the default) the 32px control of
+     *  forms, settings rows, dialog footers, empty states and auth; `sm` the 28px one of the title bar, toolbars,
+     *  row and card actions and section headers. Both take the 13px label. */
     size?: keyof typeof sizes;
     /** Lets a long label wrap, anywhere in a long word if it must, growing the button, which never grows past its
      *  container, where it would otherwise clip. */
@@ -161,6 +165,7 @@ export const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(
                 aria-pressed={selected ?? props['aria-pressed']}
                 {...(busy === undefined ? {} : { 'aria-busy': busy || undefined })}
                 data-wrap={wrap || undefined}
+                data-size={size}
                 data-settings-edge={variant === 'quiet' || variant === 'destructive-quiet' ? 'ghost' : undefined}
                 {...(iconOnly ? { 'data-icon-only': '' } : {})}
                 className={`${base} ${sizes[size]} ${wrap ? `${wrapping.wrap} ${wrappingHeights[size]}` : wrapping.nowrap} ${variant === 'choice' && selected ? selectedChoice : recipes[variant]} ${selected && variant !== 'choice' ? 'bg-fill-selected' : ''} ${iconOnly ? square[size] : ''} ${shrinks ? 'max-w-full min-w-0 shrink' : ''} ${pendingLook === 'disabled' ? heldDisabled : pendingLook ? pending : ''} ${className}`}

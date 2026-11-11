@@ -150,7 +150,7 @@ export const Stack: Story = {
             <Button variant="quiet" onClick={dismissAllNotifications}>
                 Dismiss all
             </Button>
-            <Notifications presentation="stack" />
+            <Notifications />
         </div>
     ),
 };
@@ -184,7 +184,7 @@ function EveryTone() {
     return (
         <>
             <p className="text-fg-muted text-sm">Every tone, in the bottom right corner.</p>
-            <Notifications presentation="stack" />
+            <Notifications />
         </>
     );
 }

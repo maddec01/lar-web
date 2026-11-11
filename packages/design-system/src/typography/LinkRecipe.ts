@@ -5,11 +5,12 @@
 const underline =
     'rounded-xs underline decoration-current/40 underline-offset-2 transition-colors hover:decoration-current';
 
-/** A link's look by its tone: `accent` is the primary as text, for a link that stands on its own (in prose, a fact, a
- *  reference); `inherit` takes the colour of the text around it (a link inside a note or an alert); `muted` is a
- *  navigation trail's quiet link, whose underline shows on hover; `default` is the same in body text. */
+/** A link's look by its tone: `accent` is the primary as text, for a link that stands on its own (a fact, a
+ *  reference): its colour marks it, and its underline shows on hover (prose keeps the underline, proseLinkRecipe);
+ *  `inherit` takes the colour of the text around it (a link inside a note or an alert); `muted` is a navigation
+ *  trail's quiet link, whose underline shows on hover; `default` is the same in body text. */
 export const linkRecipe = {
-    accent: `${underline} text-primary-fg hover:text-primary-fg`,
+    accent: 'rounded-xs underline decoration-transparent underline-offset-2 transition-colors text-primary-fg hover:text-primary-fg hover:decoration-current',
     inherit: `${underline} text-inherit hover:text-inherit`,
     muted: 'rounded-xs underline decoration-transparent underline-offset-2 transition-colors text-fg-muted hover:text-fg hover:decoration-current',
     /** A cluster that reads as one fact, such as a rating's mark, score and scale: body text whose underline shows on

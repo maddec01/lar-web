@@ -42,8 +42,8 @@ export function splashStatusText(text: string): string {
     return !line || /[….!?:]$/.test(line) ? line : `${line}…`;
 }
 
-/** How long the status line's roll takes (app-splash.css). */
-const ROLL_MS = 380;
+/** How long the status line's roll takes: --motion-duration-slow (app-splash.css). */
+const ROLL_MS = 300;
 
 interface SplashViewProps {
     mark: SplashMark;
@@ -184,7 +184,7 @@ export interface AppSplashProps {
     /** Whether the mark is already drawn, such as when a native starting page drew it; otherwise it plays its draw,
      *  unless the reader prefers reduced motion. */
     drawn?: boolean;
-    /** Fades the splash out, once; unmount it when the fade ends (600ms). */
+    /** Fades the splash out, once; unmount it when the fade ends (twice --motion-duration-slow, 600ms). */
     leaving?: boolean;
     /** The calm progress track under the status: `indeterminate` (the default) while how far is unknown, or a fraction
      *  from 0 to 1. Every app's splash shows it while it waits; it goes as the splash fades out. */

@@ -111,8 +111,13 @@ Components name their options the same way, so an app reads them alike:
 
 One grammar everywhere: an icon, what is (not) here, why, and the way forward.
 
-- **EmptyState**: a region with nothing in it yet, or no results (`size` hero · start · page · panel · compact · inline).
-  `compact` is centred and frameless with a small tile, for an empty list inside a settings panel or a popover.
+- **EmptyState**: a region with nothing in it yet, or no results, on two scales. The **hero** (`start`, `page`; `hero`
+  on a marketing page): the BrandMark as `artwork` on its `product`'s halo (`product` is `factory`, `server` or
+  `account`), a 22/600 title, a 14/400 sentence and `md` buttons; Server's first run and Factory's empty board are
+  the same `start` hero. The **inline** scale: `inline` is one muted line in a list or a panel's rows; `compact` a
+  bare, centred 20px muted icon, a 14/600 title, one 12px line and a secondary action in a grid, panel or settings list
+  (a search that finds nothing too, with its magnifier); `panel` the same in a hairline panel of its own. The bordered
+  icon tile is the hero's alone.
 - **PageError**: a page or region that could not be shown. Its `tone` says which of three different things happened:
     - **absence**, `neutral`: there is nothing here, such as a 404 (a `code="404"` is always neutral, whatever `tone`
       says) or no access. Say what isn't here and offer the way home, never a warning;
@@ -120,17 +125,38 @@ One grammar everywhere: an icon, what is (not) here, why, and the way forward.
       folder is offline or a server restarting. Say when or why it comes back and what the reader can do meanwhile;
     - **load failure**, `danger`: reading it failed. Say what failed and offer **Try again**; technical details go in
       its `footer`.
-- **AsyncState** owns a region's loading geometry and an inline load failure inside a form or dialog; **Alert** reports
-  an operation's result or a condition of the surface. Write the notice **message first**: most Alerts are one
-  sentence, `<Alert tone="warning" message="Metadata refresh is retrying." />`, in the regular weight. Add a `title`
-  only when a few bold status words help scanning before the sentence (`title="Read-only folder"` with the sentence in
-  `message`); a `title` alone still reads as the regular-weight message, for older callers, and `description` or
-  children are the same slot as `message`. Its size follows the surface: inside a Modal, Drawer, pane, form or panel an
-  Alert is `size="sm"` (the surfaces set it), so one notice (such as a shared-metadata notice) looks the same in every
-  pane it appears in; `size="md"` is for a page-level alert only. **One recipe per tone, for every notice:** the
-  tone's quiet surface, its hairline and its icon, with the words in the primary text colour. Never a grey box with a
-  coloured edge, a plain bordered box, or a box without the tone's icon; ConfirmDialog's "what stays safe" note is an
-  `info` Alert. Notifications (toasts) are popups: the neutral glass with the tone's icon and edge.
+- **AsyncState** owns a region's loading geometry and an inline load failure inside a form or dialog: skeleton first,
+  "Still trying…" under the skeleton once a load passes three seconds, and a failure whose Try again is always the
+  outline button (as PageError's actions are). Unavailable never shows as zero, empty or inactive. Every skeleton is
+  `SkeletonLoader.Shape` (the `.lar-skeleton` mark); a loading heading keeps a fixed width (10rem for a title).
+- The **compact Alert** (`presentation="inline"`) is one line under the row or control it is about: the tone's icon,
+  the message at 12px and its action or close button, on a faint wash of the tone. Never bare red text under a row.
+- **Notifications** (toasts) are for results whose surface is gone; everything else is inline. One presentation in
+  every app: bottom right, 384px, the menu glass, at most three at once; a success or an info closes after 5s, a
+  warning or a failure stays until closed.
+- **Alert** reports an operation's result or a condition of the surface. Write the notice **message first**: most
+  Alerts are one sentence, `<Alert tone="warning" message="Metadata refresh is retrying." />`, in the regular weight.
+  Add a `title` only when a few bold status words help scanning before the sentence (`title="Read-only folder"` with the
+  sentence in `message`); a `title` alone still reads as the regular-weight message, for older callers, and
+  `description` or children are the same slot as `message`. Its size follows the surface: inside a Modal, Drawer, pane,
+  form or panel an Alert is `size="sm"` (the surfaces set it), so one notice (such as a shared-metadata notice) looks
+  the same in every pane it appears in; `size="md"` is for a page-level alert only. **One recipe per tone, for every
+  notice:** the attention recipe at a lower strength (the tone's wash fading out across, its 35% edge, a 12px corner)
+  and its icon, with the words in the primary text colour. Never a grey box with a coloured edge, a plain bordered box,
+  or a box without the tone's icon; ConfirmDialog's "what stays safe" note is an `info` Alert. Notifications (toasts)
+  are popups: the neutral glass with the tone's icon and edge.
+
+### Cards, panels and section headers
+
+**Card** is one thing you open or act on (a desk card, a catalog, a library, a device): the card surface (a faint fill
+and a firmer hairline at 12px), an optional `media` strip, a `header` (CardHeader), a body and a footer of a status and
+`sm` actions. It lifts its fill under the pointer when it opens something (`onOpen`) and its edge too when it navigates
+(`href`, or a CardHeader `href`); `selected` is the current wash and edge (`current-edge`), `attention` the attention
+recipe in its tone. **Panel** is a titled group of rows: no fill and a hairline, a 40px header (status icon, title
+14/600, count 14/400 muted, an `sm` action), rows under hairlines, one muted line when empty, the header alone when
+`collapsed`. A heading above content (Section, SectionTitle), a Panel's header and a list's CollectionSectionHeader
+are one pattern; a count of things that need you takes Count's `warning` or `danger` tone (a 20px pill), never an 11px
+pill.
 
 ### Status words
 
@@ -143,6 +169,20 @@ dot: the dot already carries the tone, and a row of coloured words reads as a ro
 nothing to report is ToolbarStatusItem's quiet state (no `state` or `tone`), in the same box as a lit one.
 `statusWordViolations` in `@lar-works/design-system/testing` finds tinted state words in an app's sources, beside
 `problemBodyViolations`.
+
+### Which button
+
+One rule, the **button-variant rule**, in every surface of every app:
+
+- **Primary** is the one commit per view: the dialog's Save or Create, a first run's "Add a project", a sign-in's
+  Continue. Never two in a view, never on a row.
+- **Tinted** (`variant="tinted"`) is "act on this item": Start, Shape, Answer in T3, Review, Resume in T3, Add a
+  passkey. Every row, card, popover and attention list that starts something on its item uses it, in every app.
+- **Secondary** is everything else that does something: an Alert's or an empty state's action (Try again, Clear
+  search, Add catalog in an empty list), a section header's action, Cancel. The design system's own compositions
+  follow it: EmptyState draws an inline state's action secondary (a hero's way forward stays the view's primary), and
+  AsyncState's and PageError's Try again is always secondary.
+- **Quiet** is a low-stakes action inside a row (Manage, Edit); **destructive-quiet** starts a destructive one, below.
 
 ### Destructive actions
 

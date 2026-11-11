@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 
 import { tabbable } from '../foundations/KeyboardFocus';
 import { GlassBar } from './GlassBar';
+import { HomeLockup, type HomeLink } from './toolbar/HomeLockup';
 import { useScrolled } from './useScrolled';
 
 export interface SiteLink {
@@ -45,8 +46,14 @@ export function SiteShell({ skipLabel, header, footer, children }: SiteShellProp
 }
 
 interface SiteHeaderProps {
-    /** The site's mark, linking home. */
-    brand: ReactNode;
+    /** Where the lockup leads, the site's home: its `href` and accessible name. A plain left click goes through
+     *  `onNavigate`. The header draws the apps' lockup ("Lar", or with `product`'s word). */
+    home?: Omit<HomeLink, 'onNavigate'>;
+    /** The word after the Lar mark, as in the apps' title bars; the site's own header leaves it out. */
+    product?: string;
+    /** @deprecated Pass `home`: the header draws the apps' lockup itself. A custom brand renders when `home` is left
+     *  out. */
+    brand?: ReactNode;
     /** The main navigation's pages, the current one marked. */
     links: readonly SiteLink[];
     /** The page's calls to action, such as Download: in the bar from 40rem, and at the foot of the menu below it. */
@@ -67,7 +74,11 @@ interface SiteHeaderProps {
     onNavigate: (href: string) => void;
 }
 
+/** A marketing site's header on the glass bar tier, 56px tall: the apps' lockup linking home, the main navigation,
+ *  and the page's calls to action; under 48rem the navigation moves into a menu. */
 export function SiteHeader({
+    home,
+    product,
     brand,
     links,
     actions,
@@ -193,7 +204,7 @@ export function SiteHeader({
                 // While the menu is open its bar is opaque too, so a page scrolled under the glass header never shows.
                 className={`flex h-14 items-center gap-6 px-5 sm:px-8 ${open ? 'bg-surface-page' : ''}`}
             >
-                {brand}
+                {home ? <HomeLockup home={{ ...home, onNavigate: follow }} product={product} /> : brand}
                 <nav aria-label={navigationLabel} className="hidden items-center gap-1 md:flex">
                     {links.map((link) => (
                         <NavLink key={link.href} link={link} onNavigate={follow} />

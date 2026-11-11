@@ -15,6 +15,7 @@ import {
     type RefAttributes,
 } from 'react';
 
+import { quietFocusReturn } from './FocusReturn';
 import { scrollFadeClassName, useScrollFade } from './useScrollFade';
 import { windowGutterProps } from './WindowGutter';
 
@@ -35,7 +36,7 @@ interface PopoverContentPolicyProps extends Unstyled<PopoverContentProps> {
     presentation?: 'default' | 'menu' | 'flush';
     /** `sm` is 16rem and `md` 22rem, such as a chooser with a list; either stays inside the window. */
     width?: 'content' | 'sm' | 'md' | 'trigger';
-    /** `window` (the default) grows to the room the window has; `capped` stops at 32rem, so a long status list scrolls
+    /** `window` (the default) grows to the room the window has; `capped` stops at 40rem, so a long status list scrolls
      *  inside a popover of a steady height. */
     height?: 'window' | 'capped';
 }
@@ -78,6 +79,8 @@ export const PopoverContentBase = forwardRef<HTMLDivElement, PopoverContentBaseP
             ref={ref}
             {...windowGutterProps}
             {...props}
+            // The focus going back to the trigger doesn't open its tooltip.
+            {...quietFocusReturn(props)}
             data-layout={layout}
             data-height={height}
             className={`${layout === 'scroll' ? 'p-0' : presentationPadding[presentation]} ${className}`}

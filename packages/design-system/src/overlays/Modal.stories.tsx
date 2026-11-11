@@ -198,7 +198,7 @@ export const Paned: Story = {
     ),
 };
 
-/** A workspace whose body fills the dialog (an editor) holds the window's height. */
+/** A workspace whose body fills the dialog (an editor) holds the window's height under its fixed top line. */
 export const Workspace: Story = {
     render: (args) => (
         <ModalDemo {...args} trigger="Open editor">

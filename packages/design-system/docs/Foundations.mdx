@@ -16,7 +16,7 @@ import {
 
 import { Button } from '../src/actions/Button';
 import { DesignSystemProvider } from '../src/foundations/DesignSystemProvider';
-import { semanticColors } from '../src/foundations/tokens';
+import { categoricalHues, semanticColors } from '../src/foundations/tokens';
 import { GitHubIcon } from '../src/icons/BrandIcons';
 import { Heading, Text } from '../src/typography/Typography';
 
@@ -72,9 +72,10 @@ export const Surface = ({ children }) => (
 
 Lar's tokens live in `src/foundations/theme.css`, in two layers:
 
-1. **Primitives**: fixed `--color-palette-*` steps in zinc, neutral, navy, emerald, amber, red and blue, including
-   intermediate neutral and alpha steps. ninna-ui's `base-*`, `primary` and status names are compatibility aliases
-   selected per theme. Every semantic colour declaration references a fixed primitive directly; there are no exceptions.
+1. **Primitives**: fixed `--color-palette-*` steps: two pure-grey ramps (`grey` for light, `neutral` for dark), the
+   white and black alpha ladder, navy, emerald, amber and red, including intermediate and alpha steps. ninna-ui's
+   `base-*`, `primary` and status names are compatibility aliases selected per theme. Every semantic colour declaration
+   references a fixed primitive directly; there are no exceptions.
 2. **Semantic tokens**: what a colour is _for_ (a surface, text, an edge, a status's fill or text), built on the
    primitives. Components use these. Their values sit in one table, `src/foundations/tokens.ts`, which
    `tokens.test.ts` checks theme.css against and holds to WCAG AA: 4.5:1 for every text pair, 3:1 for control edges
@@ -176,29 +177,52 @@ export const SwatchGroup = ({ title, children, names }) => (
     </Surface>
 );
 
+**Alpha steps, not opaque greys.** Surfaces are a ladder of white steps over the `#000` page in dark and black steps
+over the `#fafafa` page in light (the light card, panel, control and field are white), so the same panel, card or
+field reads on the page, on glass and on artwork. Bordered on black for anything that groups; filled for things. Dark
+keeps T3 Code's balance: almost all black, with one dark step (`#0e0e0e`) for what floats; nothing at rest sits brighter
+than white 6% but hover and selected fills and controls' edges.
+
+| Role                                                        | Dark (page `#000`)                                                                                            | Light (page `#fafafa`)                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| Panel (`surface-panel`): a group of rows                    | no fill, edge white 8.5%, dividers white 8%                                                                   | `#fff`, edge black 8%                         |
+| Card (`surface-card`): one thing you open or act on         | fill white 3.5%, edge white 11%                                                                               | `#fff`, edge black 10%, a hairline drop       |
+| Control (`surface-control`, `line-control`): button, select | fill white 4%, edge white 13%                                                                                 | `#fff`, edge black 14%                        |
+| Field (`surface-field`, `line-field`): text, select, search | fill white 4%, edge white 13% (≈ `#212121`, T3's select), hover 20%, focus navy-300 + ring, disabled white 8% | `#fff`, edge black 12%, hover 20%, focus navy |
+| Panel inside glass (set by `glass-menu`, `glass-dialog`)    | fill white 3%, edge white 8.5%                                                                                | fill black 3%, edge black 8%                  |
+| Hover (`fill-hover`); selected (`fill-selected`)            | +white 6%, selected white 13%; a card that navigates lifts its edge to white 20%                              | +black 3%                                     |
+
 <SwatchGroup
     title="Surfaces"
     names={[
         'surface-page',
+        'surface-panel',
         'surface-card',
         'surface-raised',
         'surface-sunken',
         'surface-overlay',
         'surface-control',
+        'surface-field',
         'surface-glass',
     ]}
 >
-    The page; a card, panel or grouped list resting on it (the `surface-card` utility, with `line-card` and
-    `--shadow-card`); a raised panel or field that is not a card; a well inside a card (a footer, a table's header); a
-    menu, popover or dialog above it; the fill of a control (a text field, a select, a checkbox, an outlined button); a
-    translucent panel over a backdrop or artwork (a marketing page's cards and bands). `surface-card` and
-    `surface-raised` share a value today; cards take their own role so they can move apart from fields and controls.
+    The page; a panel, a group of rows (the `surface-panel` utility, with `line-panel`); a card, one thing you open or
+    act on (the `surface-card` utility, with `line-card` and `--shadow-card`); an opaque surface where nothing may show
+    through (a sticky header, a sign-in card, the fallback without blur; translucent inside glass); a well inside a
+    panel (a footer, a table's header); a menu's opaque tint; a control's fill (a button, a select, a checkbox); a text
+    field's fill; the bar glass's tint for a panel over a backdrop or artwork (a marketing page's cards and bands). Text
+    on an alpha surface is checked composited over its theme's page.
 </SwatchGroup>
 
-<SwatchGroup title="Fills" names={['fill-hover', 'fill-selected', 'fill-muted', 'fill-muted-hover', 'track']}>
-    A row or control under the pointer; the chosen item in a tab bar, segmented control, sidebar or menu (a step deeper,
-    so hovered and chosen differ); a quiet neutral fill that marks a thing rather than a state (a neutral badge, a key
-    cap, a subtle button, inline code) and its hover; the empty part of a progress bar.
+<SwatchGroup
+    title="Fills"
+    names={['fill-hover', 'fill-selected', 'fill-muted', 'fill-muted-hover', 'fill-chosen', 'fill-switch-off', 'track']}
+>
+    A row, card or control under the pointer (+white 6% / +black 3% over whatever it sits on); the chosen item in a tab
+    bar or menu (a step deeper, so hovered and chosen differ; a place uses the current recipe); a quiet neutral fill
+    that marks a thing rather than a state (a neutral badge, a key cap, a subtle button, inline code) and its hover; the
+    chosen segment's pill (the segment-chosen recipe); a switch's track while off, under its white thumb; the empty part
+    of a progress bar.
 </SwatchGroup>
 
 <SwatchGroup title="Text and icons" names={['fg', 'fg-soft', 'fg-muted', 'fg-lead', 'fg-inverse']}>
@@ -208,24 +232,38 @@ export const SwatchGroup = ({ title, children, names }) => (
 
 <SwatchGroup
     title="Edges and focus"
-    names={['line', 'line-card', 'line-hover', 'line-control', 'line-strong', 'line-strong-hover', 'focus']}
+    names={[
+        'line',
+        'line-panel',
+        'line-card',
+        'line-hover',
+        'line-control',
+        'line-field',
+        'line-field-hover',
+        'line-choice',
+        'line-strong',
+        'line-strong-hover',
+        'focus',
+    ]}
 >
-    line is decoration (dividers, a panel's edge), line-card a card's edge (half a step deeper than line in light and a
-    step lighter in dark, so a card holds its shape on the page), line-hover an edge under the pointer, and line-control
-    an outlined button's or chip's edge (its label identifies it). line-strong is an edge that identifies a control or
-    carries its state and reaches 3:1 on every surface and on the control's fill (WCAG 1.4.11): a text field, a select,
-    a checkbox, a switch's track, a dashed waiting slot; line-strong-hover is a field under the pointer. focus is the
-    one focus ring.
+    line is a divider (decoration); line-panel a panel's edge, line-card a card's firmer one; line-hover an edge under
+    the pointer (a card that navigates lifts to it); line-control a control's edge at rest (its label identifies it);
+    line-field a field's edge (a text field, a select, a textarea, a search) and line-field-hover that edge under the
+    pointer: T3 Code's quiet edge, at or just above a card's, never the loudest line on screen; line-choice a checkbox's
+    or radio's edge. line-strong carries a state and reaches 3:1 on the page, a card and a menu (WCAG 1.4.11): a status
+    light that is off, a neutral progress segment, a dashed waiting slot; line-strong-hover is it under the pointer.
+    focus is the one focus ring and a focused field's edge.
 </SwatchGroup>
 
+**A deliberate deviation from WCAG 1.4.11.** A field's edge (`line-field`), a checkbox's or radio's edge
+(`line-choice`) and a switch's off track (`fill-switch-off`) are not held to 3:1. The field's fill, its label and
+placeholder (and a switch's white thumb) tell the control apart; what is held to 3:1 is its focus edge and ring and its
+checked state (the primary fill).
+
 **Same value, different role.** A few roles share a value in one theme or both, on purpose: each names what it is
-for, so it can move on its own. `fill-hover` and `fill-muted` are both zinc-4 in light (the lightest fill that reads
-on white), but one is a state and the other marks a thing, and in dark the hover sits a step under a chip so a chip on
-a hovered row keeps its fill. `fg-lead` is `fg-muted` in light and a step lighter in dark, where long runs of mid-grey
-tire the eye. `line-hover` (a card's edge under the pointer) and `line-control` (an outlined control's edge at rest)
-are both the step after `line`; a deeper hover never deepens every outlined button with it. In dark, `fill-selected`
-shares `fill-muted`'s step (a lighter one would drop muted text on it under 4.5:1), and `line-strong-hover` shares
-`fg-muted`'s step in light. Use the role you mean, never the one whose value happens to match.
+for, so it can move on its own. `fg-lead` is `fg-muted` in light and a step lighter in dark, where long runs of
+mid-grey tire the eye. `line-strong-hover` shares `fg-muted`'s step in light. Use the role you mean, never
+the one whose value happens to match.
 
 <SwatchGroup
     title="Brand"
@@ -243,6 +281,12 @@ shares `fill-muted`'s step (a lighter one would drop muted text on it under 4.5:
     button) and that tint under the pointer.
 </SwatchGroup>
 
+<SwatchGroup title="Current" names={['current-surface', 'current-fg']}>
+    Where you are: a settings nav item, the list sidebar's page, the command palette's cursor, a chosen option in a
+    list. navy-500 at 18% under `#9db7eb` in dark, navy at 10% under `#355292` in light. Drawn by the `current` utility,
+    never by hand.
+</SwatchGroup>
+
 <SwatchGroup
     title="Status"
     names={[
@@ -251,15 +295,22 @@ shares `fill-muted`'s step (a lighter one would drop muted text on it under 4.5:
             s + '-on-fill',
             s + '-fg',
             s + '-surface',
+            s + '-wash',
+            s + '-wash-edge',
         ]),
         'danger-fill-hover',
     ]}
 >
     For each status: a solid fill and the text on it (bg-danger-fill text-danger-on-fill, a destructive button), the
     status as text or an icon on any surface (text-danger-fg), and a tinted surface under that text (bg-danger-surface
-    text-danger-fg, a badge or notice), on which fg, fg-soft and fg-muted read too; danger-fill-hover is a destructive
-    button under the pointer. The bare hues (bg-success) are for dots and bars only, never for text, and never at an
-    alpha of the moment: a tone's edge is a token.
+    text-danger-fg, a badge), on which fg, fg-soft and fg-muted read too; a notice's wash and its edge (an Alert:
+    bg-danger-wash border-danger-wash-edge), the surface and ring in light and, in dark, the hue itself at 6% and 35% (a
+    box fades it out by 70% across), so a notice tints the black or the glass under it instead of laying a slab on it;
+    danger-fill-hover is a destructive button under the pointer. **One status source**: each fill is its bare hue
+    (emerald, amber, red, and info's own working navy), the same colour `statusStateColors` gives a status light, a
+    progress segment or a stage (`tokens.test.ts` holds them equal). Info is its own token set in the primary's navy
+    hue, never the primary's tokens. The bare hues (bg-success) are for dots and bars only, never for text, and never at
+    an alpha of the moment: a tone's edge is a token.
 </SwatchGroup>
 
 <SwatchGroup
@@ -272,12 +323,46 @@ shares `fill-muted`'s step (a lighter one would drop muted text on it under 4.5:
     than the others, as it reads lighter.
 </SwatchGroup>
 
+### Categorical palette
+
+For things that differ in kind, never in state (an item's kind, a media kind, a project, an initials avatar): six
+oklch hues in the gaps between the status hues (red 27, amber 70, emerald 163, navy 265), so a kind never reads as a
+state. Pick one with `category-<name>` (`categoricalHues` in tokens.ts, or a bare angle, `category-245`) and draw it
+with a recipe: `categorical-fill` (a tile, placeholder or avatar: fill `oklch(.62 .12 H / .11)`, edge `/ .2`, text
+`oklch(.82 .08 H)` in dark and `oklch(.45 .1 H)` in light), `categorical-text` or `categorical-icon`; a badge takes the
+hue as Badge's `hue`. `kind-badge` and `kind-icon` with `--lar-kind-hue` draw the same recipes. An app picking a hue
+for a name (an avatar, a project) hashes the name onto the list.
+
+<Surface>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', padding: '0.75rem 0' }}>
+        {Object.entries(categoricalHues).map(([name, hue]) => (
+            <span
+                key={name}
+                className={`categorical-fill rounded-md border px-2.5 py-1 text-xs font-medium`}
+                style={{ '--lar-category-hue': hue }}
+            >
+                {name} · {hue}
+            </span>
+        ))}
+    </div>
+</Surface>
+
+### Product halo
+
+A product's mark on a sign-in, a first run or an empty hero sits on a soft glow in its hue: `halo` with
+`halo-factory` (amber), `halo-server` or `halo-account` (navy), `radial-gradient(60% 50% at 50% 0, hue 22%,
+transparent)`; Factory's is amber-400 at 14%, as amber-500 at 22% reads as muddy brown on black.
+
+<SwatchGroup title="Halos" names={['halo-factory', 'halo-server', 'halo-account']}>
+    Each product's hue at 22% (Factory's lighter amber at 14%), the centre of its halo.
+</SwatchGroup>
+
 ### Primitives
 
-One even twelve-step neutral ramp per theme (`--color-palette-zinc-1…12` in light, from the raised surface to text;
-`--color-palette-neutral-1…12` in dark, dense at the bottom where surfaces sit) and the hues, with fixed alpha steps for
-glass, tone edges and the scrollbar. The ramp and hues the semantic tokens are built on, in the current theme (switch
-it in the toolbar). Only
+Two pure-grey ramps (`--color-palette-grey-1…12` in light, from the raised surface to text, with no tint;
+`--color-palette-neutral-1…12` in dark, from the `#000` page, dense at the bottom where surfaces sit), the white and
+black alpha ladder the surfaces are built from, and the hues, with fixed alpha steps for tone edges, halos and the
+scrollbar. The ramp and hues the semantic tokens are built on, in the current theme (switch it in the toolbar). Only
 `foundations/` reads them: ninna-ui's own components are drawn from them, and theme.css builds the semantic tokens on
 them. A component never names one (see the vocabulary rule).
 
@@ -306,10 +391,28 @@ them. A component never names one (see the vocabulary rule).
 
 ### Glass
 
-Menus, popovers, selects, tooltips and toasts use the `glass-menu` surface (`surface-overlay` at
-`--lar-menu-opacity`, 94%, under a blur: nearly opaque, so a poster or album grid never reads through a menu's rows),
-dialogs `glass-dialog` and the navigation bar `glass-bar`, tuned by `--lar-glass-blur` (18px), `--lar-glass-opacity`
-(75%, the bar) and `--lar-glass-saturation` (1.14, 1.08 in dark).
+Three tiers and a backdrop are the only translucency (`glassTiers` in tokens.ts; each palette's `--lar-glass-*`).
+Every tier is a tint at an alpha under `saturate(1.8)` and a blur that deepens with the tier; without backdrop-filter
+it falls back to its opaque tint.
+
+| Tier                                                             | Utility                | Dark                                                     | Light            | Blur         | Edge and light                                                           |
+| ---------------------------------------------------------------- | ---------------------- | -------------------------------------------------------- | ---------------- | ------------ | ------------------------------------------------------------------------ |
+| Bar: the title bar, a site header                                | `glass-bar` (GlassBar) | `#000` at 60%                                            | `#fafafa` at 66% | 20px         | a hairline (white 8% / black 8%) once scrolled                           |
+| Menu: menus, popovers, selects, tooltips, toasts                 | `glass-menu`           | `#141414` at 72% (≈ `#0e0e0e` over black)                | `#fff` at 82%    | 28px         | rim white 10%, inset top white 4%                                        |
+| Dialog: dialogs, drawers, the command palette (its reading zone) | `glass-dialog`         | `#000` at 93%, no veil                                   | `#fff` at 94%    | 32px         | rim white 11%, inset top white 4%                                        |
+| A Modal's glass zone: its sidebar                                | (Modal marks it)       | `#171717` at 70% (≈ `#111` over black), divider white 8% | `#f5f5f5` at 80% | the dialog's | the footer: white 3% / black 3% over the reading tint, divider white 10% |
+| Backdrop under a dialog                                          | `dialog-backdrop`      | black 38%                                                | black 14%        | 4px          |                                                                          |
+
+In dark the glass sits at T3 Code's balance, near black, so it reads through its blur and rim, not its brightness.
+A Modal is two zones of one glass: the reading zone (header and content) is near-opaque ink, where only strong colour
+bleeds through, and the blur shows in the glass zone, its sidebar (and faintly its footer), where you navigate and act.
+The zones differ only by their fill, as a nested backdrop-filter can't see through the box's; the box paints both. The
+values were set live against T3 Code's settings and confirm dialogs over the factory board and the server dashboard.
+Inside a menu or a dialog, muted text rises a step (`#a3a3a3` / `#575757`), a panel becomes a faint well (white 3%,
+edge white 8.5% / black 3%, edge black 8%) and `surface-raised` turns translucent, so nothing opaque sits on the glass;
+inside a dialog a control is white 4% on a white 11% edge and the current place a subtler navy (12%). A dialog's header
+inherits the reading zone and its footer is a faint light on it, set off by a divider, never a slab. `surface-glass`
+is the bar's tint, for a panel over a backdrop or artwork.
 
 ## Status and progress
 
@@ -376,7 +479,7 @@ is a series' key in a meter or chart: its colour names what the series is, never
 series and has a status (an encode device's playback job) takes the swatch as its indicator and says the status in
 words, or adds a light coloured by its state.
 
-A series takes its colour from its own set, never from a status hue: `series` 1, 2 and 3 (navy, teal, orange; the
+A series takes its colour from its own set, never from a status hue: `series` 1, 2 and 3 (navy, teal, magenta; the
 `series-1` to `series-3` tokens), in that order and never cycled, validated apart for every colour vision and 3:1 on a
 card in both themes. Past three series, fold the rest into one or split the chart.
 
@@ -387,11 +490,13 @@ sits on the centre of the label's **first** line, never centred across the lines
 and controls stay centred on the row. Cards side by side in a row (check-up summary cards, dashboard cards) top-align
 their content, so their first lines line up whatever each card holds.
 
-A row's leading icons come in one order: the **status mark first** (a `StatusGlyph`, or a status light standing in
-for one), **then the source icon** (where its ticket is saved), then the title. Every status mark sits in the same
-fixed box (`StatusGlyph` draws one; wrap a `StatusIndicator` that stands in for a glyph in `StatusGlyphSlot`), so a
-list's titles start at the same x whichever mark each row has. Rows in one status list keep one rhythm: a row whose
-value is a control (`StatusRow trailing`) is as tall as a row whose value is a word.
+A row's leading icons come in one order: the **status mark first** (a `StatusIndicator` with a `glyph`, or its dot
+standing in for one), **then the source icon** (where its ticket is saved), then the title. A glyph sits in a fixed
+16px box (14px at `sm`), so a list's titles start at the same x whichever mark each row has; at work it turns
+(`motion="spin"`, a spinner when it has no glyph) or breathes (`motion="pulse"`), on the motion tokens, paused out of
+view and still for reduced motion. A dot is 8px with its 3px halo everywhere; the 6px `sm` dot is only for a 20px chip.
+Work that moves through parts (stages, slices, parts, an activity) is one `SegmentedProgress` track. Rows in one status
+list keep one rhythm: a row whose value is a control (`StatusRow trailing`) is as tall as a row whose value is a word.
 
 ## Layout rules for actions and options
 
@@ -522,22 +627,25 @@ section or card title, a lead, prose) and `tracking-caps` (0.08em: small upperca
 
 ## Radii
 
-T3 Code's corners: 6, 8, 10, 14 and 18px, with 4px for the smallest things (a code chip, a swatch, a text button's
-focus box) and 24px for a marketing page's cards and bands. Buttons and inputs use `md`, popovers `lg`, dialogs `2xl`.
-These are the only radii, with `full` and `none`: `scales.test.ts` fails on a bare `rounded`, Tailwind's own steps
-(`4xl`), an arbitrary `rounded-[…]` or a radius in rem in a stylesheet. The marketing devices' frames, drawn to scale,
-are the one exception.
+One radius per kind of surface, the same in every app: `md` 6px every control, field and the title bar's search;
+`lg` 8px menus, popovers, toasts and artwork; `xl` 12px every card, panel and group (InsetPanel, RowList, a settings
+group, ResultList's panel, anything with `surface-card` or `surface-panel`); `2xl` 16px dialogs, drawers and the
+command palette; `3xl` 20px a marketing page's cards and bands. `xs` 4px is for the smallest things (a code chip, a
+swatch, a text button's focus box) and `sm` 5px for a menu row, a tooltip or a chip. A surface's children never take
+their own radius at its edge (a panel's footer is clipped by the panel). These are the only radii, with `full` and
+`none`: no bare `rounded`, no Tailwind step outside these (`4xl`), no arbitrary `rounded-[…]` and no radius in rem in a
+stylesheet. The marketing devices' frames, drawn to scale, are the one exception.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', padding: '1rem 0' }}>
         {[
             ['xs', '0.25rem', '4px'],
-            ['sm', '0.375rem', '6px'],
-            ['md', '0.5rem', '8px'],
-            ['lg', '0.625rem', '10px'],
-            ['xl', '0.875rem', '14px'],
-            ['2xl', '1.125rem', '18px'],
-            ['3xl', '1.5rem', '24px'],
+            ['sm', '0.3125rem', '5px'],
+            ['md', '0.375rem', '6px · controls'],
+            ['lg', '0.5rem', '8px · menus'],
+            ['xl', '0.75rem', '12px · cards, panels'],
+            ['2xl', '1rem', '16px · dialogs'],
+            ['3xl', '1.25rem', '20px · marketing'],
             ['full', '9999px', 'pill'],
         ].map(([name, value, detail]) => (
             <div key={name} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
@@ -568,14 +676,37 @@ Breadcrumbs, whose underline shows on hover).
 ## Spacing and density
 
 Every length is on Tailwind's 4px spacing scale (`--spacing: 0.25rem`): `p-3` is 12px, `max-w-160` 640px, `px-2.75`
-11px. Lar is dense, as T3 Code is: controls are 36px on touch and 32px with a pointer (`Button`'s default), 28px in
-dense tools (`compact`, every button of a dense desktop tool), and rows 28 to 32px. A page's content is at most `max-w-page`
-(1200px) wide. Arbitrary lengths (`w-[340px]`, `gap-[3px]`) fail `scales.test.ts`; the few pixel-exact glyphs it
+11px. A page's content is at most `max-w-page` (1200px) wide.
+
+**Density by surface, never by app.** The size of a control follows the surface it sits on, the same in every app;
+no app picks a denser or looser size for itself:
+
+| Size | Height | Where                                                                              |
+| ---- | ------ | ---------------------------------------------------------------------------------- |
+| `sm` | 28px   | the title bar, toolbars, row and card actions, section-header actions              |
+| `md` | 32px   | forms, settings rows, every dialog footer, empty states, auth (`Button`'s default) |
+| `lg` | 44px   | marketing pages only (`ButtonLink size="lg"`)                                      |
+
+Both app sizes take the 13px/500 label (`text-ui`). A coarse pointer reaches any button at 44px through an invisible
+hit area, without growing what it draws. Icon buttons, the title bar's and a dialog's close alike, are 28px with a
+16px glyph; every pressable control dips to 97% while pressed. Rows are 40px single-line, 60px two-line and 28px in a
+menu. Arbitrary lengths (`w-[340px]`, `gap-[3px]`) fail `scales.test.ts`; the few pixel-exact glyphs it
 allows (a 1.5px ring, a 7px monogram) are listed there with their reasons.
 
-App shells use the compact 16px gutter, a spacing token, `px-gutter-app` (`--spacing-gutter-app`, 16px:
-`ContentContainer`, `TitleBar`); an app whose workspace wants more room adds a gutter token of its own in its UI layer.
-Shell layout owns this spacing; individual pages do not add outer gutters.
+App shells use one 16px gutter, a spacing token, `px-gutter-app` (`--spacing-gutter-app`, 16px: `ContentContainer`,
+`TitleBar`), for the bar and the content alike, in every app, a desktop window's board included. Shell layout owns this
+spacing; neither an app nor a page adds a gutter of its own.
+
+**The title bar is one bar in every app** (`TitleBar`, 52px; the site's `SiteHeader` 56px, both on `glass-bar`). On
+the left, the lockup (`product` and `home`: the mark, "ar" and the product's word at 20/500 muted, always a link home,
+the word hidden under 640px) and where you are (`TitleBarTrail`, at most 280px). At the end, one group in a fixed
+order, each a slot of its own: `search` · `status` · `actions` (the app's) · `settings` · `identity`, every control 28px
+on a 6px radius, 8px apart, each icon-only one named by a glass tooltip (never a native `title`). The bar never wraps:
+search folds to its icon by the bar's width, and `status` folds into a "…" popover under 40rem. A web app's shell
+lets the document scroll; a desktop window's (`AppShell scroll="contained"`) scrolls its own main area under the bar,
+which drags the window and starts past the traffic lights (`trafficLights`). Popovers come in three widths: 256px a
+menu (`Popover.Content width="sm"`), 320px a status (`StatusPopoverContent`'s default) and 384px a list
+(`StatusPopoverContent width="wide"`, as a `ToolbarCounter`'s).
 
 ## Breakpoints
 
@@ -607,16 +738,17 @@ a solid fill's lit top edge is `inset-shadow-(--shadow-highlight)` (pressed: `--
 artwork lifts off it with `drop-shadow-(--shadow-logo)`. An app's UI layer may add its own in its sheets, such as a
 marketing page's device shadows.
 
-**Card, not raised.** A card, panel or grouped list resting on the page takes `surface-card` (its surface,
-`line-card` edge, `--shadow-card` and, in dark, a faint top sheen): in light a hairline drop and a soft, short lift
-so a white card reads off the near-white page; in dark a lit top edge, since a shadow barely reads on black. A control
-or a field resting on the page (an outlined button, a text field, a chip) takes the flatter `--shadow-raised`, so a
-control never reads as a card and a card full of controls keeps one level. Popups and dialogs sit above both.
+**Card, panel, raised.** A card resting on the page takes `surface-card` (its faint fill, `line-card` edge and
+`--shadow-card`: in light a hairline drop so a white card reads off the `#fafafa` page; in dark none, as the fill and
+edge carry it on black). A panel, a group of rows, takes `surface-panel` and no shadow. A control or a field resting
+on the page (an outlined button, a text field, a chip) takes the flatter `--shadow-raised`, so a control never reads as
+a card and a card full of controls keeps one level. Popups and dialogs sit above both, their shadows carried by
+`glass-menu` and `glass-dialog`.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', padding: '1.25rem 0 1.75rem' }}>
         {[
-            ['--shadow-card', 'A card, panel or grouped list on the page (surface-card)', 'surface-card'],
+            ['--shadow-card', 'A card on the page (surface-card)', 'surface-card'],
             ['--shadow-raised', 'A control or field resting on the page'],
             ['--shadow-popup', 'A menu, popover, tooltip or toast'],
             ['--shadow-dialog', 'A dialog, a sheet, or a page’s one card (sign-in)'],
@@ -625,11 +757,9 @@ control never reads as a card and a card full of controls keeps one level. Popup
                 <div
                     style={{
                         height: '5rem',
-                        borderRadius: '0.625rem',
+                        borderRadius: '0.75rem',
                         background:
-                            surface === 'surface-card'
-                                ? 'var(--lar-card-sheen), var(--color-surface-card)'
-                                : 'var(--color-surface-raised)',
+                            surface === 'surface-card' ? 'var(--color-surface-card)' : 'var(--color-surface-raised)',
                         border: surface === 'surface-card' ? '1px solid var(--color-line-card)' : undefined,
                         boxShadow: `var(${name})`,
                     }}
@@ -650,9 +780,17 @@ Durations by role and two easings. A plain `transition-*` utility already runs a
 
 <Surface>
     {[
-        ['--motion-duration-fast', '150ms', 'A control’s feedback: hover, press, colour'],
-        ['--motion-duration-base', '200ms', 'A small move or fade: an arrow nudging, an image appearing'],
-        ['--motion-duration-slow', '300ms', 'Progress filling, a panel easing in'],
+        ['--motion-duration-fast', '150ms', 'A control’s feedback: hover, press (0.97), colour'],
+        [
+            '--motion-duration-base',
+            '200ms',
+            'A small move or fade; a menu, popover or tooltip opening (opacity + 0.98)',
+        ],
+        [
+            '--motion-duration-slow',
+            '300ms',
+            'Progress filling, a panel easing in; a dialog opening (opacity + an 8px rise)',
+        ],
         ['--motion-duration-deliberate', '700ms', 'A staged scene settling'],
         ['--motion-loop-pulse', '1.6s', 'A status glyph’s pulse, a skeleton’s shine'],
         ['--motion-loop-breath', '2.4s', 'A status light’s slow breath (StatusIndicator’s pulse)'],

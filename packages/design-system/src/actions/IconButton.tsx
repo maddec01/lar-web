@@ -12,8 +12,9 @@ export interface IconButtonProps extends Omit<
 > {
     /** The icon it shows; its `aria-label` names it. */
     icon: ReactNode;
-    /** Where it sits: `quiet` (default) a 32px ghost button, `header` the app header's 32px with 18px icons, `title-bar`
-     *  the title bar's 28px row, `inline` a 20px control inside a line of text. */
+    /** Where it sits: `quiet` (default) a 32px ghost button, `header` a pane's or dialog's header (a dialog's close),
+     *  28px with a 16px muted icon, `title-bar` the title bar's 28px row with 16px icons in the header's icon colour,
+     *  `inline` a 20px control inside a line of text. */
     variant?: 'header' | 'quiet' | 'title-bar' | 'inline';
     /** A status tone; `danger` follows the quiet-destructive rule: the danger colour at rest, on the danger surface on
      *  hover or keyboard focus. */
@@ -90,7 +91,7 @@ export const IconButtonBase = forwardRef<HTMLButtonElement, IconButtonBaseProps>
             className={
                 // T3 Code's ghost icon button: muted until hovered, on an accent fill.
                 (variant === 'header'
-                    ? 'text-fg-muted hover:bg-fill-hover hover:text-fg data-[state=open]:bg-fill-hover data-[state=open]:text-fg size-8 rounded-md p-0 before:-inset-1 **:data-[slot=icon]:size-4.5 '
+                    ? 'text-fg-muted hover:bg-fill-hover hover:text-fg data-[state=open]:bg-fill-hover data-[state=open]:text-fg size-7 rounded-md p-0 before:-inset-1.5 **:data-[slot=icon]:size-4 '
                     : variant === 'title-bar'
                       ? // The title bar's 28px row of controls, with 16px icons in the header's icon colour, like its
                         // status items and menu buttons.
@@ -103,7 +104,7 @@ export const IconButtonBase = forwardRef<HTMLButtonElement, IconButtonBaseProps>
                           : tone === 'neutral'
                             ? 'text-fg-muted hover:bg-fill-hover hover:text-fg data-[state=open]:bg-fill-hover rounded-md '
                             : 'rounded-md ') +
-                'data-[state=open]:bg-fill-hover! data-[state=open]:text-fg! aria-pressed:bg-fill-hover! aria-pressed:text-fg! transition-[background-color,color,scale] active:scale-[0.94] [&_svg]:size-full ' +
+                'data-[state=open]:bg-fill-hover! data-[state=open]:text-fg! aria-pressed:bg-fill-hover! aria-pressed:text-fg! transition-[background-color,color,scale] duration-(--motion-duration-fast) active:scale-[0.97] [&_svg]:size-full ' +
                 (tone === 'danger'
                     ? 'text-danger-fg! hover:bg-danger-surface! focus-visible:bg-danger-surface! '
                     : '') +

@@ -31,6 +31,9 @@ export interface ProgressStatusRowProps {
     /** Makes the row a button that opens the full details, such as a dialog with every counter; a chevron at its end,
      *  centred on the row, says so. */
     onDetails?: () => void;
+    /** Leaves out the chevron of a row that opens its details, when the row already ends in a control of its own (a
+     *  button or a menu), so it never ends in three; the whole row still opens the details. */
+    hideChevron?: boolean;
     /** Says where the row's button leads, for screen readers, after what the row shows: "Show scan details". */
     detailsLabel?: string;
     /** Names the progress bar for screen readers; the meta line names it otherwise. */
@@ -102,6 +105,7 @@ export function ProgressStatusRow({
     progress,
     trailing,
     onDetails,
+    hideChevron = false,
     detailsLabel,
     progressLabel,
     size = 'md',
@@ -166,12 +170,13 @@ export function ProgressStatusRow({
             <StatusIndicator tone={tone} />
         </span>
     );
-    const chevron = onDetails ? (
-        <ChevronRightIcon
-            aria-hidden="true"
-            className="text-fg-muted group-hover/progress:text-fg size-3.5 shrink-0 self-center transition-colors"
-        />
-    ) : null;
+    const chevron =
+        onDetails && !hideChevron ? (
+            <ChevronRightIcon
+                aria-hidden="true"
+                className="text-fg-muted group-hover/progress:text-fg size-3.5 shrink-0 self-center transition-colors"
+            />
+        ) : null;
     // In a list, the action sits at the label line's end and the lines under it run beneath the action to the row's
     // end, so the meta and the bar keep the row's whole width.
     const inlineActions = Boolean(trailing) && !onDetails && !line;

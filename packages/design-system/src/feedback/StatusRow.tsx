@@ -33,7 +33,7 @@ type StatusRowProps = StatusColour & {
     /** What the row is about, such as a service's name. */
     label: string;
     /** The way to what the row reports, such as "Review": the one look every app's status rows and attention rows
-     *  share for it, a small secondary button at the row's end, centred on the row. The row's `value` then reads under
+     *  share for it, a small tinted button at the row's end, centred on the row. The row's `value` then reads under
      *  the label, before any `detail`, so the action never wraps onto a line of its own in a narrow popover. Never a
      *  text link of the caller's in `trailing`. */
     action?: StatusRowAction;
@@ -138,11 +138,11 @@ export function StatusRow({
 
 function StatusRowActionButton({ label, href, onNavigate, onClick }: StatusRowAction) {
     return href ? (
-        <ButtonLink href={href} variant="secondary" size="sm" onNavigate={onNavigate} onClick={onClick}>
+        <ButtonLink href={href} variant="tinted" size="sm" onNavigate={onNavigate} onClick={onClick}>
             {label}
         </ButtonLink>
     ) : (
-        <Button type="button" variant="secondary" size="sm" onClick={onClick}>
+        <Button type="button" variant="tinted" size="sm" onClick={onClick}>
             {label}
         </Button>
     );

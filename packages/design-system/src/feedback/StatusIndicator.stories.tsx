@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { CheckIcon, CircleDashedIcon, EyeIcon } from 'lucide-react';
 
 import { StatusIndicator } from './StatusIndicator';
 import { StatusSummary } from './StatusSummary';
@@ -111,6 +112,46 @@ export const Overlay: Story = {
                     </span>
                 </span>
             ))}
+        </div>
+    ),
+};
+
+/** The marks at work, as T3 marks a thread: a working state turns (a spinner, or its own glyph), a waiting one
+ *  breathes, and a stage's glyph stands in for the dot in the same 16px box, so titles beside them line up. */
+export const Glyphs: Story = {
+    render: () => (
+        <ul className="flex w-72 flex-col gap-2 text-sm">
+            <li className="flex items-center gap-2">
+                <StatusIndicator state="active" motion="spin" />
+                Building
+            </li>
+            <li className="flex items-center gap-2">
+                <StatusIndicator state="waiting" motion="pulse" glyph={<EyeIcon strokeWidth={2.25} />} />
+                In review
+            </li>
+            <li className="flex items-center gap-2">
+                <StatusIndicator state="ready" glyph={<CheckIcon strokeWidth={2.25} />} />
+                Merged
+            </li>
+            <li className="flex items-center gap-2">
+                <StatusIndicator state="off" glyph={<CircleDashedIcon strokeWidth={2.25} />} />
+                Shaping
+            </li>
+            <li className="flex items-center gap-2">
+                <span className="grid size-4 place-items-center">
+                    <StatusIndicator state="waiting" />
+                </span>
+                Needs you
+            </li>
+        </ul>
+    ),
+};
+
+/** A label in a narrow slot truncates rather than push the row wider. */
+export const TruncatedLabel: Story = {
+    render: () => (
+        <div className="border-line w-40 rounded-md border p-2">
+            <StatusIndicator state="waiting" label="Waiting on review from two maintainers" />
         </div>
     ),
 };

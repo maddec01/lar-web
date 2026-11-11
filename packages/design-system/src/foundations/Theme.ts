@@ -14,24 +14,45 @@ export function isThemePreference(value: string): value is ThemePreference {
 }
 
 /** The page backgrounds, which Safari and installed web apps extend into their own chrome. */
-const themeColors = { light: '#fcfcfc', dark: '#0a0a0a' } as const;
+const themeColors = { light: '#fafafa', dark: '#000000' } as const;
+
+export interface ThemeControllerOptions {
+    /** The preference while none is stored: `dark` (the default) for a web app, which opens dark; `system` for a
+     *  desktop app, which follows the system until the reader picks Light or Dark. */
+    fallback?: ThemePreference;
+    /** Called with the preference each time it is applied (at `initialize`, on a choice, and from another window),
+     *  such as to point a desktop shell's own chrome (Electron's `nativeTheme.themeSource`) at it. */
+    onApply?: (preference: ThemePreference) => void;
+}
 
 /**
- * The light/dark preference of one app, stored under `storageKey` in localStorage. The preference sets `.light` or
- * `.dark` on <html> (nothing follows the system) and points the page's `theme-color` metas at the matching background.
+ * The light/dark preference of one app, one controller for every Lar app, with one vocabulary (the design system's
+ * theme labels: Follow system, Light, Dark). It is stored under `storageKey` in localStorage and kept in step across
+ * tabs and windows. Light or Dark sets `.light` or `.dark` on <html>; Follow system sets neither, so the palette
+ * follows `prefers-color-scheme`. Either way the page's `theme-color` metas point at the matching background. The
+ * second argument is the fallback preference, or the options.
  */
-export function createThemeController(storageKey: string): ThemeController {
+export function createThemeController(
+    storageKey: string,
+    options: ThemePreference | ThemeControllerOptions = {},
+): ThemeController {
+    const { fallback = 'dark', onApply } = typeof options === 'string' ? { fallback: options } : options;
     const changeEvent = `${storageKey}-change`;
+
+    function apply(preference: ThemePreference): void {
+        applyThemePreference(preference);
+        onApply?.(preference);
+    }
 
     function read(): ThemePreference {
         const stored = window.localStorage.getItem(storageKey);
 
-        return stored && isThemePreference(stored) ? stored : 'system';
+        return stored && isThemePreference(stored) ? stored : fallback;
     }
 
     function set(preference: ThemePreference): void {
         window.localStorage.setItem(storageKey, preference);
-        applyThemePreference(preference);
+        apply(preference);
         window.dispatchEvent(new Event(changeEvent));
     }
 
@@ -39,7 +60,7 @@ export function createThemeController(storageKey: string): ThemeController {
         function handleStorageChange(event: StorageEvent): void {
             if (event.key !== storageKey) return;
 
-            applyThemePreference(read());
+            apply(read());
             onChange();
         }
 
@@ -53,8 +74,8 @@ export function createThemeController(storageKey: string): ThemeController {
     }
 
     return {
-        initialize: () => applyThemePreference(read()),
-        useTheme: () => [useSyncExternalStore(subscribe, read, () => 'system' as const), set] as const,
+        initialize: () => apply(read()),
+        useTheme: () => [useSyncExternalStore(subscribe, read, () => fallback), set] as const,
     };
 }
 

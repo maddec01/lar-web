@@ -93,7 +93,7 @@ function TaskCheckbox(props: ComponentProps<'input'>) {
         <span className="relative me-1.5 inline-grid size-4 shrink-0 align-text-bottom">
             <input
                 {...props}
-                className="peer border-line-strong bg-surface-control checked:border-primary checked:bg-primary m-0 size-4 appearance-none rounded-sm border forced-colors:appearance-auto"
+                className="peer border-line-choice bg-surface-control checked:border-primary checked:bg-primary m-0 size-4 appearance-none rounded-sm border forced-colors:appearance-auto"
             />
             <CheckIcon
                 aria-hidden="true"

@@ -57,7 +57,7 @@ export const SelectBase = forwardRef<HTMLButtonElement, SelectBaseProps>(
                 fullWidth
                 size={size}
                 variant={(variant === 'filled' ? 'unstyled' : variant) as NinnaSelectProps['variant']}
-                className={`${variant === 'filled' ? `${formControlClasses} h-8 px-3 text-sm` : ''} [&>span:first-child]:truncate ${className ?? ''}`}
+                className={`${variant === 'filled' ? `${formControlClasses} h-8 px-3 text-(length:--text-ui) font-medium` : ''} [&>span:first-child]:truncate [&>span:first-child>span]:flex [&>span:first-child>span]:max-w-full [&>span:first-child>span>span:last-child]:truncate ${className ?? ''}`}
             />
         );
     },

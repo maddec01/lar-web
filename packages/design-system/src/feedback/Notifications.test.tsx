@@ -9,7 +9,7 @@ const toasts = () => document.querySelectorAll('[data-slot="toast"]');
 describe('slot notifications', () => {
     beforeEach(() => {
         vi.useFakeTimers({ shouldAdvanceTime: true });
-        render(<Notifications presentation="stack" />);
+        render(<Notifications />);
     });
 
     afterEach(() => vi.useRealTimers());

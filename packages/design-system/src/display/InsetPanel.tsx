@@ -9,10 +9,10 @@ interface InsetPanelProps {
     children: ReactNode;
     /** Makes the whole panel a button that calls this. */
     onClick?: () => void;
-    /** `default` groups content on the raised surface; `settings` is a settings group's panel of rows, divided by
-     *  lines. */
+    /** `default` groups content in a panel (a card when it is a button); `settings` is a settings group's panel of
+     *  rows, divided by lines. */
     presentation?: 'default' | 'settings';
-    /** Under a `settings` panel's rows, on the muted surface: the group's own action, such as an add button. */
+    /** Under a `settings` panel's rows, on the sunken surface: the group's own action, such as an add button. */
     footer?: ReactNode;
 }
 
@@ -23,9 +23,9 @@ interface InsetPanelProps {
 export function InsetPanel({ children, onClick, presentation = 'default', footer }: InsetPanelProps) {
     if (presentation === 'settings') {
         return (
-            <div className="divide-line surface-card divide-y overflow-hidden rounded-lg border">
+            <div className="divide-line surface-panel divide-y overflow-hidden rounded-xl border">
                 <FormRowsContext value="panel">{children}</FormRowsContext>
-                {footer && <div className="bg-surface-sunken rounded-b-xl px-4 py-2">{footer}</div>}
+                {footer && <div className="bg-surface-sunken px-4 py-2">{footer}</div>}
             </div>
         );
     }
@@ -37,7 +37,7 @@ export function InsetPanel({ children, onClick, presentation = 'default', footer
             tabIndex={onClick ? tabbable.tabIndex : undefined}
             onClick={onClick}
             space="related"
-            className={`surface-card rounded-lg border p-5 ${onClick ? 'focus-ring w-full cursor-pointer text-left' : ''}`}
+            className={`rounded-xl border p-5 ${onClick ? 'surface-card hover:border-line-hover focus-ring w-full cursor-pointer text-left transition-colors' : 'surface-panel'}`}
         >
             {children}
         </Stack>

@@ -1,5 +1,6 @@
 import { type ReactNode, useId } from 'react';
 
+import type { CountTone } from '../display/Count';
 import { Text } from '../typography/Typography';
 import { Stack } from './Flow';
 import { SectionTitle } from './SectionTitle';
@@ -15,6 +16,8 @@ interface SectionProps {
     loading?: boolean;
     /** Accessible context for the numeric count, for example “3 titles”. */
     countLabel?: string;
+    /** `warning` or `danger` draws the count as the attention pill, for things that need the reader. */
+    countTone?: CountTone;
     /** Controls at the heading's end, such as an add button. */
     actions?: ReactNode;
     /** The section's content. */
@@ -28,6 +31,7 @@ export function Section({
     description,
     count,
     countLabel,
+    countTone,
     loading,
     actions,
     children,
@@ -45,6 +49,7 @@ export function Section({
                     loading={loading}
                     count={count}
                     countLabel={countLabel}
+                    countTone={countTone}
                     actions={actions}
                 />
                 {description ? <Text tone="muted">{description}</Text> : null}

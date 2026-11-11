@@ -29,7 +29,7 @@ export function RadioChoice({
     return (
         <div
             {...data}
-            className="hover:bg-surface-raised has-checked:bg-primary-surface focus-ring-within flex min-w-0 items-center gap-3 transition-colors has-disabled:opacity-60"
+            className="hover:bg-fill-hover has-checked:bg-primary-surface focus-ring-within flex min-w-0 items-center gap-3 transition-colors has-disabled:opacity-60"
         >
             <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-4 py-3 has-disabled:cursor-default">
                 <input

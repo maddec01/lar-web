@@ -11,8 +11,16 @@ export { Drawer } from './Drawer';
 export { DropdownMenu } from './DropdownMenu';
 export { HelpTip } from './HelpTip';
 export { ImageViewer } from './ImageViewer';
-export { Modal, type ModalRequestClose, useModalClose } from './Modal';
+export { Modal, type ModalBack, type ModalRequestClose, useModalClose } from './Modal';
 export { ModalExpandButton } from './ModalExpandButton';
 export { Popover } from './Popover';
+export {
+    SettingsDialog,
+    type SettingsDialogGroup,
+    type SettingsDialogProps,
+    type SettingsDialogSection,
+    SettingsChildPane,
+    SettingsSectionPane,
+} from './SettingsDialog';
 export { PopoverHeader, type PopoverHeaderProps } from './PopoverHeader';
 export { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from './Tooltip';

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test';
 
 import { createThemeController } from './Theme';
 
-const theme = createThemeController('lar-test-theme');
+const theme = createThemeController('lar-test-theme', 'system');
 
 function themeColors(): Record<string, string> {
     return Object.fromEntries(
@@ -33,8 +33,8 @@ describe('theme preference', () => {
 
         expect(document.documentElement.classList.contains('dark')).toBe(false);
         expect(themeColors()).toEqual({
-            '(prefers-color-scheme: light)': '#fcfcfc',
-            '(prefers-color-scheme: dark)': '#0a0a0a',
+            '(prefers-color-scheme: light)': '#fafafa',
+            '(prefers-color-scheme: dark)': '#000000',
         });
     });
 
@@ -46,16 +46,37 @@ describe('theme preference', () => {
         expect(document.documentElement.classList.contains('dark')).toBe(true);
         expect(window.localStorage.getItem('lar-test-theme')).toBe('dark');
         expect(themeColors()).toEqual({
-            '(prefers-color-scheme: light)': '#0a0a0a',
-            '(prefers-color-scheme: dark)': '#0a0a0a',
+            '(prefers-color-scheme: light)': '#000000',
+            '(prefers-color-scheme: dark)': '#000000',
         });
 
         act(() => result.current[1]('light'));
 
         expect(document.documentElement.classList.contains('light')).toBe(true);
         expect(themeColors()).toEqual({
-            '(prefers-color-scheme: light)': '#fcfcfc',
-            '(prefers-color-scheme: dark)': '#fcfcfc',
+            '(prefers-color-scheme: light)': '#fafafa',
+            '(prefers-color-scheme: dark)': '#fafafa',
         });
+    });
+
+    it('opens dark when nothing is stored and the app falls back to dark', () => {
+        createThemeController('lar-test-dark').initialize();
+
+        expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+
+    it('tells the app each preference it applies', () => {
+        const applied: string[] = [];
+        const desktop = createThemeController('lar-test-desktop', {
+            fallback: 'system',
+            onApply: (preference) => applied.push(preference),
+        });
+        const { result } = renderHook(() => desktop.useTheme());
+
+        desktop.initialize();
+        act(() => result.current[1]('light'));
+
+        expect(applied).toEqual(['system', 'light']);
+        expect(result.current[0]).toBe('light');
     });
 });

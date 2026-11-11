@@ -1,25 +1,24 @@
-import { Children, cloneElement, Fragment, isValidElement, type ReactNode, useContext, useId } from 'react';
+import { Children, cloneElement, Fragment, isValidElement, type ReactNode, useContext } from 'react';
 
 import { Button, type ButtonProps } from '../actions/Button';
 import { ghostEdgeClassName } from '../actions/GhostEdge';
-import { Count } from '../display/Count';
-import { InsetPanel } from '../display/InsetPanel';
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { StackBase } from '../layout/Flow';
-import { HelpTip } from '../overlays/HelpTip';
-import { HeadingBase, Text, TextBase } from '../typography/Typography';
+import { TextBase } from '../typography/Typography';
 import { FieldBase, type FieldProps } from './Field';
 import { FormRowsContext } from './FormRows';
+import { SettingsGroup, SettingsSurfaceContext } from './SettingsGroup';
+import { SettingsRowSkeleton } from './SettingsRow';
 
 type DataAttributes = { [key: `data-${string}`]: string | undefined };
 
-const contentSpacing = 'px-4 py-3.5 sm:px-5';
+const contentSpacing = 'px-4 py-3.5';
 
 /** A field's row: its label tops the control (offset to the control's first line, so a label beside a textarea, a
  *  tag list or a field with help still reads with its first line), help 8px under the control. Inside a panel the
  *  row takes the panel's padding; on a dialog's surface (a FormStack) it is flush with the dialog's text. */
 function rowClasses(rows: 'panel' | 'plain') {
-    return `grid min-w-0 gap-x-6 gap-y-2 sm:items-start sm:[&>div:first-child]:pt-2 ${rows === 'panel' ? 'px-4 py-2 sm:px-5' : ''}`;
+    return `grid min-w-0 gap-x-6 gap-y-2 sm:items-start sm:[&>div:first-child]:pt-2 ${rows === 'panel' ? 'px-4 py-2' : ''}`;
 }
 
 /** A form section's padded content inside its panel, its children spaced as a group. */
@@ -45,11 +44,18 @@ export function FormStack({
     /** The FormSections (or, in a dialog, FormFields), in order. */
     children: ReactNode;
 }) {
+    // On a settings surface the groups stand T3 Code's 32px apart.
+    const settings = useContext(SettingsSurfaceContext);
+
     return (
         <FormRowsContext value="plain">
-            <StackBase space="page" className="[&>[data-form-row]+[data-form-row]]:-mt-1">
-                {children}
-            </StackBase>
+            {settings ? (
+                <div className="grid min-w-0 gap-8">{children}</div>
+            ) : (
+                <StackBase space="page" className="[&>[data-form-row]+[data-form-row]]:-mt-1">
+                    {children}
+                </StackBase>
+            )}
         </FormRowsContext>
     );
 }
@@ -66,24 +72,23 @@ interface FormSectionProps {
     badges?: ReactNode;
     /** The section's rows, inside its panel. */
     children: ReactNode;
-    /** A muted note at the top of the panel, before the rows. */
+    /** A muted line under the title. */
     description?: string;
     /** Draws the section as a skeleton while its values load. */
     loading?: boolean;
     /** Names what is loading for screen readers; the title by default. */
     loadingLabel?: string;
-    /** The app's settings group (the default): a title over a panel of rows; `dense` is a dense tool's group. */
+    /** The app's settings group (the default): a title over a panel of rows; `dense` shows its content as given. */
     presentation?: 'default';
     /** The group's title, such as "Libraries". */
     title: ReactNode;
 }
 
-/** A dense tool's settings group: its title (with an optional help popover) and description over the content as
- *  given, such as one or more settings panels and their notes. */
+/** A group whose content is shown as given, such as one or more settings panels and their notes. */
 interface DenseFormSectionProps extends DataAttributes {
-    /** A dense tool's settings group, such as a desktop tool's settings. */
+    /** Shows the content as given, under the title. */
     presentation: 'dense';
-    /** The group's title, in the dense tools' 13px semibold. */
+    /** The group's title. */
     title?: ReactNode;
     /** Explains the group in a popover from a help button after the title; `helpLabel` names that button. */
     help?: ReactNode;
@@ -97,93 +102,20 @@ interface DenseFormSectionProps extends DataAttributes {
     children?: ReactNode;
 }
 
+/**
+ * Prefer SettingsGroup, the one settings group, in new code. A FormSection draws exactly its anatomy: by default a title
+ * over a panel of rows (SettingsGroup), `dense` a title over its content as given (SettingsGroup `panel={false}`).
+ */
 export function FormSection(props: FormSectionProps | DenseFormSectionProps) {
-    if (props.presentation === 'dense') return <DenseFormSection {...props} />;
+    if (props.presentation === 'dense') {
+        const { presentation: _presentation, ...group } = props;
 
-    return <PanelFormSection {...props} />;
-}
+        return <SettingsGroup {...group} panel={false} />;
+    }
 
-function DenseFormSection({
-    presentation: _presentation,
-    title,
-    help,
-    helpLabel,
-    description,
-    'aria-label': label,
-    children,
-    ...data
-}: DenseFormSectionProps) {
-    const titleId = useId();
+    const { presentation: _presentation, loading = false, ...group } = props;
 
-    return (
-        <section
-            {...data}
-            aria-label={label}
-            aria-labelledby={label || !title ? undefined : titleId}
-            className="grid min-w-0 gap-3"
-        >
-            {(title || description) && (
-                <div>
-                    {title && (
-                        <h3 id={titleId} className="text-fg-muted m-0 flex items-center gap-1.5 text-sm font-semibold">
-                            {title}
-                            {help && (
-                                <HelpTip label={helpLabel ?? (typeof title === 'string' ? title : '')}>{help}</HelpTip>
-                            )}
-                        </h3>
-                    )}
-                    {description && <p className="text-fg-muted m-0 mt-0.5 text-xs">{description}</p>}
-                </div>
-            )}
-            {children}
-        </section>
-    );
-}
-
-function PanelFormSection({
-    count,
-    countLabel,
-    action,
-    badges,
-    children,
-    description,
-    loading = false,
-    loadingLabel,
-    title,
-}: FormSectionProps) {
-    const titleId = useId();
-    const content = (
-        <section aria-labelledby={titleId}>
-            <div className="flex min-h-5 items-center justify-between gap-3">
-                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <HeadingBase id={titleId} as="h3" className="text-fg-muted" variant="label">
-                        {title}
-                    </HeadingBase>
-                    <Count count={count} label={countLabel} loading={loading} />
-                    {badges}
-                </div>
-                {action ? <div className={`flex min-w-0 items-center ${ghostEdgeClassName}`}>{action}</div> : null}
-            </div>
-            <div className="mt-3">
-                <InsetPanel presentation="settings">
-                    {description ? (
-                        <FormContent>
-                            <Text variant="caption" tone="muted">
-                                {description}
-                            </Text>
-                        </FormContent>
-                    ) : null}
-                    {children}
-                </InsetPanel>
-            </div>
-        </section>
-    );
-
-    return loading ? (
-        <SkeletonLoader label={loadingLabel ?? (typeof title === 'string' ? title : '')}>{content}</SkeletonLoader>
-    ) : (
-        content
-    );
+    return <SettingsGroup {...group} loading={loading} />;
 }
 
 /** What a Field gives the control it wraps: the label's target id, the help or error it is described by, and its
@@ -243,11 +175,38 @@ type FormFieldProps = Omit<FieldProps, 'children'> & {
           }
     );
 
-/** A labelled field in a form section's row: the label in a 9rem column beside its control, topping it, the help and
- *  the error under the control, and an optional action at the end. */
+/** A field's parts on a settings panel's row, laid out as a SettingsRow: the label (14/500) and its help (12px muted)
+ *  at the start, the control at the end in a 16rem column, the error under the control. Narrower than 28rem the
+ *  control and its error drop under the help. The Field's own elements are placed on the row's grid. */
+function panelFieldClasses(labelled: boolean) {
+    return [
+        'contents',
+        '[&>*]:min-w-0 [&>*]:col-start-1 [&>*]:row-start-3 [&>*]:mt-2.5',
+        '@md:[&>*]:col-start-2 @md:[&>*]:row-start-1 @md:[&>*]:row-span-2 @md:[&>*]:mt-0',
+        labelled
+            ? '[&>div:first-child]:col-start-1 [&>div:first-child]:row-start-1 [&>div:first-child]:row-span-1 [&>div:first-child]:m-0 [&>div:first-child>label]:text-fg [&>div:first-child>label]:leading-5'
+            : '',
+        '[&>p]:col-start-1 [&>p]:row-start-2 [&>p]:row-span-1 [&>p]:mt-0.5 [&>p]:leading-4.5',
+        '[&>p[role=alert]]:row-start-4 [&>p[role=alert]]:mt-1.5 @md:[&>p[role=alert]]:col-start-2 @md:[&>p[role=alert]]:row-start-3',
+    ].join(' ');
+}
+
+/** A labelled field in a form section's row. In a settings panel it is a settings row (SettingsRow's anatomy: the
+ *  label and help at the start, the control at the end, the error under it); on a dialog's surface (a FormStack) the
+ *  label sits in a 9rem column beside its control, topping it, the help and the error under the control. Either takes
+ *  an optional action at the end. */
 export function FormField({ action, children, loading = false, loadingLabel, ...props }: FormFieldProps) {
     const rows = useContext(FormRowsContext);
     const row = rowClasses(rows);
+
+    if (loading && rows === 'panel')
+        return (
+            <SkeletonLoader label={loadingLabel ?? ''}>
+                <div data-form-row="">
+                    <SettingsRowSkeleton label={props.label} description={Boolean(props.helperText)} control="input" />
+                </div>
+            </SkeletonLoader>
+        );
 
     if (loading)
         return (
@@ -258,6 +217,33 @@ export function FormField({ action, children, loading = false, loadingLabel, ...
                 </div>
             </SkeletonLoader>
         );
+
+    if (rows === 'panel') {
+        // As below, an action keeps one tree whatever it holds; an empty one only collapses its column.
+        const filled = action !== undefined && hasContent(action);
+
+        return (
+            // The row is the container; its grid inside queries the row's width (an element can't query its own).
+            <div data-form-row="" className="settings-row @container min-w-0 px-4 py-3.5">
+                <div
+                    className={`grid min-w-0 items-center gap-x-6 ${filled ? 'grid-cols-[minmax(0,1fr)_auto] @md:grid-cols-[minmax(0,1fr)_16rem_auto] [&>[data-slot=field]>div:first-child]:col-span-2 @md:[&>[data-slot=field]>div:first-child]:col-span-1 [&>[data-slot=field]>p]:col-span-2 @md:[&>[data-slot=field]>p]:col-span-1' : 'grid-cols-[minmax(0,1fr)] @md:grid-cols-[minmax(0,1fr)_16rem]'}`}
+                >
+                    <FieldBase {...props} className={panelFieldClasses(Boolean(props.label))}>
+                        {children}
+                    </FieldBase>
+                    {action !== undefined ? (
+                        <div
+                            data-slot="form-field-action"
+                            hidden={!filled}
+                            className={`col-start-2 row-start-3 mt-2.5 items-center gap-2 @md:col-start-3 @md:row-span-2 @md:row-start-1 @md:mt-0 ${filled ? 'flex' : 'hidden'} ${ghostEdgeClassName}`}
+                        >
+                            {action}
+                        </div>
+                    ) : null}
+                </div>
+            </div>
+        );
+    }
 
     const content = children;
 

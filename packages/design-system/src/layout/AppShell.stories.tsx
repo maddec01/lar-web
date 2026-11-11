@@ -8,6 +8,7 @@ import {
     LayoutGridIcon,
     MusicIcon,
     PlayIcon,
+    PlusIcon,
     ScanSearchIcon,
     ScrollTextIcon,
     ServerIcon,
@@ -19,13 +20,13 @@ import {
 import { type ReactNode, useState } from 'react';
 
 import { Button } from '../actions/Button';
-import { IconButton } from '../actions/IconButton';
 import { Avatar } from '../display/Avatar';
 import { Badge } from '../display/Badge';
-import { BrandMark } from '../display/BrandMark';
 import { StatusIndicator, type StatusTone } from '../feedback/StatusIndicator';
+import { StatusPopoverContent } from '../feedback/StatusPopoverContent';
 import { Heading, Text } from '../typography/Typography';
 import { AppShell } from './AppShell';
+import { ContentContainer } from './ContentContainer';
 import { Grid, InlineBase, StackBase } from './Flow';
 import { PageLayout } from './PageLayout';
 import { Section } from './Section';
@@ -33,50 +34,87 @@ import { SidebarNavigationItem } from './sidebar/SidebarNavigationItem';
 import { SidebarNavigationGroup, SidebarPane } from './sidebar/SidebarPane';
 import { TitleBar, TitleBarTrail } from './TitleBar';
 import { CommandPaletteTrigger } from './toolbar/CommandPaletteTrigger';
+import { TitleBarSettingsButton } from './toolbar/TitleBarSettingsButton';
+import { ToolbarCounter } from './toolbar/ToolbarCounter';
 import { ToolbarStatusGroup } from './toolbar/ToolbarStatusGroup';
 import { ToolbarStatusItem } from './toolbar/ToolbarStatusItem';
 
-/** Lar Server’s title bar, as the admin app draws it: the brand, where you are, the palette, the server’s
- *  status, Settings and the account. */
+/** Lar Server’s title bar, as the admin app draws it: the lockup home, where you are, then search · status ·
+ *  Settings · the account. */
 function ServerTitleBar({ page = 'Dashboard', icon = <LayoutGridIcon /> }: { page?: string; icon?: ReactNode }) {
     return (
         <TitleBar
-            brand={
-                <a href="#dashboard">
-                    <BrandMark label="Lar" />
-                </a>
-            }
+            product="Server"
+            home={{ href: '#dashboard', label: 'Lar Server, home' }}
             title={
                 <TitleBarTrail
                     items={[{ key: 'page', icon, label: page, onSelect: () => {}, selectLabel: 'Go somewhere else' }]}
                 />
             }
-            search={<CommandPaletteTrigger label="Go to…" shortcut="k" onOpen={() => {}} />}
-            actions={
-                <>
-                    <ToolbarStatusGroup role="group" aria-label="Server online, 2 background tasks, 1 playing">
-                        <Button variant="summary" aria-label="Background tasks: 2 running">
-                            <ToolbarStatusItem icon={<ActivityIcon />} tone="info" />
-                        </Button>
-                        <Button variant="summary" aria-label="Playback: 1 stream">
-                            <ToolbarStatusItem icon={<HeadphonesIcon />} tone="success" />
-                        </Button>
-                        <Button variant="summary" aria-label="Server: healthy">
-                            <ToolbarStatusItem icon={<ServerIcon />} tone="success" />
-                        </Button>
-                    </ToolbarStatusGroup>
-                    <IconButton
-                        aria-label="Settings"
-                        title="Settings"
-                        icon={<SettingsIcon />}
-                        notification="1 sign-in request to approve"
-                        variant="title-bar"
-                    />
-                    <Button aria-label="PG: Open account menu" variant="avatar">
-                        <Avatar name="Pedro Gomes" />
+            search={<CommandPaletteTrigger label="Search" shortcut="k" onOpen={() => {}} />}
+            statusLabel="Server status"
+            status={
+                <ToolbarStatusGroup role="group" aria-label="Server online, 2 background tasks, 1 playing">
+                    <Button variant="summary" aria-label="Background tasks: 2 running">
+                        <ToolbarStatusItem icon={<ActivityIcon />} tone="info" />
                     </Button>
-                </>
+                    <Button variant="summary" aria-label="Playback: 1 stream">
+                        <ToolbarStatusItem icon={<HeadphonesIcon />} tone="success" />
+                    </Button>
+                    <Button variant="summary" aria-label="Server: healthy">
+                        <ToolbarStatusItem icon={<ServerIcon />} tone="success" />
+                    </Button>
+                </ToolbarStatusGroup>
             }
+            settings={<TitleBarSettingsButton label="Settings" description="1 sign-in request" onOpen={() => {}} />}
+            identity={
+                <Button aria-label="PG: Open account menu" variant="avatar">
+                    <Avatar name="Pedro Gomes" />
+                </Button>
+            }
+        />
+    );
+}
+
+/** Lar Factory’s board title bar: the lockup, search, the board’s counters, its actions and Settings. */
+function FactoryTitleBar() {
+    return (
+        <TitleBar
+            product="Factory"
+            home={{ href: '#board', label: 'Lar Factory, home' }}
+            search={<CommandPaletteTrigger label="Search" shortcut="k" onOpen={() => {}} />}
+            statusLabel="Board status"
+            status={
+                <ToolbarStatusGroup role="group" aria-label="Board status">
+                    <ToolbarCounter
+                        icon={<StatusIndicator state="waiting" />}
+                        label="Need you"
+                        value={6}
+                        hint="6 items waiting on you"
+                    >
+                        <StatusPopoverContent title="Needs you" count={6} width="wide">
+                            <Text tone="muted">Six items.</Text>
+                        </StatusPopoverContent>
+                    </ToolbarCounter>
+                    <ToolbarCounter
+                        icon={<StatusIndicator state="active" />}
+                        label="Building"
+                        value={3}
+                        track={{ used: 3, limit: 4 }}
+                        hint="3 building, automatic limit 4"
+                    >
+                        <StatusPopoverContent title="Building" count={3} width="wide">
+                            <Text tone="muted">Three builds.</Text>
+                        </StatusPopoverContent>
+                    </ToolbarCounter>
+                </ToolbarStatusGroup>
+            }
+            actions={
+                <Button size="sm" leftIcon={<PlusIcon />}>
+                    <span className="@max-pane:sr-only">Add item</span>
+                </Button>
+            }
+            settings={<TitleBarSettingsButton label="Settings" onOpen={() => {}} />}
         />
     );
 }
@@ -242,3 +280,28 @@ export const Default: Story = {};
 
 /** The top-level app shell: title bar, a sidebar of sections and the page beside it. */
 export const WithSidebar: Story = { render: () => <ShellWithSidebar /> };
+
+/** A desktop window (Lar Factory’s Mac app): the shell fills the window and its main area scrolls under the bar’s
+ *  glass; the bar drags the window and starts past the traffic lights. */
+export const Desktop: Story = {
+    args: {
+        scroll: 'contained',
+        trafficLights: true,
+        header: <FactoryTitleBar />,
+        children: (
+            <ContentContainer as="main">
+                <StackBase space="section" className="pt-4 pb-6">
+                    {Array.from({ length: 12 }, (_, lane) => (
+                        <Section key={lane} title={`Lane ${lane + 1}`} count={3}>
+                            <Grid variant="overview">
+                                {catalogs.map((catalog) => (
+                                    <CatalogCard key={catalog.name} catalog={catalog} />
+                                ))}
+                            </Grid>
+                        </Section>
+                    ))}
+                </StackBase>
+            </ContentContainer>
+        ),
+    },
+};

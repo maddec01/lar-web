@@ -10,6 +10,8 @@ export const defaultDesignSystemLabels = {
     dateInvalid: 'Enter a valid date.',
     cancel: 'Cancel',
     retry: 'Try again',
+    /** What a region that is still loading after a few seconds says under its skeleton (AsyncState). */
+    stillTrying: 'Still trying…',
     toolbar: 'Toolbar',
     imageSize: (width: number, height: number) => `${width} × ${height}`,
     folders: {
@@ -26,6 +28,8 @@ export const defaultDesignSystemLabels = {
         loadMore: 'Load more',
         chooseThis: 'Choose this folder',
     },
+    // The family's one theme vocabulary (Writing.mdx): an app translates these words, never renames them (no "Match
+    // system" or "System default").
     theme: {
         label: 'Appearance',
         system: 'Follow system',
@@ -53,6 +57,21 @@ export const defaultDesignSystemLabels = {
         discardConsequence: 'Your changes haven’t been saved. Discarding them can’t be undone.',
         discardConfirm: 'Discard changes',
         keepEditing: 'Keep editing',
+    },
+    /** SettingsDialog's, SettingsPage's and the settings save model's words. */
+    settings: {
+        title: 'Settings',
+        navigation: 'Settings sections',
+        search: 'Search settings',
+        noMatchTitle: 'Nothing matches',
+        noMatchDescription: 'Try another search, or clear it to see every setting.',
+        clearSearch: 'Clear search',
+        /** A child pane's way back to its section (SettingsChildPane). */
+        back: 'Back',
+        unsaved: 'Unsaved changes',
+        saveChanges: 'Save changes',
+        saved: 'Changes saved',
+        saveFailed: 'Couldn’t save your changes. Try again.',
     },
     /** A CommandPalette's key hints, each after its key: "↑↓ move", "↵ select", "esc close", "⌫ remove filter". */
     commandPalette: {
@@ -112,6 +131,7 @@ function mergeLabels(labels: DesignSystemLabelOverrides | undefined): DesignSyst
         theme: { ...defaultDesignSystemLabels.theme, ...labels.theme },
         editor: { ...defaultDesignSystemLabels.editor, ...labels.editor },
         dialog: { ...defaultDesignSystemLabels.dialog, ...labels.dialog },
+        settings: { ...defaultDesignSystemLabels.settings, ...labels.settings },
         commandPalette: { ...defaultDesignSystemLabels.commandPalette, ...labels.commandPalette },
     };
 }

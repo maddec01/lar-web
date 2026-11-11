@@ -4,6 +4,7 @@ import { ChevronDownIcon, CircleAlertIcon, TriangleAlertIcon } from 'lucide-reac
 import { type MouseEvent, type ReactNode, useId, useState } from 'react';
 
 import { IconButtonBase } from '../actions/IconButton';
+import { Count } from '../display/Count';
 import { tabbable } from '../foundations/KeyboardFocus';
 import { HeadingBase, TextBase } from '../typography/Typography';
 import { DismissButton } from './DismissButton';
@@ -14,28 +15,20 @@ type AttentionTone = 'warning' | 'danger';
 /** `data-*` attributes a row passes to its element, naming what it shows for an app's tests and focus. */
 type DataAttributes = { [name: `data-${string}`]: string | number | boolean | undefined };
 
-/** The surface's tone, in the worst problem's colour: a tinted header band over the card, the card's edge and the band's
- *  rule in the tone's hairline, the icon in a tile of the tone. The rows stay on the card surface in the text colours,
- *  so the list reads as work to do, the header as how serious it is. */
-const tones: Record<AttentionTone, { edge: string; band: string; tile: string; count: string }> = {
-    warning: {
-        edge: 'border-warning-ring',
-        band: 'bg-warning-surface border-warning-ring',
-        tile: 'bg-warning-fill text-warning-on-fill',
-        count: 'bg-warning-ring text-warning-fg',
-    },
-    danger: {
-        edge: 'border-danger-ring',
-        band: 'bg-danger-surface border-danger-ring',
-        tile: 'bg-danger-fill text-danger-on-fill',
-        count: 'bg-danger-ring text-danger-fg',
-    },
+/** The surface's tone, in the worst problem's colour: the family attention recipe on the card (the tone's edge, a 3px bar
+ *  down its leading edge and a faint wash from it) and the icon in a tile of the tone. The header stays neutral, its
+ *  count a plain figure, and the rows stay on the card in the text colours with each problem's light, so the list
+ *  reads as work to do and the edge as how serious it is. */
+const tones: Record<AttentionTone, { surface: string; tile: string }> = {
+    warning: { surface: 'attention attention-warning', tile: 'bg-warning-fill text-warning-on-fill' },
+    danger: { surface: 'attention attention-danger', tile: 'bg-danger-fill text-danger-on-fill' },
 };
 
 interface AttentionListProps {
-    /** The surface's heading, such as "Needs attention". */
+    /** The surface's heading, such as "Needs attention", or a whole sentence ("…changes are not being saved"): it wraps
+     *  rather than ending in an ellipsis, so it is always read to the end. */
     title: string;
-    /** How many problems it lists, in a small pill tinted in the tone after the title. */
+    /** How many problems it lists, as a plain muted figure after the title. */
     count?: number;
     /** `warning` (the default) while every problem can wait; `danger` once one stops something working. */
     tone?: AttentionTone;
@@ -48,10 +41,10 @@ interface AttentionListProps {
     children: ReactNode;
 }
 
-/** Problems that need the reader, in one place, the same in every app (a "Needs attention" panel, a list of
- *  connection warnings): a card with a header band tinted in the tone of the worst of them (icon tile, title, count, an
- *  optional action), then one row per problem, each with its own action. Use it wherever problems collect, one or
- *  many, in place of Alerts one above another. */
+/** Problems that need the reader, in one place, the same in every app (a "Needs attention" panel, a list of connection
+ *  warnings): a card on the attention recipe in the tone of the worst of them, a neutral header (icon tile, title,
+ *  count, an optional action), then one row per problem with its light and its own action (a tinted Review). Use it
+ *  wherever problems collect, one or many, in place of Alerts one above another. */
 function AttentionListRoot({ title, count, tone = 'warning', action, collapsible, children }: AttentionListProps) {
     const titleId = useId();
     const rowsId = useId();
@@ -65,10 +58,12 @@ function AttentionListRoot({ title, count, tone = 'warning', action, collapsible
             aria-labelledby={titleId}
             data-slot="attention-list"
             data-tone={tone}
-            className={`surface-card @container overflow-hidden rounded-xl border ${look.edge}`}
+            className={`bg-surface-card @container overflow-hidden rounded-xl ${look.surface}`}
         >
+            {/* On a card narrower than 28rem the action takes a row of its own under the title, starting where the
+                title does, so a sentence of a title keeps the card's width; the disclosure stays beside the title. */}
             <div
-                className={`flex min-h-12 items-center gap-3 px-4 py-2.5 ${look.band} ${shown ? 'border-b' : ''}`}
+                className={`border-line flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 ${shown ? 'border-b' : ''}`}
                 data-slot="attention-header"
             >
                 <span
@@ -83,17 +78,14 @@ function AttentionListRoot({ title, count, tone = 'warning', action, collapsible
                     variant="title"
                     className="flex min-w-0 flex-1 items-center gap-2 text-sm"
                 >
-                    <span className="min-w-0 truncate">{title}</span>
-                    {count === undefined ? null : (
-                        <span
-                            data-slot="count"
-                            className={`text-2xs grid h-4.5 min-w-4.5 shrink-0 place-items-center rounded-full px-1.5 leading-none font-semibold tabular-nums ${look.count}`}
-                        >
-                            {count}
-                        </span>
-                    )}
+                    <span className="min-w-0 text-pretty wrap-break-word">{title}</span>
+                    <Count count={count} />
                 </HeadingBase>
-                {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}
+                {action ? (
+                    <div className="order-last ms-9 flex basis-full items-center gap-2 @md:order-0 @md:ms-0 @md:shrink-0 @md:basis-auto">
+                        {action}
+                    </div>
+                ) : null}
                 {collapsible ? (
                     <IconButtonBase
                         {...tabbable}

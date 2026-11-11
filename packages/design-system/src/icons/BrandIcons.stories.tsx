@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { AzureDevOpsIcon, GitHubIcon } from './BrandIcons';
+import { AppleLogoIcon, AzureDevOpsIcon, GitHubIcon, GoogleLogoIcon } from './BrandIcons';
 
 const meta = {
     title: 'Foundations/Brand icons',
@@ -19,6 +19,11 @@ export const Marks: Story = {
             <GitHubIcon className="size-5" />
             <AzureDevOpsIcon className="size-3" />
             <AzureDevOpsIcon className="size-5" />
+            <GoogleLogoIcon className="size-4" />
+            <GoogleLogoIcon className="size-5" />
+            <GoogleLogoIcon className="size-5" colour="brand" />
+            <AppleLogoIcon className="size-4" />
+            <AppleLogoIcon className="size-5" />
         </div>
     ),
 };

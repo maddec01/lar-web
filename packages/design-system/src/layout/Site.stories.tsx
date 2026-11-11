@@ -5,7 +5,7 @@ import { fn } from 'storybook/test';
 
 import { ButtonLink } from '../actions/ButtonLink';
 import { ThemeSwitch } from '../actions/ThemeSwitch';
-import { BrandLink, BrandMark } from '../display/BrandMark';
+import { BrandMark } from '../display/BrandMark';
 import type { ThemePreference } from '../foundations/Theme';
 import { Text } from '../typography/Typography';
 import { Inline } from './Flow';
@@ -24,7 +24,7 @@ function DemoHeader({ current }: { current?: string }) {
 
     return (
         <SiteHeader
-            brand={<BrandLink href="/" label="Home" onNavigate={navigate} />}
+            home={{ href: '/', label: 'Lar, home' }}
             navigationLabel="Main"
             menuLabel="Open menu"
             closeMenuLabel="Close menu"

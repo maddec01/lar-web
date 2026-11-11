@@ -10,8 +10,17 @@ export interface PageErrorProps extends StateMessageProps {
 /**
  * A page or region that could not be shown: not found, failed to load, unavailable. Say what happened in the title, the
  * likely cause in the description, and offer the way forward (try again, go home) as its actions; put technical
- * details in the `footer`. Use EmptyState for a region with nothing in it, and Alert for an operation's result.
+ * details in the `footer`. Its actions are always the outline button (Try again is never a primary call to action),
+ * except on a marketing page's `hero`. Use EmptyState for a region with nothing in it, and Alert for an operation's
+ * result.
  */
 export function PageError({ tone = 'danger', code, ...props }: PageErrorProps) {
-    return <StateMessage {...props} tone={code === '404' ? 'neutral' : tone} eyebrow={code} />;
+    return (
+        <StateMessage
+            {...props}
+            tone={code === '404' ? 'neutral' : tone}
+            eyebrow={code}
+            outlineActions={props.size !== 'hero'}
+        />
+    );
 }
