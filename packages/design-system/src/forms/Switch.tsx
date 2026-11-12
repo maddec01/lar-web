@@ -6,9 +6,11 @@ import { tabbable } from '../foundations/KeyboardFocus';
 /** Every state's look, owned here rather than left to ninna-ui: an enabled switch's track is a quiet grey when off
  *  (fill-switch-off, white 16% / black 20%) and the primary when on, under a white thumb that makes it a control; a
  *  disabled one fades to 40%, so it never passes for an enabled one that is off; keyboard focus takes the one focus
- *  ring; a save in flight (`busy`, or `loading` with its spinner) keeps the look and shows the progress cursor. */
+ *  ring; a save in flight (`busy`, or `loading` with its spinner) keeps the look and shows the progress cursor. The
+ *  thumb's travel is a plain `translate`, not ninna-ui's Tailwind translate variables: Safari restarts a transition of
+ *  those from 0 whenever the thumb restyles (a hovered row around it), so an on switch flashed off under the pointer. */
 const states =
-    'bg-fill-switch-off data-[state=checked]:bg-primary [&>[data-slot=thumb]]:bg-white [&>[data-slot=thumb]]:shadow-(--shadow-raised) focus-ring focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-40 data-loading:disabled:opacity-100 aria-disabled:cursor-progress data-loading:cursor-progress';
+    '[&>[data-slot=thumb]]:[translate:0.125rem_0]! data-[state=checked]:[&>[data-slot=thumb]]:[translate:1rem_0]! bg-fill-switch-off data-[state=checked]:bg-primary [&>[data-slot=thumb]]:bg-white [&>[data-slot=thumb]]:shadow-(--shadow-raised) focus-ring focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-40 data-loading:disabled:opacity-100 aria-disabled:cursor-progress data-loading:cursor-progress';
 
 export type SwitchProps = Omit<
     NinnaSwitchProps,
