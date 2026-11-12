@@ -91,7 +91,7 @@ function matches(section: SettingsDialogSection, needle: string) {
 }
 
 /**
- * Settings, as T3 Code's dialog: 896×704 (a full-height sheet on a phone), the sidebar's glass zone on the left with a
+ * Settings, as T3 Code's dialog: 896×704, 1024×768 on a window from 1280px (a full-height sheet on a phone), the sidebar's glass zone on the left with a
  * search (focused by `/`) over the grouped sections, and the reading zone on the right under a 52px breadcrumb header
  * ("Settings / General", its actions, close), with the open section's groups in a centred column. A search that finds
  * nothing says so in the content, with Clear search. Opening focuses the dialog itself, never the search.

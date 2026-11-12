@@ -80,7 +80,8 @@ interface ModalContentPolicyProps extends Omit<ModalContentProps, 'className' | 
      *    (its footer's first button, the safe answer such as "Cancel" or "Keep editing", is the way out, as Escape is)
      *    and opens with the focus on that safe answer.
      *  - `default` (md, 640px), for a form or a detail.
-     *  - `paned` (lg, 896px wide and 704px high at most), for settings and workspaces with a sidebar.
+     *  - `paned` (lg, 896px wide and 704px high at most; 1024×768 on a window from 1280px), for settings and
+     *    workspaces with a sidebar.
      *  - `workspace` (xl, 1152px), for an item's whole story, up to the window's height.
      *  From `sm` up, `default`, `paned` and `workspace` hang from a fixed line, `max(64px, 10vh)` from the window's top,
      *  and keep 1rem under them, so a body that changes (a workspace whose Edit turns its body into an editor) grows
@@ -123,6 +124,12 @@ const heightClassName = {
         auto: 'sm:h-auto sm:has-[[data-slot=modal-body][data-layout=fill]]:h-[min(44rem,calc(100dvh-max(64px,10vh)-1rem))]',
         content: 'sm:h-auto',
         hold: 'sm:h-[min(44rem,calc(100dvh-max(64px,10vh)-1rem))]',
+    },
+    // An anchored dialog that grows a step on a large window (`xl`, 1280px), as its width does.
+    paned: {
+        auto: 'sm:h-auto sm:has-[[data-slot=modal-body][data-layout=fill]]:h-[min(44rem,calc(100dvh-max(64px,10vh)-1rem))] xl:has-[[data-slot=modal-body][data-layout=fill]]:h-[min(48rem,calc(100dvh-max(64px,10vh)-1rem))]',
+        content: 'sm:h-auto',
+        hold: 'sm:h-[min(44rem,calc(100dvh-max(64px,10vh)-1rem))] xl:h-[min(48rem,calc(100dvh-max(64px,10vh)-1rem))]',
     },
     workspace: {
         auto: 'sm:h-auto sm:has-[[data-slot=modal-body][data-layout=fill]]:h-[calc(100dvh-max(64px,10vh)-1rem)]',
@@ -275,11 +282,11 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                     presentation === 'workspace'
                         ? 'h-[calc(100dvh-1rem)] max-w-6xl sm:max-w-6xl'
                         : presentation === 'paned'
-                          ? 'h-[calc(100dvh-1rem)] max-w-4xl sm:max-w-4xl'
+                          ? 'h-[calc(100dvh-1rem)] max-w-4xl sm:max-w-4xl xl:max-w-5xl'
                           : presentation === 'confirm'
                             ? 'max-w-md sm:max-w-md'
                             : 'max-w-160 sm:max-w-160'
-                } ${heightClassName[presentation === 'workspace' ? 'workspace' : anchored ? 'anchored' : 'dialog'][height]} ${
+                } ${heightClassName[presentation === 'workspace' || presentation === 'paned' ? presentation : anchored ? 'anchored' : 'dialog'][height]} ${
                     anchored ? anchoredClassName : ''
                 }`}
             >

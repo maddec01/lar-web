@@ -413,6 +413,7 @@
     --lar-glass-menu-blur: 28px;
     --lar-glass-menu-rim: var(--color-palette-black-a8);
     --lar-glass-menu-light: var(--color-palette-grey-1);
+    --lar-glass-menu-highlight: var(--color-palette-black-a6);
     --lar-glass-dialog-tint: var(--color-palette-grey-1);
     --lar-glass-dialog-alpha: 94%;
     --lar-glass-dialog-blur: 32px;
@@ -488,6 +489,7 @@
     --lar-glass-menu-blur: 28px;
     --lar-glass-menu-rim: var(--color-palette-white-a10);
     --lar-glass-menu-light: var(--color-palette-white-a4);
+    --lar-glass-menu-highlight: var(--color-palette-white-a10);
     --lar-glass-dialog-tint: var(--color-palette-neutral-1);
     --lar-glass-dialog-alpha: 93%;
     --lar-glass-dialog-blur: 32px;
@@ -1035,7 +1037,8 @@ body {
 }
 
 /* Menu rows: T3's 28px rows with a 6px radius and an accent highlight. An entry is a control, so its label is a
-   button's 13/500 (a detail line under it stays 12/400). */
+   button's 13/500 (a detail line under it stays 12/400). The highlight (ninna-ui's base-200) is the menu glass's own
+   step, as the page's accent fill is darker than the glass in dark and would vanish on it. */
 [data-slot='dropdown-item'],
 [data-slot='dropdown-radio-item'],
 [data-slot='dropdown-checkbox-item'],
@@ -1048,6 +1051,7 @@ body {
     font-size: var(--text-ui);
     line-height: 1.25rem;
     font-weight: 500;
+    --color-base-200: var(--lar-glass-menu-highlight);
 }
 
 [data-slot='dropdown-item'] > svg,
@@ -1249,8 +1253,10 @@ body {
    content) takes the dialog's near-opaque tint, and the glass zone (the sidebar) a lighter, more translucent one, so the
    blur shows where you navigate, not where you read. The footer lays a faint light over the reading tint and sits on a
    divider. A nested backdrop-filter could not see through the box's, so the zones differ only by their fill, and the box
-   paints both (the reading tint stops where the 14rem sidebar column starts), so no half-pixel seam opens between two
-   fills. In the components layer, so a class of a zone's own still wins. */
+   paints both (the reading tint starts where the 14rem sidebar column ends), so no half-pixel seam opens between two
+   fills. The tint is one colour sized to the reading zone, never a gradient with a hard stop: Safari dithers that, and
+   over the blurred page the dithering reads as vertical stripes. In the components layer, so a class of a zone's own
+   still wins. */
 @layer components {
     [data-dialog-zone='glass'] {
         --color-line: var(--lar-glass-zone-divider);
@@ -1266,11 +1272,11 @@ body {
 @media (width >= 48rem) {
     [data-slot='modal-content'][data-dialog-zones]:has(> [data-dialog-zone='glass']) {
         background-color: transparent;
-        background-image: linear-gradient(
-            to right,
-            transparent 14rem,
-            color-mix(in srgb, var(--lar-glass-dialog-tint) var(--lar-glass-dialog-alpha), transparent) 14rem
-        );
+        --lar-reading-tint: color-mix(in srgb, var(--lar-glass-dialog-tint) var(--lar-glass-dialog-alpha), transparent);
+        background-image: linear-gradient(var(--lar-reading-tint), var(--lar-reading-tint));
+        background-size: calc(100% - 14rem) 100%;
+        background-position: right;
+        background-repeat: no-repeat;
     }
 }
 
