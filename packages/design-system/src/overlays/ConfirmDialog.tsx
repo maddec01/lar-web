@@ -64,6 +64,7 @@ export function ConfirmDialog({
         <Modal loading={busy} onClose={onCancel}>
             <Modal.Content
                 {...data}
+                data-confirm-dialog
                 id={id}
                 role="alertdialog"
                 presentation="confirm"

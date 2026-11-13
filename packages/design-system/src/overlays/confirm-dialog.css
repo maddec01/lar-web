@@ -1,0 +1,12 @@
+/* Confirmation choices stay together: narrow dialogs stack all actions in their DOM/focus order. */
+[data-confirm-dialog] {
+    container: confirmation / inline-size;
+    overflow-wrap: anywhere;
+}
+
+@container confirmation (width < 24rem) {
+    [data-confirm-dialog] [data-slot='modal-footer'] {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
