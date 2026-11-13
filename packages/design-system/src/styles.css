@@ -3,6 +3,7 @@
    UI layer's sheets after it and scans that layer itself (`@source './ui'`). */
 @import './foundations/theme.css';
 @import './feedback/app-splash.css';
+@import './overlays/confirm-dialog.css';
 
 @source './';
 

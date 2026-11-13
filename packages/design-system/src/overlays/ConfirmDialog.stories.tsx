@@ -84,3 +84,24 @@ export const LongName: Story = {
 
 /** Waiting for a read keeps Cancel reachable without allowing the destructive action. */
 export const AwaitingInspection: Story = { args: { confirmDisabled: true } };
+
+/** Three choices stay in one group on a phone; the safe answer remains first. */
+export const ThreeChoices: Story = {
+    args: {
+        title: 'Remove the shared collection?',
+        consequence: 'Remove it from this device, or remove it from every device connected to this account.',
+        reassurance: undefined,
+        secondaryAction: <Button variant="secondary">Remove locally</Button>,
+        confirmLabel: 'Remove everywhere',
+    },
+};
+
+/** Even identifiers with no spaces remain inside a narrow confirmation. */
+export const UnbrokenName: Story = {
+    args: {
+        title: 'Remove LibrarySynchronizationCheckpointRecoveryWithoutLosingDownloadedArtwork?',
+        consequence:
+            'The saved copy of LibrarySynchronizationCheckpointRecoveryWithoutLosingDownloadedArtwork is removed.',
+        reassurance: undefined,
+    },
+};
