@@ -1,5 +1,11 @@
 # @lar-works/design-system
 
+## 0.7.1
+
+### Patch Changes
+
+- [#21](https://github.com/maddec01/lar-web/pull/21) [`06a24a4`](https://github.com/maddec01/lar-web/commit/06a24a448ad1296b3ed743aa3d5956f5be7151a5) Thanks [@maddec01](https://github.com/maddec01)! - Let setting selects follow SettingsRow's controlWidth, so wide controls show long option labels while still shrinking and truncating in narrow rows.
+
 ## 0.7.0
 
 ### Minor Changes
