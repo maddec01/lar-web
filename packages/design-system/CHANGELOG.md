@@ -1,5 +1,11 @@
 # @lar-works/design-system
 
+## 0.7.2
+
+### Patch Changes
+
+- [#23](https://github.com/maddec01/lar-web/pull/23) [`314e6c9`](https://github.com/maddec01/lar-web/commit/314e6c96d902812d6c3a0eca05c82b7d72a3bda9) Thanks [@maddec01](https://github.com/maddec01)! - Keep long paths, hashes and code inside RichText in auto-sized grid layouts by applying a single anywhere-wrapping rule.
+
 ## 0.7.1
 
 ### Patch Changes
