@@ -43,7 +43,7 @@ interface LoadedOptionSelectProps<Value extends string> extends Omit<
     writesOnPick?: boolean;
     /** Busy rather than disabled while a pick it made saves: it keeps the focus and ignores picks. */
     busy?: boolean;
-    /** `setting` is a settings row's 13rem dropdown; a `field` fills its container; `inline` is a value in a row of facts
+    /** `setting` follows its SettingsRow's control width (13rem outside a row); a `field` fills its container; `inline` is a value in a row of facts
      *  that edits in place: the value and its chevron, no field edge, a fill under the pointer. `badge` is an editable kind badge in the selected option’s hue. */
     presentation?: 'field' | 'setting' | 'inline' | 'badge';
     /** The select's trigger button. */
@@ -150,7 +150,8 @@ export function OptionSelect<Value extends string>(props: OptionSelectProps<Valu
         </>
     );
 
-    if (presentation === 'setting') return <span className="block w-52 max-w-full">{control}</span>;
+    if (presentation === 'setting')
+        return <span className="block w-[var(--settings-control-width,13rem)] max-w-full">{control}</span>;
 
     return presentation === 'inline' ? <span className="-mx-1.5 inline-block max-w-full">{control}</span> : control;
 }

@@ -58,8 +58,8 @@ interface SettingsRowProps extends DataAttributes {
 /** One width for a row's text field and dropdown (13rem, or 20rem `wide`); a numeric field is 6rem at every width. */
 const controlWidths = {
     default:
-        '@md:[&_[role=combobox]]:w-52 @md:[&_input:not([type=checkbox]):not([type=radio]):not([type=number])]:w-52',
-    wide: '@md:[&_[role=combobox]]:w-80 @md:[&_input:not([type=checkbox]):not([type=radio]):not([type=number])]:w-80',
+        '@md:[--settings-control-width:13rem] @md:[&_[role=combobox]]:w-52 @md:[&_input:not([type=checkbox]):not([type=radio]):not([type=number])]:w-52',
+    wide: '@md:[--settings-control-width:20rem] @md:[&_[role=combobox]]:w-80 @md:[&_input:not([type=checkbox]):not([type=radio]):not([type=number])]:w-80',
 } as const;
 const numberWidth = '[&_input[type=number]]:w-24 [&_input[type=number]]:shrink-0';
 

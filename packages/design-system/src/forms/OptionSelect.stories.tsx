@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { OptionSelect } from './OptionSelect';
+import { SettingsRow } from './SettingsRow';
 
 type Quality = 'original' | 'high' | 'medium' | 'low';
 
@@ -106,7 +107,7 @@ export const Placeholder: Story = { render: () => <BranchSelect /> };
 /** A `none` option empties the value, which a form with the select’s `name` reads as an empty string. */
 export const WithNone: Story = { render: () => <BranchSelect none="No default" name="branch" /> };
 
-/** A settings row’s 11rem dropdown, which writes at once on a pick. */
+/** A settings dropdown defaults to 13rem outside a row and writes at once on a pick. */
 export const Setting: Story = { render: () => <BranchSelect presentation="setting" writesOnPick /> };
 
 /** A value in a row of facts that edits in place, such as an item’s kind under its label. */
@@ -166,3 +167,31 @@ export const HueBadgeSelect: Story = {
         />
     ),
 };
+
+const models = [
+    { value: 'sol', label: 'Codex · Personal GPT-6.1 Sol' },
+    { value: 'astra', label: 'Codex · Personal GPT-6 Astra' },
+    { value: 'long', label: 'Codex · Personal GPT-6.1 Sol with an extended context window' },
+];
+
+function SettingLongOptionsExample() {
+    const [value, setValue] = useState('sol');
+
+    return (
+        <div className="max-w-3xl">
+            <SettingsRow label="Model" description="Choose the model for new work." controlWidth="wide">
+                <OptionSelect
+                    label="Model"
+                    presentation="setting"
+                    writesOnPick
+                    value={value}
+                    onChange={setValue}
+                    options={models}
+                />
+            </SettingsRow>
+        </div>
+    );
+}
+
+/** A wide row shows long model names; constrained rows shrink the control and truncate longer options. */
+export const SettingLongOptions: Story = { render: () => <SettingLongOptionsExample /> };
