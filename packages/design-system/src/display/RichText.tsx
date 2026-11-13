@@ -133,7 +133,7 @@ const components = {
 // Tailwind has no typography plugin and its preflight resets headings, lists and tables, so the elements a
 // provider's text holds are styled here.
 const body = [
-    'min-w-0 max-w-full text-sm leading-relaxed break-words [overflow-wrap:anywhere]',
+    'min-w-0 max-w-full text-sm leading-relaxed wrap-anywhere',
     '[&_p]:max-w-reading [&_ul]:max-w-reading [&_ol]:max-w-reading',
     '[&>:first-child]:mt-0 [&>:last-child]:mb-0 [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_blockquote]:my-2',
     '[&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-semibold',
