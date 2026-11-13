@@ -1,5 +1,15 @@
 # @lar-works/design-system
 
+## 0.7.0
+
+### Minor Changes
+
+- [#19](https://github.com/maddec01/lar-web/pull/19) [`68592a2`](https://github.com/maddec01/lar-web/commit/68592a263ad7f9f62c296d03f2d02be6868f2952) Thanks [@maddec01](https://github.com/maddec01)! - Let workspace and paned dialog titles wrap beside their icon controls instead of truncating in a fixed-height bar. Add `Modal.Content.headerDetails` for supporting information on a separate row, and keep text actions from squeezing the title. Long identifiers wrap only when they cannot fit on one line.
+
+### Patch Changes
+
+- [#18](https://github.com/maddec01/lar-web/pull/18) [`93798f9`](https://github.com/maddec01/lar-web/commit/93798f9f6ef47f82c662879016d5105a4ae51d66) Thanks [@maddec01](https://github.com/maddec01)! - Keep confirmation actions together in a full-width stack on narrow dialogs, preserving safe-answer focus order. Wrap long identifiers in confirmation content without overflowing.
+
 ## 0.6.1
 
 ### Patch Changes
