@@ -259,6 +259,9 @@ importers:
       hast-util-to-jsx-runtime:
         specifier: ^2.3.7
         version: 2.3.7
+      html-tag-names:
+        specifier: ^2.1.0
+        version: 2.1.0
       lexical:
         specifier: 0.52.0
         version: 0.52.0(typescript@7.0.2)
@@ -3125,6 +3128,9 @@ packages:
 
   html-parse-stringify@4.0.1:
     resolution: {integrity: sha512-0zHsZJrK7S3K2aucXWL6ycoYJ/iNtIcFHC/nYQgFklPtrv5LpJctIiSCroWZWeuoXvuyFdzp6KzjJQ+OT5MfFw==}
+
+  html-tag-names@2.1.0:
+    resolution: {integrity: sha512-+NhBUNvS5Ig8g8LO1DBpyapuGsu+FLcpLwmMADCntvU9IUa30++WV3GmuBHZm8Y9cHdIson/uvbQ/6jVL63XZw==}
 
   html-url-attributes@3.0.1:
     resolution: {integrity: sha512-ol6UPyBWqsrO6EJySPz2O7ZSr856WDrEzM5zMqp+FJJLGMW35cLYmmZnl0vztAZxRUoNZJFTCohfjuIJ8I4QBQ==}
@@ -6654,6 +6660,8 @@ snapshots:
       - '@noble/hashes'
 
   html-parse-stringify@4.0.1: {}
+
+  html-tag-names@2.1.0: {}
 
   html-url-attributes@3.0.1: {}
 

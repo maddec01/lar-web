@@ -16,6 +16,7 @@ import { unified } from 'unified';
 import type { PluggableList } from 'unified';
 
 import { proseLinkRecipe } from '../typography/LinkRecipe';
+import { rehypeMarkdownPlaceholders } from './markdown-placeholders';
 
 export type RichTextFormat = 'markdown' | 'html';
 
@@ -80,7 +81,13 @@ function rehypeLabelTaskItems() {
 // The default schema is GitHub's: it keeps <details>, tables and task-list checkboxes and drops scripts,
 // handlers, javascript: URLs, iframes and styles. It keeps a dropped <style>'s text, so strip that element whole.
 const schema = { ...defaultSchema, strip: [...(defaultSchema.strip ?? []), 'style'] };
-const rehypePlugins: PluggableList = [rehypeRaw, [rehypeSanitize, schema], rehypeImagesAsLinks, rehypeLabelTaskItems];
+const rehypePlugins: PluggableList = [
+    rehypeMarkdownPlaceholders,
+    rehypeRaw,
+    [rehypeSanitize, schema],
+    rehypeImagesAsLinks,
+    rehypeLabelTaskItems,
+];
 const htmlProcessor = unified()
     .use(rehypeParse, { fragment: true })
     .use(rehypeSanitize, schema)

@@ -68,6 +68,7 @@
         "@ninna-ui/react-internal": "^0.7.0",
         "@tanstack/react-virtual": "^3.14.26",
         "hast-util-to-jsx-runtime": "^2.3.7",
+        "html-tag-names": "^2.1.0",
         "lexical": "0.52.0",
         "lucide-react": "^1.70.0",
         "qrcode-generator": "^2.0.4",
