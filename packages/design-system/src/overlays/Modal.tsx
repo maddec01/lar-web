@@ -60,7 +60,9 @@ interface ModalContentPolicyProps extends Omit<ModalContentProps, 'className' | 
     focusFirstField?: boolean;
     /** Controls in the header before the close button, such as ModalExpandButton. */
     headerActions?: ReactNode;
-    /** The trail before the `title` in the 52px header bar ("Settings / General", or "Settings / Users / Approve
+    /** Supporting information below the title and controls, such as usage figures or a status. */
+    headerDetails?: ReactNode;
+    /** The trail before the `title` in the header bar (at least 52px) ("Settings / General", or "Settings / Users / Approve
      *  device" as a list), 14px, its actions and the close button over a hairline, as SettingsDialog's. A `paned` or
      *  `workspace` dialog always takes the bar, so its close button sits where Settings' does; this adds the trail.
      *  The accessible name stays `accessibleTitle` (or the title). */
@@ -185,6 +187,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
             description,
             focusFirstField,
             headerActions,
+            headerDetails,
             breadcrumb,
             back,
             onOpenAutoFocus: callerOpenAutoFocus,
@@ -212,7 +215,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
               : undefined;
         const loading = useContext(ModalLoadingContext);
         const confirm = presentation === 'confirm';
-        // One header for every large dialog: a `paned` or `workspace` one (and any with a trail) takes the 52px bar,
+        // One header for every large dialog: a `paned` or `workspace` one (and any with a trail) takes the same bar, growing to fit wrapped titles,
         // so its close button sits at the same spot as Settings'.
         const trail = breadcrumb === undefined ? [] : typeof breadcrumb === 'string' ? [breadcrumb] : breadcrumb;
         const bar = trail.length > 0 || presentation === 'paned' || presentation === 'workspace';
@@ -298,10 +301,10 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                         data-slot="modal-header"
                         data-dialog-zone="reading"
                         data-presentation="bar"
-                        className={`border-line flex h-13 min-w-0 shrink-0 items-center gap-3 border-b ps-5 pe-3 sm:ps-6 ${sidebar ? 'md:col-start-2 md:row-start-1' : ''}`}
+                        className={`border-line flex min-h-13 min-w-0 shrink-0 flex-wrap items-start gap-x-3 gap-y-2 border-b py-3 ps-5 pe-3 sm:ps-6 ${sidebar ? 'md:col-start-2 md:row-start-1' : ''}`}
                     >
                         {back ? <ModalBackButton {...back} /> : null}
-                        <h2 className="m-0 flex min-w-0 flex-1 items-center gap-2 text-sm leading-5 font-normal">
+                        <h2 className="m-0 flex min-w-0 flex-1 items-start gap-2 py-1 text-sm leading-5 font-normal">
                             {trail.map((step, index) => (
                                 <Fragment key={index}>
                                     {/* An earlier step gives way first, so the current title keeps its words. */}
@@ -311,12 +314,24 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                                     </span>
                                 </Fragment>
                             ))}
-                            <span className="text-fg min-w-0 shrink-[0.5] truncate font-medium">{title}</span>
+                            <span className="text-fg min-w-0 flex-1 font-medium wrap-anywhere">{title}</span>
                         </h2>
-                        {headerActions ? <div className="flex shrink-0 items-center gap-1">{headerActions}</div> : null}
+                        {headerActions ? (
+                            <div
+                                ref={setActions}
+                                className={`flex min-w-0 flex-wrap items-center gap-1 ${iconActions ? 'shrink-0' : 'order-1 basis-full justify-end'}`}
+                            >
+                                {headerActions}
+                            </div>
+                        ) : null}
                         <div className="shrink-0">
                             <ModalClose />
                         </div>
+                        {headerDetails ? (
+                            <div className="order-2 flex min-w-0 basis-full flex-wrap items-center gap-x-4 gap-y-2 wrap-anywhere empty:hidden">
+                                {headerDetails}
+                            </div>
+                        ) : null}
                     </header>
                 ) : (
                     <header
@@ -353,6 +368,11 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentPolicyProps>(
                                 </div>
                             )}
                         </div>
+                        {headerDetails ? (
+                            <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 pt-2 wrap-anywhere empty:hidden">
+                                {headerDetails}
+                            </div>
+                        ) : null}
                     </header>
                 )}
                 {sidebar ? (

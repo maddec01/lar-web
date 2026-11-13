@@ -624,3 +624,49 @@ export const DiscardQuestion: Story = {
         });
     },
 };
+
+/** Full titles keep their words beside icon controls; supporting figures get their own row. */
+export const WrappingWorkspaceTitle: Story = {
+    render: (args) => <WorkspaceHeaderDemo {...args} />,
+};
+
+/** A single identifier wider than the title column uses emergency wrapping without widening the frame. */
+export const UnbrokenWorkspaceTitle: Story = {
+    render: (args) => (
+        <WorkspaceHeaderDemo
+            {...args}
+            title="Faster library sync on large collections while preserving recently changed albums, retrying interrupted downloads, and keeping progress readable across phones, tablets and desktop windows with LibrarySynchronizationCheckpointRecoveryWithoutLosingDownloadedArtwork"
+        />
+    ),
+};
+
+function WorkspaceHeaderDemo({
+    title = 'Keep downloaded collections available while reconnecting to the library',
+    ...args
+}: ComponentProps<typeof Modal> & { title?: string }) {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <ModalDemo {...args}>
+            <Modal.Content
+                title={title}
+                presentation="workspace"
+                expanded={expanded}
+                focusFirstField={false}
+                headerActions={<ModalExpandButton expanded={expanded} onToggle={() => setExpanded(!expanded)} />}
+                headerDetails={
+                    <Text variant="caption" tone="muted">
+                        52 minutes · 3.15 million tokens · $0.62
+                    </Text>
+                }
+            >
+                <Modal.Body>
+                    <Text>The complete title and its supporting information remain readable at narrow widths.</Text>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Modal.Cancel>Close</Modal.Cancel>
+                </Modal.Footer>
+            </Modal.Content>
+        </ModalDemo>
+    );
+}
