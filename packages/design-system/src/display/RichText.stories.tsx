@@ -99,3 +99,22 @@ The item keeps the wider technical content together with the readable prose.`,
         renderDiagram: WithDiagram.args?.renderDiagram,
     },
 };
+
+/** Unbroken paths and hashes must not determine an auto-sized grid's minimum width. */
+export const LongTokensInGrid: Story = {
+    render: () => {
+        const path = '/proof/' + 'artifact'.repeat(40) + '/assertions.txt';
+        const hash = 'a'.repeat(64);
+
+        return (
+            <div className="grid w-full max-w-sm">
+                <div>
+                    <RichText
+                        format="markdown"
+                        text={`Proof: ${path}\n\nSHA256: \`${hash}\`\n\n\`\`\`text\n${path}\n${hash}\n\`\`\``}
+                    />
+                </div>
+            </div>
+        );
+    },
+};
