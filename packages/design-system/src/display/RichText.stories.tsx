@@ -122,6 +122,6 @@ export const LongTokensInGrid: Story = {
 /** Bare placeholders remain readable beside supported HTML and code. */
 export const AngleBracketPlaceholders: Story = {
     args: {
-        text: 'Open https://example.com/#<fragment> with <server-id>. Use `<fragment>` in code.\n\n<details><summary>Contract</summary>Keep <fragment> verbatim.</details>',
+        text: 'Accept only #greeting=<percent-encoded JSON>, decode once. Open https://example.com/#<fragment> with <server-id>. Use `<percent-encoded JSON>` in code and [<plain text value>](https://example.com) as a link.\n\n<details><summary>Contract</summary>Keep <fragment> and <percent-encoded JSON> verbatim.</details>',
     },
 };
