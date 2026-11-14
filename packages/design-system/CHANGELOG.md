@@ -1,5 +1,11 @@
 # @lar-works/design-system
 
+## 0.7.4
+
+### Patch Changes
+
+- [#32](https://github.com/maddec01/lar-web/pull/32) [`51696a8`](https://github.com/maddec01/lar-web/commit/51696a80b98b52e91c5c861f28e48c4f6977fd4c) Thanks [@maddec01](https://github.com/maddec01)! - Keep multi-word angle-bracket placeholders such as `<percent-encoded JSON>` visible in Markdown, including inside supported HTML. Preserve real HTML sanitizing, code spans, links and quoted tag attributes.
+
 ## 0.7.3
 
 ### Patch Changes
