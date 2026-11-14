@@ -120,3 +120,28 @@ test('Markdown keeps bare angle-bracket placeholders as text alongside sanitized
     expect(out).toContain('<details>');
     expect(out).not.toContain('<fragment>');
 });
+
+test('Markdown preserves multi-word placeholders in prose, HTML, code and link labels', () => {
+    const out = markdown(
+        'Accept only #greeting=<percent-encoded JSON>, decode once.\n\n<percent-encoded JSON>\n\n<details><summary>Contract</summary>Use <plain text value>.</details>\n\n`<percent-encoded JSON>` and [<percent-encoded JSON>](https://example.com).',
+    );
+
+    expect(out.match(/&lt;percent-encoded JSON&gt;/g)).toHaveLength(4);
+    expect(out).toContain('&lt;plain text value&gt;');
+    expect(out).toContain('<details>');
+    expect(out).toContain('<code>&lt;percent-encoded JSON&gt;</code>');
+    expect(out).toMatch(/<a [^>]*href="https:\/\/example.com"[^>]*>&lt;percent-encoded JSON&gt;<\/a>/);
+});
+
+test('real tags with attributes and quoted angle brackets keep their sanitizer behavior', () => {
+    const out = markdown(
+        '<details open><summary title="<percent-encoded JSON>">Contract</summary><input disabled><a href="https://example.com" title="<fragment>">link</a></details>\n\n<script async>alert(1)</script><iframe allowfullscreen>hidden</iframe><custom-element data-value="yes">kept text</custom-element>',
+    );
+
+    expect(out).toContain('<details open="">');
+    expect(out).toMatch(/<input disabled=""[^>]*type="checkbox"/);
+    expect(out).toContain('title="&lt;percent-encoded JSON&gt;"');
+    expect(out).toContain('title="&lt;fragment&gt;"');
+    expect(out).toContain('kept text');
+    expect(out).not.toMatch(/<script|alert\(|<iframe|<custom-element|&lt;script|&lt;iframe|&amp;lt;/);
+});
