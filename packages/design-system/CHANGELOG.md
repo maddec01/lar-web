@@ -1,5 +1,11 @@
 # @lar-works/design-system
 
+## 0.7.3
+
+### Patch Changes
+
+- [#25](https://github.com/maddec01/lar-web/pull/25) [`fd70647`](https://github.com/maddec01/lar-web/commit/fd7064793d53e47b6b03844a9c274edb5400997f) Thanks [@maddec01](https://github.com/maddec01)! - Keep bare angle-bracket placeholders such as <fragment> visible in Markdown, including alongside supported HTML. Continue sanitizing real HTML and leave code spans and links unchanged.
+
 ## 0.7.2
 
 ### Patch Changes
