@@ -118,3 +118,10 @@ export const LongTokensInGrid: Story = {
         );
     },
 };
+
+/** Bare placeholders remain readable beside supported HTML and code. */
+export const AngleBracketPlaceholders: Story = {
+    args: {
+        text: 'Open https://example.com/#<fragment> with <server-id>. Use `<fragment>` in code.\n\n<details><summary>Contract</summary>Keep <fragment> verbatim.</details>',
+    },
+};

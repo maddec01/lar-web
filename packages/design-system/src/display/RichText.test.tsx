@@ -109,3 +109,14 @@ describe('links', () => {
         }
     });
 });
+
+test('Markdown keeps bare angle-bracket placeholders as text alongside sanitized HTML', () => {
+    const out = markdown(
+        'Use <fragment> with <server-id> and `<fragment>`.\n\n<fragment>\n\n<details><summary>Contract</summary>Keep <fragment>.</details>',
+    );
+
+    expect(out.match(/&lt;fragment&gt;/g)).toHaveLength(4);
+    expect(out).toContain('&lt;server-id&gt;');
+    expect(out).toContain('<details>');
+    expect(out).not.toContain('<fragment>');
+});
