@@ -82,7 +82,7 @@ export const Empty: Story = {
     ),
 };
 
-/** Posters and video stills, with a chevron for rows that open a page. */
+/** Posters and video stills; a row that opens a page shows it with its rounded hover. */
 export const PostersAndVideos: Story = {
     render: (args) => (
         <ResultList {...args} label="Movies and episodes">
@@ -185,8 +185,8 @@ export const LongContent: Story = {
     ),
 };
 
-/** A library's list on a page (`presentation="card"`): one card, a hairline between rows, a chevron on every row that
- *  opens a page, in every library (videos, playlists, people, books, music). */
+/** A library's list on a page (`presentation="card"`), in every library (videos, playlists, people, books, music):
+ *  unboxed and unruled, each row its own rounded surface under the pointer and with focus inside. */
 export const OnCard: Story = {
     args: { role: 'list', label: 'Playlists', presentation: 'card' },
     decorators: [
@@ -213,7 +213,7 @@ export const OnCard: Story = {
     ),
 };
 
-/** Posters on a card, as a videos library lists them. */
+/** Posters in a library's list, as a videos library lists them. */
 export const PostersOnCard: Story = {
     args: { role: 'list', label: 'Movies', presentation: 'card' },
     decorators: OnCard.decorators,

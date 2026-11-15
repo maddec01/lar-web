@@ -73,7 +73,7 @@ export const LongText: Story = {
     },
 };
 
-/** A full list in its bordered panel, with every tone. */
+/** A full list, unboxed, with every tone. */
 export const Panel: Story = {
     render: () => (
         <div className="max-w-2xl">
@@ -115,7 +115,7 @@ export const Panel: Story = {
     ),
 };
 
-/** Ruled rows in two columns on wide screens. */
+/** Rows in two columns on wide screens. */
 export const Columns: Story = {
     render: () => (
         <RowList label="Users" layout="columns">
