@@ -1,5 +1,13 @@
 # @lar-works/design-system
 
+## 0.7.5
+
+### Patch Changes
+
+- [#34](https://github.com/maddec01/lar-web/pull/34) [`b236cd7`](https://github.com/maddec01/lar-web/commit/b236cd7bd3befc24e08f2807820eccceacfdfd4f) Thanks [@maddec01](https://github.com/maddec01)! - A focused invalid field (Input, Textarea, Select and the fields built on them) keeps its danger edge and takes the danger
+  ring instead of the blue focus ring, so an error still shows while the reader fixes it. The command palette's key hints
+  leave out ↑↓ move and ↵ select while nothing is listed.
+
 ## 0.7.4
 
 ### Patch Changes
