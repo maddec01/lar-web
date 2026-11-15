@@ -91,7 +91,7 @@ function PropertySheetRows({ items, loading = false, emphasis = 'value' }: RowsP
             {rows.map(({ key, label, value }, index) => (
                 <div
                     key={loading ? index : (key ?? label)}
-                    className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-baseline gap-x-6 py-2.5"
+                    className="grid gap-y-0.5 py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-6"
                 >
                     <dt>
                         <Text
@@ -104,7 +104,7 @@ function PropertySheetRows({ items, loading = false, emphasis = 'value' }: RowsP
                             {label}
                         </Text>
                     </dt>
-                    <dd className="min-w-0 text-right">
+                    <dd className="min-w-0">
                         <TextBase
                             as="span"
                             className="wrap-break-word tabular-nums"
