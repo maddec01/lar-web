@@ -14,6 +14,7 @@ const formChoiceBorderClasses = 'border border-line-choice';
 export const formChoiceClasses = `${formChoiceBorderClasses} bg-surface-control shadow-(--shadow-raised) focus-ring disabled:cursor-default disabled:opacity-50`;
 
 /** T3 Code's input, select and search: a 6px-radius field (surface-field, white 4% in dark) inside its quiet edge, with
- *  a faint shadow and a focus halo while focused (focus-field); an invalid one takes the danger edge, and a disabled
- *  one fades. */
-export const formControlClasses = `min-w-0 rounded-md ${formControlBorderClasses} bg-surface-field text-fg shadow-(--shadow-raised) placeholder:text-fg-muted data-placeholder:text-fg-muted focus-field focus:border-focus! focus:ring-focus/30! focus:bg-surface-field disabled:cursor-not-allowed disabled:opacity-50 data-invalid:border-danger data-invalid:bg-surface-field aria-invalid:border-danger aria-invalid:bg-surface-field data-invalid:focus:ring-danger-ring aria-invalid:focus:ring-danger-ring`;
+ *  a faint shadow and a focus halo while focused (focus-field); an invalid one takes the danger edge and, focused, the
+ *  danger ring (stronger than the focus edge's, so an error still shows while the reader fixes it), and a disabled one
+ *  fades. */
+export const formControlClasses = `min-w-0 rounded-md ${formControlBorderClasses} bg-surface-field text-fg shadow-(--shadow-raised) placeholder:text-fg-muted data-placeholder:text-fg-muted focus-field focus:border-focus! focus:ring-focus/30! focus:bg-surface-field disabled:cursor-not-allowed disabled:opacity-50 data-invalid:border-danger data-invalid:bg-surface-field aria-invalid:border-danger aria-invalid:bg-surface-field data-invalid:focus:border-danger! aria-invalid:focus:border-danger! data-invalid:focus:ring-danger-ring! aria-invalid:focus:ring-danger-ring!`;
