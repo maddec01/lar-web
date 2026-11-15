@@ -27,7 +27,9 @@ interface ViewTabsProps<T extends string> {
     end?: ReactNode;
 }
 
-/** A row of tabs that switches which list the page shows, each with its count. */
+/** A row of tabs that switches which list the page shows, each with its count: quiet text tabs and the chosen one a
+ *  rounded pill (segment-chosen), unruled. The row bleeds by its tabs' padding (`row-inset`), so the first tab's
+ *  label sits on the content edge. */
 export function ViewTabs<T extends string>({ items, label, onChange, value, end }: ViewTabsProps<T>) {
     const row = useRef<HTMLDivElement>(null);
     const { setViewport, className: fade } = useScrollFade({ axis: 'horizontal' });
@@ -46,7 +48,7 @@ export function ViewTabs<T extends string>({ items, label, onChange, value, end 
             ref={attachRow}
             role="tablist"
             aria-label={label}
-            className={`border-line flex min-w-0 gap-1 overflow-x-auto border-b ${fade}`}
+            className={`-mx-row-inset flex min-w-0 gap-1 overflow-x-auto py-1 ${fade}`}
             onKeyDown={(event) =>
                 moveTabSelection(
                     event,
@@ -67,8 +69,8 @@ export function ViewTabs<T extends string>({ items, label, onChange, value, end 
                         aria-selected={selected}
                         tabIndex={selected ? 0 : -1}
                         data-value={item.value}
-                        className={`focus-ring-inset -mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
-                            selected ? 'border-fg text-fg' : 'text-fg-muted hover:text-fg border-transparent'
+                        className={`focus-ring-inset px-row-inset flex h-8 shrink-0 items-center gap-2 rounded-lg text-sm font-medium transition-colors motion-reduce:transition-none ${
+                            selected ? 'segment-chosen' : 'text-fg-muted hover:text-fg hover:bg-fill-hover'
                         }`}
                         onClick={() => onChange(item.value)}
                     >
@@ -82,9 +84,9 @@ export function ViewTabs<T extends string>({ items, label, onChange, value, end 
     );
 
     return end ? (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">{tabs}</div>
-            <div className="sm:w-64 sm:pb-1">{end}</div>
+            <div className="sm:w-64">{end}</div>
         </div>
     ) : (
         tabs
