@@ -7,5 +7,8 @@ the page with no lines between rows; a row that opens something takes a rounded 
 inside, and its focus ring is rounded too. Their rows no longer end in a chevron. VirtualList keeps a quiet column
 header that still sticks while scrolling. PropertySheet (and its Collapsible and Table) shows plain label/value rows
 under its title with no panel or rules, each value left-aligned right after a fixed label column (stacked under its
-label on a phone), a list's section headers lose their rule, and DataTable drops its header line
-and row rules for slightly roomier rows.
+label on a phone). A list's section headers lose their rule, and DataTable drops its header line and row rules for
+slightly roomier rows. These lists (and a page's ResultList, not a compact palette's) bleed by their rows' padding,
+the new `row-inset` spacing, so row text lines up with section titles on the content edge and only the hover fill
+reaches into the gutter. VirtualGrid takes `captionLines` (1, 2 or 3; 3 by default) so a grid of one-line cards, such
+as artists, has no empty band between rows.

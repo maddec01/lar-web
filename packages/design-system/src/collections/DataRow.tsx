@@ -21,7 +21,7 @@ function DataRowRoot({
         <LinkBoxBase
             role="row"
             aria-rowindex={rowIndex}
-            className={`group group/media-item grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 rounded-lg px-3 transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-fill-hover focus-within:bg-fill-hover' : ''}`}
+            className={`group group/media-item px-row-inset grid h-full min-w-0 grid-cols-(--lar-list-columns) items-center gap-4 rounded-lg transition-colors motion-reduce:transition-none ${interactive ? 'hover:bg-fill-hover focus-within:bg-fill-hover' : ''}`}
         >
             {children}
         </LinkBoxBase>

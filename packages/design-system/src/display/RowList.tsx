@@ -22,7 +22,7 @@ export function RowList({
     return (
         <ul
             aria-label={label}
-            className={layout === 'columns' ? 'grid gap-x-8 gap-y-1 md:grid-cols-2' : 'flex flex-col gap-1'}
+            className={`-mx-row-inset ${layout === 'columns' ? 'grid gap-x-8 gap-y-1 md:grid-cols-2' : 'flex flex-col gap-1'}`}
         >
             {children}
         </ul>
@@ -97,7 +97,7 @@ export function RowListItem({
             {badges ? <span className="hidden shrink-0 items-center gap-2 sm:flex">{badges}</span> : null}
         </>
     );
-    const row = 'flex w-full min-w-0 items-center gap-3 rounded-lg px-3 py-3';
+    const row = 'flex w-full min-w-0 items-center gap-3 rounded-lg px-row-inset py-3';
 
     return (
         <li>

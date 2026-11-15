@@ -42,12 +42,13 @@ interface ResultListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNa
     loading?: boolean;
     /** What screen readers hear while results load; the list's label by default. */
     loadingLabel?: string;
-    /** `compact` rows for a palette or a menu; `default` for a page. */
+    /** `compact` rows for a palette or a menu; `default` for a page, where the list bleeds by its rows' padding
+     *  (`row-inset`) so their text sits on the content edge. */
     density?: 'default' | 'compact';
     /** `listbox` (the default) for options to choose, with a ResultRow selected; `list` for plain links. */
     role?: 'listbox' | 'list';
     /** `choice` groups ResultChoice radio rows, with one action in the containing dialog’s footer.
-     *  `plain` (the default) floats rows on the surface, for a palette or a menu; `card` is a library's list on a
+     *  `plain` (the default) floats rows on the surface, for search results, a palette or a menu; `card` is a library's list on a
      *  page: unboxed and unruled, roomier rows, each its own rounded surface under the pointer and with focus inside.
      *  Every library list (videos, playlists, people, books, music) is a `card`. */
     presentation?: 'plain' | 'card' | 'choice';
@@ -94,7 +95,9 @@ export function ResultList({
                     aria-label={label}
                     aria-busy={loading || props['aria-busy']}
                     data-presentation={presentation}
-                    className={flows ? loneColumns : 'flex flex-col gap-1'}
+                    // A page's list (not a compact palette or menu) bleeds by its rows' padding, so their text sits on
+                    // the content edge and only the rounded hover fill reaches into the gutter.
+                    className={`${density === 'compact' ? '' : '-mx-row-inset'} ${flows ? loneColumns : 'flex flex-col gap-1'}`}
                 >
                     {loading ? Array.from({ length: 8 }, (_, index) => <ResultRow key={index} loading />) : children}
                 </div>
@@ -135,7 +138,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
     const presentation = loading ? 'default' : props.presentation;
     // A row is its own rounded surface; on a card it is roomier, with the page's larger radius.
     const radius = card ? 'rounded-lg' : 'rounded-md';
-    const classes = `grid w-full items-center text-left ${radius} ${card ? 'px-3' : 'px-2'} ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]' : presentation === 'icon' ? 'grid-cols-[1rem_minmax(0,1fr)] gap-3 py-2' : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : `grid-cols-[2.75rem_minmax(0,1fr)] gap-3 ${card ? 'py-2.5' : 'py-2'}`}`;
+    const classes = `grid w-full items-center text-left ${radius} ${compact ? 'px-2' : 'px-row-inset'} ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]' : presentation === 'icon' ? 'grid-cols-[1rem_minmax(0,1fr)] gap-3 py-2' : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : `grid-cols-[2.75rem_minmax(0,1fr)] gap-3 ${card ? 'py-2.5' : 'py-2'}`}`;
     const content = (
         <>
             {loading ? (

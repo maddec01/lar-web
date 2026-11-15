@@ -165,8 +165,8 @@ function PropertySheetCollapsible({
 
     return (
         <section aria-labelledby={id} className="min-w-0">
-            <details className="group/sheet">
-                <summary className="hover:bg-fill-hover focus-ring-inset flex cursor-pointer list-none items-center gap-4 rounded-lg px-3 py-3 transition-colors motion-reduce:transition-none [&::-webkit-details-marker]:hidden">
+            <details className="group/sheet -mx-row-inset">
+                <summary className="hover:bg-fill-hover focus-ring-inset px-row-inset flex cursor-pointer list-none items-center gap-4 rounded-lg py-3 transition-colors motion-reduce:transition-none [&::-webkit-details-marker]:hidden">
                     <span className="min-w-0 flex-1 wrap-anywhere">
                         <TextBase as="span" id={id} variant="label" className="block">
                             {title}
@@ -184,7 +184,7 @@ function PropertySheetCollapsible({
                         <ChevronDownIcon />
                     </span>
                 </summary>
-                <div className="px-3 pt-1 pb-2">{children}</div>
+                <div className="px-row-inset pt-1 pb-2">{children}</div>
             </details>
         </section>
     );

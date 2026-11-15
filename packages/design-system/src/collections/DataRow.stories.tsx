@@ -14,14 +14,14 @@ function Cover({ hue }: { hue: number }) {
     );
 }
 
-/** The table a row sits in, unboxed as in a VirtualList, with the column template its grid reads from
+/** The table a row sits in, unboxed and bled by the rows' padding as in a VirtualList, with the column template its grid reads from
  *  `--lar-list-columns`. */
 function Table({ children }: { children: ReactNode }) {
     return (
         <div
             role="table"
             aria-label="Tracks"
-            className="max-w-3xl"
+            className="-mx-row-inset max-w-3xl"
             style={
                 {
                     '--lar-list-columns': [columnWidths.primary, columnWidths.secondary, columnWidths.numeric].join(

@@ -1,8 +1,8 @@
 import { useScrollFade } from '../overlays/useScrollFade';
 
 const cellSpacing = {
-    default: 'px-4 py-3 sm:first:pl-5 sm:last:pr-5',
-    compact: 'px-3 py-2 sm:first:pl-4 sm:last:pr-4',
+    default: 'px-4 py-3 first:pl-row-inset last:pr-row-inset',
+    compact: 'px-3 py-2 first:pl-row-inset last:pr-row-inset',
 } as const;
 
 const tones = {
@@ -57,7 +57,7 @@ export function DataTable({ columns, label, rowHeader, rows, density = 'default'
             tabIndex={0}
             role="region"
             aria-label={label}
-            className={`focus-ring overflow-x-auto ${fade}`}
+            className={`focus-ring -mx-row-inset overflow-x-auto ${fade}`}
         >
             <table aria-label={label} className="w-full text-left text-sm leading-5 tabular-nums">
                 <thead className="text-fg-muted text-xs leading-4">

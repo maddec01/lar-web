@@ -18,7 +18,7 @@ export function CollectionSectionHeader({
 }) {
     return (
         <div
-            className="text-fg flex h-10 min-w-0 items-center gap-2 px-3 text-sm leading-5 font-semibold"
+            className="text-fg px-row-inset flex h-10 min-w-0 items-center gap-2 text-sm leading-5 font-semibold"
             role="presentation"
         >
             <span className="min-w-0 truncate">{children}</span>

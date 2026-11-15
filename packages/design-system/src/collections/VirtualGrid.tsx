@@ -19,10 +19,10 @@ interface VirtualGridProps {
     itemKey: (index: number) => string;
     /** The first items are on their way: placeholders fill the grid. */
     loading?: boolean;
+    /** How many lines the cards' captions hold, for the rows' height: 3 (the default) for a media card's title, maker
+     *  and meta row; 1 for a name alone, such as artists. Taller cards still grow their row. */
+    captionLines?: 1 | 2 | 3;
 }
-
-// A media card's caption, by default: its title, its maker and its meta row.
-const captionRows = 3;
 
 export function VirtualGrid({
     count,
@@ -32,6 +32,7 @@ export function VirtualGrid({
     itemKey,
     loading,
     aspect = 'square',
+    captionLines = 3,
 }: VirtualGridProps) {
     const { scrollMargin, setCollectionElement, width } = useCollectionViewport();
     const root = useRef<HTMLDivElement>(null);
@@ -46,8 +47,8 @@ export function VirtualGrid({
     const layoutWidth = width || maxItemWidth * 2 + gap;
     const columns = Math.max(2, Math.round((layoutWidth + gap) / (maxItemWidth + gap)));
     const itemWidth = Math.min(maxItemWidth, Math.max(0, (layoutWidth - gap * (columns - 1)) / columns));
-    // The art, the space under it, then a media card's three caption rows (20px each, 2px apart) and the row gap.
-    const estimatedHeight = itemWidth * (aspect === 'poster' ? 1.5 : 1) + 8 + captionRows * 22 - 2 + rowGap;
+    // The art, the space under it, then the caption's lines (20px each, 2px apart) and the row gap.
+    const estimatedHeight = itemWidth * (aspect === 'poster' ? 1.5 : 1) + 8 + captionLines * 22 - 2 + rowGap;
     // Rows grow, all together, to the tallest card measured at this layout, such as one with art of its own ratio;
     // they never shrink below the estimate, so the size only ever grows and settles.
     const layout = `${columns}:${estimatedHeight}`;

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import { IconButton } from '../actions/IconButton';
+import { SectionTitle } from '../layout/SectionTitle';
 import { Avatar } from './Avatar';
 import { Badge } from './Badge';
 import { RowList, RowListItem } from './RowList';
@@ -73,10 +74,12 @@ export const LongText: Story = {
     },
 };
 
-/** A full list, unboxed, with every tone. */
+/** A full list, unboxed, with every tone, under its section title: the rows' text sits on the title's edge and only
+ *  their rounded hover fill reaches into the gutter. */
 export const Panel: Story = {
     render: () => (
-        <div className="max-w-2xl">
+        <div className="flex max-w-2xl flex-col gap-3">
+            <SectionTitle title="Server health" />
             <RowList label="Server health">
                 <RowListItem
                     tone="success"

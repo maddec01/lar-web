@@ -79,3 +79,30 @@ export const Loading: Story = {
 };
 
 export const FewItems: Story = { args: { count: 3 } };
+
+/** A grid whose cards carry one caption line, such as artists by name alone: `captionLines={1}` keeps the rows tight,
+ *  with no empty band under each. */
+export const OneLineCaptions: Story = {
+    args: {
+        label: 'Artists',
+        captionLines: 1,
+        renderItem: (index) => {
+            const project = projects[index]!;
+
+            return (
+                <Stack space="related">
+                    <div
+                        aria-hidden="true"
+                        className="aspect-square w-full rounded-full"
+                        style={{
+                            background: `linear-gradient(135deg, hsl(${project.hue} 60% 55%), hsl(${project.hue + 50} 60% 25%))`,
+                        }}
+                    />
+                    <Text variant="label" truncate>
+                        {project.owner}
+                    </Text>
+                </Stack>
+            );
+        },
+    },
+};

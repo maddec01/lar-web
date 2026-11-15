@@ -128,7 +128,7 @@ export function VirtualList<TItem>({
             aria-colcount={visibleColumns.length}
             data-density={density}
             data-rows={rows}
-            className="group/list @container min-w-0"
+            className="group/list -mx-row-inset @container min-w-0"
             style={
                 {
                     '--lar-list-columns': visibleColumns.map((column) => columnWidths[column.size]).join(' '),
@@ -148,7 +148,7 @@ export function VirtualList<TItem>({
                 <div
                     role="row"
                     aria-rowindex={1}
-                    className="in-data-stuck:bg-surface-page grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 px-3"
+                    className="in-data-stuck:bg-surface-page px-row-inset grid h-10 grid-cols-(--lar-list-columns) items-center gap-4"
                 >
                     {visibleColumns.map((column) => (
                         <div

@@ -53,7 +53,7 @@
     /* Radii: the only ones a component uses, plus rounded-full and rounded-none, one per kind of surface (never per
        app). xs 4px a code chip, a swatch or a text button's focus box · sm 5px a menu row, a tooltip, a chip ·
        md 6px every control, field and the title bar's search · lg 8px a menu, popover, toast or artwork ·
-       xl 12px every card, panel and group (InsetPanel, RowList, a settings group, surface-card and surface-panel) ·
+       xl 12px every card, panel and group (InsetPanel, a settings group, surface-card and surface-panel) ·
        2xl 16px a dialog, drawer or the command palette · 3xl 20px a marketing card or band. */
     --radius-xs: 0.25rem;
     --radius-sm: 0.3125rem;
@@ -1427,6 +1427,9 @@ body {
 /* Shell-owned horizontal rhythm: app lists prioritise space. */
 @theme static {
     --spacing-gutter-app: 1rem;
+    /* An unboxed collection row's inline padding (px-row-inset). Its list bleeds by the same amount (-mx-row-inset),
+       so the rows' text sits on the content edge and only their rounded hover fill reaches into the gutter. */
+    --spacing-row-inset: 0.75rem;
     /* How far a row of cards (ScrollRow) fades into the card cut at its edge; a row whose cards carry more padding sets
        its own. */
     --scroll-fade-row: 3rem;
