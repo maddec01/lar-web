@@ -4,7 +4,7 @@ import { type CSSProperties, type ReactNode, useCallback, useEffect, useRef, use
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { tabbable } from '../foundations/KeyboardFocus';
-import { LinkOverlay } from '../typography/Link';
+import { LinkOverlayBase } from '../typography/Link';
 import { columnBreakpoints, columnWidths } from './CollectionTokens';
 import { useCollectionViewport } from './CollectionViewport';
 import { DataRow } from './DataRow';
@@ -128,7 +128,7 @@ export function VirtualList<TItem>({
             aria-colcount={visibleColumns.length}
             data-density={density}
             data-rows={rows}
-            className="group/list border-line-panel @container min-w-0 rounded-b-xl border-x border-b"
+            className="group/list @container min-w-0"
             style={
                 {
                     '--lar-list-columns': visibleColumns.map((column) => columnWidths[column.size]).join(' '),
@@ -143,12 +143,12 @@ export function VirtualList<TItem>({
                 role="rowgroup"
                 ref={stuck.header}
                 data-stuck={stuck.value || undefined}
-                className="data-stuck:bg-surface-page sticky top-(--lar-header-height,0px) z-20 -mx-px -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
+                className="data-stuck:bg-surface-page sticky top-(--lar-header-height,0px) z-20 -mt-(--lar-page-gutter,0px) pt-(--lar-page-gutter,0px)"
             >
                 <div
                     role="row"
                     aria-rowindex={1}
-                    className="border-line-panel in-data-stuck:bg-surface-page box-content grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 rounded-t-xl border px-3"
+                    className="in-data-stuck:bg-surface-page grid h-10 grid-cols-(--lar-list-columns) items-center gap-4 px-3"
                 >
                     {visibleColumns.map((column) => (
                         <div
@@ -225,10 +225,11 @@ export function VirtualList<TItem>({
                                                     ) : columnIndex === 0 ? (
                                                         <>
                                                             {href ? (
-                                                                <LinkOverlay
+                                                                <LinkOverlayBase
                                                                     href={href}
                                                                     onNavigate={onNavigate}
                                                                     aria-label={itemLabel(value)}
+                                                                    className="rounded-lg"
                                                                 />
                                                             ) : onSelect ? (
                                                                 <button
@@ -237,7 +238,7 @@ export function VirtualList<TItem>({
                                                                     data-slot="action-overlay"
                                                                     aria-label={itemLabel(value)}
                                                                     onClick={() => onSelect(value)}
-                                                                    className="focus-ring-inset absolute inset-0 z-1 block w-full cursor-pointer rounded-md"
+                                                                    className="focus-ring-inset absolute inset-0 z-1 block w-full cursor-pointer rounded-lg"
                                                                 />
                                                             ) : null}
                                                             <div className="py-2 group-data-[density=compact]/list:py-0">

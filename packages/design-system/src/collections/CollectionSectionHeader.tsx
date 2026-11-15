@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Count } from '../display/Count';
 
 /** A section's header inside a list (an album's disc, a letter of the alphabet): the same anatomy as a Panel's header
- *  and a SectionTitle, a 40px line with the label at 14/600 and its count at 14/400 muted, over the list's hairline. */
+ *  and a SectionTitle, a 40px line with the label at 14/600 and its count at 14/400 muted, ruled by nothing but its type. */
 export function CollectionSectionHeader({
     children,
     count,
@@ -18,7 +18,7 @@ export function CollectionSectionHeader({
 }) {
     return (
         <div
-            className="border-line text-fg flex h-10 min-w-0 items-center gap-2 border-b px-3 text-sm leading-5 font-semibold"
+            className="text-fg flex h-10 min-w-0 items-center gap-2 px-3 text-sm leading-5 font-semibold"
             role="presentation"
         >
             <span className="min-w-0 truncate">{children}</span>
