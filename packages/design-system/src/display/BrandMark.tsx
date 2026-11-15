@@ -13,7 +13,7 @@ export const MARK_S =
 const sizes = { md: 'text-xl', lg: 'text-2xl' } as const;
 
 /** The Lar lockup: the mark stands in for the L, on the baseline, then "ar", then an optional product name in grey
- *  after a 0.26em space (lar-brand SPEC.md). */
+ *  after a 0.26em space (lar-brand tools/build.mjs). */
 export function BrandMark({
     label,
     product,
