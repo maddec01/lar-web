@@ -49,8 +49,10 @@ export function VirtualGrid({
     const itemWidth = Math.min(maxItemWidth, Math.max(0, (layoutWidth - gap * (columns - 1)) / columns));
     // The art, the space under it, then the caption's lines (20px each, 2px apart) and the row gap.
     const estimatedHeight = itemWidth * (aspect === 'poster' ? 1.5 : 1) + 8 + captionLines * 22 - 2 + rowGap;
-    // Rows grow, all together, to the tallest card measured at this layout, such as one with art of its own ratio;
-    // they never shrink below the estimate, so the size only ever grows and settles.
+    // Rows grow, all together, to the tallest loaded card measured at this layout, such as one with art of its own
+    // ratio; they never shrink below the estimate, so the size only ever grows and settles. A placeholder (anything
+    // still drawing a skeleton) is never measured: it can stand taller than the card it becomes, and a height kept
+    // from it would leave an empty band under every row once the cards arrive.
     const layout = `${columns}:${estimatedHeight}`;
     const [tallest, setTallest] = useState<{ layout: string; height: number }>();
     const rowHeight = Math.max(estimatedHeight, tallest?.layout === layout ? tallest.height + rowGap : 0);
@@ -73,7 +75,7 @@ export function VirtualGrid({
         let height = 0;
 
         for (const item of root.current?.querySelectorAll<HTMLElement>('[data-collection-key]') ?? [])
-            height = Math.max(height, item.offsetHeight);
+            if (!item.querySelector('[data-slot="skeleton"]')) height = Math.max(height, item.offsetHeight);
 
         setTallest((current) =>
             current?.layout === layout && current.height >= height ? current : { layout, height },
