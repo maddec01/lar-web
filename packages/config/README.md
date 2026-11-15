@@ -3,19 +3,9 @@
 Shared Oxlint rules (including Lar's `lar/*` rules), Oxfmt options, TypeScript configs and test settings for
 [Vite+](https://viteplus.dev).
 
-```ts
-// vite.config.ts
-import { fmt, lint, test } from '@lar-works/config';
-import { defineConfig } from 'vite-plus';
-
-export default defineConfig({
-    fmt,
-    lint: lint({ apps: ['.'] }),
-    test: { ...test, environment: 'jsdom' },
-});
+```sh
+pnpm add -D @lar-works/config
 ```
 
-```json
-// tsconfig.json
-{ "extends": "@lar-works/config/tsconfig/app.json" }
-```
+The [app template](https://github.com/maddec01/lar-web/tree/main/templates/app) (`vite.config.ts`, `tsconfig.json`)
+shows the setup; `lint()`'s options are documented in its type declarations.

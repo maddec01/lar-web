@@ -7,16 +7,6 @@ Browse it in [Storybook](https://maddec01.github.io/lar-web/).
 pnpm add @lar-works/design-system
 ```
 
-```css
-/* the app's CSS entry; an app with its own UI layer adds `source(none)`, its sheets, then `@source './ui';` */
-@import '@lar-works/design-system/styles.css';
-```
-
-```tsx
-import { Button, DesignSystemProvider } from '@lar-works/design-system';
-import { PlusIcon } from '@lar-works/design-system/icons';
-
-<DesignSystemProvider labels={translatedLabels}>
-    <Button leftIcon={<PlusIcon />}>Add library</Button>
-</DesignSystemProvider>;
-```
+The [app template](https://github.com/maddec01/lar-web/tree/main/templates/app) shows the setup: `src/main.tsx`
+imports `@lar-works/design-system/styles.css`, and `src/app/providers` wraps the app in `DesignSystemProvider`. An
+app with its own UI layer imports the sheet with `source(none)`, then its own sheets and `@source './ui';`.
