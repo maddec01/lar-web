@@ -155,7 +155,7 @@ export const Unavailable: Story = {
     },
 };
 
-/** A strip edge to edge above the header, such as a library's newest covers. */
+/** A strip edge to edge above the header, such as a library's newest covers: one calm surface, no rule under it. */
 export const WithMedia: Story = {
     args: {
         media: (
@@ -168,8 +168,13 @@ export const WithMedia: Story = {
         header: <CardHeader title="Jazz" href="#jazz" subtitle="12 albums · 94 tracks" />,
         footer: <StatusIndicator state="active" motion="spin" label="Scanning · 31%" />,
         actions: undefined,
-        divided: true,
+        divided: false,
     },
+};
+
+/** The same card `divided`: a hairline under the media and above the footer, each part its own. */
+export const WithMediaDivided: Story = {
+    args: { ...WithMedia.args, divided: true },
 };
 
 /** Cards side by side in a grid, every state at once. */

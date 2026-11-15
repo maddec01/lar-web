@@ -3,6 +3,7 @@ import { type ComponentProps, useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { Input } from '../forms/Input';
+import { SectionTitle } from '../layout/SectionTitle';
 import { ViewTabs } from './ViewTabs';
 
 function ViewTabsDemo(args: ComponentProps<typeof ViewTabs<string>>) {
@@ -42,6 +43,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+/** Under a title on a page: the first tab's label sits on the title's edge; only its pill reaches into the gutter. */
+export const OnContentEdge: Story = {
+    render: (args) => (
+        <div className="flex flex-col gap-3">
+            <SectionTitle title="Music" />
+            <ViewTabsDemo {...args} />
+        </div>
+    ),
+};
 
 export const WithoutCounts: Story = {
     args: {

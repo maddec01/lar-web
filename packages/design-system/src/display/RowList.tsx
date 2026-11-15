@@ -1,13 +1,12 @@
-import { ChevronRightIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { StatusTone } from '../feedback/StatusIndicator';
-import { LinkBoxBase, LinkOverlay } from '../typography/Link';
+import { LinkBoxBase, LinkOverlayBase } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { toneTileClasses } from './ToneTile';
 
-/** Rows of one list inside a single bordered panel (surface-panel: no fill on black, a quiet edge), separated by rules;
- *  or ruled rows in two columns on wide screens. */
+/** Rows of one list, unboxed and unruled: each row that opens something is its own rounded surface under the pointer
+ *  and with focus inside. One column, or two on wide screens. */
 export function RowList({
     children,
     label,
@@ -17,17 +16,13 @@ export function RowList({
     children: ReactNode;
     /** Names the list for screen readers. */
     label: string;
-    /** `panel` (the default) rules the rows inside a panel; `columns` lays them in two ruled columns from md. */
+    /** `panel` (the default) stacks the rows in one column; `columns` lays them in two columns from md. */
     layout?: 'panel' | 'columns';
 }) {
     return (
         <ul
             aria-label={label}
-            className={
-                layout === 'columns'
-                    ? '[&>li]:border-line grid gap-x-8 md:grid-cols-2 [&>li]:border-b'
-                    : 'divide-line surface-panel divide-y overflow-hidden rounded-xl border'
-            }
+            className={`-mx-row-inset ${layout === 'columns' ? 'grid gap-x-8 gap-y-1 md:grid-cols-2' : 'flex flex-col gap-1'}`}
         >
             {children}
         </ul>
@@ -37,7 +32,7 @@ export function RowList({
 interface RowListItemProps {
     /** Independent controls at the end of the row. */
     actions?: ReactNode;
-    /** Short labels such as "lar can fix", shown before the actions or chevron. */
+    /** Short labels such as "lar can fix", shown before the actions. */
     badges?: ReactNode;
     /** Muted facts after the subtitle, such as a size or a date. */
     detail?: string;
@@ -81,9 +76,9 @@ export function RowListItem({
             <span className="flex min-w-0 flex-1 flex-col">
                 <Text as="span" variant="label" truncate title={title}>
                     {href ? (
-                        <LinkOverlay href={href} onNavigate={onNavigate}>
+                        <LinkOverlayBase href={href} onNavigate={onNavigate} className="rounded-lg">
                             {title}
-                        </LinkOverlay>
+                        </LinkOverlayBase>
                     ) : (
                         title
                     )}
@@ -102,20 +97,15 @@ export function RowListItem({
             {badges ? <span className="hidden shrink-0 items-center gap-2 sm:flex">{badges}</span> : null}
         </>
     );
-    const row = 'flex w-full min-w-0 items-center gap-3 px-4 py-3';
+    const row = 'flex w-full min-w-0 items-center gap-3 rounded-lg px-row-inset py-3';
 
     return (
         <li>
             <LinkBoxBase
-                className={`${row} ${href ? 'hover:bg-fill-hover focus-within:bg-fill-hover transition-colors' : ''}`}
+                className={`${row} ${href ? 'hover:bg-fill-hover focus-within:bg-fill-hover transition-colors motion-reduce:transition-none' : ''}`}
             >
                 {content}
                 {actions ? <span className="flex shrink-0 items-center gap-1">{actions}</span> : null}
-                {href ? (
-                    <span aria-hidden="true" className="text-fg-muted flex shrink-0 [&>svg]:size-4">
-                        <ChevronRightIcon />
-                    </span>
-                ) : null}
             </LinkBoxBase>
         </li>
     );

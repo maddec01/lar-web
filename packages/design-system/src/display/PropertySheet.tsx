@@ -6,7 +6,6 @@ import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { SectionTitle } from '../layout/SectionTitle';
 import { Text, TextBase } from '../typography/Typography';
 import { BadgeList, type BadgeListItem } from './BadgeList';
-import { InsetPanel } from './InsetPanel';
 
 type PropertySheetProps = {
     /** The sheet's title, such as "File" or "Appears on". */
@@ -33,7 +32,8 @@ type PropertySheetProps = {
       }
 );
 
-/** A titled sheet of facts about one thing; the body is label/value rows, a row of tags, or a short note. */
+/** A titled sheet of facts about one thing, unboxed and unruled under its title; the body is label/value rows, a row
+ *  of tags, or a short note. */
 function PropertySheetRoot({
     children,
     loading = false,
@@ -51,9 +51,7 @@ function PropertySheetRoot({
             className="min-w-0"
         >
             <SectionTitle id={id} title={title} level={level} loading={loading} count={count} countLabel={countLabel} />
-            <div className="mt-3">
-                <InsetPanel presentation="settings">{loading ? <PropertySheetRows loading /> : children}</InsetPanel>
-            </div>
+            <div className="mt-2">{loading ? <PropertySheetRows loading /> : children}</div>
         </section>
     );
 
@@ -89,11 +87,11 @@ function PropertySheetRows({ items, loading = false, emphasis = 'value' }: RowsP
     const rows: readonly PropertySheetRow[] = items ?? Array.from({ length: 3 }, () => ({ label: '', value: '' }));
 
     return (
-        <dl className="divide-line divide-y">
+        <dl>
             {rows.map(({ key, label, value }, index) => (
                 <div
                     key={loading ? index : (key ?? label)}
-                    className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-baseline gap-x-6 px-4 py-2.5 sm:px-5"
+                    className="grid gap-y-0.5 py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-6"
                 >
                     <dt>
                         <Text
@@ -106,7 +104,7 @@ function PropertySheetRows({ items, loading = false, emphasis = 'value' }: RowsP
                             {label}
                         </Text>
                     </dt>
-                    <dd className="min-w-0 text-right">
+                    <dd className="min-w-0">
                         <TextBase
                             as="span"
                             className="wrap-break-word tabular-nums"
@@ -132,7 +130,7 @@ function PropertySheetTags({
     items: readonly PropertySheetTag[];
 }) {
     return (
-        <div className="px-4 py-3 sm:px-5">
+        <div className="py-2.5">
             <BadgeList items={items} />
         </div>
     );
@@ -145,7 +143,7 @@ function PropertySheetNote({
     children: ReactNode;
 }) {
     return (
-        <TextBase className="px-4 py-3 sm:px-5" tone="muted">
+        <TextBase className="py-2.5" tone="muted">
             {children}
         </TextBase>
     );
@@ -167,29 +165,27 @@ function PropertySheetCollapsible({
 
     return (
         <section aria-labelledby={id} className="min-w-0">
-            <InsetPanel presentation="settings">
-                <details className="group/sheet">
-                    <summary className="hover:bg-fill-hover focus-ring-inset flex cursor-pointer list-none items-center gap-4 px-4 py-4 sm:px-5 [&::-webkit-details-marker]:hidden">
-                        <span className="min-w-0 flex-1 wrap-anywhere">
-                            <TextBase as="span" id={id} variant="label" className="block">
-                                {title}
+            <details className="group/sheet -mx-row-inset">
+                <summary className="hover:bg-fill-hover focus-ring-inset px-row-inset flex cursor-pointer list-none items-center gap-4 rounded-lg py-3 transition-colors motion-reduce:transition-none [&::-webkit-details-marker]:hidden">
+                    <span className="min-w-0 flex-1 wrap-anywhere">
+                        <TextBase as="span" id={id} variant="label" className="block">
+                            {title}
+                        </TextBase>
+                        {summary ? (
+                            <TextBase as="span" tone="muted" variant="caption" className="mt-1 block">
+                                {summary}
                             </TextBase>
-                            {summary ? (
-                                <TextBase as="span" tone="muted" variant="caption" className="mt-1 block">
-                                    {summary}
-                                </TextBase>
-                            ) : null}
-                        </span>
-                        <span
-                            aria-hidden="true"
-                            className="shrink-0 transition-transform group-open/sheet:rotate-180 [&>svg]:size-4"
-                        >
-                            <ChevronDownIcon />
-                        </span>
-                    </summary>
-                    <div className="border-line border-t p-4 sm:p-5">{children}</div>
-                </details>
-            </InsetPanel>
+                        ) : null}
+                    </span>
+                    <span
+                        aria-hidden="true"
+                        className="shrink-0 transition-transform group-open/sheet:rotate-180 [&>svg]:size-4"
+                    >
+                        <ChevronDownIcon />
+                    </span>
+                </summary>
+                <div className="px-row-inset pt-1 pb-2">{children}</div>
+            </details>
         </section>
     );
 }
@@ -209,20 +205,20 @@ function PropertySheetTable({
     return (
         <div className="overflow-x-auto" tabIndex={0}>
             <table aria-label={label} className="w-full min-w-120 table-fixed border-collapse text-left text-sm">
-                <thead className="border-line text-fg-muted border-b text-xs">
+                <thead className="text-fg-muted text-xs">
                     <tr>
                         {columns.map((column) => (
-                            <th key={column} scope="col" className="px-4 py-3 font-medium sm:px-5">
+                            <th key={column} scope="col" className="px-3 py-2.5 font-medium first:pl-0 last:pr-0">
                                 {column}
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-line divide-y">
+                <tbody>
                     {rows.map((row) => (
                         <tr key={row.key}>
                             {row.cells.map((cell, index) => (
-                                <td key={index} className="px-4 py-3 align-top wrap-anywhere sm:px-5">
+                                <td key={index} className="px-3 py-2.5 align-top wrap-anywhere first:pl-0 last:pr-0">
                                     {cell}
                                 </td>
                             ))}

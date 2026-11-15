@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentProps } from 'react';
 
+import { Link } from '../typography/Link';
 import { Text } from '../typography/Typography';
 import { Badge } from './Badge';
 import { PropertySheet } from './PropertySheet';
@@ -39,6 +40,34 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Rows: Story = {};
+
+/** On a wide page the value sits right after its fixed label column, left-aligned, links and long values included;
+ *  on a phone the label stacks over its value. */
+export const WideWithLinks: Story = {
+    decorators: [
+        (Story) => (
+            <div className="max-w-5xl">
+                <Story />
+            </div>
+        ),
+    ],
+    args: {
+        title: 'External IDs',
+        children: (
+            <PropertySheet.Rows
+                items={[
+                    { label: 'IMDb', value: <Link href="https://www.imdb.com/title/tt15239678/">tt15239678</Link> },
+                    { label: 'TMDB', value: <Link href="https://www.themoviedb.org/movie/693134">693134</Link> },
+                    { label: 'Original title', value: 'Dune: Part Two' },
+                    {
+                        label: 'Path',
+                        value: '/mnt/media/movies/Dune Part Two (2024)/Dune.Part.Two.2024.2160p.UHD.BluRay.REMUX.HDR.HEVC.Atmos.mkv',
+                    },
+                ]}
+            />
+        ),
+    },
+};
 
 export const Tags: Story = {
     args: {

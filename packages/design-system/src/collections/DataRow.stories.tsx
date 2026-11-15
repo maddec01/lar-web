@@ -14,13 +14,14 @@ function Cover({ hue }: { hue: number }) {
     );
 }
 
-/** The table a row sits in, with the column template its grid reads from `--lar-list-columns`. */
+/** The table a row sits in, unboxed and bled by the rows' padding as in a VirtualList, with the column template its grid reads from
+ *  `--lar-list-columns`. */
 function Table({ children }: { children: ReactNode }) {
     return (
         <div
             role="table"
             aria-label="Tracks"
-            className="border-line bg-surface-raised max-w-3xl overflow-hidden rounded-xl border"
+            className="-mx-row-inset max-w-3xl"
             style={
                 {
                     '--lar-list-columns': [columnWidths.primary, columnWidths.secondary, columnWidths.numeric].join(
@@ -52,7 +53,8 @@ const tracks = [
     { title: 'Leãozinho', artist: 'Caetano Veloso', album: 'Bicho', duration: '3:05', hue: 45 },
 ];
 
-/** One row of a collection table. `DataRow.Primary` is the first cell: artwork, title and subtitle. */
+/** One row of a collection table, unruled: an interactive row takes a rounded fill under the pointer and with focus
+ *  inside. `DataRow.Primary` is the first cell: artwork, title and subtitle. */
 const meta = {
     title: 'Collections/DataRow',
     component: DataRow,

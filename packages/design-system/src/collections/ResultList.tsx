@@ -1,10 +1,9 @@
-import { ChevronRightIcon } from 'lucide-react';
 import { Children, type ComponentPropsWithoutRef, createContext, type ReactNode, useContext } from 'react';
 
 import { SkeletonLoader } from '../feedback/SkeletonLoader';
 import { tabbable } from '../foundations/KeyboardFocus';
 import { StackBase } from '../layout/Flow';
-import { LinkBoxBase, LinkOverlay } from '../typography/Link';
+import { LinkBoxBase, LinkOverlayBase } from '../typography/Link';
 import { Text, TextBase } from '../typography/Typography';
 
 const ResultListContext = createContext({ compact: false, listbox: true, card: false });
@@ -43,14 +42,15 @@ interface ResultListProps extends Omit<ComponentPropsWithoutRef<'div'>, 'classNa
     loading?: boolean;
     /** What screen readers hear while results load; the list's label by default. */
     loadingLabel?: string;
-    /** `compact` rows for a palette or a menu; `default` for a page. */
+    /** `compact` rows for a palette or a menu; `default` for a page, where the list bleeds by its rows' padding
+     *  (`row-inset`) so their text sits on the content edge. */
     density?: 'default' | 'compact';
     /** `listbox` (the default) for options to choose, with a ResultRow selected; `list` for plain links. */
     role?: 'listbox' | 'list';
     /** `choice` groups ResultChoice radio rows, with one action in the containing dialog’s footer.
-     *  `plain` (the default) floats rows on the surface, for a palette or a menu; `card` is a library's list on a
-     *  page: one card (the card surface and depth every app card has), a hairline between rows, and a chevron at the
-     *  end of every row that opens a page. Every library list (videos, playlists, people, books, music) is a `card`. */
+     *  `plain` (the default) floats rows on the surface, for search results, a palette or a menu; `card` is a library's list on a
+     *  page: unboxed and unruled, roomier rows, each its own rounded surface under the pointer and with focus inside.
+     *  Every library list (videos, playlists, people, books, music) is a `card`. */
     presentation?: 'plain' | 'card' | 'choice';
     /** Disables every radio in a choice list. */
     disabled?: boolean;
@@ -95,13 +95,9 @@ export function ResultList({
                     aria-label={label}
                     aria-busy={loading || props['aria-busy']}
                     data-presentation={presentation}
-                    className={
-                        card
-                            ? 'surface-panel divide-line flex flex-col divide-y overflow-hidden rounded-xl border'
-                            : flows
-                              ? loneColumns
-                              : 'flex flex-col gap-1'
-                    }
+                    // A page's list (not a compact palette or menu) bleeds by its rows' padding, so their text sits on
+                    // the content edge and only the rounded hover fill reaches into the gutter.
+                    className={`${density === 'compact' ? '' : '-mx-row-inset'} ${flows ? loneColumns : 'flex flex-col gap-1'}`}
                 >
                     {loading ? Array.from({ length: 8 }, (_, index) => <ResultRow key={index} loading />) : children}
                 </div>
@@ -130,8 +126,11 @@ export interface ResultRowProps extends Pick<
     current?: boolean;
     /** A line under the title, such as an artist. */
     subtitle?: string;
-    /** Extra detail at the row's end, such as a year. */
+    /** Extra detail under the subtitle, such as a year. */
     detail?: string;
+    /** The result's state at the row's end, such as a StatusIndicator with its label ("Source missing"). It keeps its
+     *  words; the title truncates first. */
+    status?: ReactNode;
     /** The result's name. */
     title: string;
 }
@@ -140,9 +139,9 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
     const { compact, listbox, card } = useContext(ResultListContext);
     const loading = 'loading' in props;
     const presentation = loading ? 'default' : props.presentation;
-    // On a card, every row that opens a page ends in a chevron, and rows sit edge to edge between hairlines.
-    const chevron = presentation === 'poster' || presentation === 'video' || (card && !loading && Boolean(props.href));
-    const classes = `grid w-full items-center text-left ${card ? 'rounded-none px-4' : 'rounded-md px-2'} ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)_auto] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)_auto] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)_auto]' : presentation === 'icon' ? `${chevron ? 'grid-cols-[1rem_minmax(0,1fr)_auto]' : 'grid-cols-[1rem_minmax(0,1fr)]'} gap-3 py-2` : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : `${chevron ? 'grid-cols-[2.75rem_minmax(0,1fr)_auto]' : 'grid-cols-[2.75rem_minmax(0,1fr)]'} gap-3 ${card ? 'py-2.5' : 'py-2'}`}`;
+    // A row is its own rounded surface; on a card it is roomier, with the page's larger radius.
+    const radius = card ? 'rounded-lg' : 'rounded-md';
+    const classes = `grid w-full items-center text-left ${radius} ${compact ? 'px-2' : 'px-row-inset'} ${presentation === 'poster' ? 'grid-cols-[4rem_minmax(0,1fr)] gap-4 py-3' : presentation === 'video' ? 'grid-cols-[5rem_minmax(0,1fr)] gap-4 py-3 sm:grid-cols-[10rem_minmax(0,1fr)]' : presentation === 'icon' ? 'grid-cols-[1rem_minmax(0,1fr)] gap-3 py-2' : compact ? 'grid-cols-[2rem_minmax(0,1fr)] gap-2 py-1' : `grid-cols-[2.75rem_minmax(0,1fr)] gap-3 ${card ? 'py-2.5' : 'py-2'}`}`;
     const content = (
         <>
             {loading ? (
@@ -158,13 +157,14 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
                 <Text as="span" variant="label" truncate loading={loading}>
                     {!loading &&
                         (props.href && !listbox ? (
-                            <LinkOverlay
+                            <LinkOverlayBase
                                 href={props.href}
                                 onNavigate={props.onSelect}
                                 aria-current={props.current ? 'page' : undefined}
+                                className={radius}
                             >
                                 {props.title}
-                            </LinkOverlay>
+                            </LinkOverlayBase>
                         ) : (
                             props.title
                         ))}
@@ -181,10 +181,9 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
             {!loading && props.subtitle && props.kind !== props.subtitle ? (
                 <span className="sr-only"> {props.kind}</span>
             ) : null}
-            {chevron ? (
-                <span aria-hidden="true" className="text-fg-muted flex [&>svg]:size-4">
-                    <ChevronRightIcon />
-                </span>
+            {/* An implicit third column sized to the status, so the title's column gives way first. */}
+            {!loading && props.status ? (
+                <span className="col-start-3 row-start-1 flex items-center whitespace-nowrap">{props.status}</span>
             ) : null}
         </>
     );
@@ -201,6 +200,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
         current = false,
         subtitle: _subtitle,
         detail: _detail,
+        status: _status,
         title: _title,
         ...buttonProps
     } = props;
@@ -208,7 +208,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
     const row =
         href && !listbox ? (
             <LinkBoxBase
-                className={`${classes} hover:bg-fill-hover focus-within:bg-fill-hover has-[[aria-current=page]]:current`}
+                className={`${classes} hover:bg-fill-hover focus-within:bg-fill-hover has-[[aria-current=page]]:current transition-colors motion-reduce:transition-none`}
             >
                 {content}
             </LinkBoxBase>
@@ -220,7 +220,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
                 role={listbox ? 'option' : undefined}
                 aria-selected={listbox ? selected : undefined}
                 aria-current={current ? 'page' : undefined}
-                className={`${classes} hover:bg-fill-hover aria-selected:current aria-[current=page]:current focus-ring disabled:pointer-events-none disabled:opacity-60`}
+                className={`${classes} hover:bg-fill-hover aria-selected:current aria-[current=page]:current focus-ring-inset transition-colors disabled:pointer-events-none disabled:opacity-60 motion-reduce:transition-none`}
                 onClick={onSelect}
             >
                 {content}

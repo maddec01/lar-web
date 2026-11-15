@@ -1,8 +1,8 @@
 import { useScrollFade } from '../overlays/useScrollFade';
 
 const cellSpacing = {
-    default: 'px-4 py-2.5 sm:first:pl-5 sm:last:pr-5',
-    compact: 'px-3 py-1.5 sm:first:pl-4 sm:last:pr-4',
+    default: 'px-4 py-3 first:pl-row-inset last:pr-row-inset',
+    compact: 'px-3 py-2 first:pl-row-inset last:pr-row-inset',
 } as const;
 
 const tones = {
@@ -42,7 +42,7 @@ interface DataTableProps {
     rowHeader: string;
     /** The rows, in order. */
     rows: readonly DataTableRow[];
-    /** `compact` rows are about 32px instead of 40px, for long tables read line by line. */
+    /** `compact` rows are about 36px instead of 44px, for long tables read line by line. */
     density?: keyof typeof cellSpacing;
 }
 
@@ -57,11 +57,11 @@ export function DataTable({ columns, label, rowHeader, rows, density = 'default'
             tabIndex={0}
             role="region"
             aria-label={label}
-            className={`focus-ring overflow-x-auto ${fade}`}
+            className={`focus-ring -mx-row-inset overflow-x-auto ${fade}`}
         >
             <table aria-label={label} className="w-full text-left text-sm leading-5 tabular-nums">
                 <thead className="text-fg-muted text-xs leading-4">
-                    <tr className="border-line border-b">
+                    <tr>
                         <th scope="col" className={`${spacing} font-medium`}>
                             {rowHeader}
                         </th>
@@ -72,7 +72,7 @@ export function DataTable({ columns, label, rowHeader, rows, density = 'default'
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-line divide-y">
+                <tbody>
                     {rows.map((row) => (
                         <tr key={row.id}>
                             <th scope="row" className={`${spacing} text-fg font-normal`}>
