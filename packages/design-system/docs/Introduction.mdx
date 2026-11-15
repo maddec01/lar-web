@@ -4,215 +4,35 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Lar's design system
 
-`@lar-works/design-system` holds Lar's tokens and theme, base styles, foundations and **generic components and
-patterns**, and the rules that keep apps consistent (these docs and the lint rules in `@lar-works/config`). It names no
-product: each app's own compositions, such as a board's rows, a media library's cards or a marketing page's device
-frames, live in that app's UI layer (`src/ui`), built from what this package exports.
+`@lar-works/design-system` holds Lar's tokens, foundations and generic components, and names no product. Each app's
+own compositions live in its UI layer (`src/ui`), built from this package's components, `/primitives` and tokens;
+feature code outside `src/ui` only composes components and picks their semantic props (`@lar-works/config`'s lint
+rules enforce it). A composition moves here, with a story, once a second product needs it. Installing:
+[README](https://github.com/maddec01/lar-web/tree/main/packages/design-system#readme).
 
-It is built on ninna-ui and Tailwind 4 for behaviour and utilities, with
-[lucide](https://lucide.dev/icons) for icons. Apps never reach for those directly: they compose the components this
-package exports.
+## Prop conventions
 
-## Installing it in an app
+- **`variant`** is a look among equals; **`tone`** is a status colour (`neutral`, `info`, `success`, `warning`,
+  `danger`, plus `accent`), never a look and never `error`; **`size`** is one ladder, `xs`–`xl`, never a boolean
+  such as `compact`; **`density`** is how tightly rows pack; **`presentation`** is only a structurally different
+  layout of the same content.
+- Labels are props: components hold no copy, routing or i18n. Public components take no `className`; compositions
+  use the `…Base` export from `/primitives`.
 
-1. Add the package:
+## Cross-app rules
 
-    ```sh
-    pnpm add @lar-works/design-system
-    ```
-
-2. Import its styles once, at the top of the app's CSS. This brings in Tailwind, ninna-ui's preset, Lar's tokens and
-   base styles, and the utilities the components use:
-
-    ```css
-    @import '@lar-works/design-system/styles.css';
-    ```
-
-    An app with a UI layer of its own imports `styles.css` with `source(none)`, then its layer's sheets, and has
-    Tailwind scan only that layer:
-
-    ```css
-    @import '@lar-works/design-system/styles.css' source(none);
-    @import './ui/board/board.css';
-
-    @source './ui';
-    ```
-
-3. Wrap the app in `DesignSystemProvider`. It sets the icons' stroke width and supplies the design system's own words
-   (Close, Cancel, Appearance…), which an app translates through its `labels` prop:
-
-    ```tsx
-    import { DesignSystemProvider } from '@lar-works/design-system';
-
-    createRoot(document.getElementById('root')!).render(
-        <DesignSystemProvider labels={{ theme: { label: 'Aparência' } }}>
-            <App />
-        </DesignSystemProvider>,
-    );
-    ```
-
-Components come from `@lar-works/design-system`, icons from `@lar-works/design-system/icons`, and test helpers from
-`@lar-works/design-system/testing`. An app's UI layer also takes `@lar-works/design-system/primitives`: the styleable
-bases behind the components (`ButtonBase`, `BadgeBase`, `TextBase`, `StackBase`…, which take a class for the
-composition's layout) and the hooks and recipes they share (`useScrollFade`, `linkRecipe`, `SplashView`…).
-
-## Feature code never styles
-
-An app has two kinds of code. Its **UI layer** (`src/ui`) holds the app's own compositions: it may lay them out and
-style them with the design system's tokens and semantic utilities (`bg-surface-raised`, `text-fg-muted`, `gap-3`) and
-its primitives, but never with a raw colour (`lar/no-raw-colours`), and it imports nothing of the app but other ui
-files and shared types: labels, values and callbacks arrive as props. **Feature code** (everything else in `src`)
-only composes components, the design system's and the UI layer's, and chooses their **semantic** recipes, such as
-`<Button variant="destructive">` or `<Text variant="caption" tone="muted">`.
-
-The lint rule **`lar/no-visual-recipes`** enforces this in an app's `src` outside `src/ui`. It reports:
-
-- a `className` or `style` prop on any element;
-- raw `h1`–`h6`, `p`, `button`, `input`, `select`, `textarea` and `svg` elements: use `Heading`, `Text`, `Button`,
-  `IconButton`, `Input`, `Select`, `Textarea` and the icons instead;
-- look props on design-system components, such as `size`, `color`, `weight`, `gap`, `radius` or `fullWidth`, and
-  `variant` on form controls.
-
-A companion rule, `lar/boundaries`, keeps `@ninna-ui/*`, `lucide-react`, Radix and Floating UI out of apps, so they
-reach them only through this package's public API, keeps `@lar-works/design-system/primitives` inside `src/ui`, and
-keeps app state, routing, services and features out of `src/ui`.
-
-## When something is missing
-
-If a screen needs a look that no component offers, compose it in the app's UI layer from the components, primitives
-and tokens; extend a generic component here when the need is generic (a variant, a slot). **Promote** a composition
-into this package when a second product needs it: give it a generic name and props, cover its states (loading, empty,
-error, disabled, long text) and add a colocated `<Component>.stories.tsx`.
-
-### Prop conventions
-
-Components name their options the same way, so an app reads them alike:
-
-- **`variant`** is a component's look among equals: `<Button variant="secondary">`, `<Text variant="caption">`.
-- **`tone`** is a status colour, from one vocabulary: `neutral`, `info`, `success`, `warning`, `danger` (plus `accent`
-  where a highlight is not a status). It never means a look of its own (`raised` is a `variant`), and a failure is
-  `danger`, never `error`. Only the text components (Text, Heading, Link) add the colours of words: `default`,
-  `muted`, `lead`, `soft` and a link's `inherit`. A confirmation's kind is ConfirmDialog's `intent`
-  (`destructive` or `default`), not a tone.
-- **`size`** is an object's scale on one ladder, `'xs' | 'sm' | 'md' | 'lg' | 'xl'`, of which each component takes
-  the steps it has (StatusIndicator, Badge, BrandMark, ButtonLink). A single control or row that comes tighter is
-  `size="sm"` (Button, Alert, StatusRow, ProgressStatusRow, Avatar, CollectionViewToggle, ScrollRow), never a boolean
-  such as `compact`; a part's own scale is `…Size` on the same ladder. EmptyState and PageError name where they sit instead
-  (`'hero' | 'start' | 'page' | 'panel' | 'compact' | 'inline'`). **`density`** is how tightly rows in a list or table pack
-  (`'default' | 'compact'`).
-- **`presentation`** is only for a structurally different layout of the same content (such as a card's `overview` and
-  `row`), never a colour or a size.
-- **Labels are props** (`label`, `backLabel`, `moreLabel`, …): components hold no copy, routing or i18n.
-- **No `className`** on public props: an app cannot style a component, and the public types of components such as
-  Button, Badge and Alert leave it out. Compositions, the design system's own and an app's UI layer, use the `…Base`
-  export of such a component (`ButtonBase`, `BadgeBase`), from `@lar-works/design-system/primitives`.
-
-### Empty, not-found and failed states
-
-One grammar everywhere: an icon, what is (not) here, why, and the way forward.
-
-- **EmptyState**: a region with nothing in it yet, or no results, on two scales. The **hero** (`start`, `page`; `hero`
-  on a marketing page): the BrandMark as `artwork` on its `product`'s halo (`product` is `factory`, `server` or
-  `account`), a 22/600 title, a 14/400 sentence and `md` buttons; Server's first run and Factory's empty board are
-  the same `start` hero. The **inline** scale: `inline` is one muted line in a list or a panel's rows; `compact` a
-  bare, centred 20px muted icon, a 14/600 title, one 12px line and a secondary action in a grid, panel or settings list
-  (a search that finds nothing too, with its magnifier); `panel` the same in a hairline panel of its own. The bordered
-  icon tile is the hero's alone.
-- **PageError**: a page or region that could not be shown. Its `tone` says which of three different things happened:
-    - **absence**, `neutral`: there is nothing here, such as a 404 (a `code="404"` is always neutral, whatever `tone`
-      says) or no access. Say what isn't here and offer the way home, never a warning;
-    - **temporary unavailability**, `warning`: it exists but can't be reached right now, such as a library whose
-      folder is offline or a server restarting. Say when or why it comes back and what the reader can do meanwhile;
-    - **load failure**, `danger`: reading it failed. Say what failed and offer **Try again**; technical details go in
-      its `footer`.
-- **AsyncState** owns a region's loading geometry and an inline load failure inside a form or dialog: skeleton first,
-  "Still trying…" under the skeleton once a load passes three seconds, and a failure whose Try again is always the
-  outline button (as PageError's actions are). Unavailable never shows as zero, empty or inactive. Every skeleton is
-  `SkeletonLoader.Shape` (the `.lar-skeleton` mark); a loading heading keeps a fixed width (10rem for a title).
-- The **compact Alert** (`presentation="inline"`) is one line under the row or control it is about: the tone's icon,
-  the message at 12px and its action or close button, on a faint wash of the tone. Never bare red text under a row.
-- **Notifications** (toasts) are for results whose surface is gone; everything else is inline. One presentation in
-  every app: bottom right, 384px, the menu glass, at most three at once; a success or an info closes after 5s, a
-  warning or a failure stays until closed.
-- **Alert** reports an operation's result or a condition of the surface. Write the notice **message first**: most
-  Alerts are one sentence, `<Alert tone="warning" message="Metadata refresh is retrying." />`, in the regular weight.
-  Add a `title` only when a few bold status words help scanning before the sentence (`title="Read-only folder"` with the
-  sentence in `message`); a `title` alone still reads as the regular-weight message, for older callers, and
-  `description` or children are the same slot as `message`. Its size follows the surface: inside a Modal, Drawer, pane,
-  form or panel an Alert is `size="sm"` (the surfaces set it), so one notice (such as a shared-metadata notice) looks
-  the same in every pane it appears in; `size="md"` is for a page-level alert only. **One recipe per tone, for every
-  notice:** the attention recipe at a lower strength (the tone's wash fading out across, its 35% edge, a 12px corner)
-  and its icon, with the words in the primary text colour. Never a grey box with a coloured edge, a plain bordered box,
-  or a box without the tone's icon; ConfirmDialog's "what stays safe" note is an `info` Alert. Notifications (toasts)
-  are popups: the neutral glass with the tone's icon and edge.
-
-### Cards, panels and section headers
-
-**Card** is one thing you open or act on (a desk card, a catalog, a library, a device): the card surface (a faint fill
-and a firmer hairline at 12px), an optional `media` strip, a `header` (CardHeader), a body and a footer of a status and
-`sm` actions. It lifts its fill under the pointer when it opens something (`onOpen`) and its edge too when it navigates
-(`href`, or a CardHeader `href`); `selected` is the current wash and edge (`current-edge`), `attention` the attention
-recipe in its tone. **Panel** is a titled group of rows: no fill and a hairline, a 40px header (status icon, title
-14/600, count 14/400 muted, an `sm` action), rows under hairlines, one muted line when empty, the header alone when
-`collapsed`. A heading above content (Section, SectionTitle), a Panel's header and a list's CollectionSectionHeader
-are one pattern; a count of things that need you takes Count's `warning` or `danger` tone (a 20px pill), never an 11px
-pill.
-
-### Status words
-
-One rule, the **status-word rule**: a **state**, what condition something is in (Merged, Failed, Running, Unavailable,
-On, Problem, Waiting on #12), is a **StatusIndicator**: the state's coloured light, then its word in neutral text
-(`<StatusIndicator state="failed" label="Failed" />`; ProgressStatusRow and an app's own state words follow it). Pick the `state` (ready, active, waiting, failed, off), never the colour. A **tone Badge** is only
-for a **verdict or a category**, a judgement or a kind that isn't a condition: "Worth fixing", "Serious", "Probably this
-one", "Check carefully", "Beta". A state is never a tinted pill, and never a word in a tone's text colour beside its
-dot: the dot already carries the tone, and a row of coloured words reads as a row of alarms. A toolbar icon with
-nothing to report is ToolbarStatusItem's quiet state (no `state` or `tone`), in the same box as a lit one.
-`statusWordViolations` in `@lar-works/design-system/testing` finds tinted state words in an app's sources, beside
-`problemBodyViolations`.
-
-### Which button
-
-One rule, the **button-variant rule**, in every surface of every app:
-
-- **Primary** is the one commit per view: the dialog's Save or Create, a first run's "Add a project", a sign-in's
-  Continue. Never two in a view, never on a row.
-- **Tinted** (`variant="tinted"`) is "act on this item": Start, Shape, Answer in T3, Review, Resume in T3, Add a
-  passkey. Every row, card, popover and attention list that starts something on its item uses it, in every app.
-- **Secondary** is everything else that does something: an Alert's or an empty state's action (Try again, Clear
-  search, Add catalog in an empty list), a section header's action, Cancel. The design system's own compositions
-  follow it: EmptyState draws an inline state's action secondary (a hero's way forward stays the view's primary), and
-  AsyncState's and PageError's Try again is always secondary.
-- **Quiet** is a low-stakes action inside a row (Manage, Edit); **destructive-quiet** starts a destructive one, below.
-
-### Destructive actions
-
-One rule, the **quiet-destructive rule**: a control that starts a destructive action (Delete, Abandon, Remove,
-Revoke) is named in the danger text colour at rest, in a quiet weight, and gains the danger surface on hover or
-keyboard focus. That is `<Button variant="destructive-quiet">` for an inline or footer trigger, `IconButton
-tone="danger"` for an icon-only one and `DropdownMenu.Item destructive` in a menu. It opens a ConfirmDialog
-(`intent="destructive"`), whose confirm button is the only solid red control (`variant="destructive"`). A destructive
-trigger is never neutral grey text: it must not read as a harmless action.
-
-### Leaving a dialog with unsaved changes
-
-A Modal with `dirty` asks "Discard changes?" before Escape, a click outside, the close button or `Modal.Cancel` closes
-it. A control inside it that leaves for somewhere else (another item's dialog, a link) calls `useModalClose()`'s
-`requestClose(next)`: the same question, then `next` on Discard. Never a second discard dialog of the app's own.
-That question, like every confirmation (`presentation="confirm"`, ConfirmDialog), has no close button and opens with
-the focus on its safe answer (Keep editing, Cancel); Escape gives that answer too.
-
-### Menus
-
-A menu's entries are actions. When what it acts on is in a state worth knowing first (a library that is scanning), that
-state heads the menu as `DropdownMenu.Status` (light, word, optional detail), never a disabled entry standing in for
-it. Menus and popovers keep the app's 16px gutter from the window's edges and are nearly opaque, so artwork behind them
-never reads through their rows.
-
-## Finding your way around
-
-- **Foundations**: the semantic tokens and the vocabulary rule, the scales (type, spacing,
-  breakpoints, radii, elevation, motion), links, focus, the layering rule and entry points, and icons.
-- **Typography**, **Actions**, **Forms**, **Display**, **Feedback**, **Navigation**, **Overlays**, **Collections** and
-  **Layout**: the components, grouped as they are in `src/`.
-
-Use the toolbar's theme switch to check every story in light and dark.
+- **The status-word rule.** A state (Merged, Failed, Running) is a `StatusIndicator`: its light, then its word in
+  neutral text. A tone `Badge` is only for a verdict or a category ("Worth fixing", "Beta"). A state is never a tinted
+  pill or a word in a tone's colour.
+- **The button-variant rule.** `primary` is the one commit per view (never two, never on a row); `tinted` acts on an
+  item (Start, Review, Resume) in every row, card and popover; `secondary` is every other action (Try again, Cancel,
+  an empty state's or Alert's action, and any action under a paragraph, so its edge lines up with the text); `quiet` is
+  a low-stakes action inside a row.
+- **The quiet-destructive rule.** A control that starts a destructive action is in the danger text colour at rest,
+  quiet, and gains the danger surface on hover or focus (`Button variant="destructive-quiet"`,
+  `IconButton tone="danger"`, `DropdownMenu.Item destructive`), never neutral grey. It opens a `ConfirmDialog`, whose
+  confirm button is the only solid red control. The only sentence in danger text is a field's error.
+- **Notices.** Every notice is an `Alert`, message first, never a box of an app's own; never bare red text under a
+  row. Toasts are only for results whose surface is gone.
+- **Unsaved changes.** A dirty `Modal` asks before closing; a control that leaves it calls `useModalClose()`, never a
+  discard dialog of the app's own.
