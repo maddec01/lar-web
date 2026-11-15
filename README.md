@@ -12,7 +12,7 @@
   <a href="https://maddec01.github.io/lar-web/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset=".github/readme/storybook-dark.webp">
-      <img src=".github/readme/storybook-light.webp" width="100%" alt="The design system's Storybook showing the SettingsDialog component: a settings window with a searchable section list and rows of notification and command settings">
+      <img src=".github/readme/storybook-light.webp" width="100%" alt="The design system's SettingsDialog component: a settings window with a searchable section list and rows of notification and command settings">
     </picture>
   </a>
 </p>
@@ -43,6 +43,7 @@ Each package's README shows the setup. To start a new app from the template, clo
 
 ```sh
 node scripts/create-app.mjs ../my-app --name my-app
+cd ../my-app && git init && pnpm install && pnpm dev
 ```
 
 ## Contributing
