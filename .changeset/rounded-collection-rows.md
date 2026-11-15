@@ -13,4 +13,5 @@ the new `row-inset` spacing, so row text lines up with section titles on the con
 reaches into the gutter. VirtualGrid takes `captionLines` (1, 2 or 3; 3 by default) so a grid of one-line cards, such
 as artists, has no empty band between rows. ViewTabs loses its full-width rule and underline: tabs are quiet text with
 a rounded hover, the chosen one a rounded pill like a segmented control's, and the first tab's label sits on the
-content edge.
+content edge. ResultRow takes `status`, such as a StatusIndicator reading "Source missing", shown at the row's end;
+the title truncates before it.

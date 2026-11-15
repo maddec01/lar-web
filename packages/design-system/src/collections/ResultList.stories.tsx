@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { fn } from 'storybook/test';
 
 import { EmptyState } from '../feedback/EmptyState';
+import { StatusIndicator } from '../feedback/StatusIndicator';
 import { Section } from '../layout/Section';
 import { ResultGroups, ResultList, ResultRow } from './ResultList';
 
@@ -209,6 +210,43 @@ export const OnCard: Story = {
                     onSelect={fn()}
                 />
             ))}
+        </ResultList>
+    ),
+};
+
+/** A broken entry carries its state at the row's end, vertically centred; a long title truncates before the status
+ *  gives up its words. */
+export const WithStatus: Story = {
+    args: { role: 'list', label: 'Movies', presentation: 'card' },
+    decorators: OnCard.decorators,
+    render: (args) => (
+        <ResultList {...args}>
+            <ResultRow
+                artwork={<Art hue={200} />}
+                kind="Movie"
+                title="Dune: Part Two"
+                subtitle="2024 · Movies"
+                href="/movies/1"
+                onSelect={fn()}
+            />
+            <ResultRow
+                artwork={<Art hue={20} />}
+                kind="Movie"
+                title="The Lord of the Rings: The Return of the King (Extended Edition, Remastered 4K HDR)"
+                subtitle="2003 · Movies"
+                href="/movies/2"
+                onSelect={fn()}
+                status={<StatusIndicator tone="warning" label="Source missing" />}
+            />
+            <ResultRow
+                artwork={<Art hue={120} />}
+                kind="Movie"
+                title="Aftersun"
+                subtitle="2022 · Movies"
+                href="/movies/3"
+                onSelect={fn()}
+                status={<StatusIndicator tone="danger" label="Unreadable" />}
+            />
         </ResultList>
     ),
 };

@@ -126,8 +126,11 @@ export interface ResultRowProps extends Pick<
     current?: boolean;
     /** A line under the title, such as an artist. */
     subtitle?: string;
-    /** Extra detail at the row's end, such as a year. */
+    /** Extra detail under the subtitle, such as a year. */
     detail?: string;
+    /** The result's state at the row's end, such as a StatusIndicator with its label ("Source missing"). It keeps its
+     *  words; the title truncates first. */
+    status?: ReactNode;
     /** The result's name. */
     title: string;
 }
@@ -178,6 +181,10 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
             {!loading && props.subtitle && props.kind !== props.subtitle ? (
                 <span className="sr-only"> {props.kind}</span>
             ) : null}
+            {/* An implicit third column sized to the status, so the title's column gives way first. */}
+            {!loading && props.status ? (
+                <span className="col-start-3 row-start-1 flex items-center whitespace-nowrap">{props.status}</span>
+            ) : null}
         </>
     );
 
@@ -193,6 +200,7 @@ export function ResultRow(props: ResultRowProps | { loading: true }) {
         current = false,
         subtitle: _subtitle,
         detail: _detail,
+        status: _status,
         title: _title,
         ...buttonProps
     } = props;
