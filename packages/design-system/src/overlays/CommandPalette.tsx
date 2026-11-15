@@ -250,8 +250,13 @@ export function CommandPalette({
                     data-slot="command-palette-hints"
                     className="text-2xs text-fg-muted hidden shrink-0 items-center gap-4 border-t border-(--lar-glass-footer-divider) bg-(--lar-glass-footer) px-4 py-2 pointer-fine:flex"
                 >
-                    <KeyHint keys="↑↓" label={hints.move} />
-                    <KeyHint keys="↵" label={hints.select} />
+                    {/* With nothing listed there is nothing to move to or select, so only the keys that still work show. */}
+                    {options.length > 0 && (
+                        <>
+                            <KeyHint keys="↑↓" label={hints.move} />
+                            <KeyHint keys="↵" label={hints.select} />
+                        </>
+                    )}
                     <KeyHint keys="esc" label={hints.close} />
                     {tokens.length > 0 && leaveLast ? (
                         <KeyHint keys="⌫" label={scope ? hints.leaveScope : hints.removeFilter} />

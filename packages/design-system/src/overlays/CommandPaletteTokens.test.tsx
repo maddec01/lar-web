@@ -123,6 +123,19 @@ test('Enter chooses the highlighted option, and does nothing with an empty list'
     expect(input().hasAttribute('aria-activedescendant')).toBe(false);
 });
 
+test('with nothing listed the key hints leave out moving and selecting', async () => {
+    const hints = () => document.querySelector('[data-slot="command-palette-hints"]')!.textContent;
+
+    await show(element({}));
+    expect(hints()).toContain('↑↓');
+    expect(hints()).toContain('↵');
+
+    await rerender(element({ options: [] }));
+    expect(hints()).not.toContain('↑↓');
+    expect(hints()).not.toContain('↵');
+    expect(hints()).toContain('esc');
+});
+
 test('Esc and the Close button close it', async () => {
     const onClose = vi.fn();
 
