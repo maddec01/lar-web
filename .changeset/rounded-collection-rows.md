@@ -14,4 +14,5 @@ reaches into the gutter. VirtualGrid takes `captionLines` (1, 2 or 3; 3 by defau
 as artists, has no empty band between rows. ViewTabs loses its full-width rule and underline: tabs are quiet text with
 a rounded hover, the chosen one a rounded pill like a segmented control's, and the first tab's label sits on the
 content edge. ResultRow takes `status`, such as a StatusIndicator reading "Source missing", shown at the row's end;
-the title truncates before it.
+the title truncates before it. A Card's media strip has a hairline under it only when the card is `divided`, so a
+card with a cover shelf reads as one surface.

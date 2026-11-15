@@ -21,14 +21,15 @@ export interface CardProps extends DataAttributes {
     children?: ReactNode;
     /** The top of the card: a CardHeader (title, what it is, its state and its actions), or a row of the caller's own. */
     header?: ReactNode;
-    /** Flush at the very top, edge to edge above a hairline: artwork, a shelf of covers, a chart. */
+    /** Flush at the very top, edge to edge: artwork, a shelf of covers, a chart; over a hairline only when `divided`. */
     media?: ReactNode;
     /** The start of the card's footer: a status, a next step, a line of facts. */
     footer?: ReactNode;
     /** The end of the card's footer: its actions, as `sm` buttons (a tinted one for "you can act on this"). */
     actions?: ReactNode;
-    /** Draws a hairline above the footer, for a card whose footer is a part of its own (a library's state, a device's
-     *  encoder); without it the footer is the card's last line (a desk card's status and actions). */
+    /** Draws a hairline under the media and above the footer, for a card whose parts are its own (a library's state, a
+     *  device's encoder); without it the card reads as one surface and the footer is its last line (a desk card's
+     *  status and actions). */
     divided?: boolean;
     /** The card's padding: `md` (16px, the default), `sm` (12px) for a card among many in a row or a grid, `none` for
      *  content that sets its own. */
@@ -170,7 +171,7 @@ export function CardBase({
                 />
             ) : null}
             {media ? (
-                <div data-slot="card-media" className="border-line border-b">
+                <div data-slot="card-media" className={divided ? 'border-line border-b' : undefined}>
                     {media}
                 </div>
             ) : null}
