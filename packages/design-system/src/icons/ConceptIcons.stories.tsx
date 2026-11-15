@@ -10,7 +10,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** One icon per concept, the same in every app; docs/Icons.mdx says when each applies. */
+/** One icon per concept, the same in every app; ConceptIcons.ts says when each applies. */
 export const Glossary: Story = {
     render: () => (
         <ul className="text-fg m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3 p-0">

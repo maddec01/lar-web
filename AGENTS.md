@@ -1,15 +1,16 @@
 # lar-web agent instructions
 
-lar-web holds `@lar-works/design-system`, `@lar-works/config` and the app template (see README.md). Three apps use the
-published packages: lar-platform (`web/`), lar-server (`web/`) and lar-factory (`apps/web`).
+Consumers of the published packages: lar-platform (`web/`, `account/web/`), lar-server (`web/`) and lar-factory
+(`apps/web`). A change here reaches them only after a release and a version bump in each.
 
-- The design system holds tokens, theme, foundations, generic components and patterns, and the rules (docs, lint); it
-  names no product. Product compositions live in each app's own UI layer (`src/ui`), built from the design system's
-  components, `@lar-works/design-system/primitives` and its tokens. Promote a composition here (with a story) only
-  when a second product needs it; feature code outside `src/ui` never styles anything.
-- Before adding a component, look for an existing one that does the job or can grow a variant: no near-duplicates.
-- Inside the design system, import the owning module directly (not a category `index.ts`), take labels and
-  callbacks as props (no i18n, routing or server state), and import icons from `lucide-react`.
-- Every component has a colocated `*.stories.tsx` with its meaningful states. Tests cover logic and real behaviour (keyboard, focus, layout), not copy or markup.
-- A change to a published package needs a changeset (`pnpm changeset`) describing it for the apps.
-- Before a PR: `pnpm exec vp check`, `pnpm test`, `pnpm build` (Node 24).
+- The design system names no product. App compositions live in each app's `src/ui`; promote one here (with a story)
+  only when a second product needs it. Before adding a component, extend an existing one (a variant, a slot) rather
+  than add a near-duplicate.
+- Inside the design system: import the owning module directly (not a category `index.ts`), take labels and callbacks
+  as props (no i18n, routing or server state), and import icons from `lucide-react`.
+- Every component has a colocated `*.stories.tsx` with its meaningful states; a story's a11y exception carries its
+  reason beside `parameters.a11y.config.rules`. Tests cover logic and behaviour, not copy or markup.
+- Cross-app design and copy rules live in `packages/design-system/docs/` (Storybook): keep them in sync with the code.
+- A change to a published package needs a changeset (`pnpm changeset`).
+- Verify with `pnpm exec vp check`, `pnpm test`, `pnpm build`. Browser tests (`*.browser.test.tsx`) need
+  `pnpm --filter @lar-works/design-system exec playwright install chromium` once, and again after a Playwright upgrade.

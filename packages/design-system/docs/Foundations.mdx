@@ -70,59 +70,11 @@ export const Surface = ({ children }) => (
 
 # Foundations
 
-Lar's tokens live in `src/foundations/theme.css`, in two layers:
-
-1. **Primitives**: fixed `--color-palette-*` steps: two pure-grey ramps (`grey` for light, `neutral` for dark), the
-   white and black alpha ladder, navy, emerald, amber and red, including intermediate and alpha steps. ninna-ui's
-   `base-*`, `primary` and status names are compatibility aliases selected per theme. Every semantic colour declaration
-   references a fixed primitive directly; there are no exceptions.
-2. **Semantic tokens**: what a colour is _for_ (a surface, text, an edge, a status's fill or text), built on the
-   primitives. Components use these. Their values sit in one table, `src/foundations/tokens.ts`, which
-   `tokens.test.ts` checks theme.css against and holds to WCAG AA: 4.5:1 for every text pair, 3:1 for control edges
-   and the focus ring, in both themes.
-
-The palette applies under `html[data-theme='minimal']`; `.light` or `.dark` on `<html>` picks a scheme, and with
-neither it follows the system. Components read tokens through Tailwind utilities (`bg-surface-raised`,
-`text-fg-muted`, `rounded-md`, `text-ui`, `@pane:`…); apps never use them at all.
-
-### The vocabulary rule
-
-Components speak the semantic layer only, and `foundations/vocabulary.test.ts` fails on anything else outside
-`foundations/`:
-
-- **No primitive.** `text-base-700`, `bg-base-200`, `border-base-300`, `var(--color-base-600)`: each is a role
-  (`text-fg-muted`, `bg-fill-muted`, `border-line`, `var(--color-line-strong)`).
-- **No `dark:` colour override.** Every semantic token already has its dark value; a component that needs a different
-  colour in dark needs a token (or a value of an existing one) instead, which is then contrast-checked.
-- **No `color-mix()` in a component.** A mix a component needs is a token (a hover fill, a tint); a translucent
-  version of a role is Tailwind's opacity modifier (`bg-surface-page/85`, `border-warning/45`). An app's UI-layer sheets
-  may mix in CSS, where their roles are derived.
-- **An app's roles colour glyphs, dots and bars, never text**: text is always in a text token.
-
-A genuine exception goes in that test's allow-list, with its reason; there are none today.
-
-### Layering
-
-`foundations`, `typography`, `actions`, `forms`, `display`, `feedback`, `navigation`, `overlays`, `collections` and
-`layout` are all **generic**: they carry no product nouns and read only foundation tokens (`tokens.test.ts` fails on
-any other custom property). Each app's **UI layer** (its `src/ui`) holds that app's own compositions: it composes the
-generic layers and may add roles and sheets of its own, derived from the semantic tokens (a board's status roles, a
-marketing page's device metal and glow, a media app's provider brand colours), which load from the app's CSS entry
-after `styles.css`. Storybook loads `styles.css` alone, so a generic component that leans on an app's token shows the
-gap here. A composition moves into the generic layers once a second product needs it.
-
-| Import                                | Holds                                                             | Used by           |
-| ------------------------------------- | ----------------------------------------------------------------- | ----------------- |
-| `@lar-works/design-system`            | the generic components, patterns and theme helpers                | every app         |
-| `@lar-works/design-system/primitives` | the styleable `…Base` building blocks and the hooks they share    | an app's `src/ui` |
-| `@lar-works/design-system/icons`      | every icon and the shared icon glossary (`conceptIcons`)          | every app         |
-| `@lar-works/design-system/styles.css` | Tailwind, the tokens, base styles and every component's utilities | every app         |
+Every value here is drawn from the code: `src/foundations/tokens.ts` (documented role by role) and `theme.css`.
+Components use the semantic tokens only, never a primitive, a `dark:` colour or a `color-mix()`
+(`foundations/vocabulary.test.ts`); lengths, sizes, radii and tracking stay on the scales below (`scales.test.ts`).
 
 ## Colour
-
-### Semantic tokens
-
-Every swatch shows its light and dark value. Each name is a Tailwind colour: `bg-…`, `text-…`, `border-…`.
 
 export const SwatchPair = ({ name }) => (
     <div
@@ -153,12 +105,9 @@ export const SwatchPair = ({ name }) => (
     </div>
 );
 
-export const SwatchGroup = ({ title, children, names }) => (
+export const SwatchGroup = ({ title, names }) => (
     <Surface>
         <Text variant="label">{title}</Text>
-        <Text as="div" variant="caption" tone="muted">
-            {children}
-        </Text>
         <div
             style={{
                 display: 'grid',
@@ -177,21 +126,6 @@ export const SwatchGroup = ({ title, children, names }) => (
     </Surface>
 );
 
-**Alpha steps, not opaque greys.** Surfaces are a ladder of white steps over the `#000` page in dark and black steps
-over the `#fafafa` page in light (the light card, panel, control and field are white), so the same panel, card or
-field reads on the page, on glass and on artwork. Bordered on black for anything that groups; filled for things. Dark
-keeps T3 Code's balance: almost all black, with one dark step (`#0e0e0e`) for what floats; nothing at rest sits brighter
-than white 6% but hover and selected fills and controls' edges.
-
-| Role                                                        | Dark (page `#000`)                                                                                            | Light (page `#fafafa`)                        |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| Panel (`surface-panel`): a group of rows                    | no fill, edge white 8.5%, dividers white 8%                                                                   | `#fff`, edge black 8%                         |
-| Card (`surface-card`): one thing you open or act on         | fill white 3.5%, edge white 11%                                                                               | `#fff`, edge black 10%, a hairline drop       |
-| Control (`surface-control`, `line-control`): button, select | fill white 4%, edge white 13%                                                                                 | `#fff`, edge black 14%                        |
-| Field (`surface-field`, `line-field`): text, select, search | fill white 4%, edge white 13% (≈ `#212121`, T3's select), hover 20%, focus navy-300 + ring, disabled white 8% | `#fff`, edge black 12%, hover 20%, focus navy |
-| Panel inside glass (set by `glass-menu`, `glass-dialog`)    | fill white 3%, edge white 8.5%                                                                                | fill black 3%, edge black 8%                  |
-| Hover (`fill-hover`); selected (`fill-selected`)            | +white 6%, selected white 13%; a card that navigates lifts its edge to white 20%                              | +black 3%                                     |
-
 <SwatchGroup
     title="Surfaces"
     names={[
@@ -205,30 +139,14 @@ than white 6% but hover and selected fills and controls' edges.
         'surface-field',
         'surface-glass',
     ]}
->
-    The page; a panel, a group of rows (the `surface-panel` utility, with `line-panel`); a card, one thing you open or
-    act on (the `surface-card` utility, with `line-card` and `--shadow-card`); an opaque surface where nothing may show
-    through (a sticky header, a sign-in card, the fallback without blur; translucent inside glass); a well inside a
-    panel (a footer, a table's header); a menu's opaque tint; a control's fill (a button, a select, a checkbox); a text
-    field's fill; the bar glass's tint for a panel over a backdrop or artwork (a marketing page's cards and bands). Text
-    on an alpha surface is checked composited over its theme's page.
-</SwatchGroup>
+/>
 
 <SwatchGroup
     title="Fills"
     names={['fill-hover', 'fill-selected', 'fill-muted', 'fill-muted-hover', 'fill-chosen', 'fill-switch-off', 'track']}
->
-    A row, card or control under the pointer (+white 6% / +black 3% over whatever it sits on); the chosen item in a tab
-    bar or menu (a step deeper, so hovered and chosen differ; a place uses the current recipe); a quiet neutral fill
-    that marks a thing rather than a state (a neutral badge, a key cap, a subtle button, inline code) and its hover; the
-    chosen segment's pill (the segment-chosen recipe); a switch's track while off, under its white thumb; the empty part
-    of a progress bar.
-</SwatchGroup>
+/>
 
-<SwatchGroup title="Text and icons" names={['fg', 'fg-soft', 'fg-muted', 'fg-lead', 'fg-inverse']}>
-    Body text; secondary text that still reads as content; meta, captions and placeholders; muted long-form text (leads
-    and prose, a step lighter in dark); text on an fg fill. All reach 4.5:1 on every surface above.
-</SwatchGroup>
+<SwatchGroup title="Text and icons" names={['fg', 'fg-soft', 'fg-muted', 'fg-lead', 'fg-inverse']} />
 
 <SwatchGroup
     title="Edges and focus"
@@ -245,25 +163,7 @@ than white 6% but hover and selected fills and controls' edges.
         'line-strong-hover',
         'focus',
     ]}
->
-    line is a divider (decoration); line-panel a panel's edge, line-card a card's firmer one; line-hover an edge under
-    the pointer (a card that navigates lifts to it); line-control a control's edge at rest (its label identifies it);
-    line-field a field's edge (a text field, a select, a textarea, a search) and line-field-hover that edge under the
-    pointer: T3 Code's quiet edge, at or just above a card's, never the loudest line on screen; line-choice a checkbox's
-    or radio's edge. line-strong carries a state and reaches 3:1 on the page, a card and a menu (WCAG 1.4.11): a status
-    light that is off, a neutral progress segment, a dashed waiting slot; line-strong-hover is it under the pointer.
-    focus is the one focus ring and a focused field's edge.
-</SwatchGroup>
-
-**A deliberate deviation from WCAG 1.4.11.** A field's edge (`line-field`), a checkbox's or radio's edge
-(`line-choice`) and a switch's off track (`fill-switch-off`) are not held to 3:1. The field's fill, its label and
-placeholder (and a switch's white thumb) tell the control apart; what is held to 3:1 is its focus edge and ring and its
-checked state (the primary fill).
-
-**Same value, different role.** A few roles share a value in one theme or both, on purpose: each names what it is
-for, so it can move on its own. `fg-lead` is `fg-muted` in light and a step lighter in dark, where long runs of
-mid-grey tire the eye. `line-strong-hover` shares `fg-muted`'s step in light. Use the role you mean, never
-the one whose value happens to match.
+/>
 
 <SwatchGroup
     title="Brand"
@@ -275,17 +175,9 @@ the one whose value happens to match.
         'primary-surface',
         'primary-surface-hover',
     ]}
->
-    A filled primary control, that fill under the pointer, and its text; the primary as text, a link or an icon (lifted
-    in dark, where the fill would not read as text); the primary tint under primary-fg (a chosen row or choice, a tinted
-    button) and that tint under the pointer.
-</SwatchGroup>
+/>
 
-<SwatchGroup title="Current" names={['current-surface', 'current-fg']}>
-    Where you are: a settings nav item, the list sidebar's page, the command palette's cursor, a chosen option in a
-    list. navy-500 at 18% under `#9db7eb` in dark, navy at 10% under `#355292` in light. Drawn by the `current` utility,
-    never by hand.
-</SwatchGroup>
+<SwatchGroup title="Current" names={['current-surface', 'current-fg']} />
 
 <SwatchGroup
     title="Status"
@@ -300,38 +192,16 @@ the one whose value happens to match.
         ]),
         'danger-fill-hover',
     ]}
->
-    For each status: a solid fill and the text on it (bg-danger-fill text-danger-on-fill, a destructive button), the
-    status as text or an icon on any surface (text-danger-fg), and a tinted surface under that text (bg-danger-surface
-    text-danger-fg, a badge), on which fg, fg-soft and fg-muted read too; a notice's wash and its edge (an Alert:
-    bg-danger-wash border-danger-wash-edge), the surface and ring in light and, in dark, the hue itself at 6% and 35% (a
-    box fades it out by 70% across), so a notice tints the black or the glass under it instead of laying a slab on it;
-    danger-fill-hover is a destructive button under the pointer. **One status source**: each fill is its bare hue
-    (emerald, amber, red, and info's own working navy), the same colour `statusStateColors` gives a status light, a
-    progress segment or a stage (`tokens.test.ts` holds them equal). Info is its own token set in the primary's navy
-    hue, never the primary's tokens. The bare hues (bg-success) are for dots and bars only, never for text, and never at
-    an alpha of the moment: a tone's edge is a token.
-</SwatchGroup>
+/>
 
 <SwatchGroup
     title="Tone edges"
     names={['primary', 'success', 'warning', 'danger', 'info'].flatMap((s) => [s + '-edge', s + '-ring'])}
->
-    Each tone's two edges, decoration that needs no contrast of its own: `-edge` borders a neutral box in the tone (an
-    Alert, a chosen option, a map part that asks; border-warning-edge), `-ring` is the hairline of a box already tinted
-    in it (a Badge, a warning panel, a chosen row, a toned focus ring; ring-success-ring). Amber takes a stronger alpha
-    than the others, as it reads lighter.
-</SwatchGroup>
+/>
 
 ### Categorical palette
 
-For things that differ in kind, never in state (an item's kind, a media kind, a project, an initials avatar): six
-oklch hues in the gaps between the status hues (red 27, amber 70, emerald 163, navy 265), so a kind never reads as a
-state. Pick one with `category-<name>` (`categoricalHues` in tokens.ts, or a bare angle, `category-245`) and draw it
-with a recipe: `categorical-fill` (a tile, placeholder or avatar: fill `oklch(.62 .12 H / .11)`, edge `/ .2`, text
-`oklch(.82 .08 H)` in dark and `oklch(.45 .1 H)` in light), `categorical-text` or `categorical-icon`; a badge takes the
-hue as Badge's `hue`. `kind-badge` and `kind-icon` with `--lar-kind-hue` draw the same recipes. An app picking a hue
-for a name (an avatar, a project) hashes the name onto the list.
+For kinds, never states: `category-<name>` with the `categorical-fill`, `categorical-text` or `categorical-icon` recipe.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', padding: '0.75rem 0' }}>
@@ -347,24 +217,13 @@ for a name (an avatar, a project) hashes the name onto the list.
     </div>
 </Surface>
 
-### Product halo
+### Product halos
 
-A product's mark on a sign-in, a first run or an empty hero sits on a soft glow in its hue: `halo` with
-`halo-factory` (amber), `halo-server` or `halo-account` (navy), `radial-gradient(60% 50% at 50% 0, hue 22%,
-transparent)`; Factory's is amber-400 at 14%, as amber-500 at 22% reads as muddy brown on black.
-
-<SwatchGroup title="Halos" names={['halo-factory', 'halo-server', 'halo-account']}>
-    Each product's hue at 22% (Factory's lighter amber at 14%), the centre of its halo.
-</SwatchGroup>
+<SwatchGroup title="Halos" names={['halo-factory', 'halo-server', 'halo-account']} />
 
 ### Primitives
 
-Two pure-grey ramps (`--color-palette-grey-1…12` in light, from the raised surface to text, with no tint;
-`--color-palette-neutral-1…12` in dark, from the `#000` page, dense at the bottom where surfaces sit), the white and
-black alpha ladder the surfaces are built from, and the hues, with fixed alpha steps for tone edges, halos and the
-scrollbar. The ramp and hues the semantic tokens are built on, in the current theme (switch it in the toolbar). Only
-`foundations/` reads them: ninna-ui's own components are drawn from them, and theme.css builds the semantic tokens on
-them. A component never names one (see the vocabulary rule).
+Only `foundations/` reads these.
 
 <ColorPalette>
     <ColorItem
@@ -389,148 +248,9 @@ them. A component never names one (see the vocabulary rule).
     />
 </ColorPalette>
 
-### Glass
-
-Three tiers and a backdrop are the only translucency (`glassTiers` in tokens.ts; each palette's `--lar-glass-*`).
-Every tier is a tint at an alpha under `saturate(1.8)` and a blur that deepens with the tier; without backdrop-filter
-it falls back to its opaque tint.
-
-| Tier                                                             | Utility                | Dark                                                     | Light            | Blur         | Edge and light                                                           |
-| ---------------------------------------------------------------- | ---------------------- | -------------------------------------------------------- | ---------------- | ------------ | ------------------------------------------------------------------------ |
-| Bar: the title bar, a site header                                | `glass-bar` (GlassBar) | `#000` at 60%                                            | `#fafafa` at 66% | 20px         | a hairline (white 8% / black 8%) once scrolled                           |
-| Menu: menus, popovers, selects, tooltips, toasts                 | `glass-menu`           | `#141414` at 72% (≈ `#0e0e0e` over black)                | `#fff` at 82%    | 28px         | rim white 10%, inset top white 4%                                        |
-| Dialog: dialogs, drawers, the command palette (its reading zone) | `glass-dialog`         | `#000` at 93%, no veil                                   | `#fff` at 94%    | 32px         | rim white 11%, inset top white 4%                                        |
-| A Modal's glass zone: its sidebar                                | (Modal marks it)       | `#171717` at 70% (≈ `#111` over black), divider white 8% | `#f5f5f5` at 80% | the dialog's | the footer: white 3% / black 3% over the reading tint, divider white 10% |
-| Backdrop under a dialog                                          | `dialog-backdrop`      | black 38%                                                | black 14%        | 4px          |                                                                          |
-
-In dark the glass sits at T3 Code's balance, near black, so it reads through its blur and rim, not its brightness.
-A Modal is two zones of one glass: the reading zone (header and content) is near-opaque ink, where only strong colour
-bleeds through, and the blur shows in the glass zone, its sidebar (and faintly its footer), where you navigate and act.
-The zones differ only by their fill, as a nested backdrop-filter can't see through the box's; the box paints both. The
-values were set live against T3 Code's settings and confirm dialogs over the factory board and the server dashboard.
-Inside a menu or a dialog, muted text rises a step (`#a3a3a3` / `#575757`), a panel becomes a faint well (white 3%,
-edge white 8.5% / black 3%, edge black 8%) and `surface-raised` turns translucent, so nothing opaque sits on the glass;
-inside a dialog a control is white 4% on a white 11% edge and the current place a subtler navy (12%). A dialog's header
-inherits the reading zone and its footer is a faint light on it, set off by a divider, never a slab. `surface-glass`
-is the bar's tint, for a panel over a backdrop or artwork.
-
-## Status and progress
-
-### One tone map
-
-A status light and a progress bar take their colour from what the state **means**, the same in every app; the status
-word beside the light stays in neutral text (the status-word rule in the Introduction), since the light already carries
-the colour. Components take a `state` (`StatusState`); pick the state, never the colour. A `tone` remains for the rare case no
-state names (a data colour, the accent for "in development").
-
-| `state`   | Colour | Means                                                        | Examples                                            |
-| --------- | ------ | ------------------------------------------------------------ | --------------------------------------------------- |
-| `ready`   | green  | connected, ready, up to date, done                           | Lidarr connected, catalog up to date, merged        |
-| `active`  | blue   | running, working, live                                       | scanning, 5 active tasks, building                  |
-| `waiting` | amber  | waiting on something, needs attention, degraded, backing off | Remote access on, waiting; needs you; provider busy |
-| `failed`  | red    | failed, broken, unreachable                                  | scan failed, folder not found                       |
-| `off`     | grey   | off, idle, queued, not checked yet, unknown (no glow)        | turned off, not scanned yet                         |
-
-`StatusIndicator`, `StatusRow`, `ToolbarStatusItem`, `PopoverHeader`, `StatusPopoverContent` and `ProgressStatusRow`
-all take it. A state that is **more than one thing** ("5 active · 3 failed") is a `StatusSummary` (or an array of parts
-for `PopoverHeader status` / `StatusPopoverContent status`): each part keeps its own light and colour, so a failure
-never hides in the main state's blue. Leave out a part with nothing to count.
-
-### One progress grammar
-
-Every running piece of work (a scan, a job, an enrichment pass, a calibration) is a `ProgressStatusRow`, in a list, a
-card's footer, a popover or a dialog alike:
-
-1. **Identity first.** The light, then what or where (`label`: the catalog, "Video calibration"), never cut; it wraps.
-   Inside the object's own card or dialog, which already names it, the label is the work ("Comparing with Lidarr").
-2. **Second line, muted:** the phase (`operation`), the status word in neutral text (`statusLabel`: Queued, Waiting,
-   Done), then the numbers in one format: **count · percent · ETA** ("1,204 of 3,890 files · 31% · 12 min left"). The
-   caller words the count and the ETA; the row computes the percent. One extra fact may follow (`detail`); a full
-   counter list belongs in the details the row opens (`onDetails`), never in the row.
-3. **The bar**, in the status's colour: while running, determinate when the amount is known (`progress`), sweeping
-   when it isn't; while paused or backing off, held at its place in amber. Queued, failed and done draw none.
-4. **Why** it is held or failed (`reason`), in neutral text: "MusicBrainz is busy; trying again at 8:21 PM",
-   "Folder not found: /mnt/media/tv".
-5. **Actions** (Cancel, Retry, Review) at the end, centred on the text; the bar keeps to the text's column.
-
-| `status`  | State     | Bar               | Words                             |
-| --------- | --------- | ----------------- | --------------------------------- |
-| `queued`  | `off`     | none              | "Queued", and what it waits for   |
-| `running` | `active`  | fills, or sweeps  | count · percent · ETA             |
-| `paused`  | `waiting` | held at its place | "Waiting"/"Paused" and the reason |
-| `failed`  | `failed`  | none              | the reason, and Review or Retry   |
-| `done`    | `ready`   | none              | "Done", and when it finished      |
-
-Two densities: `compact` for card footers and popovers (12px label, 4px bar; an idle row keeps the bar's room so a
-grid of cards holds its height), regular for pages and dialogs (14px label, 6px bar).
-
-**What wraps and what stays on one line.** The label is the thing's identity and wraps, never cut. The meta line is
-one line on purpose, so a list of rows keeps one rhythm: out of room it ends in an ellipsis while the percent stays
-whole at its end, and the full line is the meta's hover title and, with the percent, the progress bar's accessible
-value. The reason under a bar keeps to one line the same way, with its full text as its title. A card's summary
-(`layout="line"`) puts the label in that one line too and ends it on the numbers, which stay whole with the percent:
-the label and the words before them (the task, the status, the reason) give way first, under the same hover title.
-The details it opens (`onDetails`) hold everything in full.
-
-### Lights and legends
-
-A **round** mark is a status light: only a state colours it. A **square** mark (`LegendSwatch`, drawn by `MeterLegend`)
-is a series' key in a meter or chart: its colour names what the series is, never how it is doing. A row that names a
-series and has a status (an encode device's playback job) takes the swatch as its indicator and says the status in
-words, or adds a light coloured by its state.
-
-A series takes its colour from its own set, never from a status hue: `series` 1, 2 and 3 (navy, teal, magenta; the
-`series-1` to `series-3` tokens), in that order and never cycled, validated apart for every colour vision and 3:1 on a
-card in both themes. Past three series, fold the rest into one or split the chart.
-
-### One alignment rule
-
-Wherever a status has lines under it (`StatusRow` with a `detail`, `ProgressStatusRow`, an attention row), the light
-sits on the centre of the label's **first** line, never centred across the lines; a muted value reads with that line
-and controls stay centred on the row. Cards side by side in a row (check-up summary cards, dashboard cards) top-align
-their content, so their first lines line up whatever each card holds.
-
-A row's leading icons come in one order: the **status mark first** (a `StatusIndicator` with a `glyph`, or its dot
-standing in for one), **then the source icon** (where its ticket is saved), then the title. A glyph sits in a fixed
-16px box (14px at `sm`), so a list's titles start at the same x whichever mark each row has; at work it turns
-(`motion="spin"`, a spinner when it has no glyph) or breathes (`motion="pulse"`), on the motion tokens, paused out of
-view and still for reduced motion. A dot is 8px with its 3px halo everywhere; the 6px `sm` dot is only for a 20px chip.
-Work that moves through parts (stages, slices, parts, an activity) is one `SegmentedProgress` track. Rows in one status
-list keep one rhythm: a row whose value is a control (`StatusRow trailing`) is as tall as a row whose value is a word.
-
-## Layout rules for actions and options
-
-- **Ghost actions sit flush.** In any action slot of a header or row (`SettingsSection action`, `SectionTitle actions`,
-  `FormSection action`, `PopoverHeader action`, `SettingsRow` controls), a ghost Button (`quiet`, `destructive-quiet`)
-  at the end lines its label up with the card's edge, like a bordered button's edge; the slot does it, so callers never
-  nudge a button. A caption about a section's action belongs in the section's `description`, never under the button.
-- **An action under prose is outlined.** Outside those slots nothing pulls a ghost's 12px inset back, so its label
-  would start off the text above it. An action that follows a paragraph or a caption ("This album isn’t in
-  MusicBrainz" under its explanation) is a `secondary` Button (`size="sm"` beside captions), whose edge lines up with
-  the text; supporting prose above it keeps the reading measure (`Text measure="reading"`).
-- **A footer option is a Checkbox.** `Modal.Footer leading` may hold a one-shot option for this submit
-  ("Scan for changes now", "Create issue") as a `Checkbox`. A `Switch` there is a misuse: a switch sets something that
-  stays, which is a row in the form.
-- **Empty lists.** An empty settings or archive list is `EmptyState size="compact"` in the list's panel, with the add
-  action when there is one ("No catalogs yet" · **Add catalog**).
-- **Menus keep one inset.** A menu row with a control at its end (the account menu's Appearance choice) is
-  `DropdownMenu.ControlRow`, which keeps the entries' 12px inset; never an app's `Inline` inside the menu. A menu's
-  entries either all lead with an icon or none do: a lone icon (only Sign out) reads as another kind of entry.
-- **No hard cuts.** Every region the design system scrolls (popovers, menus, modal and drawer bodies, image pickers,
-  counter lists) fades where content runs past an edge; an app never adds its own scroller inside one.
-- **Help opens beside what it explains.** `HelpTip` opens above its "?" (`side` for another side), so it never covers
-  the description under the setting's name.
-- **One splash.** `AppSplash` (and an app's own loading screen built on `SplashView`) shows one status line, which always ends in an
-  ellipsis, over the calm indeterminate track while the app waits, in every app.
-- **Every notice is an Alert, one recipe per tone.** The tone's quiet surface (`-surface`), its hairline (`-ring`) and
-  its icon; the words are the primary text colour, title semibold, message regular, at either size. ConfirmDialog's
-  reassurance note is an `info` Alert; no app or composition draws a notice box of its own.
-
 ## Type scale
 
-Lar sets the platform UI font (`--font-sans`: SF Pro on Apple platforms, Segoe UI on Windows) at 14px (`text-sm`),
-with `--font-mono` for code. The scale is Tailwind's steps plus the ones Lar's density and marketing pages need, and
-nothing else: an arbitrary size such as `text-[13px]` fails `scales.test.ts`.
+Apps pick a `variant` on `Text` or `Heading`, never a size.
 
 <Surface>
     {[
@@ -556,9 +276,6 @@ nothing else: an arbitrary size such as `text-[13px]` fails `scales.test.ts`.
         </Specimen>
     ))}
 </Surface>
-
-Apps never pick a size: they pick a semantic `variant` on `Text` and `Heading`. The marketing variants (`display`,
-`hero`, `headline`, `feature`, `lead`, `prose`) grow with the viewport.
 
 ### Heading
 
@@ -617,24 +334,7 @@ Apps never pick a size: they pick a semantic `variant` on `Text` and `Heading`. 
     ))}
 </Surface>
 
-`Text` and `Heading` also take a `tone` (`default`, `muted`, `soft`, `danger`, `warning`, `success`), `truncate` and
-`loading`; see **Typography / Typography** for every combination.
-
-**Tracking** has four steps, tighter as type grows: `tracking-display` (−0.035em: a hero, a marketing headline, the
-brand word), `tracking-title` (−0.02em: a page title, a metric, a feature's title), `tracking-heading` (−0.01em: a
-section or card title, a lead, prose) and `tracking-caps` (0.08em: small uppercase, an overline). Body text keeps
-`tracking-normal`; no other letter-spacing is allowed (`scales.test.ts`).
-
 ## Radii
-
-One radius per kind of surface, the same in every app: `md` 6px every control, field and the title bar's search;
-`lg` 8px menus, popovers, toasts and artwork; `xl` 12px every card, panel and group (InsetPanel, RowList, a settings
-group, ResultList's panel, anything with `surface-card` or `surface-panel`); `2xl` 16px dialogs, drawers and the
-command palette; `3xl` 20px a marketing page's cards and bands. `xs` 4px is for the smallest things (a code chip, a
-swatch, a text button's focus box) and `sm` 5px for a menu row, a tooltip or a chip. A surface's children never take
-their own radius at its edge (a panel's footer is clipped by the panel). These are the only radii, with `full` and
-`none`: no bare `rounded`, no Tailwind step outside these (`4xl`), no arbitrary `rounded-[…]` and no radius in rem in a
-stylesheet. The marketing devices' frames, drawn to scale, are the one exception.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', padding: '1rem 0' }}>
@@ -665,55 +365,10 @@ stylesheet. The marketing devices' frames, drawn to scale, are the one exception
     </div>
 </Surface>
 
-## Links
-
-One link look, `typography/LinkRecipe.ts`, drawn by `Link`, `InlineLink`, RichText's and the Markdown editor's links
-and every link a composition draws itself (a linked fact, a reference, "Part of #12"): an underline at 40% of the
-link's colour that fills in on hover. Its tone is `accent` (`primary-fg`, the default: a link that stands on its own),
-`inherit` (the colour of the text around it, inside a note or an alert) or `muted` (a navigation trail, such as
-Breadcrumbs, whose underline shows on hover).
-
-## Spacing and density
-
-Every length is on Tailwind's 4px spacing scale (`--spacing: 0.25rem`): `p-3` is 12px, `max-w-160` 640px, `px-2.75`
-11px. A page's content is at most `max-w-page` (1200px) wide.
-
-**Density by surface, never by app.** The size of a control follows the surface it sits on, the same in every app;
-no app picks a denser or looser size for itself:
-
-| Size | Height | Where                                                                              |
-| ---- | ------ | ---------------------------------------------------------------------------------- |
-| `sm` | 28px   | the title bar, toolbars, row and card actions, section-header actions              |
-| `md` | 32px   | forms, settings rows, every dialog footer, empty states, auth (`Button`'s default) |
-| `lg` | 44px   | marketing pages only (`ButtonLink size="lg"`)                                      |
-
-Both app sizes take the 13px/500 label (`text-ui`). A coarse pointer reaches any button at 44px through an invisible
-hit area, without growing what it draws. Icon buttons, the title bar's and a dialog's close alike, are 28px with a
-16px glyph; every pressable control dips to 97% while pressed. Rows are 40px single-line, 60px two-line and 28px in a
-menu. Arbitrary lengths (`w-[340px]`, `gap-[3px]`) fail `scales.test.ts`; the few pixel-exact glyphs it
-allows (a 1.5px ring, a 7px monogram) are listed there with their reasons.
-
-App shells use one 16px gutter, a spacing token, `px-gutter-app` (`--spacing-gutter-app`, 16px: `ContentContainer`,
-`TitleBar`), for the bar and the content alike, in every app, a desktop window's board included. Shell layout owns this
-spacing; neither an app nor a page adds a gutter of its own.
-
-**The title bar is one bar in every app** (`TitleBar`, 52px; the site's `SiteHeader` 56px, both on `glass-bar`). On
-the left, the lockup (`product` and `home`: the mark, "ar" and the product's word at 20/500 muted, always a link home,
-the word hidden under 640px) and where you are (`TitleBarTrail`, at most 280px). At the end, one group in a fixed
-order, each a slot of its own: `search` · `status` · `actions` (the app's) · `settings` · `identity`, every control 28px
-on a 6px radius, 8px apart, each icon-only one named by a glass tooltip (never a native `title`). The bar never wraps:
-search folds to its icon by the bar's width, and `status` folds into a "…" popover under 40rem. A web app's shell
-lets the document scroll; a desktop window's (`AppShell scroll="contained"`) scrolls its own main area under the bar,
-which drags the window and starts past the traffic lights (`trafficLights`). Popovers come in three widths: 256px a
-menu (`Popover.Content width="sm"`), 320px a status (`StatusPopoverContent`'s default) and 384px a list
-(`StatusPopoverContent width="wide"`, as a `ToolbarCounter`'s).
-
 ## Breakpoints
 
-The viewport breakpoints are Tailwind's: `sm` 40rem · `md` 48rem · `lg` 64rem · `xl` 80rem · `2xl` 96rem. A
-component that lays itself out answers to its **container** instead (`@container` on the parent), on Tailwind's
-container steps (`@md` 28rem · `@lg` 32rem · `@xl` 36rem · `@3xl` 48rem · `@4xl` 56rem · `@5xl` 64rem · `@6xl` 72rem)
-plus two of Lar's own:
+Viewport breakpoints are Tailwind's; a component that lays itself out answers to its container, with two steps of
+Lar's own:
 
 <Surface>
     <Specimen name="@pane" detail="40rem">
@@ -730,20 +385,6 @@ plus two of Lar's own:
 </Surface>
 
 ## Elevation
-
-Shadows by role, deeper in the dark theme. They are plain variables, used as `shadow-(--shadow-raised)`;
-`glass-menu` and `glass-dialog` already carry theirs. A component never mixes a shadow of its own: `scales.test.ts`
-fails on a `shadow-[…]`, `drop-shadow-[…]` or `inset-shadow-[…]` that names a colour. Besides the four surfaces,
-a solid fill's lit top edge is `inset-shadow-(--shadow-highlight)` (pressed: `--shadow-pressed`), and a logo over
-artwork lifts off it with `drop-shadow-(--shadow-logo)`. An app's UI layer may add its own in its sheets, such as a
-marketing page's device shadows.
-
-**Card, panel, raised.** A card resting on the page takes `surface-card` (its faint fill, `line-card` edge and
-`--shadow-card`: in light a hairline drop so a white card reads off the `#fafafa` page; in dark none, as the fill and
-edge carry it on black). A panel, a group of rows, takes `surface-panel` and no shadow. A control or a field resting
-on the page (an outlined button, a text field, a chip) takes the flatter `--shadow-raised`, so a control never reads as
-a card and a card full of controls keeps one level. Popups and dialogs sit above both, their shadows carried by
-`glass-menu` and `glass-dialog`.
 
 <Surface>
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', padding: '1.25rem 0 1.75rem' }}>
@@ -775,9 +416,6 @@ a card and a card full of controls keeps one level. Popups and dialogs sit above
 
 ## Motion
 
-Durations by role and two easings. A plain `transition-*` utility already runs at `--motion-duration-fast` on
-`ease-standard`; another duration is `duration-(--motion-duration-base)`.
-
 <Surface>
     {[
         ['--motion-duration-fast', '150ms', 'A control’s feedback: hover, press (0.97), colour'],
@@ -807,17 +445,9 @@ Durations by role and two easings. A plain `transition-*` utility already runs a
     ))}
 </Surface>
 
-**Reduced motion.** Under `prefers-reduced-motion: reduce` the durations collapse to an instant (transitions still
-finish and fire their end events), the repeating loops stop (a pulse holds still, the indeterminate track turns into a
-static striped bar, the skeleton's shine stops) and a marketing page's reveals and loops stay still. The one exception is a spinner that
-says an action is in flight (`SpinnerIcon motion="always"`, a busy `Button`), which keeps turning. Loops also pause
-while out of view or behind an open dialog (`ambientMotion`).
-
 ## Focus
 
-One ring everywhere: 2px of `focus` outside the control, on keyboard focus (`:focus-visible`). Every element gets it
-by default; a component that sets its own outline uses one of these utilities, never its own `outline-*` or `ring-*`
-recipe:
+A component that sets its own outline uses one of these, never its own `outline-*` or `ring-*`:
 
 <Surface>
     {[
@@ -843,21 +473,8 @@ recipe:
 
 ## Icons
 
-Every icon is from [lucide](https://lucide.dev/icons), under lucide's `…Icon` names, plus the brand marks lucide does
-not draw (`GitHubIcon`). Apps import them from **`@lar-works/design-system/icons`**, never from `lucide-react`
-(`lar/boundaries` reports that):
-
-```tsx
-import { Button } from '@lar-works/design-system';
-import { PlusIcon } from '@lar-works/design-system/icons';
-
-<Button leftIcon={<PlusIcon />}>Add library</Button>;
-```
-
-`DesignSystemProvider` draws them at a 1.75 stroke, which matches the weight of Lar's type, and components size them
-(16px in buttons, 18px in header icon buttons). Inside the design system, components import icons from `lucide-react`.
-A concept with its one icon (activity, diagnostics, metadata, check-up, scans, updates, settings sections…) is drawn
-from `conceptIcons`; [Writing/Icons](?path=/docs/writing-icons--docs) is the glossary.
+Apps import every icon from `@lar-works/design-system/icons`, never `lucide-react`; a concept's icon comes from
+`conceptIcons` (**Foundations / Icon glossary**).
 
 <style>
     {'.lar-foundations-icon { display: inline-flex; } .lar-foundations-icon svg { width: 20px; height: 20px; }'}
@@ -900,20 +517,3 @@ from `conceptIcons`; [Writing/Icons](?path=/docs/writing-icons--docs) is the glo
         ))}
     </div>
 </Surface>
-
-## Destructive actions
-
-The quiet-destructive rule (Introduction): a trigger that opens a destructive confirmation is named in the danger text
-colour at rest, in a quiet weight, and gains the danger surface on hover or keyboard focus: `Button
-variant="destructive-quiet"`, `IconButton tone="danger"` and `DropdownMenu.Item destructive`. It is never neutral grey
-text. Only the confirming action in `ConfirmDialog` uses a solid danger fill (`Button variant="destructive"`). This
-applies equally to deleting a library, deleting logs and abandoning work. A state word is never in the danger text colour
-(the status-word rule); a problem's explanation stays in neutral text. The one sentence in the danger text colour is a
-field's error under its invalid control (`Field errorText`), which pairs with the control's danger edge.
-
-## Writing
-
-The **Writing / Content** foundations page defines the shared glossary: sentence case, no trailing full stops in
-headings or labels, UK English with **catalog** as the deliberate product term, chart units in axes and values, and
-one arrow after standalone navigation instructions (`Link arrow`). Settings headings and actions remain in place
-while their row values load; use row-shaped skeletons rather than a single block.

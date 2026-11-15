@@ -1,4 +1,4 @@
-// One icon per concept: the icon glossary (docs/Icons.mdx) as code. An app draws a concept's icon from here, so
+// One icon per concept, the icon glossary. An app draws a concept's icon from here, so
 // "activity" is the pulse everywhere and the pulse means nothing else. An app extends the glossary with its own
 // concepts (`{ ...conceptIcons, scans: ScanLineIcon }`) and never redraws one of these.
 import {
