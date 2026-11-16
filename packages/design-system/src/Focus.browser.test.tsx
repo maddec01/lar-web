@@ -176,7 +176,17 @@ const question = () => document.querySelector('[role="alertdialog"]');
 it('asks before discarding unsaved changes on Escape, and keeps editing on request', async () => {
     const onClose = await openEditor();
 
+    const editor = screen.getByRole('dialog', { name: 'Edit catalog' });
+
     await page.getByRole('textbox', { name: 'Name' }).fill('Family photos 2004–2024');
+
+    for (const key of [...Array<string>(6).fill('{Tab}'), ...Array<string>(6).fill('{Shift>}{Tab}{/Shift}')]) {
+        await userEvent.keyboard(key);
+        expect(editor.contains(document.activeElement), `${key} reached ${document.activeElement?.outerHTML}`).toBe(
+            true,
+        );
+    }
+
     await userEvent.keyboard('{Escape}');
     await expect.poll(question).not.toBeNull();
     // A question opens on its safe answer, never on the action it asks about.
@@ -184,6 +194,7 @@ it('asks before discarding unsaved changes on Escape, and keeps editing on reque
 
     await page.getByRole('button', { name: 'Keep editing' }).click();
     await expect.poll(question).toBeNull();
+    await expect.poll(() => editor.contains(document.activeElement)).toBe(true);
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Family photos 2004–2024');
 });
