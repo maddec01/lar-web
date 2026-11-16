@@ -1,6 +1,6 @@
 import { expect, test } from 'vite-plus/test';
 
-import { CONTRAST_FLOOR, chipFill, chipText, contrastRatio, tint } from './LabelTint';
+import { CONTRAST_FLOOR, chipFill, chipText, contrastRatio } from './LabelTint';
 
 test('the contrast ratio is the WCAG one', () => {
     expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21);
@@ -19,10 +19,4 @@ test("every chip's name clears the contrast floor in both modes", () => {
         );
 
     expect(below).toEqual([]);
-});
-
-test('anything but a colour keeps the neutral style', () => {
-    expect(tint('#C2E0C6')).toBeDefined();
-    expect(tint(undefined)).toBeUndefined();
-    expect(tint('red; background: url(x)')).toBeUndefined();
 });

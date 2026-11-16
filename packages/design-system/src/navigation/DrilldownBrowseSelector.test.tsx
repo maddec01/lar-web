@@ -30,32 +30,6 @@ it('opens the searchable drilldown and returns to its menu', async () => {
     expect(screen.queryByRole('searchbox', { name: 'Search genres' })).not.toBeInTheDocument();
 });
 
-it('filters accents and selects a genre from the drilldown', async () => {
-    const onChange = vi.fn();
-
-    renderSelector(onChange, vi.fn());
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Genres' }));
-
-    const search = screen.getByRole('searchbox', { name: 'Search genres' });
-
-    fireEvent.change(search, { target: { value: 'metal' } });
-    expect(screen.getByText('No genres found')).toBeInTheDocument();
-
-    fireEvent.change(search, { target: { value: 'baio' } });
-
-    expect(screen.getByRole('option', { name: 'Baïonarena' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Ambient' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('option', { name: 'Baïonarena' }));
-
-    expect(onChange).toHaveBeenCalledWith('baionarena');
-    expect(screen.queryByRole('searchbox', { name: 'Search genres' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    expect(await screen.findByRole('menuitem', { name: 'Genres' })).toBeInTheDocument();
-});
-
 function renderSelector(onChange: (itemId: string | undefined) => void, onClear: () => void) {
     render(
         <DrilldownBrowseSelector

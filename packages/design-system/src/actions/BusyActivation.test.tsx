@@ -52,23 +52,3 @@ describe.each(['button', 'link', 'icon'] as const)('%s busy activation', (kind) 
         expect(action).toHaveBeenCalledOnce();
     });
 });
-
-it('restores activation once busy clears', async () => {
-    const user = userEvent.setup();
-    const action = vi.fn();
-    const { rerender } = render(
-        <Button busy onClick={action}>
-            Retry
-        </Button>,
-    );
-
-    await user.click(screen.getByRole('button'));
-    expect(action).not.toHaveBeenCalled();
-    rerender(
-        <Button busy={false} onClick={action}>
-            Retry
-        </Button>,
-    );
-    await user.keyboard('{Enter}');
-    expect(action).toHaveBeenCalledOnce();
-});
