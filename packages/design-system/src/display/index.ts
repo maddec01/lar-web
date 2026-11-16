@@ -27,7 +27,6 @@ export { RadioChoice } from './RadioChoice';
 export { RichText, type RichTextFormat } from './RichText';
 export { RowList, RowListItem } from './RowList';
 export { LegendSwatch, MeterLegend, type MeterSegment, type MeterSeries, StackedMeter } from './StackedMeter';
-export { StatTile } from './StatTile';
 export { StepList } from './StepList';
 export { TextPreview } from './TextPreview';
 export { TimeSeriesChart, TimeSeriesChartSkeleton, type TimeSeriesPoint } from './TimeSeriesChart';

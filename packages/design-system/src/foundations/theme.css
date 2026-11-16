@@ -1405,8 +1405,50 @@ body {
     }
 }
 
+/* A tick meter (TickMeter): bare ticks on the track colour, a limit's tick a step firmer. Running work breathes at its
+   front tick on --motion-loop-pulse; work of unknown size sends a light along the ticks, one sweep each
+   --motion-loop-sweep and a third, the lit tick fading behind it. Out of view the meter pauses (AmbientMotion); with
+   reduced motion it holds still, a sweep as a dim tint of its colour across the ticks. */
+.lar-tick {
+    background: var(--color-track);
+}
+.lar-tick[data-marker] {
+    background: var(--color-fg-muted);
+}
+.lar-tick-meter[data-sweeping] .lar-tick {
+    animation: lar-tick-sweep calc(var(--motion-loop-sweep) * 4 / 3) linear infinite;
+    animation-delay: calc(var(--lar-tick-index) * var(--motion-loop-sweep) * 2 / 3 / var(--lar-tick-count));
+}
+.lar-tick[data-front] {
+    animation: lar-led-pulse var(--motion-loop-pulse) ease-in-out infinite;
+}
+[data-ambient-motion='paused'] .lar-tick {
+    animation-play-state: paused;
+}
+@keyframes lar-tick-sweep {
+    0% {
+        background: var(--lar-tick-colour);
+    }
+    18% {
+        background: color-mix(in srgb, var(--lar-tick-colour) 25%, var(--color-track));
+    }
+    24%,
+    100% {
+        background: var(--color-track);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lar-tick[data-front],
+    .lar-tick-meter[data-sweeping] .lar-tick {
+        animation: none;
+    }
+    .lar-tick-meter[data-sweeping] .lar-tick {
+        background: color-mix(in srgb, var(--lar-tick-colour) 40%, var(--color-track));
+    }
+}
+
 /* A status glyph at work (StatusIndicator's `motion`, SpinnerIcon's `status`): working turns once per
-   --motion-loop-spin, waiting breathes on --motion-loop-pulse, and a segment of work in flight (SegmentedProgress)
+   --motion-loop-spin, waiting breathes on --motion-loop-pulse, and the front tick of work in flight (TickMeter)
    breathes the same. Smooth curves, never steps(); still for reduced motion. */
 @media (prefers-reduced-motion: no-preference) {
     .lar-status-spin {
@@ -1448,7 +1490,8 @@ body
         .animate-pulse,
         .lar-status-spin,
         .lar-status-pulse,
-        .lar-led-pulse
+        .lar-led-pulse,
+        .lar-tick
     ) {
     animation-play-state: paused;
 }

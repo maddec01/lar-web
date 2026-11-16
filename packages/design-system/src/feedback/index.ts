@@ -24,7 +24,6 @@ export {
 export { PageError, type PageErrorProps } from './PageError';
 export { Progress } from './Progress';
 export { ProgressStatusRow, type ProgressStatusRowProps } from './ProgressStatusRow';
-export { type ProgressSegment, SegmentedProgress } from './SegmentedProgress';
 export { SkeletonLoader } from './SkeletonLoader';
 export { Loading } from './Loading';
 export { StatusIndicator, type StatusIndicatorProps, type StatusTone } from './StatusIndicator';
@@ -43,3 +42,4 @@ export { StatusSummary, type StatusSummaryPart, type StatusSummaryProps } from '
 export { StatusPopoverContent, StatusPopoverSection } from './StatusPopoverContent';
 export type { StateAction, StateProduct, StateSize } from './StateMessage';
 export { StatusRow, type StatusRowAction } from './StatusRow';
+export { TickMeter, type TickSegment } from './TickMeter';
