@@ -8,7 +8,7 @@ import { Input } from '../forms';
 import { DesignSystemProvider } from '../foundations/DesignSystemProvider';
 import { SidebarNavigationItem, SidebarPane } from '../layout';
 import { ActionModal } from './ActionModal';
-import { Modal } from './Modal';
+import { Modal, useModalClose } from './Modal';
 
 function renderDialog(children: ReactNode) {
     return render(children, {
@@ -25,6 +25,87 @@ function FormDialog({ children, sidebar }: { children: ReactNode; sidebar?: Reac
         </Modal>
     );
 }
+
+/** One catalog's editor, dirty once its name changes, with a link that opens the other catalog's editor in its place. */
+function CatalogEditor({
+    catalog,
+    onOpen,
+    onClose,
+}: {
+    catalog: string;
+    onOpen: (catalog: string) => void;
+    onClose: () => void;
+}) {
+    const [name, setName] = useState(catalog);
+    const other = catalog === 'Family photos' ? 'Holiday photos' : 'Family photos';
+
+    function OpenOther() {
+        const requestClose = useModalClose();
+
+        return (
+            <button type="button" onClick={() => requestClose(() => onOpen(other))}>
+                Open {other}
+            </button>
+        );
+    }
+
+    return (
+        <Modal dirty={name !== catalog} onClose={onClose}>
+            <Modal.Content title={`Edit ${catalog}`}>
+                <Modal.Body>
+                    <Input aria-label="Name" value={name} onChange={(event) => setName(event.target.value)} />
+                    <OpenOther />
+                </Modal.Body>
+            </Modal.Content>
+        </Modal>
+    );
+}
+
+function LinkedEditors({ onClose }: { onClose: () => void }) {
+    const [catalog, setCatalog] = useState('Family photos');
+
+    return <CatalogEditor key={catalog} catalog={catalog} onOpen={setCatalog} onClose={onClose} />;
+}
+
+const question = () => screen.queryByRole('alertdialog');
+const pressEscape = () => fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
+const rename = (name: string) =>
+    fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: name } });
+
+describe('modal dirty guard', () => {
+    it('closes once the reader discards, and Escape on the question keeps editing', async () => {
+        const onClose = vi.fn();
+
+        renderDialog(<LinkedEditors onClose={onClose} />);
+        rename('Holiday photos');
+        pressEscape();
+        expect(question()).toBeInTheDocument();
+        pressEscape();
+        await waitFor(() => expect(question()).not.toBeInTheDocument());
+        expect(onClose).not.toHaveBeenCalled();
+        expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Holiday photos');
+
+        pressEscape();
+        fireEvent.click(within(question()!).getByRole('button', { name: 'Discard changes' }));
+        expect(onClose).toHaveBeenCalledOnce();
+    });
+
+    it('asks before leaving a dirty editor for another dialog, then goes there instead of closing', async () => {
+        const onClose = vi.fn();
+
+        renderDialog(<LinkedEditors onClose={onClose} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Open Holiday photos' }));
+        expect(screen.getByRole('dialog', { name: 'Edit Holiday photos' })).toBeInTheDocument();
+        expect(question()).not.toBeInTheDocument();
+
+        rename('Holidays');
+        fireEvent.click(screen.getByRole('button', { name: 'Open Family photos' }));
+        expect(question()).toBeInTheDocument();
+        fireEvent.click(within(question()!).getByRole('button', { name: 'Discard changes' }));
+        await waitFor(() => expect(screen.getByRole('dialog', { name: 'Edit Family photos' })).toBeInTheDocument());
+        expect(onClose).not.toHaveBeenCalled();
+    });
+});
 
 describe('modal dismissal', () => {
     it('dismisses a notification without closing the modal, then still allows backdrop dismissal', async () => {

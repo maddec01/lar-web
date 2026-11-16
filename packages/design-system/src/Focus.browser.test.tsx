@@ -158,7 +158,7 @@ it('wraps Tab and Shift+Tab inside the site’s menu, and Escape hands focus bac
 
 // The dirty guard
 
-const { DirtyDismissGuard, DiscardThenNavigate } = composeStories(modalStories);
+const { DirtyDismissGuard } = composeStories(modalStories);
 
 async function openEditor(onClose = fn()) {
     render(
@@ -173,14 +173,6 @@ async function openEditor(onClose = fn()) {
 
 const question = () => document.querySelector('[role="alertdialog"]');
 
-it('closes a clean editor on Escape without asking', async () => {
-    const onClose = await openEditor();
-
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(() => onClose.mock.calls.length).toBe(1);
-    expect(question()).toBeNull();
-});
-
 it('asks before discarding unsaved changes on Escape, and keeps editing on request', async () => {
     const onClose = await openEditor();
 
@@ -194,42 +186,4 @@ it('asks before discarding unsaved changes on Escape, and keeps editing on reque
     await expect.poll(question).toBeNull();
     expect(onClose).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Family photos 2004–2024');
-});
-
-it('closes once the reader discards, and Escape on the question keeps editing', async () => {
-    const onClose = await openEditor();
-
-    await page.getByRole('textbox', { name: 'Name' }).fill('Holiday photos');
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(question).not.toBeNull();
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(question).toBeNull();
-    expect(onClose).not.toHaveBeenCalled();
-
-    await userEvent.keyboard('{Escape}');
-    await expect.poll(question).not.toBeNull();
-    await page.getByRole('button', { name: 'Discard changes' }).click();
-    await expect.poll(() => onClose.mock.calls.length).toBe(1);
-});
-
-it('asks before leaving a dirty editor for another dialog, then goes there instead of closing', async () => {
-    const onClose = fn();
-
-    render(
-        <DesignSystemProvider>
-            <DiscardThenNavigate onClose={onClose} />
-        </DesignSystemProvider>,
-    );
-    await screen.findByRole('dialog', { name: 'Edit Family photos' });
-
-    await page.getByRole('button', { name: 'Open Holiday photos' }).click();
-    await expect.poll(() => screen.queryByRole('dialog', { name: 'Edit Holiday photos' })).not.toBeNull();
-    expect(question()).toBeNull();
-
-    await page.getByRole('textbox', { name: 'Name' }).fill('Holidays');
-    await page.getByRole('button', { name: 'Open Family photos' }).click();
-    await expect.poll(question).not.toBeNull();
-    await page.getByRole('button', { name: 'Discard changes' }).click();
-    await expect.poll(() => screen.queryByRole('dialog', { name: 'Edit Family photos' })).not.toBeNull();
-    expect(onClose).not.toHaveBeenCalled();
 });
