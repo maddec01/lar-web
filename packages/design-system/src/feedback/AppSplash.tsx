@@ -36,7 +36,7 @@ export const LAR_SPLASH_MARK: SplashMark = {
 /** The splash's one status-line rule: the line says what is under way, so it ends in an ellipsis ("Loading
  *  projects…", "Connecting to your server…"); three full stops become one ellipsis, and a line that already ends in
  *  its own punctuation keeps it. Both apps' lines read alike whatever their copy passes. */
-export function splashStatusText(text: string): string {
+function splashStatusText(text: string): string {
     const line = text.trim().replace(/\.{3}$/, '…');
 
     return !line || /[….!?:]$/.test(line) ? line : `${line}…`;

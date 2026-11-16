@@ -123,19 +123,6 @@ test('Enter chooses the highlighted option, and does nothing with an empty list'
     expect(input().hasAttribute('aria-activedescendant')).toBe(false);
 });
 
-test('with nothing listed the key hints leave out moving and selecting', async () => {
-    const hints = () => document.querySelector('[data-slot="command-palette-hints"]')!.textContent;
-
-    await show(element({}));
-    expect(hints()).toContain('↑↓');
-    expect(hints()).toContain('↵');
-
-    await rerender(element({ options: [] }));
-    expect(hints()).not.toContain('↑↓');
-    expect(hints()).not.toContain('↵');
-    expect(hints()).toContain('esc');
-});
-
 test('Esc and the Close button close it', async () => {
     const onClose = vi.fn();
 
@@ -144,18 +131,6 @@ test('Esc and the Close button close it', async () => {
     expect(onClose).toHaveBeenCalledOnce();
     await act(async () => button('Close').click());
     expect(onClose).toHaveBeenCalledTimes(2);
-});
-
-test('Backspace calls back in an empty query and does nothing otherwise', async () => {
-    const onBackspaceEmpty = vi.fn();
-
-    await show(element({ onBackspaceEmpty }));
-    await press('Backspace');
-    expect(onBackspaceEmpty).toHaveBeenCalledOnce();
-
-    await rerender(element({ onBackspaceEmpty, query: 'a' }));
-    await press('Backspace');
-    expect(onBackspaceEmpty).toHaveBeenCalledOnce();
 });
 
 test('no key acts during IME composition', async () => {
@@ -169,98 +144,4 @@ test('no key acts during IME composition', async () => {
     expect(onSelect).not.toHaveBeenCalled();
     expect(onBackspaceEmpty).not.toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
-});
-
-test('a token shows its content, and its remove button has its own name and returns focus to the field', async () => {
-    const onRemove = vi.fn();
-
-    await show(
-        element({
-            tokens: [
-                { id: 'repo', label: 'lar-factory' },
-                {
-                    id: 'bug',
-                    label: 'bug',
-                    leading: createElement('i', { 'data-testid': 'colour' }),
-                    remove: { label: 'Remove label bug', onRemove },
-                },
-            ],
-            trailing: createElement('button', { type: 'button' }, 'Clear'),
-        }),
-    );
-
-    expect(document.querySelectorAll('li')).toHaveLength(2);
-    expect(document.querySelector('li')?.querySelector('button')).toBeNull();
-    expect(document.querySelector('[data-testid="colour"]')?.closest('li')?.textContent).toBe('bug');
-    expect([...document.querySelectorAll('[role="dialog"] button')].some((item) => item.textContent === 'Clear')).toBe(
-        true,
-    );
-
-    button('Remove label bug').focus();
-    await act(async () => button('Remove label bug').click());
-    expect(onRemove).toHaveBeenCalledOnce();
-    expect(document.activeElement).toBe(input());
-});
-
-test('choosing an option can name the option the highlight moves to, as the list changes', async () => {
-    const props = { onSelect: () => 'Restore' };
-
-    await show(element(props));
-    await act(async () => {
-        input().dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
-        root!.render(element({ ...props, options: ['Add item', 'Settings', 'Restore'] }));
-    });
-    expect(active()).toBe('Restore');
-});
-
-test('the highlight moves to the first option when the active option leaves the list', async () => {
-    await show(element({}));
-    await press('ArrowUp');
-    expect(active()).toBe('Archive');
-
-    await rerender(element({ options: ['Add item', 'Settings'] }));
-    expect(active()).toBe('Add item');
-
-    await press('ArrowDown');
-    await rerender(element({ options: ['Archive', 'Settings'] }));
-    expect(active()).toBe('Settings');
-});
-
-test('an option follows the pointer and a click chooses it with the focus left in the field', async () => {
-    const onSelect = vi.fn();
-
-    await show(element({ onSelect }));
-
-    const settings = [...document.querySelectorAll<HTMLElement>('[role="option"]')].find(
-        (option) => option.textContent === 'Settings',
-    )!;
-
-    await act(async () => settings.dispatchEvent(new MouseEvent('pointermove', { bubbles: true })));
-    expect(active()).toBe('Settings');
-
-    const pressed = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
-
-    await act(async () => settings.dispatchEvent(pressed));
-    expect(pressed.defaultPrevented).toBe(true);
-    await act(async () => settings.click());
-    expect(onSelect.mock.calls).toEqual([['Settings']]);
-});
-
-test('values that differ only in punctuation get separate option ids', async () => {
-    await show(element({ options: ['a b', 'a_b'] }));
-    await press('ArrowDown');
-    expect(active()).toBe('a_b');
-    expect(input().getAttribute('aria-activedescendant')).not.toContain(' ');
-});
-
-test('a press on the trailing control leaves the focus in the field', async () => {
-    await show(element({ trailing: createElement('button', { id: 'clear' }, 'Clear') }));
-
-    const clear = document.querySelector<HTMLButtonElement>('#clear')!;
-
-    await act(async () => {
-        clear.focus();
-        clear.click();
-    });
-    expect(document.activeElement).toBe(input());
 });

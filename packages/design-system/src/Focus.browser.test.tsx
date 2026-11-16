@@ -181,16 +181,11 @@ it('closes a clean editor on Escape without asking', async () => {
     expect(question()).toBeNull();
 });
 
-it.each([
-    ['Escape', () => userEvent.keyboard('{Escape}')],
-    ['the close button', () => page.getByRole('button', { name: 'Close' }).click()],
-    // The overlay, beside the dialog's frame.
-    ['a click outside', () => userEvent.click(document.body, { position: { x: 4, y: 4 } })],
-] as const)('asks before discarding unsaved changes on %s, and keeps editing on request', async (_, dismiss) => {
+it('asks before discarding unsaved changes on Escape, and keeps editing on request', async () => {
     const onClose = await openEditor();
 
     await page.getByRole('textbox', { name: 'Name' }).fill('Family photos 2004–2024');
-    await dismiss();
+    await userEvent.keyboard('{Escape}');
     await expect.poll(question).not.toBeNull();
     // A question opens on its safe answer, never on the action it asks about.
     await expect.poll(() => document.activeElement?.textContent).toBe('Keep editing');

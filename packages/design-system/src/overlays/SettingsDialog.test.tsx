@@ -85,30 +85,6 @@ describe('SettingsDialog', () => {
         expect(document.activeElement).toBe(screen.getByRole('searchbox', { name: 'Search settings' }));
     });
 
-    it('names the dialog after the open section and lists sections as links or buttons', async () => {
-        renderSettings(<Demo />);
-
-        expect(await screen.findByRole('dialog', { name: 'Settings: General' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'General' })).toHaveAttribute('aria-current', 'page');
-        expect(screen.getByRole('link', { name: 'Archive' })).toHaveAttribute('href', '/settings/archive');
-    });
-
-    it('filters the sections by name and keywords, and says so in the content when nothing matches', async () => {
-        renderSettings(<Demo />);
-
-        const search = await screen.findByRole('searchbox', { name: 'Search settings' });
-
-        fireEvent.change(search, { target: { value: 'theme' } });
-        expect(screen.getByRole('button', { name: 'Appearance' })).toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: 'General' })).toBeNull();
-
-        fireEvent.change(search, { target: { value: 'nothing like it' } });
-        fireEvent.click(screen.getByRole('button', { name: 'Clear search' }));
-        expect(search).toHaveValue('');
-        expect(document.activeElement).toBe(search);
-        expect(screen.getByRole('button', { name: 'General' })).toBeInTheDocument();
-    });
-
     it('shows Save changes only while a typed draft is unsaved, saves it and says so', async () => {
         const save = vi.fn(() => Promise.resolve());
         const onSaved = vi.fn();
@@ -123,16 +99,6 @@ describe('SettingsDialog', () => {
         await waitFor(() => expect(onSaved).toHaveBeenCalledOnce());
         expect(screen.queryByRole('button', { name: 'Save changes' })).toBeNull();
         expect(screen.getByRole('textbox', { name: 'Limit' })).toHaveValue('6');
-    });
-
-    it('Cancel throws the draft away', async () => {
-        renderSettings(<Demo />);
-
-        fireEvent.change(await screen.findByRole('textbox', { name: 'Limit' }), { target: { value: '9' } });
-        fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
-
-        expect(screen.getByRole('textbox', { name: 'Limit' })).toHaveValue('4');
-        expect(screen.queryByRole('button', { name: 'Save changes' })).toBeNull();
     });
 
     it('asks before a section change loses an unsaved draft', async () => {

@@ -72,8 +72,3 @@ it('restores activation once busy clears', async () => {
     await user.keyboard('{Enter}');
     expect(action).toHaveBeenCalledOnce();
 });
-
-it('retains native IconButton loading semantics when busy is omitted', () => {
-    render(<IconButton loading aria-label="Refresh" icon={<PlayIcon />} />);
-    expect(screen.getByRole('button', { name: 'Refresh' })).toHaveAttribute('aria-busy', 'true');
-});

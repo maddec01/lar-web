@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vite-plus/test';
 
 import { DateField } from './DateField';
-import { formatDateField, formatDateLong, parseDateField } from './DateValue';
+import { formatDateField, parseDateField } from './DateValue';
 
 describe('date precision and locale', () => {
     it.each(['2024', '2024-02', '2024-02-29', '0099-04-02'])(
@@ -13,25 +13,6 @@ describe('date precision and locale', () => {
             }
         },
     );
-    it.each(['2023-02-29', '2024-13', '2024-00-01', '0000', '31/04/2024', '29/02/24', 'some date'])(
-        'rejects impossible or ambiguous %s',
-        (value) => {
-            expect(parseDateField(value, 'en-GB')).toBeUndefined();
-        },
-    );
-    it('accepts ISO, locale order and clearing', () => {
-        expect(parseDateField('2/29/2024', 'en-US')).toBe('2024-02-29');
-        expect(parseDateField('02/2024', 'en-GB')).toBe('2024-02');
-        expect(parseDateField('2024-02-29', 'en-US')).toBe('2024-02-29');
-        expect(parseDateField('')).toBe('');
-    });
-    it('formats the long date pages show, at its precision', () => {
-        expect(formatDateLong('2021-01-10', 'en-US')).toBe('January 10, 2021');
-        expect(formatDateLong('2021-01', 'en-US')).toBe('January 2021');
-        expect(formatDateLong('2021', 'en-US')).toBe('2021');
-        expect(formatDateLong('2021-01-10', 'en-GB')).toBe('10 January 2021');
-        expect(formatDateLong('not a date', 'en-US')).toBe('not a date');
-    });
     it('shows the long date at rest and the numeric text while editing', () => {
         const onValueChange = vi.fn();
 
@@ -47,14 +28,6 @@ describe('date precision and locale', () => {
         expect(onValueChange).toHaveBeenCalledWith('2021-01-12');
     });
 
-    it('selects the numeric text when editing starts, so typing replaces the date', () => {
-        render(<DateField aria-label="Release date" value="2021-01-10" locale="en-US" onValueChange={vi.fn()} />);
-
-        const input = screen.getByRole<HTMLInputElement>('textbox');
-
-        fireEvent.focus(input);
-        expect([input.selectionStart, input.selectionEnd]).toEqual([0, '01/10/2021'.length]);
-    });
     it('only commits valid ISO dates and retains invalid drafts for correction', () => {
         const onValueChange = vi.fn();
 

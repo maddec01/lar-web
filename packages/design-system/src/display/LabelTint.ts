@@ -27,7 +27,7 @@ const onPage = (hex: string, mode: Mode): string => {
 
 /** The palette's foreground, and the surface a chip's text contrasts least with: the fill a picked row takes, as it
  *  shows on the page. */
-export const PALETTE: Record<Mode, { foreground: string; surface: string }> = {
+const PALETTE: Record<Mode, { foreground: string; surface: string }> = {
     light: { foreground: semanticColors.fg.light, surface: onPage(semanticColors['fill-selected'].light, 'light') },
     dark: { foreground: semanticColors.fg.dark, surface: onPage(semanticColors['fill-selected'].dark, 'dark') },
 };
