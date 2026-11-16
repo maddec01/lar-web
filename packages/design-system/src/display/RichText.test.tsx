@@ -42,6 +42,16 @@ describe('images', () => {
             /<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>[\s\S]*Image: a diagram<\/a>/,
         );
     });
+
+    test('an html image becomes a link too', () => {
+        const out = html('<p><img src="https://example.com/d.png" alt="shot"></p>');
+
+        expect(out).not.toMatch(/<img/);
+        expect(out).toContain('data-attachment="true"');
+        expect(out).toMatch(
+            /<a [^>]*href="https:\/\/example.com\/d.png"[^>]*target="_blank"[^>]*>[\s\S]*Image: shot<\/a>/,
+        );
+    });
 });
 
 describe('links', () => {
@@ -80,7 +90,7 @@ test('Markdown preserves multi-word placeholders in prose, HTML, code and link l
     expect(out).toMatch(/<a [^>]*href="https:\/\/example.com"[^>]*>&lt;percent-encoded JSON&gt;<\/a>/);
 });
 
-test('real tags with attributes and quoted angle brackets keep their sanitizer behavior', () => {
+test('the Markdown-format sanitizer strips scripts and unknown tags (XSS) but keeps real tags, attributes and quoted angle brackets', () => {
     const out = markdown(
         '<details open><summary title="<percent-encoded JSON>">Contract</summary><input disabled><a href="https://example.com" title="<fragment>">link</a></details>\n\n<script async>alert(1)</script><iframe allowfullscreen>hidden</iframe><custom-element data-value="yes">kept text</custom-element>',
     );

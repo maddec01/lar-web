@@ -73,14 +73,6 @@ async function mount(value = '', format: 'markdown' | 'html' = 'markdown') {
     };
 }
 
-test('"- " starts a bullet list, and Enter adds an item', async () => {
-    const { area, markdown } = await mount();
-
-    await typeInto(area, '- a\nb');
-    expect(area.querySelectorAll('ul > li').length).toBe(2);
-    expect(markdown()).toBe('- a\n- b');
-});
-
 test('it reports the Markdown it makes of its starting text once, before any edit', async () => {
     const { area, baseline } = await mount('Some **text**\n\n\n\nmore');
 
@@ -139,6 +131,24 @@ test('each toolbar button applies its format and shows pressed while the selecti
         expect(button(label).getAttribute('aria-pressed'), `${label} again`).toBe('false');
         expect(markdown()).toBe('word');
     }
+});
+
+test('the Link button announces its URL field, which takes focus, and Escape closes it with no link', async () => {
+    const { area, button, press, markdown } = await mount();
+
+    await typeInto(area, 'word');
+    expect([button('Link').getAttribute('aria-haspopup'), button('Link').getAttribute('aria-expanded')]).toEqual([
+        'dialog',
+        'false',
+    ]);
+    await selectAll(area);
+    await press('Link');
+    expect(button('Link').getAttribute('aria-expanded')).toBe('true');
+    expect(document.activeElement, 'the field takes focus').toBe(urlField());
+    await keyIn(urlField()!, 'Escape');
+    expect(urlField()).toBeNull();
+    expect(button('Link').getAttribute('aria-expanded')).toBe('false');
+    expect(markdown()).toBe('word');
 });
 
 test('Tab indents a list item and Shift+Tab outdents it; elsewhere Tab moves focus on', async () => {

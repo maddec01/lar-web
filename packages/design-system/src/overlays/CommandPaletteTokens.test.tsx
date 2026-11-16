@@ -123,6 +123,15 @@ test('Enter chooses the highlighted option, and does nothing with an empty list'
     expect(input().hasAttribute('aria-activedescendant')).toBe(false);
 });
 
+test('the highlight moves to the first option when the active option leaves the list', async () => {
+    await show(element({}));
+    await press('ArrowUp');
+    expect(active()).toBe('Archive');
+
+    await rerender(element({ options: ['Add item', 'Settings'] }));
+    expect(active(), 'aria-activedescendant names an option still in the list').toBe('Add item');
+});
+
 test('Esc and the Close button close it', async () => {
     const onClose = vi.fn();
 
