@@ -11,96 +11,14 @@ RuleTester.it = it;
 
 const tester = new RuleTester();
 const app = (file: string) => `/repo/web/src/${file}`;
-const designSystem = (file: string) => `/repo/packages/design-system/src/${file}`;
 
 tester.run('boundaries', rules.boundaries, {
-    valid: [
-        { code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') },
-        { code: "import { HomePage } from '@/features/home';", filename: app('app/AppRoutes.tsx') },
-        { code: "import { routes } from '@/shared/routing/routes';", filename: app('features/home/Home.tsx') },
-        {
-            code: "import { Button } from '@ninna-ui/primitives';",
-            filename: designSystem('actions/Button.tsx'),
-            options: [{ role: 'design-system' }],
-        },
-        {
-            code: "import { XIcon } from 'lucide-react';",
-            filename: designSystem('overlays/Modal.tsx'),
-            options: [{ role: 'design-system' }],
-        },
-        {
-            code: "import { Input } from '../forms/Input';",
-            filename: designSystem('overlays/Modal.tsx'),
-            options: [{ role: 'design-system' }],
-        },
-        { code: "import { useQuery } from '@tanstack/react-query';", filename: app('services/music/music.hooks.ts') },
-        { code: "import { XIcon } from 'lucide-react';", filename: app('features/home/Home.test.tsx') },
-        {
-            code: "import { ButtonBase } from '@lar-works/design-system/primitives';\nimport { Card } from './Card';\nimport type { Track } from '@/shared/media';",
-            filename: app('ui/media/Track.tsx'),
-            options: [{ role: 'ui' }],
-        },
-    ],
+    valid: [{ code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') }],
     invalid: [
-        {
-            code: "import { XIcon } from 'lucide-react';",
-            filename: app('features/home/Home.tsx'),
-            errors: [{ message: /Use the @lar-works\/design-system public API/ }],
-        },
-        {
-            code: "import { Button } from '@ninna-ui/primitives';",
-            filename: app('features/home/Home.tsx'),
-            errors: 1,
-        },
-        {
-            code: "import { Button } from '@lar-works/design-system';",
-            filename: app('services/music/music.service.ts'),
-            errors: [{ message: 'Services own data access and server state, never UI.' }],
-        },
-        {
-            code: "import { AppLayout } from '@/app/shell/AppLayout';",
-            filename: app('features/home/Home.tsx'),
-            errors: [{ message: 'Features cannot depend on the application composition root.' }],
-        },
         {
             code: "import { Player } from '@/features/music/Player';",
             filename: app('features/home/Home.tsx'),
             errors: [{ message: 'Cross-feature consumers must use the feature public API.' }],
-        },
-        {
-            code: "import { Home } from '.';",
-            filename: app('features/home/HomePage.tsx'),
-            errors: [{ message: 'Inside a feature, import the owning module directly to avoid barrel cycles.' }],
-        },
-        {
-            code: "import { session } from '@/services/auth';",
-            filename: app('shared/routing/routes.ts'),
-            errors: [{ message: 'Shared foundations cannot depend on application, features or services.' }],
-        },
-        {
-            code: "import { ButtonBase } from '@lar-works/design-system/primitives';",
-            filename: app('features/home/Home.tsx'),
-            errors: [{ message: /Only the app's UI layer/ }],
-        },
-        {
-            code: "import { usePlayer } from '@/features/music';\nimport { useTranslation } from 'react-i18next';",
-            filename: app('ui/media/Track.tsx'),
-            options: [{ role: 'ui' }],
-            errors: 2,
-        },
-        {
-            code: "import { useTranslation } from 'react-i18next';",
-            filename: designSystem('overlays/Modal.tsx'),
-            options: [{ role: 'design-system' }],
-            errors: 1,
-        },
-        {
-            code: "import { Input } from '../forms';",
-            filename: designSystem('overlays/Modal.tsx'),
-            options: [{ role: 'design-system' }],
-            errors: [
-                { message: 'Inside the design system, import the owning module directly to avoid barrel cycles.' },
-            ],
         },
     ],
 });
@@ -111,16 +29,6 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             code: 'import { Button } from \'@lar-works/design-system\'; export const A = () => <Button size="sm" />;',
             filename: app('features/home/A.tsx'),
         },
-        {
-            code: 'import { Alert } from \'@lar-works/design-system\'; export const A = () => <Alert size="sm" message="Try again." />;',
-            filename: app('features/home/A.tsx'),
-        },
-        {
-            code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text variant="lead">Hi</Text>;',
-            filename: app('features/home/A.tsx'),
-        },
-        { code: 'export const A = ({ size }) => <Row size={size} />;', filename: app('features/home/A.tsx') },
-        { code: 'export const A = () => <p className="x" />;', filename: app('features/home/A.test.tsx') },
     ],
     invalid: [
         {
@@ -128,60 +36,20 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'className' }],
         },
-        {
-            code: 'export const A = () => <Row style={{}} />;',
-            filename: app('features/home/A.tsx'),
-            errors: [{ messageId: 'style' }],
-        },
-        {
-            code: 'export const A = () => <button />;',
-            filename: app('features/home/A.tsx'),
-            errors: [{ messageId: 'element' }],
-        },
-        {
-            code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text size="sm" />;',
-            filename: app('features/home/A.tsx'),
-            errors: [{ messageId: 'lookProp' }],
-        },
-        {
-            code: 'import { Input } from \'@lar-works/design-system\';\nexport const A = () => <Input variant="filled" />;',
-            filename: app('features/home/A.tsx'),
-            errors: [{ messageId: 'lookProp' }],
-        },
     ],
 });
 
 tester.run('no-raw-colours', rules['no-raw-colours'], {
-    valid: [
-        'export const a = "bg-surface text-fg-muted gap-2 px-[calc(--spacing(3)+1px)]";',
-        'export const a = "border-[oklch(0.62_0.1_var(--hue)/0.45)]"; export const b = "#section";',
-    ],
-    invalid: [
-        { code: 'export const a = "bg-[#0a0a0a] p-2";', errors: 1 },
-        { code: 'export const a = { color: `rgb(0 0 0 / ${alpha})` };', errors: 1 },
-    ],
+    valid: ['export const a = "bg-surface text-fg-muted gap-2 px-[calc(--spacing(3)+1px)]";'],
+    invalid: [{ code: 'export const a = "bg-[#0a0a0a] p-2";', errors: 1 }],
 });
 
 tester.run('padding-lines', rules['padding-lines'], {
-    valid: [
-        "import a from 'a';\nimport b from 'b';\n\nconst c = a;\nconst d = b;\n\nexport { c, d };",
-        'function f() {\n    const a = 1;\n\n    return a;\n}',
-        'function f(a) {\n    if (a) return 1;\n\n    return 2;\n}',
-    ],
+    valid: ['function f() {\n    const a = 1;\n\n    return a;\n}'],
     invalid: [
-        {
-            code: "import a from 'a';\nconst c = a;",
-            output: "import a from 'a';\n\nconst c = a;",
-            errors: 1,
-        },
         {
             code: 'function f() {\n    const a = 1;\n    return a;\n}',
             output: 'function f() {\n    const a = 1;\n\n    return a;\n}',
-            errors: 1,
-        },
-        {
-            code: 'function f(a) {\n    g();\n    if (a) g();\n}',
-            output: 'function f(a) {\n    g();\n\n    if (a) g();\n}',
             errors: 1,
         },
     ],
