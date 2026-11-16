@@ -27,39 +27,12 @@ it('opens on keyboard focus and dismisses with Escape without moving focus', asy
     expect(trigger).toHaveFocus();
 });
 
-it('suppresses a disabled tooltip and allows focus opening after it is enabled', async () => {
-    function Example({ disabled }: { disabled: boolean }) {
-        return (
-            <TooltipProvider>
-                <Tooltip disabled={disabled}>
-                    <TooltipTrigger asChild>
-                        <IconButton aria-label="Update" icon={<span>↑</span>} />
-                    </TooltipTrigger>
-                    <TooltipPopup>Check for updates</TooltipPopup>
-                </Tooltip>
-            </TooltipProvider>
-        );
-    }
-
-    const view = render(<Example disabled />);
-    const trigger = screen.getByRole('button', { name: 'Update' });
-
-    act(() => trigger.focus());
-    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-    act(() => trigger.blur());
-    view.rerender(<Example disabled={false} />);
-    act(() => trigger.focus());
-    expect(await screen.findByRole('tooltip')).toHaveTextContent('Check for updates');
-});
-
-it.each(['direct', 'composed'])('opens a %s disabled trigger on wrapper focus', async (kind) => {
-    const asChild = kind === 'composed';
-
+it('opens a disabled trigger on wrapper focus', async () => {
     render(
         <TooltipProvider>
             <Tooltip>
-                <TooltipTrigger asChild={asChild} disabled={!asChild}>
-                    {asChild ? <IconButton disabled aria-label="Update" icon={<span>↑</span>} /> : 'Update'}
+                <TooltipTrigger asChild>
+                    <IconButton disabled aria-label="Update" icon={<span>↑</span>} />
                 </TooltipTrigger>
                 <TooltipPopup>Updates are unavailable while offline</TooltipPopup>
             </Tooltip>

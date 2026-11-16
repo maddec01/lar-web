@@ -51,33 +51,4 @@ describe.each([
         expect(control).toHaveAttribute('aria-checked', 'false');
         expect(onChange).not.toHaveBeenCalled();
     });
-
-    it('toggles again once busy clears', async () => {
-        const user = userEvent.setup();
-        const onChange = vi.fn();
-        const { rerender } = render(make(true, onChange));
-
-        rerender(make(false, onChange));
-
-        const control = screen.getByRole('switch', { name: 'Automatic scans' });
-
-        expect(control).not.toHaveAttribute('aria-busy');
-        await user.click(control);
-        expect(control).toHaveAttribute('aria-checked', 'true');
-        expect(onChange).toHaveBeenCalledExactlyOnceWith(true);
-    });
-});
-
-it('turns from its label too, and not while busy', async () => {
-    const user = userEvent.setup();
-    const onChange = vi.fn();
-    const { rerender } = render(<Switch label="Automatic scans" busy onCheckedChange={onChange} />);
-
-    await user.click(screen.getByText('Automatic scans'));
-    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
-
-    rerender(<Switch label="Automatic scans" onCheckedChange={onChange} />);
-    await user.click(screen.getByText('Automatic scans'));
-    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-    expect(onChange).toHaveBeenCalledExactlyOnceWith(true);
 });

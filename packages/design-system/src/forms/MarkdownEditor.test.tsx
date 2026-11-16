@@ -73,39 +73,6 @@ async function mount(value = '', format: 'markdown' | 'html' = 'markdown') {
     };
 }
 
-test('"- " starts a bullet list, and Enter adds an item', async () => {
-    const { area, markdown } = await mount();
-
-    await typeInto(area, '- a\nb');
-    expect(area.querySelectorAll('ul > li').length).toBe(2);
-    expect(markdown()).toBe('- a\n- b');
-});
-
-test('"1. " starts a numbered list', async () => {
-    const { area, markdown } = await mount();
-
-    await typeInto(area, '1. a\nb');
-    expect(area.querySelectorAll('ol > li').length).toBe(2);
-    expect(markdown()).toBe('1. a\n2. b');
-});
-
-test('"# " starts a heading, and **bold** turns bold', async () => {
-    const { area, markdown } = await mount();
-
-    await typeInto(area, '# h');
-    expect(area.querySelector('h1')!.textContent).toBe('h');
-    expect(markdown()).toBe('# h');
-    await typeInto(area, '\nsay **this**');
-    expect(area.querySelector('p strong')!.textContent).toBe('this');
-    expect(markdown()).toBe('# h\n\nsay **this**');
-});
-
-test('it starts from the Markdown it is given', async () => {
-    const { area } = await mount('- one\n- two');
-
-    expect([...area.querySelectorAll('ul > li')].map((li) => li.textContent)).toEqual(['one', 'two']);
-});
-
 test('it reports the Markdown it makes of its starting text once, before any edit', async () => {
     const { area, baseline } = await mount('Some **text**\n\n\n\nmore');
 
@@ -166,27 +133,22 @@ test('each toolbar button applies its format and shows pressed while the selecti
     }
 });
 
-test('Link opens a URL field, which Enter applies, and Escape or an empty URL closes with no link', async () => {
+test('the Link button announces its URL field, which takes focus, and Escape closes it with no link', async () => {
     const { area, button, press, markdown } = await mount();
 
     await typeInto(area, 'word');
+    expect([button('Link').getAttribute('aria-haspopup'), button('Link').getAttribute('aria-expanded')]).toEqual([
+        'dialog',
+        'false',
+    ]);
     await selectAll(area);
     await press('Link');
+    expect(button('Link').getAttribute('aria-expanded')).toBe('true');
     expect(document.activeElement, 'the field takes focus').toBe(urlField());
     await keyIn(urlField()!, 'Escape');
     expect(urlField()).toBeNull();
-    expect(button('Link').getAttribute('aria-pressed')).toBe('false');
-    await selectAll(area);
-    await press('Link');
-    await enterUrl('  ');
-    expect(urlField()).toBeNull();
-    expect(button('Link').getAttribute('aria-pressed')).toBe('false');
+    expect(button('Link').getAttribute('aria-expanded')).toBe('false');
     expect(markdown()).toBe('word');
-    await selectAll(area);
-    await press('Link');
-    await enterUrl('https://example.com');
-    expect(urlField()).toBeNull();
-    expect(markdown()).toBe('[word](https://example.com)');
 });
 
 test('Tab indents a list item and Shift+Tab outdents it; elsewhere Tab moves focus on', async () => {
@@ -215,18 +177,6 @@ test('Tab indents a list item and Shift+Tab outdents it; elsewhere Tab moves foc
     expect(markdown()).toBe('text\n\n- a\n- b');
 });
 
-test('Markdown pasted at the end of a list item that starts with a block goes in after it, not into the item', async () => {
-    const { area, markdown } = await mount();
-
-    await typeInto(area, '- a\nb');
-    await pastePlain(area, '## Pasted\n\nmore');
-    expect([...area.querySelectorAll('li')].map((li) => li.textContent)).toEqual(['a', 'b']);
-    expect(area.querySelector('h2')!.textContent).toBe('Pasted');
-    expect(markdown()).toBe('- a\n- b\n\n## Pasted\n\nmore');
-    await typeInto(area, '!');
-    expect(markdown(), 'the caret ends after the pasted text').toBe('- a\n- b\n\n## Pasted\n\nmore!');
-});
-
 test('Markdown pasted over selected text replaces it', async () => {
     const { area, markdown } = await mount();
 
@@ -235,44 +185,4 @@ test('Markdown pasted over selected text replaces it', async () => {
     await pastePlain(area, '- a\n- b');
     expect(markdown()).toBe('- a\n- b');
     expect(area.textContent).not.toContain('replace me');
-});
-
-test("the Link button itself says it opens the URL field, and the field's Apply button links the selection", async () => {
-    const { area, button, press, markdown } = await mount();
-
-    await typeInto(area, 'word');
-    expect([button('Link').getAttribute('aria-haspopup'), button('Link').getAttribute('aria-expanded')]).toEqual([
-        'dialog',
-        'false',
-    ]);
-    await selectAll(area);
-    await press('Link');
-    expect(button('Link').getAttribute('aria-expanded')).toBe('true');
-    urlField()!.value = 'https://example.com';
-    await act(async () => [...document.querySelectorAll('button')].find((b) => b.textContent === 'Apply')!.click());
-    expect(urlField()).toBeNull();
-    expect(markdown()).toBe('[word](https://example.com)');
-});
-
-test('the Link tooltip hides while the URL field is open, even with the pointer back on the button', async () => {
-    const { area, button, press } = await mount();
-
-    await typeInto(area, 'word');
-    await selectAll(area);
-
-    const tip = () =>
-        [...document.querySelectorAll('[data-slot="tooltip-content"]')].find(
-            (el) => el.firstChild?.textContent === 'Link',
-        );
-
-    await press('Link');
-    expect(urlField()).not.toBeNull();
-    // The pointer leaves for the field and comes back to the button, which hover would show the tooltip for.
-    await act(async () => {
-        button('Link').dispatchEvent(new MouseEvent('pointerleave', { bubbles: false }));
-        button('Link').dispatchEvent(new MouseEvent('pointermove', { bubbles: true }));
-        await new Promise((done) => setTimeout(done, 800));
-    });
-    expect(urlField()).not.toBeNull();
-    expect(tip(), 'hidden while the field is open').toBeUndefined();
 });

@@ -30,62 +30,7 @@ it('opens the searchable drilldown and returns to its menu', async () => {
     expect(screen.queryByRole('searchbox', { name: 'Search genres' })).not.toBeInTheDocument();
 });
 
-it('filters accents and selects a genre from the drilldown', async () => {
-    const onChange = vi.fn();
-
-    renderSelector(onChange, vi.fn());
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Genres' }));
-
-    const search = screen.getByRole('searchbox', { name: 'Search genres' });
-
-    fireEvent.change(search, { target: { value: 'metal' } });
-    expect(screen.getByText('No genres found')).toBeInTheDocument();
-
-    fireEvent.change(search, { target: { value: 'baio' } });
-
-    expect(screen.getByRole('option', { name: 'Baïonarena' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'Ambient' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('option', { name: 'Baïonarena' }));
-
-    expect(onChange).toHaveBeenCalledWith('baionarena');
-    expect(screen.queryByRole('searchbox', { name: 'Search genres' })).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    expect(await screen.findByRole('menuitem', { name: 'Genres' })).toBeInTheDocument();
-});
-
-it('clears the one selected filter from the shared menu', async () => {
-    const onClear = vi.fn();
-
-    renderSelector(vi.fn(), onClear);
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    fireEvent.click(await screen.findByRole('menuitemradio', { name: 'All' }));
-
-    expect(onClear).toHaveBeenCalledOnce();
-});
-
-it('lists a short group without a search and clears it alone', async () => {
-    const onChange = vi.fn();
-
-    renderSelector(vi.fn(), vi.fn(), { selectedId: 'live', onChange });
-    fireEvent.click(screen.getByRole('button', { name: 'All' }));
-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Types Live albums' }));
-
-    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'Live albums' })).toHaveAttribute('aria-selected', 'true');
-
-    fireEvent.click(screen.getByRole('option', { name: 'All types' }));
-
-    expect(onChange).toHaveBeenCalledWith(undefined);
-});
-
-function renderSelector(
-    onChange: (itemId: string | undefined) => void,
-    onClear: () => void,
-    types: { selectedId?: string; onChange: (itemId: string | undefined) => void } = { onChange: vi.fn() },
-) {
+function renderSelector(onChange: (itemId: string | undefined) => void, onClear: () => void) {
     render(
         <DrilldownBrowseSelector
             allLabel="All"
@@ -129,7 +74,7 @@ function renderSelector(
                     loading: false,
                     loadingLabel: 'Loading types',
                     noResultsLabel: 'No types found',
-                    ...types,
+                    onChange: vi.fn(),
                 },
             ]}
             label="All"

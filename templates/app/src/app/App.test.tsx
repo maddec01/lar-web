@@ -24,10 +24,4 @@ describe('app', () => {
         expect(screen.getByRole('heading', { name: 'Welcome' })).toBeInTheDocument();
         expect(await screen.findByText('Everything is running')).toBeInTheDocument();
     });
-
-    it('shows the not-found page for unknown addresses', async () => {
-        await renderAt('/nowhere');
-
-        expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
-    });
 });

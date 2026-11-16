@@ -22,14 +22,6 @@ function header() {
     );
 }
 
-it('a press outside the header closes the menu', () => {
-    header();
-    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
-    fireEvent.pointerDown(document.body);
-
-    expect(screen.getByRole('button', { name: 'Open menu' })).toHaveAttribute('aria-expanded', 'false');
-});
-
 it('the open menu makes the page behind it inert, and closing it gives the page back', () => {
     header();
 

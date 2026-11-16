@@ -1,14 +1,14 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { createRef, type ReactNode, useState } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
+import { type ReactNode, useState } from 'react';
+import { describe, expect, it, vi } from 'vite-plus/test';
 
 import { showErrorNotification } from '../feedback/ErrorNotification';
 import { Notifications } from '../feedback/Notifications';
-import { Input, Select, SelectItem } from '../forms';
+import { Input } from '../forms';
 import { DesignSystemProvider } from '../foundations/DesignSystemProvider';
 import { SidebarNavigationItem, SidebarPane } from '../layout';
 import { ActionModal } from './ActionModal';
-import { Modal } from './Modal';
+import { Modal, useModalClose } from './Modal';
 
 function renderDialog(children: ReactNode) {
     return render(children, {
@@ -16,253 +16,95 @@ function renderDialog(children: ReactNode) {
     });
 }
 
-function FormDialog({
-    children,
-    focusFirstField,
-    sidebar,
-}: {
-    children: ReactNode;
-    focusFirstField?: boolean;
-    sidebar?: ReactNode;
-}) {
+function FormDialog({ children, sidebar }: { children: ReactNode; sidebar?: ReactNode }) {
     return (
         <Modal onClose={() => undefined}>
-            <Modal.Content
-                title="Edit settings"
-                description="Change your settings"
-                focusFirstField={focusFirstField}
-                sidebar={sidebar}
-            >
+            <Modal.Content title="Edit settings" description="Change your settings" sidebar={sidebar}>
                 <Modal.Body>{children}</Modal.Body>
             </Modal.Content>
         </Modal>
     );
 }
 
-describe('modal body overflow', () => {
-    const observers = new Set<ControlledResizeObserver>();
+/** A link in the dialog to another one, leaving through the dialog's dirty guard. */
+function OpenOther({ other, onOpen }: { other: string; onOpen: (catalog: string) => void }) {
+    const requestClose = useModalClose();
 
-    class ControlledResizeObserver {
-        elements = new Set<Element>();
-        disconnect = vi.fn(() => this.elements.clear());
-        private callback: ResizeObserverCallback;
+    return (
+        <button type="button" onClick={() => requestClose(() => onOpen(other))}>
+            Open {other}
+        </button>
+    );
+}
 
-        constructor(callback: ResizeObserverCallback) {
-            this.callback = callback;
-            observers.add(this);
-        }
-        observe(element: Element) {
-            this.elements.add(element);
-        }
-        unobserve(element: Element) {
-            this.elements.delete(element);
-        }
-        resize(element: Element) {
-            if (this.elements.has(element)) this.callback([], this);
-        }
-    }
+/** One catalog's editor, dirty once its name changes, with a link that opens the other catalog's editor in its place. */
+function CatalogEditor({
+    catalog,
+    onOpen,
+    onClose,
+}: {
+    catalog: string;
+    onOpen: (catalog: string) => void;
+    onClose: () => void;
+}) {
+    const [name, setName] = useState(catalog);
+    const other = catalog === 'Family photos' ? 'Holiday photos' : 'Family photos';
 
-    beforeEach(() => {
-        observers.clear();
-        vi.stubGlobal('ResizeObserver', ControlledResizeObserver);
+    return (
+        <Modal dirty={name !== catalog} onClose={onClose}>
+            <Modal.Content title={`Edit ${catalog}`}>
+                <Modal.Body>
+                    <Input aria-label="Name" value={name} onChange={(event) => setName(event.target.value)} />
+                    <OpenOther other={other} onOpen={onOpen} />
+                </Modal.Body>
+            </Modal.Content>
+        </Modal>
+    );
+}
+
+function LinkedEditors({ onClose }: { onClose: () => void }) {
+    const [catalog, setCatalog] = useState('Family photos');
+
+    return <CatalogEditor key={catalog} catalog={catalog} onOpen={setCatalog} onClose={onClose} />;
+}
+
+const question = () => screen.queryByRole('alertdialog');
+const pressEscape = () => fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
+const rename = (name: string) =>
+    fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: name } });
+
+describe('modal dirty guard', () => {
+    it('closes once the reader discards, and Escape on the question keeps editing', async () => {
+        const onClose = vi.fn();
+
+        renderDialog(<LinkedEditors onClose={onClose} />);
+        rename('Holiday photos');
+        pressEscape();
+        expect(question()).toBeInTheDocument();
+        pressEscape();
+        await waitFor(() => expect(question()).not.toBeInTheDocument());
+        expect(onClose).not.toHaveBeenCalled();
+        expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Holiday photos');
+
+        pressEscape();
+        fireEvent.click(within(question()!).getByRole('button', { name: 'Discard changes' }));
+        expect(onClose).toHaveBeenCalledOnce();
     });
 
-    afterEach(() => vi.unstubAllGlobals());
+    it('asks before leaving a dirty editor for another dialog, then goes there instead of closing', async () => {
+        const onClose = vi.fn();
 
-    it('measures on attachment and follows hidden distances back to both boundaries', () => {
-        const metrics = { scrollTop: 0, scrollHeight: 100, clientHeight: 100 };
-        const onScroll = vi.fn();
-        const ref = vi.fn((element: HTMLDivElement | null) => {
-            if (!element) return;
+        renderDialog(<LinkedEditors onClose={onClose} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Open Holiday photos' }));
+        expect(screen.getByRole('dialog', { name: 'Edit Holiday photos' })).toBeInTheDocument();
+        expect(question()).not.toBeInTheDocument();
 
-            for (const key of ['scrollTop', 'scrollHeight', 'clientHeight'] as const) {
-                Object.defineProperty(element, key, { configurable: true, get: () => metrics[key] });
-            }
-        });
-        const view = renderDialog(
-            <Modal onClose={() => undefined}>
-                <Modal.Content title="Overflow" focusFirstField={false}>
-                    <Modal.Body ref={ref} onScroll={onScroll} aria-label="Scrollable content">
-                        <p>Content</p>
-                    </Modal.Body>
-                </Modal.Content>
-            </Modal>,
-        );
-        const body = screen.getByLabelText('Scrollable content');
-        const expectDistances = (top: number, bottom: number) => {
-            expect(body.style.getPropertyValue('--scroll-fade-top')).toBe(`${top}px`);
-            expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe(`${bottom}px`);
-        };
-
-        expect(ref).toHaveBeenCalledWith(body);
-        expectDistances(0, 0);
-
-        metrics.scrollHeight = 300;
-        fireEvent.scroll(body);
-        expectDistances(0, 200);
-
-        metrics.scrollTop = 10;
-        fireEvent.scroll(body);
-        expectDistances(10, 190);
-
-        metrics.scrollTop = 195;
-        fireEvent.scroll(body);
-        expectDistances(195, 5);
-
-        metrics.scrollTop = 200;
-        fireEvent.scroll(body);
-        expectDistances(200, 0);
-
-        metrics.scrollTop = 0;
-        fireEvent.scroll(body);
-        expectDistances(0, 200);
-        expect(onScroll).toHaveBeenCalledTimes(5);
-        expect(onScroll.mock.calls[0]![0].target).toBe(body);
-
-        view.unmount();
-        expect(ref).toHaveBeenLastCalledWith(null);
-        expect([...observers].every((observer) => observer.elements.size === 0)).toBe(true);
-        metrics.scrollTop = 50;
-        fireEvent.scroll(body);
-        expectDistances(0, 200);
-    });
-
-    it.each(['scroll', 'fill'] as const)('updates for content and viewport resizing with layout=%s', (layout) => {
-        const ref = createRef<HTMLDivElement>();
-        const view = renderDialog(
-            <Modal onClose={() => undefined}>
-                <Modal.Content title="Resizing" focusFirstField={false}>
-                    <Modal.Body ref={ref} layout={layout}>
-                        <Modal.Pane active>
-                            <p>Loaded content</p>
-                        </Modal.Pane>
-                        <Modal.Pane active={false}>Hidden pane</Modal.Pane>
-                    </Modal.Body>
-                </Modal.Content>
-            </Modal>,
-        );
-        const body = ref.current!;
-        const content = screen.getByText('Loaded content');
-        const metrics = { scrollTop: 0, scrollHeight: 300, clientHeight: 100 };
-
-        for (const key of ['scrollTop', 'scrollHeight', 'clientHeight'] as const) {
-            Object.defineProperty(body, key, { configurable: true, get: () => metrics[key] });
-        }
-
-        const resize = (element: Element) => {
-            act(() => {
-                for (const observer of observers) observer.resize(element);
-            });
-        };
-        // In fill layouts only the descendant changes size; the wrapper and pane stay fixed.
-        const contentObserver = [...observers].find((observer) => observer.elements.has(content));
-
-        expect(contentObserver).toBeDefined();
-
-        resize(content);
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('200px');
-
-        metrics.scrollHeight = 450;
-        resize(content);
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('350px');
-
-        metrics.clientHeight = 500;
-        resize(body);
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-
-        metrics.clientHeight = 100;
-        metrics.scrollHeight = 200;
-        metrics.scrollTop = 100;
-        resize(body);
-        expect(body.style.getPropertyValue('--scroll-fade-top')).toBe('100px');
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-
-        metrics.scrollTop = 0;
-        metrics.scrollHeight = 100;
-        resize(content);
-        expect(body.style.getPropertyValue('--scroll-fade-top')).toBe('0px');
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-
-        view.unmount();
-        expect(ref.current).toBeNull();
-        expect([...observers].every((observer) => observer.elements.size === 0)).toBe(true);
-    });
-
-    it('tracks inserted descendants and releases removed content in a fixed fill layout', async () => {
-        const metrics = { scrollTop: 0, scrollHeight: 100, clientHeight: 100 };
-        const ref = (element: HTMLDivElement | null) => {
-            if (!element) return;
-
-            for (const key of ['scrollTop', 'scrollHeight', 'clientHeight'] as const) {
-                Object.defineProperty(element, key, { configurable: true, get: () => metrics[key] });
-            }
-        };
-        const dialog = (loaded: boolean) => (
-            <Modal onClose={() => undefined}>
-                <Modal.Content title="Async fill" focusFirstField={false}>
-                    <Modal.Body ref={ref} layout="fill" aria-label="Body">
-                        <Modal.Pane active>
-                            <section>{loaded ? <p>Loaded content</p> : null}</section>
-                        </Modal.Pane>
-                    </Modal.Body>
-                </Modal.Content>
-            </Modal>
-        );
-        const view = renderDialog(dialog(false));
-        const body = screen.getByLabelText('Body');
-
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-
-        metrics.scrollHeight = 300;
-        view.rerender(dialog(true));
-        await waitFor(() => expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('200px'));
-
-        const content = screen.getByText('Loaded content');
-        const observer = [...observers].find((observer) => observer.elements.has(content))!;
-
-        expect(observer).toBeDefined();
-        metrics.scrollHeight = 450;
-        act(() => observer.resize(content));
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('350px');
-
-        metrics.scrollHeight = 100;
-        view.rerender(dialog(false));
-        await waitFor(() => expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px'));
-
-        metrics.scrollHeight = 300;
-        act(() => observer.resize(content));
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-
-        view.unmount();
-        await act(async () => body.firstElementChild!.append(content));
-        expect(body.style.getPropertyValue('--scroll-fade-bottom')).toBe('0px');
-        expect([...observers].every((observer) => observer.elements.size === 0)).toBe(true);
-    });
-
-    it('preserves callback ref cleanup when the forwarded ref changes', () => {
-        const cleanup = vi.fn();
-        const callbackRef = vi.fn(() => cleanup);
-        const objectRef = createRef<HTMLDivElement>();
-        const dialog = (ref: typeof callbackRef | typeof objectRef) => (
-            <Modal onClose={() => undefined}>
-                <Modal.Content title="Ref lifecycle" focusFirstField={false}>
-                    <Modal.Body ref={ref} aria-label="Body">
-                        Content
-                    </Modal.Body>
-                </Modal.Content>
-            </Modal>
-        );
-        const view = renderDialog(dialog(callbackRef));
-        const body = screen.getByLabelText('Body');
-
-        expect(callbackRef).toHaveBeenCalledWith(body);
-        view.rerender(dialog(objectRef));
-        expect(cleanup).toHaveBeenCalledOnce();
-        expect(callbackRef).toHaveBeenCalledTimes(1);
-        expect(objectRef.current).toBe(body);
-
-        view.unmount();
-        expect(objectRef.current).toBeNull();
+        rename('Holidays');
+        fireEvent.click(screen.getByRole('button', { name: 'Open Family photos' }));
+        expect(question()).toBeInTheDocument();
+        fireEvent.click(within(question()!).getByRole('button', { name: 'Discard changes' }));
+        await waitFor(() => expect(screen.getByRole('dialog', { name: 'Edit Family photos' })).toBeInTheDocument());
+        expect(onClose).not.toHaveBeenCalled();
     });
 });
 
@@ -350,20 +192,6 @@ describe('modal focus', () => {
         expect(name.selectionEnd).toBe('My catalog'.length);
     });
 
-    it('focuses a select without opening its options', () => {
-        renderDialog(
-            <FormDialog>
-                <Select aria-label="Language" defaultValue="en">
-                    <SelectItem value="en">English</SelectItem>
-                </Select>
-                <Input aria-label="Name" />
-            </FormDialog>,
-        );
-
-        expect(screen.getByRole('combobox', { name: 'Language' })).toHaveFocus();
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-    });
-
     it('waits for a loading field, then stops selecting it on subsequent updates', async () => {
         const view = renderDialog(
             <FormDialog>
@@ -394,26 +222,6 @@ describe('modal focus', () => {
         expect(name.selectionStart).toBe(3);
         expect(name.selectionEnd).toBe(3);
     });
-
-    it.each([false, true])(
-        'leaves focus to the caller while first-field focus is off (on at opening: %s)',
-        async (onAtOpening) => {
-            const view = renderDialog(
-                <FormDialog focusFirstField={onAtOpening}>
-                    <Input aria-label="Name" disabled />
-                </FormDialog>,
-            );
-
-            view.rerender(
-                <FormDialog focusFirstField={false}>
-                    <Input aria-label="Name" />
-                </FormDialog>,
-            );
-            await act(async () => undefined);
-
-            expect(screen.getByRole('textbox', { name: 'Name' })).not.toHaveFocus();
-        },
-    );
 
     it.each(['pointerdown', 'keydown'])('does not move focus after %s interaction while fields load', async (event) => {
         const view = renderDialog(

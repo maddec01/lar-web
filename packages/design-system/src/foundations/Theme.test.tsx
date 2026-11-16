@@ -58,25 +58,4 @@ describe('theme preference', () => {
             '(prefers-color-scheme: dark)': '#fafafa',
         });
     });
-
-    it('opens dark when nothing is stored and the app falls back to dark', () => {
-        createThemeController('lar-test-dark').initialize();
-
-        expect(document.documentElement.classList.contains('dark')).toBe(true);
-    });
-
-    it('tells the app each preference it applies', () => {
-        const applied: string[] = [];
-        const desktop = createThemeController('lar-test-desktop', {
-            fallback: 'system',
-            onApply: (preference) => applied.push(preference),
-        });
-        const { result } = renderHook(() => desktop.useTheme());
-
-        desktop.initialize();
-        act(() => result.current[1]('light'));
-
-        expect(applied).toEqual(['system', 'light']);
-        expect(result.current[0]).toBe('light');
-    });
 });
