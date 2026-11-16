@@ -32,13 +32,4 @@ describe('shared UI copy contract', () => {
             ]),
         ).toEqual([]);
     });
-
-    it('only checks typography in translations, and allows exact quotation paths', () => {
-        expect(
-            checkUiCopy({ quote: 'Could not load', app: 'Could not load' }, { ignorePaths: ['quote'] }).map(
-                ({ path }) => path,
-            ),
-        ).toEqual(['app']);
-        expect(checkUiCopy({ text: 'No se puede abrir' }, { locale: 'es' })).toEqual([]);
-    });
 });

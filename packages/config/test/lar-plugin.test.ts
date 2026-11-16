@@ -11,6 +11,7 @@ RuleTester.it = it;
 
 const tester = new RuleTester();
 const app = (file: string) => `/repo/web/src/${file}`;
+const designSystem = (file: string) => `/repo/packages/design-system/src/${file}`;
 
 tester.run('boundaries', rules.boundaries, {
     valid: [{ code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') }],
@@ -19,6 +20,20 @@ tester.run('boundaries', rules.boundaries, {
             code: "import { Player } from '@/features/music/Player';",
             filename: app('features/home/Home.tsx'),
             errors: [{ message: 'Cross-feature consumers must use the feature public API.' }],
+        },
+        {
+            code: "import { usePlayer } from '@/features/music';\nimport { useTranslation } from 'react-i18next';",
+            filename: app('ui/media/Track.tsx'),
+            options: [{ role: 'ui' }],
+            errors: 2,
+        },
+        {
+            code: "import { Input } from '../forms';",
+            filename: designSystem('overlays/Modal.tsx'),
+            options: [{ role: 'design-system' }],
+            errors: [
+                { message: 'Inside the design system, import the owning module directly to avoid barrel cycles.' },
+            ],
         },
     ],
 });
@@ -35,6 +50,11 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             code: 'export const A = () => <Row className="flex" />;',
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'className' }],
+        },
+        {
+            code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text size="sm" />;',
+            filename: app('features/home/A.tsx'),
+            errors: [{ messageId: 'lookProp' }],
         },
     ],
 });
