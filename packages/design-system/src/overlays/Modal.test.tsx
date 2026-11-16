@@ -26,6 +26,17 @@ function FormDialog({ children, sidebar }: { children: ReactNode; sidebar?: Reac
     );
 }
 
+/** A link in the dialog to another one, leaving through the dialog's dirty guard. */
+function OpenOther({ other, onOpen }: { other: string; onOpen: (catalog: string) => void }) {
+    const requestClose = useModalClose();
+
+    return (
+        <button type="button" onClick={() => requestClose(() => onOpen(other))}>
+            Open {other}
+        </button>
+    );
+}
+
 /** One catalog's editor, dirty once its name changes, with a link that opens the other catalog's editor in its place. */
 function CatalogEditor({
     catalog,
@@ -39,22 +50,12 @@ function CatalogEditor({
     const [name, setName] = useState(catalog);
     const other = catalog === 'Family photos' ? 'Holiday photos' : 'Family photos';
 
-    function OpenOther() {
-        const requestClose = useModalClose();
-
-        return (
-            <button type="button" onClick={() => requestClose(() => onOpen(other))}>
-                Open {other}
-            </button>
-        );
-    }
-
     return (
         <Modal dirty={name !== catalog} onClose={onClose}>
             <Modal.Content title={`Edit ${catalog}`}>
                 <Modal.Body>
                     <Input aria-label="Name" value={name} onChange={(event) => setName(event.target.value)} />
-                    <OpenOther />
+                    <OpenOther other={other} onOpen={onOpen} />
                 </Modal.Body>
             </Modal.Content>
         </Modal>
