@@ -14,7 +14,19 @@ const app = (file: string) => `/repo/web/src/${file}`;
 const designSystem = (file: string) => `/repo/packages/design-system/src/${file}`;
 
 tester.run('boundaries', rules.boundaries, {
-    valid: [{ code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') }],
+    valid: [
+        { code: "import { Button } from '@lar-works/design-system';", filename: app('features/home/Home.tsx') },
+        {
+            code: "import { ButtonBase } from '@lar-works/design-system/primitives';\nimport { Card } from './Card';\nimport type { Track } from '@/shared/media';",
+            filename: app('ui/media/Track.tsx'),
+            options: [{ role: 'ui' }],
+        },
+        {
+            code: "import { Input } from '../forms/Input';",
+            filename: designSystem('overlays/Modal.tsx'),
+            options: [{ role: 'design-system' }],
+        },
+    ],
     invalid: [
         {
             code: "import { Player } from '@/features/music/Player';",
@@ -25,7 +37,16 @@ tester.run('boundaries', rules.boundaries, {
             code: "import { usePlayer } from '@/features/music';\nimport { useTranslation } from 'react-i18next';",
             filename: app('ui/media/Track.tsx'),
             options: [{ role: 'ui' }],
-            errors: 2,
+            errors: [
+                {
+                    message:
+                        'The UI layer composes the design system and other ui files only; app state, routing, services and features reach it as props.',
+                },
+                {
+                    message:
+                        'UI-layer components receive labels, values and callbacks; they do not own application state, routing or localization.',
+                },
+            ],
         },
         {
             code: "import { Input } from '../forms';",
@@ -52,7 +73,22 @@ tester.run('no-visual-recipes', rules['no-visual-recipes'], {
             errors: [{ messageId: 'className' }],
         },
         {
+            code: 'export const A = () => <Row style={{}} />;',
+            filename: app('features/home/A.tsx'),
+            errors: [{ messageId: 'style' }],
+        },
+        {
+            code: 'export const A = () => <button />;',
+            filename: app('features/home/A.tsx'),
+            errors: [{ messageId: 'element' }],
+        },
+        {
             code: 'import { Text } from \'@lar-works/design-system\';\nexport const A = () => <Text size="sm" />;',
+            filename: app('features/home/A.tsx'),
+            errors: [{ messageId: 'lookProp' }],
+        },
+        {
+            code: 'import { Input } from \'@lar-works/design-system\';\nexport const A = () => <Input variant="filled" />;',
             filename: app('features/home/A.tsx'),
             errors: [{ messageId: 'lookProp' }],
         },
